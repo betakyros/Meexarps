@@ -138,6 +138,12 @@ public class main : MonoBehaviour
 
             Debug.Log("received sendWouldYouRatherAnswer from: " + from + " with answer: " + leftOrRight);
         }
+        else if ("sendRequestAnotherQuestion".Equals(action))
+        {
+            string elementId = data["info"]["elementId"].ToString();
+            string nextQuestion = GetNextQuestion();
+            AirConsole.instance.Message(from, new JsonAction("sendAnotherQuestion", new string[] { elementId, nextQuestion }));
+        }
         else if ("sendDecidedQuestions".Equals(action))
         {
             //Stop the would you rathers
@@ -232,9 +238,9 @@ public class main : MonoBehaviour
     public void SendRetrieveQuestions(int deviceId)
     {
         string[] questionsToSend = new string[] {
-            questions[currentQuestionIndex++],
-            questions[currentQuestionIndex++],
-            questions[currentQuestionIndex++]
+            GetNextQuestion(),
+            GetNextQuestion(),
+            GetNextQuestion()
         };
         AirConsole.instance.Message(deviceId, new JsonAction("sendRetrieveQuestions", questionsToSend));
     }
@@ -300,21 +306,27 @@ public class main : MonoBehaviour
     
     public void CalculateVoting()
     {
+        int increasedFontSize = 27;
         List<Answers> answerList = gameState.GetCurrentRound().answers;
         for (int i = 0; i < answerList.Count; i++)
         {
+            List<string> namesOfCorrectPeople = new List<string>();
+            Dictionary<string, List<string>> wrongGuessNameToPlayerNames = new Dictionary<string, List<string>>();
+
             Answers answers = answerList[i];
             string anonymousPlayerName = answers.anonymousPlayerName;
             string targetPlayerName = gameState.players[answers.deviceId].nickname;
-
+            /*
             StringBuilder votesSB = new StringBuilder();
             //todo convert player names to player numbers in sendvoting
 
-            votesSB.Append(anonymousPlayerName);
-            votesSB.Append(" is ");
-            votesSB.Append(targetPlayerName);
-            votesSB.Append("\n");
-            votesSB.Append("\n");
+            
+    votesSB.Append(anonymousPlayerName);
+    votesSB.Append(" is ");
+    votesSB.Append(targetPlayerName);
+    votesSB.Append("\n");
+    votesSB.Append("\n");
+    */
             foreach (KeyValuePair<int, Dictionary<string, string>> playerVote in gameState.GetCurrentRound().votes)
             {
                 Player p = gameState.players[playerVote.Key];
@@ -323,21 +335,34 @@ public class main : MonoBehaviour
                     string currentGuess = playerVote.Value[anonymousPlayerName];
                     if (playerVote.Value.ContainsKey(anonymousPlayerName))
                     {
-                        votesSB.Append("\t");
-                        votesSB.Append(p.nickname);
-                        votesSB.Append(" guessed ");
-                        votesSB.Append(anonymousPlayerName);
-                        votesSB.Append(" was ");
-                        votesSB.Append(currentGuess);
-                        votesSB.Append("\n");
-                        votesSB.Append("\n");
+
+                        /*
+                            votesSB.Append("\t");
+                            votesSB.Append(p.nickname);
+                            votesSB.Append(" guessed ");
+                            votesSB.Append(anonymousPlayerName);
+                            votesSB.Append(" was ");
+                            votesSB.Append(currentGuess);
+                            votesSB.Append("\n");
+                            votesSB.Append("\n");
+                            */
                         if (currentGuess == targetPlayerName)
                         {
+                            namesOfCorrectPeople.Add("<b><size=" + increasedFontSize + "><color=green>" + p.nickname + "</color></size></b>");
                             p.points++;
+                        }
+                        else
+                        {
+                            if(!wrongGuessNameToPlayerNames.ContainsKey(currentGuess))
+                            {
+                                wrongGuessNameToPlayerNames.Add(currentGuess, new List<string>());
+                            }
+                            wrongGuessNameToPlayerNames[currentGuess].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
                         }
                     }
                 } else
                 {
+                    /*
                     votesSB.Append("\t");
                     votesSB.Append(p.nickname);
                     votesSB.Append(" has no idea who ");
@@ -345,13 +370,82 @@ public class main : MonoBehaviour
                     votesSB.Append(" is!");
                     votesSB.Append("\n");
                     votesSB.Append("\n");
+                    */
+                    if (!wrongGuessNameToPlayerNames.ContainsKey("none"))
+                    {
+                        wrongGuessNameToPlayerNames.Add("none", new List<string>());
+                    }
+                    wrongGuessNameToPlayerNames["none"].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
                 }
             }
+
+            StringBuilder correctVotesSB = new StringBuilder();
+            if (namesOfCorrectPeople.Count > 0)
+            {
+                correctVotesSB.Append(System.String.Join(", ", namesOfCorrectPeople.GetRange(0, namesOfCorrectPeople.Count - 1)));
+                if (namesOfCorrectPeople.Count != 1)
+                {
+                    correctVotesSB.Append(" and ");
+                }
+                correctVotesSB.Append(namesOfCorrectPeople[namesOfCorrectPeople.Count - 1]);
+            } else
+            {
+                correctVotesSB.Append("No one");
+            }
+            correctVotesSB.Append(" correctly guessed that ");
+            correctVotesSB.Append(anonymousPlayerName);
+            correctVotesSB.Append(" is ");
+            correctVotesSB.Append(targetPlayerName);
+
+            StringBuilder wrongVotesSb = new StringBuilder();
+            foreach (KeyValuePair<string, List<string>> wrongVotes in wrongGuessNameToPlayerNames)
+            {
+                if("none".Equals(wrongVotes.Key))
+                {
+                    continue;
+                }
+                wrongVotesSb.Append(System.String.Join(", ", wrongVotes.Value.GetRange(0, wrongVotes.Value.Count - 1)));
+                if(wrongVotes.Value.Count != 1) { 
+                    wrongVotesSb.Append(" and ");
+                }
+                wrongVotesSb.Append(wrongVotes.Value[wrongVotes.Value.Count - 1]);
+                wrongVotesSb.Append(" incorrectly guessed that ");
+                wrongVotesSb.Append(anonymousPlayerName);
+                wrongVotesSb.Append(" is ");
+                wrongVotesSb.Append(wrongVotes.Key);
+                wrongVotesSb.Append("\n");
+                wrongVotesSb.Append("\n");
+            }
+
+            if (wrongGuessNameToPlayerNames.ContainsKey("none"))
+            {
+                List<string> noneVoters = wrongGuessNameToPlayerNames["none"];
+                bool hasOneNoneVoter = noneVoters.Count == 1;
+                wrongVotesSb.Append(System.String.Join(", ", noneVoters.GetRange(0, noneVoters.Count - 1)));
+                if (!hasOneNoneVoter)
+                {
+                    wrongVotesSb.Append(" and ");
+                }
+                wrongVotesSb.Append(noneVoters[noneVoters.Count - 1]);
+                if(hasOneNoneVoter)
+                {
+                    wrongVotesSb.Append(" has ");
+                } else
+                {
+                    wrongVotesSb.Append(" have ");
+                }
+                wrongVotesSb.Append("no idea who ");
+                wrongVotesSb.Append(anonymousPlayerName);
+                wrongVotesSb.Append(" is!");
+            }
+
+
             //an offset for the instructions tile and the questions tile
             int playerTileOffset = 1;
             Text myText = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset + i];
             //todo set the text size to the same size as the panel
-            myText.text = votesSB.ToString();
+            string tileTitle = anonymousPlayerName + " is " + targetPlayerName + "\n\n";
+            myText.text = "<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + "</size></b>" + correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString();
         }
         
         if (gameState.GetCurrentRoundNumber() == gameState.GetNumberOfPlayers() - 1)
@@ -418,6 +512,11 @@ public class main : MonoBehaviour
     public bool HasEveryoneVoted()
     {
         return gameState.GetCurrentRound().votes.Count == gameState.GetNumberOfPlayers();
+    }
+
+    private string GetNextQuestion()
+    {
+        return questions[currentQuestionIndex++];
     }
 }
 
@@ -689,7 +788,7 @@ Gary Chapman
 William Moulton Marston
 Gary Gygax
 Walter H. Holtzman
-Paul Costa 
+Paul Costa
 Robert McCrae
 Derpy McDerpface
 Hugh Jass
@@ -768,8 +867,8 @@ At a party, would you rather meet someone new or stick to your crowd?|Meet new p
 Do you relate to people who let their emotions guide them?|No|Yes
 Do you stay calm under pressure?|AHHHHHHH|Yes
 Does it take you a long time to decide what to watch on tv?|No|Yes
-When in a group of people you do not know, do you have any problems jumping into their conversation?No|Yes
-Would you be willing to stop on others to get ahead in life?|No|Yes
+When in a group of people you do not know, do you have any problems jumping into their conversation?|No|Yes
+Would you be willing to step on others to get ahead in life?|No|Yes
 When focusing on a task, are you likely to get distracted?|No|Yes
 Do you cry in front of others?|Never|Yes
 When making life choices, which do you listen to more, your heart or your head?|Heart|Head
@@ -791,6 +890,7 @@ Would you rather be able to fall asleep immediately or wake up at a specific tim
 The Trolly Problem. Would you personally kill one person to save 5?|No|Yes
 Would you be willing to sit in a room for 8 hours a day for $25 an hour?|No|Yes
 Would you rather be slapped very hard, or slap someone very hard?|Be Slapped|Slap Someone
-Do you believe in love at first sight?|No|Yes";
+Do you believe in love at first sight?|No|Yes
+Would you rather travel to the past or the future?|Past|Future";
     }
 }

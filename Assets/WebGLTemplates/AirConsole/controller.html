@@ -1047,6 +1047,8 @@ path, .jtk-endpoint {
                     keyboard.setValue("retrieveQuestionsField1",  payload.data[0]);
                     keyboard.setValue("retrieveQuestionsField2", payload.data[1]);
                     keyboard.setValue("retrieveQuestionsField3", payload.data[2]);
+                } else if(myAction === "sendAnotherQuestion") {
+                    keyboard.setValue(payload.data[0], payload.data[1]);
                 } else if(myAction === "sendWouldYouRather") {
                     //if you are currently submiting questions, you don't get to play would you rather
                     if(document.getElementById("retrieveQuestionsView").style.display == "none") {
@@ -1129,6 +1131,16 @@ path, .jtk-endpoint {
 				var message = {
 					'action': "sendWouldYouRatherAnswer",
 					'info': answer
+				};
+				me.air_console.message(AirConsole.SCREEN, message);
+			}
+
+			App.prototype.sendRequestAnotherQuestion = function sendRequestAnotherQuestion(elementId) {
+				var message = {
+					'action': "sendRequestAnotherQuestion",
+					'info': {
+                        elementId
+                    }
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
@@ -1296,7 +1308,9 @@ Others under Creative Commons 0 License from https://freesound.org
         <div class="pseudo_button" onclick="window.app.sendWouldYouRatherAnswer(1)">Right Answer</div>
     </div>
     <div class="view" id="retrieveQuestionsView" style="padding:20% 0;display:none">
-        Write somethings you'd like to know about your friends!
+        Write somethings you'd like to know about your friends! 
+        <br>
+        Use a default question, modify it or write your own!
         <br>
         <br>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
@@ -1304,6 +1318,7 @@ Others under Creative Commons 0 License from https://freesound.org
               <div style="color:#aaa"><i>Give me a good question</i></div>
             </div>
             <div class="pseudo_button" onclick="keyboard.setValue('retrieveQuestionsField1', '')" style="margin:5px">Clear</div>
+            <div class="pseudo_button" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField1')" style="margin:5px">Another!</div>
         </div>
         <p>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
@@ -1311,6 +1326,7 @@ Others under Creative Commons 0 License from https://freesound.org
               <div style="color:#aaa"><i>Give me a good question</i></div>
             </div>
             <div class="pseudo_button" onclick="keyboard.setValue('retrieveQuestionsField2', '')" style="margin:5px">Clear</div>
+            <div class="pseudo_button" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField2')" style="margin:5px">Another!</div>
         </div>
         <p>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
@@ -1318,6 +1334,7 @@ Others under Creative Commons 0 License from https://freesound.org
               <div style="color:#aaa"><i>Give me a good question</i></div>
             </div>
             <div class="pseudo_button" onclick="keyboard.setValue('retrieveQuestionsField3', '')" style="margin:5px">Clear</div>
+            <div class="pseudo_button" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField3')" style="margin:5px">Another!</div>
         </div>
         <p>
         <div class="pseudo_button" onclick="window.app.sendDecidedQuestions()">Send out the questions!</div>
