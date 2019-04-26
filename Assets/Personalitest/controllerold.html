@@ -1,0 +1,115 @@
+<html>
+<head>
+	<script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.7.0.js"></script>
+	
+  <script type="text/javascript">
+	function App() {
+		var me = this;
+		me.air_console = new AirConsole({"orientation": "portrait", "synchronize_time":"true"});
+		me.air_console.onMessage = function(from, data) {
+		console.log("onMessage", from, data);
+		}
+		
+	}
+	/*
+
+	air_console.message(AirConsole.SCREEN, "How are you?");
+	
+	function sendMessage(action, parameters) {
+		var message = {
+			'action': 'move',
+			'info': { 'amount': 5, 'torque':234.8}
+		};
+		air_console.message(AirConsole.SCREEN, message);
+	}
+	console.log("got here");
+	*/
+	App.prototype.sendAnswer = function sendAnswer(action) {
+		console.log("sending", action, document.getElementById("answer").value);
+		var message = {
+			'action':action,
+			'info': document.getElementById("answer")
+		};
+		air_console.message(AirConsole.SCREEN, message);
+	}
+
+	new Button("your-button", {
+		"down": function() {
+			console.log("buttondown");
+			// The callback function for when the button is pressed
+		},
+		"up": function() {
+			console.log("buttonup");
+			// The callback function for when the button is released
+		}
+	});
+
+	var ctrl_data = '{
+		"orientation": "portrait",
+		"selected_view_id": "view-0",
+		"views": [{
+			"id": "view-0",
+			"sections": [{
+				"id": "view-0-section-1",
+				"elements": [],
+				"classes": []
+			}, {
+				"id": "view-0-section-2",
+				"elements": [{
+					"id": "view-0-section-2-element-0",
+					"key": "button",
+					"name": "Button",
+					"tmpl": "button",
+					"constructor_fn": "ButtonElement",
+					"options": {
+						"constructor_args": {},
+						"attr_id": "view-0-section-2-element-0",
+						"css_classes": "button-300-300",
+						"view_action": {
+							"target": null,
+							"view_id": null
+						},
+						"label": "Submit",
+						"send_onrelease": false,
+						"message_data": []
+					}
+				}],
+				"classes": []
+			}]
+		}]
+	}';
+	</script>
+
+	<style type=text/css>
+		.frame {
+			text-align: center;
+			vertical-align: middle;
+			height: 100%;
+			width: 100%;
+		}
+		#your-button {
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			width: 40%;
+			height: 50%;
+		  }
+	</style>
+	<body onload="window.app = new App()">
+		<!--
+			<div class="frame">
+			<p id="question">What is your favorite color?</p>
+			Answer: <input type="text" id="answer"/><br>
+			<button type="button" ontouchstart="window.app.sendAnswer('submitAnswer')" ontouchend="sendAnswer('submitAnswer')">Submit</button>
+			<div class=button-300-150><div class=button-text>X</div></div>
+			
+		  <div class="button-text">Submit</div>
+		</div>
+		-->
+			<div id="view-0" class="view" style="display: flex;">
+			<div id="view-0-section-1" class="section " style="height: 49%;">
+			</div>
+			<div id="view-0-section-2" class="section " style="height: 49%;">
+			<div id="view-0-section-2-element-0" class="button-300-300 button-element element">
+	</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta content='width=device-width, initial-scale=1, maximum-scale=1 user-scalable=0' name='viewport'>
+  <title>AirConsole Controller</title>
+  <link href='https://fonts.googleapis.com/css?family=Play:400,700' rel='stylesheet' type='text/css'>
+  <!-- AirConsole-Controls -->
+  <link rel="stylesheet" type="text/css" href="airconsole-controls/button/button.css">
+  <link rel="stylesheet" type="text/css" href="airconsole-controls/dpad/dpad.css">
+  <!-- Styles -->
+  <link rel="stylesheet" type="text/css" href="controller/styles/styles.css">
+  <link rel="stylesheet" type="text/css" href="controller/styles/controls.css">
+</head>
+<body>
+
+  <div id="controller-container">
+
+    <!-- REPLACE_HERE START -->
+    <div id="view-0" class="view" style="display: flex;">
+      <div id="view-0-section-1" class="section " style="height: 49%; text-align: center; vertical-align: middle;">
+	    <p id="question">What is your favorite color?</p>
+		  Answer: <input type="text" id="answer"><br>
+      </div>
+      <div id="view-0-section-2" class="section " style="height: 49%;">
+        <div id="view-0-section-2-element-0" class="button-300-300 button-element element">
+          <div class="button-text">Submit</div>
+          </div>
+        </div>
+      </div>
+
+
+<script type="text/javascript">
+//generated with https://developers.airconsole.com/tools/airconsole-controller-generator/app/index.html#/
+
+  function App() {
+	var me = this;
+	me.air_console = new AirConsole({"orientation": "portrait", "synchronize_time":"true"});
+	me.air_console.onMessage = function(from, data) {
+	console.log("onMessage", from, data);
+	}
+		
+  };
+  console.log("gothere");
+  var ctrl_data = `{
+    "orientation": "portrait",
+    "selected_view_id": "view-0",
+    "views": [{
+        "id": "view-0",
+        "sections": [{
+            "id": "view-0-section-1",
+            "elements": [],
+            "classes": []
+        }, {
+            "id": "view-0-section-2",
+            "elements": [{
+                "id": "view-0-section-2-element-0",
+                "key": "button",
+                "name": "Button",
+                "tmpl": "button",
+                "constructor_fn": "ButtonElement",
+                "options": {
+                    "constructor_args": {},
+                    "attr_id": "view-0-section-2-element-0",
+                    "css_classes": "button-300-300",
+                    "view_action": {
+                        "target": null,
+                        "view_id": null
+                    },
+                    "label": "Submit",
+                    "send_onrelease": false,
+                    "message_data": [{
+                        "key": "submitAnswer",
+                        "value": "document.getElementById('answer').value"
+                    }]
+                }
+            }],
+            "classes": []
+        }]
+    }]
+}`;
+</script>
+
+    <!-- REPLACE_HERE END -->
+
+  </div>
+
+  <!-- 3rd Party Libs -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script type="text/javascript" src="controller/libs/handlebars-v4.0.5.js"></script>
+  <!-- AIRCONSOLE -->
+  <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-latest.js"></script>
+  <script type="text/javascript" src="controller/libs/airconsole_view_manager.js"></script>
+  <!-- AIRCONSOLE CONTROLS -->
+  <script type="text/javascript" src="airconsole-controls/button/button.js"></script>
+  <script type="text/javascript" src="airconsole-controls/dpad/dpad.js"></script>
+  <script type="text/javascript" src="airconsole-controls/swipe-analog/swipe-analog.js"></script>
+  <script type="text/javascript" src="airconsole-controls/swipe-digital/swipe-digital.js"></script>
+  <!-- GENERATOR -->
+  <script type="text/javascript" src="controller/js/controller_generator.js"></script>
+  <script type="text/javascript" src="controller/js/main.js"></script>
+</body>
+</html>
