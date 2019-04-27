@@ -28,6 +28,7 @@ public class main : MonoBehaviour
     //should make a different sound per person
     public AudioClip[] blips;
     private int currentQuestionIndex;
+    private int currentWouldYouRatherIndex;
     private string gameCode;
 
     // Start is called before the first frame update
@@ -51,17 +52,17 @@ public class main : MonoBehaviour
 
         blips.Shuffle();
 
-
         AirConsole.instance.onReady += OnReady;
         AirConsole.instance.onMessage += OnMessage;
         gameState = new GameState();
         currentQuestionIndex = 0;
+        currentWouldYouRatherIndex = 0;
     }
 
     void OnReady(string code)
     {
         gameCode = code;
-        welcomeInstructionsText.text = "Navigate to airconsole.com and enter " + code + " to join!";
+        welcomeInstructionsText.text = "Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!";
     }
 
     void Update()
@@ -97,6 +98,8 @@ public class main : MonoBehaviour
             if (gameState.GetNumberOfPlayers() < 6)
             {
                 string name = data["info"]["name"].ToString();
+                //remove the nbsp
+                name = Regex.Replace(name, @"\u00a0", " ");
                 Player p = new Player(name, from, gameState.GetNumberOfPlayers(), 0);
                 welcomePanels[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
                 gameState.players.Add(from, p);
@@ -232,7 +235,7 @@ public class main : MonoBehaviour
         SendRetrieveQuestions(currentPlayerTurnDeviceId[gameState.GetCurrentRoundNumber()]); 
         
         wouldYouRatherPanel.SetActive(true);
-        InvokeRepeating("SendWouldYouRather", 0f, 8f);
+        InvokeRepeating("SendWouldYouRather", 0f, 12f);
     }
 
     public void SendRetrieveQuestions(int deviceId)
@@ -254,7 +257,7 @@ public class main : MonoBehaviour
             Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>()[playerIconOffset + i].transform;
             myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f, myTransform.position.y);
         }
-        string[] currentWouldYouRather = wouldYouRathers[Random.Range(0, wouldYouRathers.Length - 1)];
+        string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Length];
         wouldYouRatherPanel.GetComponentInChildren<Text>().text = currentWouldYouRather[0];
         //left answer
         wouldYouRatherPanel.GetComponentsInChildren<Text>()[1].text = currentWouldYouRather[1];
@@ -516,7 +519,7 @@ public class main : MonoBehaviour
 
     private string GetNextQuestion()
     {
-        return questions[currentQuestionIndex++];
+        return questions[currentQuestionIndex++ % questions.Length];
     }
 }
 
@@ -887,10 +890,34 @@ Would you rather be able to professionaly play 3 instruments, or fluently speak 
 Would you date someone with a creepy mustache?|Probably|Very Yes
 Do you prefer zombies or aliens?|Zombies|Aliens
 Would you rather be able to fall asleep immediately or wake up at a specific time?|Sleep|Wake Up
-The Trolly Problem. Would you personally kill one person to save 5?|No|Yes
+The Trolley Problem. Would you personally kill one person to save 5?|No|Yes
 Would you be willing to sit in a room for 8 hours a day for $25 an hour?|No|Yes
 Would you rather be slapped very hard, or slap someone very hard?|Be Slapped|Slap Someone
 Do you believe in love at first sight?|No|Yes
-Would you rather travel to the past or the future?|Past|Future";
+Would you rather travel to the past or the future?|Past|Future
+Would you rather get eaten by a shark or get run over by a car? |Eaten by a shark|Get run over by a car
+Do you believe in life after love? | I can feel something inside me say... | I really don't think I'm strong enough
+Would you rather fight 10 horse-sized flies or 100 fly-sized pigs? | Flies | Pigs
+Hit or miss? | I guess you never miss, huh? | You got a boyfriend...I bet he doesn't kiss ya!!!
+Would you allow twerking at your funeral? | Absolutely not!!! | It should be REQUIRED
+Is a Hot Pocket a big pizza roll or is a pizza roll a mini Hot Pocket? | big pizza roll | mini Hot Pocket
+If you were stranded on an island with Toad, would you eat him | Nah bruh | Ye duh 
+Do you do your part to save the planet? | I suck |I'm an environmentalist :)
+Would you rather live in an 80s teen movie or early 2000s teen movie?| 80s| 2000s
+Would you rather swim in jello or nacho cheese? | jello| nacho cheese
+Would you have a servant? | no, that's weird| SERVE ME PEASANT
+If you farted an something solid came out, would you own up to it?| [Shaggy voice] It wasn't me!| I'm poopy and I'm PROUD
+Shrek or Shrek 2? | Shrek | Shrek 2
+Bee Movie or Bratz the Movie | Bee Movie | Bratz the Movie
+Broccoli|gross|hawt
+No pants during the winter or fleece pants (flants) during the summer?|I wanna freeze|Sweat baby sweat
+Would you rather receive a lump sum of money or a steady amount daily?| Gimme LUMPS | Stream it 2 me
+Doughnuts or cake?|DOUGHNUTS|CAKE
+Would you rather rave or mosh?|RAVE|MOSH
+Would you rather be a wizard or a superhero?|I'm Harry Potter!!!|I'm Spider Man!!!
+Starburst jelly beans or regular Starburst?| jelly beans | Starburst
+Would you rather have an elephant-sized cat or a cat-sized elephant?|I WANNA HOLD IT|I WANNA RIDE IT
+Livin' on a Prayer or Don't Stop Believin'|WOAAAAAAAAH LIVIN ON A PRAYER|JUST A SMALL TOWN GUUURRRLLLLL";
+
     }
 }
