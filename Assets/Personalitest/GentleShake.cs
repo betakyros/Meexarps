@@ -58,12 +58,12 @@ public class GentleShake : MonoBehaviour
             currentX = minX;
         }
 
-        if (transform.position.y <= minY)
+        if (transform.position.y <= minY * 1.01f)
         {
             maxY = Random.Range(originalPos.y, originalPos.y + bobAmountVertical);
             currentY = maxY;
         }
-        else if (transform.position.y >= maxY)
+        else if (transform.position.y >= maxY * .99f)
         {
             minY = Random.Range(originalPos.y - bobAmountVertical, originalPos.y);
             currentY = minY;

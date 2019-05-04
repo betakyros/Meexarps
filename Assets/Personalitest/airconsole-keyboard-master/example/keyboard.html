@@ -1024,21 +1024,14 @@ path, .jtk-endpoint {
                 myAction = payload.action;
                 /* THIS IS WHERE ACTIONS ARE RECEIVED */
                 
-                if(myAction === "sendQuestions") {
-                    hideAllViews();
-                    //empty the text value fields
-                    keyboard.setValue("textfield1", "");
-                    keyboard.setValue("textfield2", "");
-                    keyboard.setValue("textfield3", "");
-                    document.getElementById("submitAnswerView").style.display = "block";
-                    document.getElementById("question1").innerHTML = payload.data[0];
-                    document.getElementById("question2").innerHTML = payload.data[1];
-                    document.getElementById("question3").innerHTML = payload.data[2];
-                } else if(myAction === "sendWaitScreen") {
+                if(myAction === "sendWaitScreen") {
                     console.log("sendWaitScreen");
                     console.log(payload.data);
                     hideAllViews();
                     document.getElementById("waitingView").style.display = "block";
+                } else if(myAction === "sendStartGameScreen") {
+                    hideAllViews();
+                    document.getElementById("startGameScreenView").style.display = "block";
                 } else if(myAction === "sendRetrieveQuestions") {
                     console.log("sendRetrieveQuestions");
                     console.log(payload.data);
@@ -1057,6 +1050,16 @@ path, .jtk-endpoint {
                     }
                     console.log("sendWouldYouRather");
                     console.log(payload.data);
+                } else if(myAction === "sendQuestions") {
+                    hideAllViews();
+                    //empty the text value fields
+                    keyboard.setValue("textfield1", "");
+                    keyboard.setValue("textfield2", "");
+                    keyboard.setValue("textfield3", "");
+                    document.getElementById("submitAnswerView").style.display = "block";
+                    document.getElementById("question1").innerHTML = payload.data[0];
+                    document.getElementById("question2").innerHTML = payload.data[1];
+                    document.getElementById("question3").innerHTML = payload.data[2];
                 } else if(myAction === "sendVoting") {
                         hideAllViews();
                         document.getElementById("submitVoteView").style.display = "block";
@@ -1093,6 +1096,7 @@ path, .jtk-endpoint {
                     hideAllViews();
                     document.getElementById("endGameView").style.display = "block";
                 }
+                //IF YOU ADD A NEW STATE, YOU MUST ADD IT TO THE PHONEVIEWGAMESTATE SO RECONNECT WILL WORK
                 
             }
 
@@ -1251,12 +1255,13 @@ path, .jtk-endpoint {
 
   </head>
   <body style="background-color:#8cffd4; text-align: center;" onload="init()">
+    <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
     <div class="view" id="welcomeScreenView" style="padding:50% 0;">
         Welcome to Know Your Friends!
         <br>
         <br>
         <div class="textfield" id="nickname">
-          <div style="color:#aaa"><i>Enter a fun name</i></div>
+          <div style="color:#aaa"><i>Enter a fun name but identifiable name</i></div>
         </div>
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->

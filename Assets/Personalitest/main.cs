@@ -21,7 +21,7 @@ public class main : MonoBehaviour
     public GameObject votingPanel;
     public GameObject resultsPanel;
     public GameObject endScreenPanel;
-    public GameObject canvas;
+    public Canvas canvas;
     public AudioSource introAudioSource;
     public AudioSource mainLoopAudioSource;
     public AudioSource blipAudioSource;
@@ -62,42 +62,76 @@ public class main : MonoBehaviour
     void OnReady(string code)
     {
         gameCode = code;
-        welcomeInstructionsText.text = "Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!";
+        welcomeInstructionsText.text = "Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!\nPlayers can reconnect by joining and using the same name";
     }
 
     void Update()
     {
-        //gameStateText.text = gameState.ToString();
+        if(null == gameState)
+        {
+            Debug.Log("Gamestate is now null!");
+        }
     }
 
     void OnMessage(int from, JToken data)
     {
-        Debug.Log("message received");
-        Debug.Log("message received from " + from + " data: " + data.ToString());
         string action = data["action"].ToString();
-        if ("sendAnswers".Equals(action))
+        if ("sendWelcomeInfo".Equals(action))
         {
-            List<string> myAnswers = new List<string>();
-            foreach (JProperty property in ((JObject)(data["info"])).Properties())
-            {
-                Debug.Log("property: " + property);
-                myAnswers.Add(property.Value.ToString());
-            }
-            gameState.GetCurrentRound().answers.Add(
-                new Answers(myAnswers.ToArray(), from, GenerateAnonymousPlayerName()));
-            if(HasEveryoneSubmittedAnswers())
-            {
-                answerQuestionsPanel.SetActive(false);
-                votingPanel.SetActive(true);
+            string name = data["info"]["name"].ToString();
+            KeyValuePair<int, Player> currentPlayer = gameState.GetPlayerByName(name);
 
-                SendVoting();
-            }
-        }
-        else if ("sendWelcomeInfo".Equals(action))
-        {
-            if (gameState.GetNumberOfPlayers() < 6)
+            //reconect case
+            if (!currentPlayer.Equals(default(KeyValuePair<int, Player>)))
             {
-                string name = data["info"]["name"].ToString();
+                gameState.players.Remove(currentPlayer.Key);
+                gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points));
+                switch (gameState.phoneViewGameState)
+                {
+                    case PhoneViewGameState.SendStartGameScreen:
+                        AirConsole.instance.Message(from, new JsonAction("startGameScreenView", new string[] { " " }));
+                        break;
+                    case PhoneViewGameState.SendWaitScreen:
+                        AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
+                        break;
+                    case PhoneViewGameState.SendWouldYouRather:
+                        if (currentPlayer.Value.playerNumber == gameState.GetCurrentRoundNumber())
+                        {
+                            SendRetrieveQuestions(from);
+                        } else
+                        {
+                            AirConsole.instance.Message(from, new JsonAction("sendWouldYouRather", new string[] { " " }));
+                        }
+                        break;
+                    case PhoneViewGameState.SendQuestions:
+                        SendQuestions(from);
+                        break;
+                    case PhoneViewGameState.SendVoting:
+                        if(gameState.GetCurrentRound().votes.ContainsKey(from))
+                        {
+                            AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
+                        } else
+                        {
+                            SendVoting(from);
+                        }
+                        break;
+                    case PhoneViewGameState.SendNextRoundScreen:
+                        AirConsole.instance.Message(from, new JsonAction("sendNextRoundScreen", new string[] { " " }));
+                        break;
+                    case PhoneViewGameState.SendAdvanceToResultsScreen:
+                        AirConsole.instance.Message(from, new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
+                        break;
+                    case PhoneViewGameState.SendEndScreen:
+                        AirConsole.instance.Message(from, new JsonAction("sendEndScreen", new string[] { " " }));
+                        break;
+                    default:
+                        AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
+                        break;
+                }
+            }
+            //new player
+            else if (gameState.GetNumberOfPlayers() < 6)
+            {
                 //remove the nbsp
                 name = Regex.Replace(name, @"\u00a0", " ");
                 Player p = new Player(name, from, gameState.GetNumberOfPlayers(), 0);
@@ -107,7 +141,6 @@ public class main : MonoBehaviour
         }
         else if ("sendStartGame".Equals(action))
         {
-            Debug.Log("received sendStartGame");
             GameObject.Find("WelcomeScreenPanel").SetActive(false);
 
             int playerIconOffset = 5;
@@ -132,11 +165,11 @@ public class main : MonoBehaviour
             if (leftOrRight == 0)
             {
                 Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>()[indexOfFirstIcon + playerNumber].transform;
-                myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.3f, myTransform.position.y);
+                myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.3f * canvas.scaleFactor, myTransform.position.y);
             } else
             {
                 Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>()[indexOfFirstIcon + playerNumber].transform;
-                myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.70f, myTransform.position.y);
+                myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.70f * canvas.scaleFactor, myTransform.position.y);
             }
 
             Debug.Log("received sendWouldYouRatherAnswer from: " + from + " with answer: " + leftOrRight);
@@ -155,6 +188,15 @@ public class main : MonoBehaviour
             wouldYouRatherPanel.SetActive(false);
             answerQuestionsPanel.SetActive(true);
 
+            //display the status of each player's submission
+            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+            {
+                Player currentPlayer = gameState.GetPlayerByPlayerNumber(i);
+                int tilesOffset = 1;
+                answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + i].text = currentPlayer.nickname + "\n\n<color=red>Has Not Submitted</color>";
+
+            }
+
             List<string> myQuestions = new List<string>();
             foreach (JProperty property in ((JObject)(data["info"])).Properties())
             {
@@ -164,6 +206,30 @@ public class main : MonoBehaviour
             Debug.Log("received sendDecidedQuestions from: " + from + " with questions: " + myQuestions);
             gameState.GetCurrentRound().questions = myQuestions;
             SendQuestions();
+        }
+        else if ("sendAnswers".Equals(action))
+        {
+            List<string> myAnswers = new List<string>();
+            foreach (JProperty property in ((JObject)(data["info"])).Properties())
+            {
+                myAnswers.Add(property.Value.ToString());
+            }
+            gameState.GetCurrentRound().answers.Add(
+                new Answers(myAnswers.ToArray(), gameState.players[from].playerNumber, GenerateAnonymousPlayerName()));
+
+            int tilesOffset = 1;
+            Player currentPlayer = gameState.players[from];
+            answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + currentPlayer.playerNumber].text = currentPlayer.nickname + "\n\n<color=green>Has Submitted</color>";
+
+
+            if (HasEveryoneSubmittedAnswers())
+            {
+                answerQuestionsPanel.SetActive(false);
+                votingPanel.SetActive(true);
+
+                SendVoting();
+                gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
+            }
         }
         else if ("sendVoting".Equals(action))
         {
@@ -182,7 +248,7 @@ public class main : MonoBehaviour
             {
                 votingPanel.SetActive(false);
                 resultsPanel.SetActive(true);
-                CalculateVoting();
+                StartCoroutine(CalculateVoting(2));
                 Debug.Log("All Votes collected");
             }
         }
@@ -206,11 +272,6 @@ public class main : MonoBehaviour
         }
         //play a sound to confirm the input
         blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
-
-        //answers.Add(from, new Answers(myAnswers.ToArray(), from));
-        //TODO SEND CONFIRMATION MESSAGE
-        //AirConsole.instance.Message(from, data.ToString());
-        //answers.Add(from, data.get);
     }
 
     /* Possible actions to send */
@@ -223,18 +284,22 @@ public class main : MonoBehaviour
     public void SendWaitScreenToEveryone()
     {
         AirConsole.instance.Broadcast(new JsonAction("sendWaitScreen", new[] { "This is a funny quote" }));
+        gameState.phoneViewGameState = PhoneViewGameState.SendWaitScreen;
     }
 
     //startRound sends one person a SendRetrieveQuestions message and sends the others would you rathers until the questions are complete
     public void StartRound()
     {
+        //if starting from previous round
         resultsPanel.SetActive(false);
+
         gameState.rounds.Add(new Round());
         //controllers in the retrieve questions state will ignore would you rathers
-        List<int> currentPlayerTurnDeviceId = new List<int>(gameState.players.Keys);
-        SendRetrieveQuestions(currentPlayerTurnDeviceId[gameState.GetCurrentRoundNumber()]); 
+        int currentPlayerTurnDeviceId = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).deviceId;
+        SendRetrieveQuestions(currentPlayerTurnDeviceId); 
         
         wouldYouRatherPanel.SetActive(true);
+        gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         InvokeRepeating("SendWouldYouRather", 0f, 12f);
     }
 
@@ -255,7 +320,7 @@ public class main : MonoBehaviour
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
             Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>()[playerIconOffset + i].transform;
-            myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f, myTransform.position.y);
+            myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f * canvas.scaleFactor, myTransform.position.y);
         }
         string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Length];
         wouldYouRatherPanel.GetComponentInChildren<Text>().text = currentWouldYouRather[0];
@@ -267,13 +332,25 @@ public class main : MonoBehaviour
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendWouldYouRather", new[] { " " })));
     }
 
-    public void SendQuestions() {
+    public void SendQuestions()
+    {
+        SendQuestions(-1);
+    }
+
+    public void SendQuestions(int playerDeviceId)
+    {
         string[] questionsToSend = gameState.GetCurrentRound().questions.ToArray();
 
         string actionData = JsonUtility.ToJson(new JsonAction("sendQuestions", questionsToSend));
-        Debug.Log(actionData);
 
-        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendQuestions", questionsToSend)));
+        if (playerDeviceId < 0)
+        {
+            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendQuestions", questionsToSend)));
+            gameState.phoneViewGameState = PhoneViewGameState.SendQuestions;
+        } else
+        {
+            AirConsole.instance.Message(playerDeviceId, JsonUtility.ToJson(new JsonAction("sendQuestions", questionsToSend)));
+        }
     }
 
     public void SendVoting()
@@ -296,40 +373,153 @@ public class main : MonoBehaviour
             int answerPanelOffset = 3;
             Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + i];
             //todo set the text size to the same size as the panel
-            myText.text = answers.displayVotePanel();
+            myText.text = answers.anonymousPlayerName + "\n\n";
         }
         votingPanel.GetComponentsInChildren<Text>()[2].text = gameState.GetCurrentRound().PrintQuestions();
+        StartCoroutine(DoZoom(2));
 
         //send data to the phones
         List<string> listToSend = new List<string>();
         listToSend.AddRange(playerNames);
         listToSend.AddRange(anonymousPlayerNames);
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendVoting", listToSend.ToArray())));
+        gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
+        //todo display instructions
+
     }
-    
-    public void CalculateVoting()
+
+    public void SendVoting(int playerDeviceId)
     {
-        int increasedFontSize = 27;
+        List<string> playerNames = new List<string>();
+        List<string> anonymousPlayerNames = new List<string>();
+
+        foreach (Player p in gameState.players.Values)
+        {
+            playerNames.Add(p.nickname);
+        }
+
+        List<Answers> answersList = gameState.GetCurrentRound().answers;
+        for (int i = 0; i < answersList.Count; i++)
+        {
+            Answers answers = answersList[i];
+            anonymousPlayerNames.Add(answers.anonymousPlayerName);
+        }
+
+        //send data to the phones
+        List<string> listToSend = new List<string>();
+        listToSend.AddRange(playerNames);
+        listToSend.AddRange(anonymousPlayerNames);
+        AirConsole.instance.Message(playerDeviceId, JsonUtility.ToJson(new JsonAction("sendVoting", listToSend.ToArray())));
+    }
+
+    //todo remove parameter
+    private IEnumerator<WaitForSeconds> DoZoom(float seconds)
+    {
+        yield return new WaitForSeconds(1);
+
+        //flash the instructions
+        if (gameState.GetCurrentRoundNumber() == 0)
+        {
+            Image[] images = votingPanel.GetComponentsInChildren<Image>();
+            CameraZoom instructionsCz = images[0].gameObject.AddComponent<CameraZoom>();
+            instructionsCz.Setup(1f, 10f, true, false, true);
+            yield return new WaitForSeconds(12);
+
+            Destroy(instructionsCz);
+            //reset the position of the child panels
+            //questions panel
+            images[1].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+            //votingpanelgrid
+            images[2].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+        }
+
+
+        votingPanel.GetComponentsInChildren<Image>()[2].GetComponentInChildren<GridLayoutGroup>().enabled = false;
+        AutoResizeGrid autoResizeGrid = FindObjectsOfType(typeof(AutoResizeGrid))[2] as AutoResizeGrid;
+        autoResizeGrid.enabled = false;
+        int panelOffset = 3;
+        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+        {
+
+            int answerPanelOffset = 3;
+            Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset];
+
+            //Camera zoom will make the current panel the last element, so we don't need to add i
+            CameraZoom cz = votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.AddComponent<CameraZoom>();
+            cz.Setup(1f, 12f, true, true, false);
+            List<Answers> answersList = gameState.GetCurrentRound().answers;
+            Answers answers = answersList[i];
+
+            //create the short text to replace the text with questions on minimize
+            StringBuilder shortTextSb = new StringBuilder();
+            shortTextSb.Append(myText.text);
+
+            //wait one second after pause before displaying anything
+            yield return new WaitForSeconds(2);
+
+            for (int j = 0; j < answers.text.Length; j++) 
+            {
+                string answer = answers.text[j];
+
+                myText.text += gameState.GetCurrentRound().questions[j] + "\n" + answer;
+                shortTextSb.Append(answer);
+                if (j < answers.text.Length - 1 )
+                {
+                    myText.text += "<size=15>\n\n</size>";
+                    shortTextSb.Append("<size=15>\n\n</size>");
+                }
+                //wait four seconds between each answer to give it a punch
+                yield return new WaitForSeconds(4);
+            }
+            myText.text = shortTextSb.ToString();
+            yield return new WaitForSeconds(2);
+            Destroy(cz);
+        }
+        for (int i = gameState.GetNumberOfPlayers(); i < 6; i++)
+        {
+            votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+        }
+        votingPanel.GetComponentsInChildren<Image>()[2].GetComponentInChildren<GridLayoutGroup>().enabled = true;
+        autoResizeGrid.enabled = true;
+    }
+
+
+    //todo remove parameter
+    public IEnumerator<WaitForSeconds> CalculateVoting(int count)
+    {
+
+        //set the anonymous names of each box
+        List<Answers> answersList = gameState.GetCurrentRound().answers;
+        for (int i = 0; i < answersList.Count; i++)
+        {
+            Answers answers = answersList[i];
+            int resultsPanelOffset = 1;
+            Text myText = resultsPanel.GetComponentsInChildren<Text>()[resultsPanelOffset + i];
+            //todo set the text size to the same size as the panel
+            myText.text = answers.anonymousPlayerName;
+        }
+
+        //give some time for the context switch
+        yield return new WaitForSeconds(3);
+
+
+        resultsPanel.GetComponentsInChildren<Image>()[0].GetComponentInChildren<GridLayoutGroup>().enabled = false;
+        AutoResizeGrid autoResizeGrid = FindObjectsOfType(typeof(AutoResizeGrid))[3] as AutoResizeGrid;
+        autoResizeGrid.enabled = false;
+
+        int increasedFontSize = 23;
         List<Answers> answerList = gameState.GetCurrentRound().answers;
         for (int i = 0; i < answerList.Count; i++)
         {
             List<string> namesOfCorrectPeople = new List<string>();
+            List<string> namesOfCorrectPeopleForZoomInView = new List<string>();
             Dictionary<string, List<string>> wrongGuessNameToPlayerNames = new Dictionary<string, List<string>>();
+            Dictionary<string, List<string>> wrongGuessNameToPlayerNamesForZoomInView = new Dictionary<string, List<string>>();
 
+            //answers is stooring device ids it should be playeriids
             Answers answers = answerList[i];
             string anonymousPlayerName = answers.anonymousPlayerName;
-            string targetPlayerName = gameState.players[answers.deviceId].nickname;
-            /*
-            StringBuilder votesSB = new StringBuilder();
-            //todo convert player names to player numbers in sendvoting
-
-            
-    votesSB.Append(anonymousPlayerName);
-    votesSB.Append(" is ");
-    votesSB.Append(targetPlayerName);
-    votesSB.Append("\n");
-    votesSB.Append("\n");
-    */
+            string targetPlayerName = gameState.GetPlayerByPlayerNumber(answers.playerNumber).nickname;
             foreach (KeyValuePair<int, Dictionary<string, string>> playerVote in gameState.GetCurrentRound().votes)
             {
                 Player p = gameState.players[playerVote.Key];
@@ -338,19 +528,9 @@ public class main : MonoBehaviour
                     string currentGuess = playerVote.Value[anonymousPlayerName];
                     if (playerVote.Value.ContainsKey(anonymousPlayerName))
                     {
-
-                        /*
-                            votesSB.Append("\t");
-                            votesSB.Append(p.nickname);
-                            votesSB.Append(" guessed ");
-                            votesSB.Append(anonymousPlayerName);
-                            votesSB.Append(" was ");
-                            votesSB.Append(currentGuess);
-                            votesSB.Append("\n");
-                            votesSB.Append("\n");
-                            */
                         if (currentGuess == targetPlayerName)
                         {
+                            namesOfCorrectPeopleForZoomInView.Add("<color=green>" + p.nickname + "</color>");
                             namesOfCorrectPeople.Add("<b><size=" + increasedFontSize + "><color=green>" + p.nickname + "</color></size></b>");
                             p.points++;
                         }
@@ -358,41 +538,41 @@ public class main : MonoBehaviour
                         {
                             if(!wrongGuessNameToPlayerNames.ContainsKey(currentGuess))
                             {
+                                wrongGuessNameToPlayerNamesForZoomInView.Add(currentGuess, new List<string>());
                                 wrongGuessNameToPlayerNames.Add(currentGuess, new List<string>());
                             }
+                            wrongGuessNameToPlayerNamesForZoomInView[currentGuess].Add("<color=red>" + p.nickname + "</color>");
                             wrongGuessNameToPlayerNames[currentGuess].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
                         }
                     }
                 } else
                 {
-                    /*
-                    votesSB.Append("\t");
-                    votesSB.Append(p.nickname);
-                    votesSB.Append(" has no idea who ");
-                    votesSB.Append(anonymousPlayerName);
-                    votesSB.Append(" is!");
-                    votesSB.Append("\n");
-                    votesSB.Append("\n");
-                    */
                     if (!wrongGuessNameToPlayerNames.ContainsKey("none"))
                     {
+                        wrongGuessNameToPlayerNamesForZoomInView.Add("none", new List<string>());
                         wrongGuessNameToPlayerNames.Add("none", new List<string>());
                     }
+                    wrongGuessNameToPlayerNamesForZoomInView["none"].Add("<color=red>" + p.nickname + "</color>");
                     wrongGuessNameToPlayerNames["none"].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
                 }
             }
 
             StringBuilder correctVotesSB = new StringBuilder();
+            StringBuilder correctVotesStringSb = new StringBuilder();
             if (namesOfCorrectPeople.Count > 0)
             {
+                correctVotesStringSb.Append(System.String.Join(", ", namesOfCorrectPeopleForZoomInView.GetRange(0, namesOfCorrectPeople.Count - 1)));
                 correctVotesSB.Append(System.String.Join(", ", namesOfCorrectPeople.GetRange(0, namesOfCorrectPeople.Count - 1)));
                 if (namesOfCorrectPeople.Count != 1)
                 {
+                    correctVotesStringSb.Append(" and ");
                     correctVotesSB.Append(" and ");
                 }
+                correctVotesStringSb.Append(namesOfCorrectPeopleForZoomInView[namesOfCorrectPeople.Count - 1]);
                 correctVotesSB.Append(namesOfCorrectPeople[namesOfCorrectPeople.Count - 1]);
             } else
             {
+                correctVotesStringSb.Append("No one");
                 correctVotesSB.Append("No one");
             }
             correctVotesSB.Append(" correctly guessed that ");
@@ -400,64 +580,172 @@ public class main : MonoBehaviour
             correctVotesSB.Append(" is ");
             correctVotesSB.Append(targetPlayerName);
 
+            correctVotesStringSb.Append(" correctly guessed that ");
+            correctVotesStringSb.Append(anonymousPlayerName);
+            correctVotesStringSb.Append(" is ");
+            correctVotesStringSb.Append(targetPlayerName);
+
             StringBuilder wrongVotesSb = new StringBuilder();
+            StringBuilder wrongVotesForZoomInViewSb = new StringBuilder();
+            int wrongVotesCount = 0;
             foreach (KeyValuePair<string, List<string>> wrongVotes in wrongGuessNameToPlayerNames)
             {
+                StringBuilder currentSb = new StringBuilder();
                 if("none".Equals(wrongVotes.Key))
                 {
                     continue;
                 }
-                wrongVotesSb.Append(System.String.Join(", ", wrongVotes.Value.GetRange(0, wrongVotes.Value.Count - 1)));
+                currentSb.Append(System.String.Join(", ", wrongVotes.Value.GetRange(0, wrongVotes.Value.Count - 1)));
                 if(wrongVotes.Value.Count != 1) { 
                     wrongVotesSb.Append(" and ");
                 }
-                wrongVotesSb.Append(wrongVotes.Value[wrongVotes.Value.Count - 1]);
-                wrongVotesSb.Append(" incorrectly guessed that ");
-                wrongVotesSb.Append(anonymousPlayerName);
-                wrongVotesSb.Append(" is ");
-                wrongVotesSb.Append(wrongVotes.Key);
-                wrongVotesSb.Append("\n");
-                wrongVotesSb.Append("\n");
+                currentSb.Append(wrongVotes.Value[wrongVotes.Value.Count - 1]);
+                currentSb.Append(" incorrectly guessed that ");
+                currentSb.Append(anonymousPlayerName);
+                currentSb.Append(" is ");
+                currentSb.Append(wrongVotes.Key);
+                currentSb.Append("\n");
+                currentSb.Append("\n");
+                wrongVotesSb.Append(currentSb.ToString());
+                wrongVotesCount++;
             }
 
             if (wrongGuessNameToPlayerNames.ContainsKey("none"))
             {
+                StringBuilder currentSb = new StringBuilder();
                 List<string> noneVoters = wrongGuessNameToPlayerNames["none"];
                 bool hasOneNoneVoter = noneVoters.Count == 1;
-                wrongVotesSb.Append(System.String.Join(", ", noneVoters.GetRange(0, noneVoters.Count - 1)));
+                currentSb.Append(System.String.Join(", ", noneVoters.GetRange(0, noneVoters.Count - 1)));
                 if (!hasOneNoneVoter)
                 {
-                    wrongVotesSb.Append(" and ");
+                    currentSb.Append(" and ");
                 }
-                wrongVotesSb.Append(noneVoters[noneVoters.Count - 1]);
+                currentSb.Append(noneVoters[noneVoters.Count - 1]);
                 if(hasOneNoneVoter)
                 {
-                    wrongVotesSb.Append(" has ");
+                    currentSb.Append(" has ");
                 } else
                 {
-                    wrongVotesSb.Append(" have ");
+                    currentSb.Append(" have ");
                 }
-                wrongVotesSb.Append("no idea who ");
-                wrongVotesSb.Append(anonymousPlayerName);
-                wrongVotesSb.Append(" is!");
+                currentSb.Append("no idea who ");
+                currentSb.Append(anonymousPlayerName);
+                currentSb.Append(" is!");
+                wrongVotesSb.Append(currentSb.ToString());
+                wrongVotesCount++;
             }
 
+            //todo unduplicate this code
+            List<string> wrongVotesLines = new List<string>();
+            foreach (KeyValuePair<string, List<string>> wrongVotes in wrongGuessNameToPlayerNamesForZoomInView)
+            {
+                StringBuilder currentSb = new StringBuilder();
+                if ("none".Equals(wrongVotes.Key))
+                {
+                    continue;
+                }
+                currentSb.Append(System.String.Join(", ", wrongVotes.Value.GetRange(0, wrongVotes.Value.Count - 1)));
+                if (wrongVotes.Value.Count != 1)
+                {
+                    currentSb.Append(" and ");
+                }
+                currentSb.Append(wrongVotes.Value[wrongVotes.Value.Count - 1]);
+                currentSb.Append(" incorrectly guessed that ");
+                currentSb.Append(anonymousPlayerName);
+                currentSb.Append(" is ");
+                currentSb.Append(wrongVotes.Key);
+                wrongVotesLines.Add(currentSb.ToString());
+            }
 
-            //an offset for the instructions tile and the questions tile
+            if (wrongGuessNameToPlayerNames.ContainsKey("none"))
+            {
+                StringBuilder currentSb = new StringBuilder();
+                List<string> noneVoters = wrongGuessNameToPlayerNamesForZoomInView["none"];
+                bool hasOneNoneVoter = noneVoters.Count == 1;
+                currentSb.Append(System.String.Join(", ", noneVoters.GetRange(0, noneVoters.Count - 1)));
+                if (!hasOneNoneVoter)
+                {
+                    currentSb.Append(" and ");
+                }
+                currentSb.Append(noneVoters[noneVoters.Count - 1]);
+                if (hasOneNoneVoter)
+                {
+                    currentSb.Append(" has ");
+                }
+                else
+                {
+                    currentSb.Append(" have ");
+                }
+                currentSb.Append("no idea who ");
+                currentSb.Append(anonymousPlayerName);
+                currentSb.Append(" is!");
+                wrongVotesLines.Add(currentSb.ToString());
+            }
+
+            //an offset for the the questions tile
             int playerTileOffset = 1;
-            Text myText = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset + i];
-            //todo set the text size to the same size as the panel
+
+            Text myText = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset];
+
+
+            //display all results people
+
+            //first, display the questions and answers again
+            int playerPanelTileOffset = 2;
+            myText.text = anonymousPlayerName + "'s answers\n\n";
+            CameraZoom cz = resultsPanel.GetComponentsInChildren<Image>()[playerPanelTileOffset].gameObject.AddComponent<CameraZoom>();
+            cz.Setup(1f, 20f + wrongVotesCount * 4f, true, true, false);
+
+            for (int j = 0; j < answers.text.Length; j++)
+            {
+                yield return new WaitForSeconds(3);
+                string answer = answers.text[j];
+
+                myText.text += gameState.GetCurrentRound().questions[j] + "\n" + answer;
+                if (j < answers.text.Length - 1)
+                {
+                    myText.text += "<size=15>\n\n</size>";
+                }
+            }
+            yield return new WaitForSeconds(3);
+
+            myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
+            yield return new WaitForSeconds(3);
+
+            foreach (string s in wrongVotesLines)
+            {
+                myText.text += "<size=15>\n\n</size>" + s;
+                yield return new WaitForSeconds(4);
+            }
+            myText.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
+
+            yield return new WaitForSeconds(4);
+            yield return new WaitForSeconds(3);
+
             string tileTitle = anonymousPlayerName + " is " + targetPlayerName + "\n\n";
             myText.text = "<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + "</size></b>" + correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString();
+
+            //wait for the shrink
+            yield return new WaitForSeconds(1);
+            Destroy(cz);
         }
-        
+        //reset the position of the other panels
+        for (int i = gameState.GetNumberOfPlayers(); i < 6; i++)
+        {
+            int playerPanelTileOffset = 2;
+            resultsPanel.GetComponentsInChildren<Image>()[playerPanelTileOffset].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+        }
+        resultsPanel.GetComponentsInChildren<Image>()[0].GetComponentInChildren<GridLayoutGroup>().enabled = true;
+        autoResizeGrid.enabled = true;
         if (gameState.GetCurrentRoundNumber() == gameState.GetNumberOfPlayers() - 1)
         {
             AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " })));
+            gameState.phoneViewGameState = PhoneViewGameState.SendAdvanceToResultsScreen;
         }
         else
         {
             AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendNextRoundScreen", new string[] { " " })));
+            gameState.phoneViewGameState = PhoneViewGameState.SendNextRoundScreen;
         }
     }
 
@@ -481,24 +769,7 @@ public class main : MonoBehaviour
 
         }
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendEndScreen", new string[] { " "})));
-    }
-
-    public void DisplayAnswers(Text answersDisplay)
-    {
-        StringBuilder sb = new StringBuilder("", 100);
-        /*
-        foreach (KeyValuePair<int, Answers> answer in answers)
-        {
-
-            sb.Append("Key = "+ answer.Key.ToString() + ", Value = \n");
-            foreach(string a in answer.Value.text)
-            {
-                sb.Append(a);
-                sb.Append("\n");
-            }
-        }
-        answersDisplay.text = sb.ToString();
-        */
+        gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
     }
 
     private int anonymousNameCounter = 0;
@@ -589,7 +860,7 @@ public static class JsonHelper
 class Player
 {
     public string nickname { get; set; }
-    private int deviceId { get; set; }
+    public int deviceId { get; set; }
     public int playerNumber { get; set; }
     private int avatarId { get; set; }
     public int points { get; set; }
@@ -601,6 +872,15 @@ class Player
         playerNumber = pn;
         avatarId = a;
         points = 0;
+    }
+
+    public Player(string n, int d, int pn, int a, int p)
+    {
+        nickname = n;
+        deviceId = d;
+        playerNumber = pn;
+        avatarId = a;
+        points = p;
     }
 
     public override string ToString()
@@ -619,13 +899,13 @@ class Player
 public class Answers
 {
     public string[] text { get; set; }
-    public int deviceId { get; }
+    public int playerNumber { get; }
     public string anonymousPlayerName { get; }
 
-    public Answers(string[] t, int di, string apn)
+    public Answers(string[] t, int pn, string apn)
     {
         text = t;
-        deviceId = di;
+        playerNumber = pn;
         anonymousPlayerName = apn;
     }
 
@@ -646,7 +926,7 @@ public class Answers
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder("", 100);
-        sb.Append("Player Number: " + deviceId + "\n");
+        sb.Append("Player Number: " + playerNumber + "\n");
         foreach (string answer in text)
         { 
             sb.Append("\t" + answer);
@@ -674,11 +954,12 @@ class Round
     public string PrintQuestions()
     {
         StringBuilder sb = new StringBuilder("", 100);
-        foreach (string question in questions)
+        for (int i = 0; i < questions.Count; i++)
         {
+            string question = questions[i];
             sb.Append("\t" + question);
-            sb.Append("\n");
-            sb.Append("\n");
+            if(i <questions.Count - 1)
+            sb.Append("<size=10>\n\n</size>");
         }
         return sb.ToString();
 
@@ -717,16 +998,18 @@ class GameState
     //Dictionary<deviceId, Player>
     public Dictionary<int, Player> players { get; set; }
     public List<Round> rounds { get; set; }
+    public PhoneViewGameState phoneViewGameState;
 
     public GameState()
     {
         players = new Dictionary<int, Player>();
         rounds = new List<Round>();
+        phoneViewGameState = PhoneViewGameState.SendStartGameScreen;
     }
 
     public Player GetPlayerByPlayerNumber(int playerNumber)
     {
-        foreach(Player p in players.Values)
+        foreach (Player p in players.Values)
         {
             if (playerNumber == p.playerNumber)
             {
@@ -734,6 +1017,18 @@ class GameState
             }
         }
         return null;
+    }
+
+    public KeyValuePair<int, Player> GetPlayerByName(string playerName)
+    {
+        foreach (KeyValuePair<int, Player> p in players)
+        {
+            if (playerName == p.Value.nickname)
+            {
+                return p;
+            }
+        }
+        return default;
     }
 
     public void ResetGameState()
@@ -778,6 +1073,19 @@ class GameState
     }
 
 
+}
+
+enum PhoneViewGameState
+{
+    SendQuestions = 0,
+    SendWaitScreen = 1,
+    SendRetrieveQuestions = 2,
+    SendWouldYouRather = 3,
+    SendVoting = 4,
+    SendNextRoundScreen = 5,
+    SendAdvanceToResultsScreen = 6,
+    SendEndScreen = 7,
+    SendStartGameScreen
 }
 
 static class Resources
@@ -852,7 +1160,8 @@ What is one of your 'dealbreakers'?
 What are your thoughts about white lies?
 If you had to get a tatoo, what kind of tatoo would you get?
 What kind of music do you like?
-What do you like to do on your phone?";
+What do you like to do on your phone?
+What is the minimum amount of money you need to completely change your lifestyle?";
     }
 
     public static string GetWouldYouRathers()
