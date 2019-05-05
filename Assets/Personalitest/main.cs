@@ -300,7 +300,7 @@ public class main : MonoBehaviour
         
         wouldYouRatherPanel.SetActive(true);
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
-        InvokeRepeating("SendWouldYouRather", 0f, 12f);
+        InvokeRepeating("SendWouldYouRather", 0f, 15f);
     }
 
     public void SendRetrieveQuestions(int deviceId)
@@ -315,6 +315,13 @@ public class main : MonoBehaviour
 
     public void SendWouldYouRather()
     {
+        WouldYouRatherTimer oldWouldYouRatherTimer = wouldYouRatherPanel.GetComponent<WouldYouRatherTimer>();
+        if (null == oldWouldYouRatherTimer)
+        {
+            Destroy(oldWouldYouRatherTimer);
+        }
+        WouldYouRatherTimer wyrt = wouldYouRatherPanel.AddComponent<WouldYouRatherTimer>();
+        wyrt.SetTimerText(wouldYouRatherPanel.GetComponentsInChildren<Text>()[1]);
         //reset the icon
         int playerIconOffset = 5;
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
@@ -323,11 +330,11 @@ public class main : MonoBehaviour
             myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f * canvas.scaleFactor, myTransform.position.y);
         }
         string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Length];
-        wouldYouRatherPanel.GetComponentInChildren<Text>().text = currentWouldYouRather[0];
+        wouldYouRatherPanel.GetComponentsInChildren<Text>()[0].text = currentWouldYouRather[0];
         //left answer
-        wouldYouRatherPanel.GetComponentsInChildren<Text>()[1].text = currentWouldYouRather[1];
+        wouldYouRatherPanel.GetComponentsInChildren<Text>()[2].text = currentWouldYouRather[1];
         //right answer
-        wouldYouRatherPanel.GetComponentsInChildren<Text>()[2].text = currentWouldYouRather[2];
+        wouldYouRatherPanel.GetComponentsInChildren<Text>()[3].text = currentWouldYouRather[2];
         //Maybe send the possible answers here
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendWouldYouRather", new[] { " " })));
     }
@@ -461,7 +468,7 @@ public class main : MonoBehaviour
             {
                 string answer = answers.text[j];
 
-                myText.text += gameState.GetCurrentRound().questions[j] + "\n" + answer;
+                myText.text += "<i>" + gameState.GetCurrentRound().questions[j] + "</i>\n<b>" + answer + "</b>";
                 shortTextSb.Append(answer);
                 if (j < answers.text.Length - 1 )
                 {
@@ -596,8 +603,8 @@ public class main : MonoBehaviour
                     continue;
                 }
                 currentSb.Append(System.String.Join(", ", wrongVotes.Value.GetRange(0, wrongVotes.Value.Count - 1)));
-                if(wrongVotes.Value.Count != 1) { 
-                    wrongVotesSb.Append(" and ");
+                if(wrongVotes.Value.Count != 1) {
+                    currentSb.Append(" and ");
                 }
                 currentSb.Append(wrongVotes.Value[wrongVotes.Value.Count - 1]);
                 currentSb.Append(" incorrectly guessed that ");
@@ -694,38 +701,48 @@ public class main : MonoBehaviour
             int playerPanelTileOffset = 2;
             myText.text = anonymousPlayerName + "'s answers\n\n";
             CameraZoom cz = resultsPanel.GetComponentsInChildren<Image>()[playerPanelTileOffset].gameObject.AddComponent<CameraZoom>();
-            cz.Setup(1f, 20f + wrongVotesCount * 4f, true, true, false);
 
+            int zoomInTime = 1;
+            float waitForContextSeconds = 1.5f;
+            int waitForReadSeconds = 5;
+            float waitForEachAnswer = .5f;
+
+            float totalWaitTime = 2 * waitForContextSeconds + 2 * waitForReadSeconds + (3 + wrongVotesCount) * waitForEachAnswer;
+            cz.Setup(zoomInTime, totalWaitTime, true, true, false);
+            yield return new WaitForSeconds(zoomInTime);
+            yield return new WaitForSeconds(waitForContextSeconds);
             for (int j = 0; j < answers.text.Length; j++)
             {
-                yield return new WaitForSeconds(3);
+                yield return new WaitForSeconds(waitForEachAnswer);
                 string answer = answers.text[j];
 
-                myText.text += gameState.GetCurrentRound().questions[j] + "\n" + answer;
+                myText.text += "<i>" + gameState.GetCurrentRound().questions[j] + "</i>\n<b>" + answer + "</b>";
                 if (j < answers.text.Length - 1)
                 {
                     myText.text += "<size=15>\n\n</size>";
                 }
             }
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(waitForReadSeconds);
 
             myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(waitForContextSeconds);
 
             foreach (string s in wrongVotesLines)
             {
                 myText.text += "<size=15>\n\n</size>" + s;
-                yield return new WaitForSeconds(4);
+                yield return new WaitForSeconds(waitForEachAnswer);
             }
             myText.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
 
-            yield return new WaitForSeconds(4);
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(waitForReadSeconds);
+            //yield return new WaitForSeconds(zoomInTime);
 
             string tileTitle = anonymousPlayerName + " is " + targetPlayerName + "\n\n";
             myText.text = "<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + "</size></b>" + correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString();
 
             //wait for the shrink
+            yield return new WaitForSeconds(zoomInTime);
+            //1 second buffer
             yield return new WaitForSeconds(1);
             Destroy(cz);
         }
