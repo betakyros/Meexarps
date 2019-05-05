@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using UnityEngine.UI;
 using System.Text;
 using System.Text.RegularExpressions;
+using UnityEngine.Video;
 
 public class main : MonoBehaviour
 {
@@ -25,6 +26,8 @@ public class main : MonoBehaviour
     public AudioSource introAudioSource;
     public AudioSource mainLoopAudioSource;
     public AudioSource blipAudioSource;
+    public RawImage instructionVideo;
+    public VideoPlayer vp;
     //should make a different sound per person
     public AudioClip[] blips;
     private int currentQuestionIndex;
@@ -148,7 +151,7 @@ public class main : MonoBehaviour
             {
                 wouldYouRatherPanel.GetComponentsInChildren<Image>()[playerIconOffset + i].gameObject.SetActive(false);
             }
-            int playerTextOffset = 3;
+            int playerTextOffset = 4;
             for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
             {
                 wouldYouRatherPanel.GetComponentsInChildren<Text>()[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
@@ -428,11 +431,29 @@ public class main : MonoBehaviour
         if (gameState.GetCurrentRoundNumber() == 0)
         {
             Image[] images = votingPanel.GetComponentsInChildren<Image>();
-            CameraZoom instructionsCz = images[0].gameObject.AddComponent<CameraZoom>();
-            instructionsCz.Setup(1f, 10f, true, false, true);
-            yield return new WaitForSeconds(12);
-
-            Destroy(instructionsCz);
+            //CameraZoom instructionsCz = images[0].gameObject.AddComponent<CameraZoom>();
+            //instructionsCz.Setup(1f, 16f, true, false, true);
+            vp.url = System.IO.Path.Combine(Application.streamingAssetsPath+"/", "knowyourfriendstutorialvideo.mp4");
+            
+            vp.Prepare();
+            while (!vp.isPrepared)
+            {
+                yield return new WaitForSeconds(1);
+                break;
+            }
+            instructionVideo.texture = vp.texture;
+            instructionVideo.gameObject.SetActive(true);
+            CameraZoom instructionsCz = instructionVideo.gameObject.AddComponent<CameraZoom>();
+            instructionsCz.Setup(1f, 16f, false, false, false, true);
+            vp.Play();
+            //vp.Pause();
+            yield return new WaitForSeconds(1);
+            vp.Play();
+            yield return new WaitForSeconds(16);
+            vp.Pause();
+            yield return new WaitForSeconds(1);
+            instructionVideo.gameObject.SetActive(false);
+            //Destroy(instructionsCz);
             //reset the position of the child panels
             //questions panel
             images[1].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
@@ -1110,15 +1131,7 @@ static class Resources
 
     public static string GetAnonymousNames()
     {
-        return @"Katharine Briggs
-Isabel Myers
-Gary Chapman
-William Moulton Marston
-Gary Gygax
-Walter H. Holtzman
-Paul Costa
-Robert McCrae
-Derpy McDerpface
+        return @"Derpy McDerpface
 Hugh Jass
 Anita Bath
 Personali Tea
@@ -1133,7 +1146,17 @@ Dee Plomasy
 Kim Yoonity
 Polly Tix
 Justin Case
-Sarah Nade";
+Sarah Nade
+Al E.Gater
+Arty Fischel
+Ben Dover
+Don Keigh
+Horace Cope
+Levy Tate
+Stan Dupp
+Warren Peace
+Sarah Nader
+Eura Snotball";
     }
 
     public static string GetQuestions()
@@ -1178,7 +1201,16 @@ What are your thoughts about white lies?
 If you had to get a tatoo, what kind of tatoo would you get?
 What kind of music do you like?
 What do you like to do on your phone?
-What is the minimum amount of money you need to completely change your lifestyle?";
+What is the minimum amount of money you need to completely change your lifestyle?
+What do you want to do with your body after you die?
+If you could relive any schooling, what would you do differently?
+What do you like to do by yourself?
+What is the most awkward situation you've ever been in?
+Without saying what the category is, what are your top five?
+What is the weirdest dream you had?
+What is your favorite book genre?
+What do you do when you are sad?
+Without using any explicit language, what is your favorite expletive?";
     }
 
     public static string GetWouldYouRathers()
@@ -1224,26 +1256,40 @@ Would you rather travel to the past or the future?|Past|Future
 Would you rather get eaten by a shark or get run over by a car? |Eaten by a shark|Get run over by a car
 Do you believe in life after love? | I can feel something inside me say... | I really don't think I'm strong enough
 Would you rather fight 10 horse-sized flies or 100 fly-sized pigs? | Flies | Pigs
-Hit or miss? | I guess you never miss, huh? | You got a boyfriend...I bet he doesn't kiss ya!!!
-Would you allow twerking at your funeral? | Absolutely not!!! | It should be REQUIRED
-Is a Hot Pocket a big pizza roll or is a pizza roll a mini Hot Pocket? | big pizza roll | mini Hot Pocket
+Is a Hot Pocket a big pizza roll or is a pizza roll a mini Hot Pocket? | Big pizza roll | Mini Hot Pocket
 If you were stranded on an island with Toad, would you eat him | Nah bruh | Ye duh 
-Do you do your part to save the planet? | I suck |I'm an environmentalist :)
 Would you rather live in an 80s teen movie or early 2000s teen movie?| 80s| 2000s
-Would you rather swim in jello or nacho cheese? | jello| nacho cheese
-Would you have a servant? | no, that's weird| SERVE ME PEASANT
-If you farted an something solid came out, would you own up to it?| [Shaggy voice] It wasn't me!| I'm poopy and I'm PROUD
-Shrek or Shrek 2? | Shrek | Shrek 2
-Bee Movie or Bratz the Movie | Bee Movie | Bratz the Movie
-Broccoli|gross|hawt
-No pants during the winter or fleece pants (flants) during the summer?|I wanna freeze|Sweat baby sweat
-Would you rather receive a lump sum of money or a steady amount daily?| Gimme LUMPS | Stream it 2 me
+Would you rather swim in jello or nacho cheese? |Jello|Nacho cheese
+Would you have a servant? | No, that's weird| SERVE ME PEASANT
+Broccoli|Gross|Amazing
+No pants during the winter or fleece pants (flants) during the summer?|I wanna freeze|I'll sweat thanks
+Would you rather receive a lump sum of money or a steady amount daily?| Lump Sum | Daily amount
 Doughnuts or cake?|DOUGHNUTS|CAKE
 Would you rather rave or mosh?|RAVE|MOSH
 Would you rather be a wizard or a superhero?|I'm Harry Potter!!!|I'm Spider Man!!!
 Starburst jelly beans or regular Starburst?| jelly beans | Starburst
 Would you rather have an elephant-sized cat or a cat-sized elephant?|I WANNA HOLD IT|I WANNA RIDE IT
-Livin' on a Prayer or Don't Stop Believin'|WOAAAAAAAAH LIVIN ON A PRAYER|JUST A SMALL TOWN GUUURRRLLLLL";
+Backstreet boys or Nsync?|TELL ME WHY| BYE BYE BYE
+Do you desire more power?|No|Yes
+Would you rather relive your life with your current memories, or stay in the present but become a child?|Relive|Fountain of youth
+Are you easily embarassed?|No|Yes
+Are you good at dancing?|No|Yes
+Are you good at karaoke?|No|Yes
+Do you react loudly to movies?|No|Yes
+Would you rather always be 30 minutes early, or always 10 minutes late?|30 minutes early|10 minutes late
+Would you rather lose all your posessions, or all your photos?|Posessions|Photos
+Would you rather know how you die, or how anyone else dies?|I gotta know about me|I'm so curious about other people!
+Would you rather be famous when you are alive and forgotten when you die, or unknown when you are alive, but famous after you die?|Fame now!|Fame later!
+Would you rather be 1 foot shorter or 2 feet taller?|Shorter please|Taller for sure
+Would you live alone in the Matrix where you have complete control?|No|Yes
+On a deserted island, would you rather be alone, or with someone annoying?|Alone|Someone annoying
+Would you rather teleport or fly?|Teleport|Fly
+Would you rather control water or fire?|Water|Fire
+Would you rather lose all of your memories from birth to now or lose your ability to make new long term memories?|Goodbye old memories|Goodbye new memories
+Would you rather get one free round trip international plane ticket every year or be able to fly domestic anytime for free?|International|Domestic
+Would you rather be beautiful or rich?|Beautiful|Rich
+Would you rather look 10 years into the future, or 1000 years into the future?|10 years|1000 years
+Would you rather be a reverse centaur or a reverse mermaid/merman?|Neigh!|Blub!Would you rather snitch on your best friend for a crime they committed or go to jail for the crime they committed?|Snitch on them!|Cover for them!";
 
     }
 }

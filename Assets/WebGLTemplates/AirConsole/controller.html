@@ -86,14 +86,14 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
             filterExclude:true,
             maxConnections: 1,
             anchor:"Right",
-            endpoint:[ "Dot", { radius: 7, cssClass:"large-green" } ]
+            endpoint:[ "Dot", { radius: 18, cssClass:"large-green" } ]
         });
 
         // configure the .playerNameBoxs as targets.
         instance.makeTarget(playerNameBoxs, {
             dropOptions: { hoverClass: "hover" },
             anchor:"Left",
-            endpoint:[ "Dot", { radius: 7, cssClass:"small-blue" } ]
+            endpoint:[ "Dot", { radius: 18, cssClass:"small-blue" } ]
         });
         /*
         // and finally connect a couple of small windows, just so its obvious what's going on when this demo loads.           
@@ -978,9 +978,10 @@ path, .jtk-endpoint {
       function init() {
 		    window.app = new App();
         keyboard = new AirConsoleKeyboard("my_keyboard");
-        keyboard.bind("nickname");
-
-        keyboard.bind("textfield1", {
+        //keyboard.bind("nickname");
+        
+        /*
+        //keyboard.bind("textfield1", {
           onShow: function(input_id) {
             console.log("onShow#1", input_id);
           },
@@ -999,7 +1000,7 @@ path, .jtk-endpoint {
         keyboard.bind("retrieveQuestionsField1");
         keyboard.bind("retrieveQuestionsField2");
         keyboard.bind("retrieveQuestionsField3");
-        
+        */
         function hideAllViews() {
             elements = document.getElementsByClassName("view");
             for (var i = 0; i < elements.length; i++) {
@@ -1037,11 +1038,12 @@ path, .jtk-endpoint {
                     console.log(payload.data);
                     hideAllViews();
                     document.getElementById("retrieveQuestionsView").style.display = "block";
-                    keyboard.setValue("retrieveQuestionsField1",  payload.data[0]);
-                    keyboard.setValue("retrieveQuestionsField2", payload.data[1]);
-                    keyboard.setValue("retrieveQuestionsField3", payload.data[2]);
+                    document.getElementById("retrieveQuestionsField1").innerText=payload.data[0];
+                    document.getElementById("retrieveQuestionsField2").innerText=payload.data[1];
+                    document.getElementById("retrieveQuestionsField3").innerText=payload.data[2];
                 } else if(myAction === "sendAnotherQuestion") {
-                    keyboard.setValue(payload.data[0], payload.data[1]);
+                    document.getElementById(payload.data[0]).innerText=payload.data[1];
+                    //keyboard.setValue(payload.data[0], payload.data[1]);
                 } else if(myAction === "sendWouldYouRather") {
                     //if you are currently submiting questions, you don't get to play would you rather
                     if(document.getElementById("retrieveQuestionsView").style.display == "none") {
@@ -1103,13 +1105,13 @@ path, .jtk-endpoint {
             /* THIS IS WHERE RESPONSES ARE DEFINED */
             
             App.prototype.sendWelcomeInfo = function sendWelcomeInfo() {
-                var nickname = keyboard.valueText('nickname');
+                var nickname = document.getElementById('nickname').innerText;
                 if(nickname) {
 				    console.log("sending", "welcomeInfo name: ", );
 				    var message = {
 					    'action': "sendWelcomeInfo",
 					    'info': {
-                            'name': keyboard.valueText('nickname'),
+                            'name': nickname,
                             'avatarId': 0
                         }
 				    };
@@ -1150,9 +1152,9 @@ path, .jtk-endpoint {
 			}
 
 			App.prototype.sendDecidedQuestions = function sendDecidedQuestions() {
-				var question1 = keyboard.valueText('retrieveQuestionsField1');
-				var question2 = keyboard.valueText('retrieveQuestionsField2');
-				var question3 = keyboard.valueText('retrieveQuestionsField3');
+				var question1 = document.getElementById('retrieveQuestionsField1').innerText;
+				var question2 = document.getElementById('retrieveQuestionsField2').innerText;
+				var question3 = document.getElementById('retrieveQuestionsField3').innerText;
 				var message = {
 					'action': "sendDecidedQuestions",
 					'info': {
@@ -1165,9 +1167,9 @@ path, .jtk-endpoint {
 			}
 
 			App.prototype.sendAnswer = function sendAnswer() {
-				var answerText1 = keyboard.valueText('textfield1');
-				var answerText2 = keyboard.valueText('textfield2');
-				var answerText3 = keyboard.valueText('textfield3');
+				var answerText1 = document.getElementById('textfield1').innerText;
+				var answerText2 = document.getElementById('textfield2').innerText;
+				var answerText3 = document.getElementById('textfield3').innerText;
 				var message = {
 					'action': "sendAnswers",
 					'info': {
@@ -1230,6 +1232,10 @@ path, .jtk-endpoint {
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
+
+            App.prototype.setPlaceholder = function setPlaceholder(elementId, value) {
+                document.getElementById(elementId).setAttribute('placeholder', value);
+            }
 		}
     }
     </script>
@@ -1251,6 +1257,28 @@ path, .jtk-endpoint {
         cursor: hand;
         cursor: pointer;
       }
+
+      .franklinInput {
+          border: 1px solid black;
+          padding: 4px;
+          background-color:white;
+          width:200px;
+          margin: 4px;
+          display: flex;
+          justify-content: center;
+      }
+
+      .franklinInput:focus {
+        content: "";
+        color: black; 
+        font-style: normal;
+      }
+
+      .franklinInput[placeholder]:empty:before {
+        content: attr(placeholder);
+        color: #555; 
+        font-style: italic;
+      }
     </style>
 
   </head>
@@ -1260,8 +1288,13 @@ path, .jtk-endpoint {
         Welcome to Know Your Friends!
         <br>
         <br>
-        <div class="textfield" id="nickname">
-          <div style="color:#aaa"><i>Enter a fun name but identifiable name</i></div>
+        <!-- TODO make placeholder text italics -->
+        Enter a fun name but identifiable name
+        <br>
+        <!--<input type="text" id="nickname" placeholder="Identifiable name">-->
+        <div style="display:flex;justify-content:center;">
+            <span placeholder="Identifiable name" class="franklinInput" contenteditable="true" id="nickname" 
+            onclick="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', 'Identifiable name')"></span>
         </div>
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
@@ -1289,13 +1322,6 @@ Kitten Meow Sound | Mike Koenig
 <br>
 Others under Creative Commons 0 License from https://freesound.org
         </div>
-        <!--
-        TODO enable icons
-        Icon:
-        <div class="textfield" id="nickname">
-          <div style="color:#aaa"><i>Enter a fun name</i></div>
-        </div>
-        -->
     </div>
     <div class="view" id="startGameScreenView" style="padding:50% 0;display:none">
         Hit this button to start the game!
@@ -1319,26 +1345,29 @@ Others under Creative Commons 0 License from https://freesound.org
         <br>
         <br>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
-            <div class="textfield" id="retrieveQuestionsField1">
-              <div style="color:#aaa"><i>Give me a good question</i></div>
+            <div style="display:flex;justify-content:center;">
+                <span placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1" 
+                onclick="window.app.setPlaceholder('retrieveQuestionsField1', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField1', 'Give me a good question')"></span>
             </div>
-            <div class="pseudo_button" onclick="keyboard.setValue('retrieveQuestionsField1', '')" style="margin:5px">Clear</div>
+            <div class="pseudo_button" onclick="document.getElementById('retrieveQuestionsField1').innerText=''" style="margin:5px">Clear</div>
             <div class="pseudo_button" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField1')" style="margin:5px">Another!</div>
         </div>
         <p>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
-            <div class="textfield" id="retrieveQuestionsField2">
-              <div style="color:#aaa"><i>Give me a good question</i></div>
+            <div style="display:flex;justify-content:center;">
+                <span placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2" 
+                onclick="window.app.setPlaceholder('retrieveQuestionsField2', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField2', 'Give me a good question')"></span>
             </div>
-            <div class="pseudo_button" onclick="keyboard.setValue('retrieveQuestionsField2', '')" style="margin:5px">Clear</div>
+            <div class="pseudo_button" onclick="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>
             <div class="pseudo_button" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField2')" style="margin:5px">Another!</div>
         </div>
         <p>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
-            <div class="textfield" id="retrieveQuestionsField3">
-              <div style="color:#aaa"><i>Give me a good question</i></div>
+            <div style="display:flex;justify-content:center;">
+                <span placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3" 
+                onclick="window.app.setPlaceholder('retrieveQuestionsField3', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3', 'Give me a good question')"></span>
             </div>
-            <div class="pseudo_button" onclick="keyboard.setValue('retrieveQuestionsField3', '')" style="margin:5px">Clear</div>
+            <div class="pseudo_button" onclick="document.getElementById('retrieveQuestionsField3').innerText=''" style="margin:5px">Clear</div>
             <div class="pseudo_button" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField3')" style="margin:5px">Another!</div>
         </div>
         <p>
@@ -1350,19 +1379,21 @@ Others under Creative Commons 0 License from https://freesound.org
         <br>
         <br>
         <div id="question1"></div>
-
-        <div class="textfield" id="textfield1">
-          <div style="color:#aaa"><i>Answer me!</i></div>
+        <div style="display:flex;justify-content:center;">
+            <span placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1" 
+            onclick="window.app.setPlaceholder('textfield1', '')" onblur="window.app.setPlaceholder('textfield1', 'Answer me!')"></span>
         </div>
         <p>
         <div id="question2"></div>
-        <div class="textfield" id="textfield2">
-          <div style="color:#aaa"><i>Answer me!</i></div>
+        <div style="display:flex;justify-content:center;">
+            <span placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2" 
+            onclick="window.app.setPlaceholder('textfield2', '')" onblur="window.app.setPlaceholder('textfield2', 'Answer me!')"></span>
         </div>
         <p>
         <div id="question3"></div>
-        <div class="textfield" id="textfield3">
-          <div style="color:#aaa"><i>Answer me!</i></div>
+        <div style="display:flex;justify-content:center;">
+            <span placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3" 
+            onclick="window.app.setPlaceholder('textfield3', '')" onblur="window.app.setPlaceholder('textfield3', 'Answer me!')"></span>
         </div>
         <p>
         <div class="pseudo_button" onclick="window.app.sendAnswer()">Submit Answer!</div>
@@ -1386,7 +1417,7 @@ Others under Creative Commons 0 License from https://freesound.org
         <div class="pseudo_button" onclick="window.app.sendVoting()" style="bottom:1em; right:1em; position: absolute;">Submit Votes!</div>
     </div>
     <div class="view" id="nextRoundView" style="padding:50% 0;display:none;">
-        Hit this button to start the nextRound!
+        Hit this button to start the next round!
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
         <div class="pseudo_button" onclick="window.app.sendNextRound()">Continue to Next Round</div>

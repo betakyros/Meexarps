@@ -19,6 +19,7 @@ public class CameraZoom : MonoBehaviour
     float maxFontSize = 50;
     bool gentleShake;
     bool resetAnchors;
+    bool isMovie;
 
     float startTime;
     Vector3 originalPosition;
@@ -29,7 +30,14 @@ public class CameraZoom : MonoBehaviour
 
     public void Setup(float initialGrowDuration, float initialPauseDuration, bool setAsLastSibling, bool setGentleShake, bool setResetAnchors)
     {
-        RectTransform myRectTransform= gameObject.GetComponent<RectTransform>();
+        Setup(initialGrowDuration, initialPauseDuration, setAsLastSibling, setGentleShake, setResetAnchors, false);
+    }
+
+    public void Setup(float initialGrowDuration, float initialPauseDuration, bool setAsLastSibling, bool setGentleShake, bool setResetAnchors, bool setIsMovie)
+    {
+        isMovie = setIsMovie;
+
+        RectTransform myRectTransform = gameObject.GetComponent<RectTransform>();
 
         duration = initialGrowDuration;
         pauseDuration = initialPauseDuration;
@@ -39,7 +47,11 @@ public class CameraZoom : MonoBehaviour
         originalMaxAnchor = myRectTransform.anchorMax;
         startTime = Time.time;
         originalPosition = gameObject.transform.position;
-        originalAlpha = gameObject.GetComponent<Image>().color.a;
+        if(!isMovie)
+        {
+            originalAlpha = gameObject.GetComponent<Image>().color.a;
+            originalFontSize = gameObject.GetComponentInChildren<Text>().fontSize;
+        }
         canvas = gameObject.GetComponentInParent<Canvas>();
         gentleShake = setGentleShake;
         resetAnchors = setResetAnchors;
@@ -51,7 +63,6 @@ public class CameraZoom : MonoBehaviour
         {
             GetComponent<GentleShake>().SetOriginalPosition(canvas.transform.position);
         }
-        originalFontSize = gameObject.GetComponentInChildren<Text>().fontSize;
         if (resetAnchors)
         {
             //remove the anchors so that sizeDelta will be a value instead of a scale factor
@@ -87,14 +98,15 @@ public class CameraZoom : MonoBehaviour
             currentX = Mathf.SmoothStep(originalPosition.x, canvas.transform.position.x, t);
             currentY = Mathf.SmoothStep(originalPosition.y, canvas.transform.position.y, t);
 
-            curentAlpha = Mathf.SmoothStep(originalAlpha, 1f, t);
-
-            currentFontSize = Mathf.SmoothStep(originalFontSize, maxFontSize, t);
-
+            if (!isMovie)
+            {
+                curentAlpha = Mathf.SmoothStep(originalAlpha, 1f, t);
+                currentFontSize = Mathf.SmoothStep(originalFontSize, maxFontSize, t);
+                myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, curentAlpha);
+                gameObject.GetComponentInChildren<Text>().fontSize = Mathf.RoundToInt(currentFontSize);
+            }
             myPanelTransform.sizeDelta = new Vector2(currentWidth, currentHeight);
             myPanelTransform.position = new Vector3(currentX, currentY, 0);
-            myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, curentAlpha);
-            gameObject.GetComponentInChildren<Text>().fontSize = Mathf.RoundToInt(currentFontSize);
         }
         //paused
         else if(timePassed < (duration + pauseDuration))
@@ -112,14 +124,16 @@ public class CameraZoom : MonoBehaviour
             currentX = Mathf.SmoothStep(canvas.transform.position.x, originalPosition.x, t);
             currentY = Mathf.SmoothStep(canvas.transform.position.y, originalPosition.y, t);
 
-            curentAlpha = Mathf.SmoothStep(1f, originalAlpha, t);
-
-            currentFontSize = Mathf.SmoothStep( maxFontSize, originalFontSize, t);
+            if (!isMovie)
+            {
+                curentAlpha = Mathf.SmoothStep(1f, originalAlpha, t);
+                currentFontSize = Mathf.SmoothStep(maxFontSize, originalFontSize, t);
+                myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, curentAlpha);
+                gameObject.GetComponentInChildren<Text>().fontSize = Mathf.RoundToInt(currentFontSize);
+            }
 
             myPanelTransform.sizeDelta = new Vector2(currentWidth, currentHeight);
             myPanelTransform.position = new Vector3(currentX, currentY, 0);
-            myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, curentAlpha);
-            gameObject.GetComponentInChildren<Text>().fontSize = Mathf.RoundToInt(currentFontSize);
         }
         else
         {
