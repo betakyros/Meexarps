@@ -1055,9 +1055,10 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendQuestions") {
                     hideAllViews();
                     //empty the text value fields
-                    keyboard.setValue("textfield1", "");
-                    keyboard.setValue("textfield2", "");
-                    keyboard.setValue("textfield3", "");
+                    document.getElementById("textfield1").innerHTML = "";
+                    document.getElementById("textfield2").innerHTML = "";
+                    document.getElementById("textfield3").innerHTML = "";
+
                     document.getElementById("submitAnswerView").style.display = "block";
                     document.getElementById("question1").innerHTML = payload.data[0];
                     document.getElementById("question2").innerHTML = payload.data[1];
@@ -1435,6 +1436,5 @@ Others under Creative Commons 0 License from https://freesound.org
         <p>
         <div class="pseudo_button" onclick="window.app.sendPlayAgain()">Continue to Next game</div>
     </div>
-    <div id="my_keyboard"></div>
   </body>
 </html>
