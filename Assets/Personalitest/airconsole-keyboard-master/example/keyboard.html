@@ -279,10 +279,6 @@ path, .jtk-endpoint {
             }
         }
 
-        function clearTextBox(elementId) {
-            keyboard.setValue(elementId, "");
-        }
-
 		function App() {
 			var me = this;
 			me.air_console = new AirConsole({"orientation": "portrait", "synchronize_time":"true"});
@@ -478,14 +474,23 @@ path, .jtk-endpoint {
             }
             
             App.prototype.sendNextRound = function sendNextRound() {
-				console.log("sending", "nextRound");
 				var message = {
 					'action': "sendNextRound",
 					'info': {}
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
-
+            
+            
+            App.prototype.viewCredits = function viewCredits() {
+                hideAllViews();
+                document.getElementById("creditsView").style.display = "block";
+			}
+            App.prototype.returnToWelcomeScreen = function returnToWelcomeScreen() {
+                hideAllViews();
+                document.getElementById("welcomeScreenView").style.display = "block";
+			}
+            
             App.prototype.sendShowEndScreen = function sendShowEndScreen() {
 				console.log("sending", "sendShowEndScreen");
 				var message = {
@@ -573,6 +578,9 @@ path, .jtk-endpoint {
         <div class="pseudo_button" onclick="window.app.sendWelcomeInfo()">Submit Nickname!</div>
         <p>
         <p>
+        <div class="pseudo_button" onclick="window.app.viewCredits()">View Credits!</div>
+    </div>
+    <div class="view" id="creditsView" style="padding:50% 0;display:none;">
         <div>
 Credits:
 <br>
@@ -594,6 +602,8 @@ Kitten Meow Sound | Mike Koenig
 <br>
 Others under Creative Commons 0 License from https://freesound.org
         </div>
+        <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
+        <div class="pseudo_button" onclick="window.app.returnToWelcomeScreen()">Return to Welcome Screen</div>
     </div>
     <div class="view" id="startGameScreenView" style="padding:50% 0;display:none">
         Hit this button to start the game!
