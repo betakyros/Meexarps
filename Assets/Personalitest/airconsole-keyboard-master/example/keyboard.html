@@ -300,9 +300,11 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendStartGameScreen") {
                     hideAllViews();
                     document.getElementById("startGameScreenView").style.display = "block";
+                } else if(myAction === "nameAlreadyTaken") {
+                    hideAllViews();
+                    document.getElementById("welcomeScreenView").style.display = "block";
+                    document.getElementById("nameAlreadyTakenView").style.display = "block";
                 } else if(myAction === "sendRetrieveQuestions") {
-                    console.log("sendRetrieveQuestions");
-                    console.log(payload.data);
                     hideAllViews();
                     document.getElementById("retrieveQuestionsView").style.display = "block";
                     document.getElementById("retrieveQuestionsField1").innerText=payload.data[0];
@@ -311,8 +313,17 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendAnotherQuestion") {
                     document.getElementById(payload.data[0]).innerText=payload.data[1];
                 } else if(myAction === "sendWouldYouRather") {
+                    console.log("payload.data" + payload.data);
                     //if you are currently submiting questions, you don't get to play would you rather
-                    if(document.getElementById("retrieveQuestionsView").style.display == "none") {
+                    if(
+                        (
+                            document.getElementById("retrieveQuestionsView").style.display == "none" &&
+                            //also don't force would you rather if you're trying to reconnect
+                            document.getElementById("welcomeScreenView").style.display  == "none"
+                        ) ||
+                        payload.data == "reconnecting"
+                    ) 
+                    {
                         hideAllViews();
                         document.getElementById("wouldYouRatherView").style.display = "block";
                     }
@@ -370,7 +381,6 @@ path, .jtk-endpoint {
             }
 
             /* THIS IS WHERE RESPONSES ARE DEFINED */
-            
             App.prototype.sendWelcomeInfo = function sendWelcomeInfo() {
                 var nickname = document.getElementById('nickname').innerText;
                 if(nickname) {
@@ -575,6 +585,9 @@ path, .jtk-endpoint {
         <div style="display:flex;justify-content:center;">
             <span placeholder="Identifiable name" class="franklinInput" contenteditable="true" id="nickname" 
             onclick="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', 'Identifiable name')"></span>
+        </div>
+        <div class="view" id="nameAlreadyTakenView" style="display:none;color:red;font-style:italic;">
+            That name is already taken, please choose another name
         </div>
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
