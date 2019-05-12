@@ -145,17 +145,6 @@ public class main : MonoBehaviour
         else if ("sendStartGame".Equals(action))
         {
             GameObject.Find("WelcomeScreenPanel").SetActive(false);
-
-            int playerIconOffset = 5;
-            for (int i = 5; i >= gameState.GetNumberOfPlayers(); i--)
-            {
-                wouldYouRatherPanel.GetComponentsInChildren<Image>()[playerIconOffset + i].gameObject.SetActive(false);
-            }
-            int playerTextOffset = 4;
-            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
-            {
-                wouldYouRatherPanel.GetComponentsInChildren<Text>()[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
-            }
             introAudioSource.Stop();
             mainLoopAudioSource.Play();
             StartRound();
@@ -167,15 +156,13 @@ public class main : MonoBehaviour
             int playerNumber = gameState.players[from].playerNumber;
             if (leftOrRight == 0)
             {
-                Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>()[indexOfFirstIcon + playerNumber].transform;
+                Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>(true)[indexOfFirstIcon + playerNumber].transform;
                 myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.3f * canvas.scaleFactor, myTransform.position.y);
             } else
             {
-                Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>()[indexOfFirstIcon + playerNumber].transform;
+                Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>(true)[indexOfFirstIcon + playerNumber].transform;
                 myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.70f * canvas.scaleFactor, myTransform.position.y);
             }
-
-            Debug.Log("received sendWouldYouRatherAnswer from: " + from + " with answer: " + leftOrRight);
         }
         else if ("sendRequestAnotherQuestion".Equals(action))
         {
@@ -293,15 +280,49 @@ public class main : MonoBehaviour
     //startRound sends one person a SendRetrieveQuestions message and sends the others would you rathers until the questions are complete
     public void StartRound()
     {
-        //if starting from previous round
-        resultsPanel.SetActive(false);
-
         gameState.rounds.Add(new Round());
+
+        //if starting from previous game
+        resultsPanel.SetActive(false);
+        wouldYouRatherPanel.SetActive(true);
+
+        //display only the active players without the current question writer
+        int playerIconOffset = 5;
+        Image[] playerIcons = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
+        for (int i = 5; i >= gameState.GetNumberOfPlayers(); i--)
+        {
+            playerIcons[playerIconOffset + i].gameObject.SetActive(false);
+        }
+
+        //also set the current player's icon to inactive
+        playerIcons[playerIconOffset + gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
+
+        //set the current player's icon to true
+        int currentPlayerIconPanelOffset = 13;
+        for (int i = 0; i < 6; i++)
+        {
+            if(i == gameState.GetCurrentRoundNumber())
+            {
+                playerIcons[currentPlayerIconPanelOffset + i].gameObject.SetActive(true);
+            } else
+            {
+                playerIcons[currentPlayerIconPanelOffset + i].gameObject.SetActive(false);
+            }
+        }
+
+        int playerTextOffset = 4;
+        int currentPlayerTextOffset = 11;
+        Text[] playerTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
+        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+        {
+            playerTexts[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
+            playerTexts[currentPlayerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
+        }
+
         //controllers in the retrieve questions state will ignore would you rathers
         int currentPlayerTurnDeviceId = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).deviceId;
         SendRetrieveQuestions(currentPlayerTurnDeviceId); 
         
-        wouldYouRatherPanel.SetActive(true);
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         InvokeRepeating("SendWouldYouRather", 0f, 15f);
     }
@@ -327,9 +348,14 @@ public class main : MonoBehaviour
         wyrt.SetTimerText(wouldYouRatherPanel.GetComponentsInChildren<Text>()[1]);
         //reset the icon
         int playerIconOffset = 5;
+        Image[] playerIconPanels = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
-            Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>()[playerIconOffset + i].transform;
+            if (i == gameState.GetCurrentRoundNumber()) {
+                //don't do anything for the current player
+                continue;
+            }
+            Transform myTransform = playerIconPanels[playerIconOffset + i].transform;
             myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f * canvas.scaleFactor, myTransform.position.y);
         }
         string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Length];
