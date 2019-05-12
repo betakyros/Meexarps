@@ -542,13 +542,16 @@ path, .jtk-endpoint {
           margin: 4px;
           display: flex;
           justify-content: center;
-          user-select: text;
+          -webkit-user-select: text;
+           user-select: text;
       }
 
       .franklinInput:focus {
         content: "";
         color: black; 
         font-style: normal;
+        -webkit-user-select: text;
+        user-select: text;
       }
 
       .franklinInput[placeholder]:empty:before {
