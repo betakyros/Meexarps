@@ -449,7 +449,7 @@ public class main : MonoBehaviour
             int answerPanelOffset = 3;
             Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + i];
             //todo set the text size to the same size as the panel
-            myText.text = answers.anonymousPlayerName + "\n\n";
+            myText.text = "\n" + answers.anonymousPlayerName + "\n\n";
         }
         votingPanel.GetComponentsInChildren<Text>()[2].text = gameState.GetCurrentRound().PrintQuestions();
         StartCoroutine(DoZoom(2));
@@ -565,7 +565,7 @@ public class main : MonoBehaviour
                 //wait four seconds between each answer to give it a punch
                 yield return new WaitForSeconds(4);
             }
-            myText.text = shortTextSb.ToString();
+            myText.text = "\n" + shortTextSb.ToString();
             yield return new WaitForSeconds(2);
             Destroy(cz);
         }
@@ -786,7 +786,7 @@ public class main : MonoBehaviour
 
             //first, display the questions and answers again
             int playerPanelTileOffset = 2;
-            myText.text = anonymousPlayerName + "'s answers\n\n";
+            myText.text = "\n" + anonymousPlayerName + "'s answers\n\n";
             CameraZoom cz = resultsPanel.GetComponentsInChildren<Image>()[playerPanelTileOffset].gameObject.AddComponent<CameraZoom>();
 
             int zoomInTime = 1;
@@ -825,7 +825,7 @@ public class main : MonoBehaviour
             //yield return new WaitForSeconds(zoomInTime);
 
             string tileTitle = anonymousPlayerName + " is " + targetPlayerName + "\n\n";
-            myText.text = "<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + "</size></b>" + correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString();
+            myText.text = "\n<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + "</size></b>" + correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString();
 
             //wait for the shrink
             yield return new WaitForSeconds(zoomInTime);

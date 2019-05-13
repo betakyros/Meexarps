@@ -143,14 +143,45 @@ public class CameraZoom : MonoBehaviour
             }
             if (resetAnchors)
             {
-                myPanelTransform.anchorMax = originalMaxAnchor;
-                myPanelTransform.anchorMin = originalMinAnchor;
-                //unclear why i have to do this
-                myPanelTransform.position = originalPosition;
+                SetToDefaults(myPanelTransform);
             }
             //destroy this script
         }
 
+    }
+
+    void OnDisable()
+    {
+        Debug.Log("PrintOnDisable: script was disabled");
+        RectTransform myPanelTransform = GetComponent<RectTransform>();
+
+        SetToDefaults(myPanelTransform);
+    }
+
+    void SetToDefaults(RectTransform myPanelTransform)
+    {
+
+        if (!isMovie)
+        {
+            Image myImage = gameObject.GetComponent<Image>();
+
+            myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, originalAlpha);
+            gameObject.GetComponentInChildren<Text>().fontSize = Mathf.RoundToInt(originalFontSize);
+        }
+
+        myPanelTransform.sizeDelta = new Vector2(originalWidth, originalHeight);
+        myPanelTransform.position = originalPosition;
+        if (gentleShake)
+        {
+            GetComponent<GentleShake>().SetOriginalPosition(originalPosition);
+        }
+        if (resetAnchors)
+        {
+            myPanelTransform.anchorMax = originalMaxAnchor;
+            myPanelTransform.anchorMin = originalMinAnchor;
+            //unclear why i have to do this
+            myPanelTransform.position = originalPosition;
+        }
     }
 }
 
