@@ -862,9 +862,15 @@ public class main : MonoBehaviour
         {
             StringBuilder pointsSB = new StringBuilder(100);
 
+            string[] pointSuffixStrings = new string[] { "gazillion", "bajillion", "trazillion", "million", "foshizillion", "mozillion" };
+
+            pointSuffixStrings.Shuffle<string>();
+            
             pointsSB.Append(p.nickname);
             pointsSB.Append(" has ");
             pointsSB.Append(p.points);
+            pointsSB.Append(" ");
+            pointsSB.Append(pointSuffixStrings[p.playerNumber]);
             pointsSB.Append(" points");
             pointsSB.Append("\n");
             int tilesOffset = 1;
