@@ -14,7 +14,7 @@ public class main : MonoBehaviour
     private static string[] questions;
     private static string[] anonymousNames;
     //(question, left answer, right answer)
-    private static string[][] wouldYouRathers;
+    private static List<string[]> wouldYouRathers;
     private GameState gameState;
     public List<GameObject> welcomePanels;
     public GameObject wouldYouRatherPanel;
@@ -51,7 +51,7 @@ public class main : MonoBehaviour
         questions.Shuffle();
         anonymousNames.Shuffle();
         tempWouldYouRathers.Shuffle();
-        wouldYouRathers = tempWouldYouRathers.ToArray();
+        wouldYouRathers = tempWouldYouRathers;
 
         blips.Shuffle();
 
@@ -125,6 +125,16 @@ public class main : MonoBehaviour
             introAudioSource.Stop();
             mainLoopAudioSource.Play();
             StartRound();
+        }
+        else if ("sendSubmitWouldYouRather".Equals(action))
+        {
+            List<string> wouldYouRather = new List<string>();
+            foreach (JProperty property in ((JObject)(data["info"])).Properties())
+            {
+                Debug.Log("property: " + property);
+                wouldYouRather.Add(property.Value.ToString());
+            }
+            wouldYouRathers.Insert(0, wouldYouRather.ToArray());
         }
         else if ("sendWouldYouRatherAnswer".Equals(action))
         {
@@ -388,7 +398,7 @@ public class main : MonoBehaviour
             Transform myTransform = playerIconPanels[playerIconOffset + i].transform;
             myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f * canvas.scaleFactor, myTransform.position.y);
         }
-        string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Length];
+        string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Count];
         wouldYouRatherPanel.GetComponentsInChildren<Text>()[0].text = currentWouldYouRather[0];
         //left answer
         wouldYouRatherPanel.GetComponentsInChildren<Text>()[2].text = currentWouldYouRather[1];

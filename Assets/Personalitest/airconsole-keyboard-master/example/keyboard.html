@@ -401,12 +401,29 @@ path, .jtk-endpoint {
 			}
 
             App.prototype.sendStartGame = function sendStartGame() {
-				console.log("sending", "startGame");
 				var message = {
 					'action': "sendStartGame",
 					'info': {}
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
+			}
+
+            App.prototype.sendSubmitWouldYouRather = function sendSubmitWouldYouRather() {
+				var wouldYouRatherQuestionSubmit = document.getElementById('wouldYouRatherSubmit').innerText;
+				var wouldYouRatherLeftSubmit = document.getElementById('wouldYouRatherLeftSubmit').innerText;
+				var wouldYouRatherRightSubmit = document.getElementById('wouldYouRatherRightSubmit').innerText;
+				var message = {
+					'action': "sendSubmitWouldYouRather",
+					'info': {
+                        wouldYouRatherQuestionSubmit,
+                        wouldYouRatherLeftSubmit,
+                        wouldYouRatherRightSubmit
+                    }
+				};
+				me.air_console.message(AirConsole.SCREEN, message);
+				document.getElementById('wouldYouRatherSubmit').innerText = "";
+				document.getElementById('wouldYouRatherLeftSubmit').innerText = "";
+				document.getElementById('wouldYouRatherRightSubmit').innerText = "";
 			}
             
             App.prototype.sendWouldYouRatherAnswer = function sendWouldYouRatherAnswer(answer) {
@@ -490,7 +507,6 @@ path, .jtk-endpoint {
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
-            
             
             App.prototype.viewCredits = function viewCredits() {
                 hideAllViews();
@@ -621,11 +637,39 @@ Others under Creative Commons 0 License from https://freesound.org
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
         <div class="pseudo_button" onclick="window.app.returnToWelcomeScreen()">Return to Welcome Screen</div>
     </div>
-    <div class="view" id="startGameScreenView" style="padding:50% 0;display:none">
+    <div class="view" id="startGameScreenView" style="padding:40% 0;display:none">
         Hit this button to start the game!
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
         <div class="pseudo_button" onclick="window.app.sendStartGame()">Start Game</div>
+        <br>
+        <br>
+        While you wait, you may submit some fun Would You Rather questions!
+        <br>
+        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
+            <div style="display:flex;justify-content:center;">
+                <span placeholder="Would You Rather Question" class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit" 
+                onclick="window.app.setPlaceholder('wouldYouRatherSubmit', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit', 'Would You Rather Question')"></span>
+            </div>
+            <div class="pseudo_button" onclick="document.getElementById('wouldYouRatherSubmit').innerText=''" style="margin:5px">Clear</div>
+        </div>
+        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
+            <div style="display:flex;justify-content:center;">
+                <span placeholder="Left Answer" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit" 
+                onclick="window.app.setPlaceholder('wouldYouRatherLeftSubmit', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit', 'Left Answer')"></span>
+            </div>
+            <div class="pseudo_button" onclick="document.getElementById('wouldYouRatherLeftSubmit').innerText=''" style="margin:5px">Clear</div>
+        </div>
+        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
+            <div style="display:flex;justify-content:center;">
+                <span placeholder="Right Answer" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmit" 
+                onclick="window.app.setPlaceholder('wouldYouRatherRightSubmit', '')" onblur="window.app.setPlaceholder('wouldYouRatherRightSubmit', 'Right Answer')"></span>
+            </div>
+            <div class="pseudo_button" onclick="document.getElementById('wouldYouRatherRightSubmit').innerText=''" style="margin:5px">Clear</div>
+        </div>        
+        <br>
+        <div class="pseudo_button" onclick="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
+
     </div>
     <div class="view" id="waitingView" style="padding:50% 0;display:none">
         Submitted, now hang on tight for the next action
