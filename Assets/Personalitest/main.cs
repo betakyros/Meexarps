@@ -208,6 +208,10 @@ public class main : MonoBehaviour
                 gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
             }
         }
+        else if ("sendSkipInstructions".Equals(action))
+        {
+            Destroy(instructionVideo.gameObject.GetComponent<CameraZoom>());
+        }
         else if ("sendVoting".Equals(action))
         {
             Debug.Log("received sendVoting from: " + from);
@@ -431,39 +435,12 @@ public class main : MonoBehaviour
 
     public void SendVoting()
     {
-        List<string> playerNames = new List<string>();
-        List<string> anonymousPlayerNames = new List<string>();
-
-        foreach (Player p in gameState.players.Values)
-        {
-            playerNames.Add(p.nickname);
-        }
-
-        gameState.GetCurrentRound().answers.Shuffle();
-
-        List<Answers> answersList = gameState.GetCurrentRound().answers;
-        for (int i = 0; i < answersList.Count; i++)
-        {
-            Answers answers = answersList[i];
-            anonymousPlayerNames.Add(answers.anonymousPlayerName);
-            int answerPanelOffset = 3;
-            Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + i];
-            //todo set the text size to the same size as the panel
-            myText.text = "\n" + answers.anonymousPlayerName + "\n\n";
-        }
-        votingPanel.GetComponentsInChildren<Text>()[2].text = gameState.GetCurrentRound().PrintQuestions();
-        StartCoroutine(DoZoom(2));
-
-        //send data to the phones
-        List<string> listToSend = new List<string>();
-        listToSend.AddRange(playerNames);
-        listToSend.AddRange(anonymousPlayerNames);
-        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendVoting", listToSend.ToArray())));
-        gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
-        //todo display instructions
+        //show instruction will show skippable instructions, then send the voting screen to the phones, then dozoom
+        StartCoroutine(ShowInstrucitons(2));
 
     }
 
+    //send voting screen for reconnecting players
     public void SendVoting(int playerDeviceId)
     {
         List<string> playerNames = new List<string>();
@@ -489,19 +466,41 @@ public class main : MonoBehaviour
     }
 
     //todo remove parameter
-    private IEnumerator<WaitForSeconds> DoZoom(float seconds)
+    private IEnumerator<WaitForSeconds> ShowInstrucitons(float seconds)
     {
-        yield return new WaitForSeconds(1);
+        //setup and show the answer panels
+        List<string> playerNames = new List<string>();
+        List<string> anonymousPlayerNames = new List<string>();
 
+        foreach (Player p in gameState.players.Values)
+        {
+            playerNames.Add(p.nickname);
+        }
+
+        gameState.GetCurrentRound().answers.Shuffle();
+
+        List<Answers> answersList = gameState.GetCurrentRound().answers;
+        for (int i = 0; i < answersList.Count; i++)
+        {
+            Answers answers = answersList[i];
+            anonymousPlayerNames.Add(answers.anonymousPlayerName);
+            int answerPanelOffset = 3;
+            Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + i];
+            //todo set the text size to the same size as the panel
+            myText.text = "\n" + answers.anonymousPlayerName + "\n\n";
+        }
+        votingPanel.GetComponentsInChildren<Text>()[2].text = gameState.GetCurrentRound().PrintQuestions();
+        
         //flash the instructions
         if (gameState.GetCurrentRoundNumber() == 0)
         {
+            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
+
             Image[] images = votingPanel.GetComponentsInChildren<Image>();
-            //CameraZoom instructionsCz = images[0].gameObject.AddComponent<CameraZoom>();
-            //instructionsCz.Setup(1f, 16f, true, false, true);
-            vp.url = System.IO.Path.Combine(Application.streamingAssetsPath+"/", "knowyourfriendstutorialvideo.mp4");
-            
+            vp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "knowyourfriendstutorialvideo.mp4");
+
             vp.Prepare();
+            yield return new WaitForSeconds(1);
             while (!vp.isPrepared)
             {
                 yield return new WaitForSeconds(1);
@@ -515,19 +514,38 @@ public class main : MonoBehaviour
             //vp.Pause();
             yield return new WaitForSeconds(1);
             vp.Play();
-            yield return new WaitForSeconds(16);
+            while(null != instructionsCz)
+            {
+                yield return new WaitForSeconds(1);
+            }
             vp.Pause();
             yield return new WaitForSeconds(1);
             instructionVideo.gameObject.SetActive(false);
-            //Destroy(instructionsCz);
+            Destroy(instructionsCz);
             //reset the position of the child panels
             //questions panel
             images[1].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
             //votingpanelgrid
             images[2].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+        } else
+        {
+            yield return new WaitForSeconds(1);
         }
 
+        //send data to the phones
+        List<string> listToSend = new List<string>();
+        listToSend.AddRange(playerNames);
+        listToSend.AddRange(anonymousPlayerNames);
+        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendVoting", listToSend.ToArray())));
+        gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
 
+        StartCoroutine(DoZoom(2));
+
+    }
+
+    //todo remove parameter
+    private IEnumerator<WaitForSeconds> DoZoom(float seconds)
+    {
         votingPanel.GetComponentsInChildren<Image>()[2].GetComponentInChildren<GridLayoutGroup>().enabled = false;
         AutoResizeGrid autoResizeGrid = FindObjectsOfType(typeof(AutoResizeGrid))[2] as AutoResizeGrid;
         autoResizeGrid.enabled = false;
@@ -565,7 +583,7 @@ public class main : MonoBehaviour
                 //wait four seconds between each answer to give it a punch
                 yield return new WaitForSeconds(4);
             }
-            myText.text = "\n" + shortTextSb.ToString();
+            myText.text = shortTextSb.ToString();
             yield return new WaitForSeconds(2);
             Destroy(cz);
         }
@@ -594,7 +612,7 @@ public class main : MonoBehaviour
         }
 
         //give some time for the context switch
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
 
 
         resultsPanel.GetComponentsInChildren<Image>()[0].GetComponentInChildren<GridLayoutGroup>().enabled = false;

@@ -137,22 +137,13 @@ public class CameraZoom : MonoBehaviour
         }
         else
         {
-            if (gentleShake)
-            {
-                GetComponent<GentleShake>().SetOriginalPosition(originalPosition);
-            }
-            if (resetAnchors)
-            {
-                SetToDefaults(myPanelTransform);
-            }
-            //destroy this script
+            SetToDefaults(myPanelTransform);
         }
 
     }
 
     void OnDisable()
     {
-        Debug.Log("PrintOnDisable: script was disabled");
         RectTransform myPanelTransform = GetComponent<RectTransform>();
 
         SetToDefaults(myPanelTransform);
@@ -182,6 +173,7 @@ public class CameraZoom : MonoBehaviour
             //unclear why i have to do this
             myPanelTransform.position = originalPosition;
         }
+        Destroy(this);
     }
 }
 

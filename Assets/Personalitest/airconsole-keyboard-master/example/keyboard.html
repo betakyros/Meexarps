@@ -340,6 +340,9 @@ path, .jtk-endpoint {
                     document.getElementById("question1").innerHTML = payload.data[0];
                     document.getElementById("question2").innerHTML = payload.data[1];
                     document.getElementById("question3").innerHTML = payload.data[2];
+                } else if(myAction === "sendSkipInstructions") {
+                    hideAllViews();
+                    document.getElementById("skipInstructionsView").style.display = "block";
                 } else if(myAction === "sendVoting") {
                         hideAllViews();
                         document.getElementById("submitVoteView").style.display = "block";
@@ -459,7 +462,7 @@ path, .jtk-endpoint {
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
-
+            
 			App.prototype.sendAnswer = function sendAnswer() {
 				var answerText1 = document.getElementById('textfield1').innerText;
 				var answerText2 = document.getElementById('textfield2').innerText;
@@ -471,6 +474,16 @@ path, .jtk-endpoint {
                         answerText2,
                         answerText3
                     }
+				};
+				me.air_console.message(AirConsole.SCREEN, message);
+                hideAllViews();
+                document.getElementById("waitingView").style.display = "block";
+			}
+            
+			App.prototype.sendSkipInstructions = function sendSkipInstructions() {
+				var message = {
+					'action': "sendSkipInstructions",
+					'info': {}
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
                 hideAllViews();
@@ -716,6 +729,11 @@ Others under Creative Commons 0 License from https://freesound.org
         </div>
         <p>
         <div class="pseudo_button" onclick="window.app.sendDecidedQuestions()">Send out the questions!</div>
+    </div>
+    <div class="view" id="skipInstructionsView" style="padding:50% 0;display:none;">
+        Watch the instructions on the screen or press this button to skip the video
+        <p>
+        <div class="pseudo_button" onclick="window.app.sendSkipInstructions()">Skip Instructions</div>
     </div>
     <div class="view" id="submitAnswerView" style="padding:20% 0;display:none">
 
