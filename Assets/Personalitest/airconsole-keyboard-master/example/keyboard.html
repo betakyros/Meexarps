@@ -415,7 +415,13 @@ path, .jtk-endpoint {
 				var wouldYouRatherQuestionSubmit = document.getElementById('wouldYouRatherSubmit').innerText;
 				var wouldYouRatherLeftSubmit = document.getElementById('wouldYouRatherLeftSubmit').innerText;
 				var wouldYouRatherRightSubmit = document.getElementById('wouldYouRatherRightSubmit').innerText;
-				var message = {
+				if("" == wouldYouRatherQuestionSubmit ||
+                    "" == wouldYouRatherLeftSubmit ||
+                    "" == wouldYouRatherRightSubmit) {
+                    //don't submit if we are missing a field
+                    return;
+                }
+                var message = {
 					'action': "sendSubmitWouldYouRather",
 					'info': {
                         wouldYouRatherQuestionSubmit,
