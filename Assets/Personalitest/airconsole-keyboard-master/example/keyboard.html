@@ -304,6 +304,12 @@ path, .jtk-endpoint {
                     hideAllViews();
                     document.getElementById("welcomeScreenView").style.display = "block";
                     document.getElementById("nameAlreadyTakenView").style.display = "block";
+                } else if(myAction === "selectRoundCountView") {
+                    hideAllViews();
+                    document.getElementById("roundCountInputField").setAttribute("max", payload.data);
+                    document.getElementById("roundCountInputField").value = payload.data;
+                    document.getElementById("roundCountDisplayField").value = payload.data;
+                    document.getElementById("selectRoundCountView").style.display = "block";
                 } else if(myAction === "sendRetrieveQuestions") {
                     hideAllViews();
                     document.getElementById("retrieveQuestionsView").style.display = "block";
@@ -327,8 +333,6 @@ path, .jtk-endpoint {
                         hideAllViews();
                         document.getElementById("wouldYouRatherView").style.display = "block";
                     }
-                    console.log("sendWouldYouRather");
-                    console.log(payload.data);
                 } else if(myAction === "sendQuestions") {
                     hideAllViews();
                     //empty the text value fields
@@ -407,6 +411,16 @@ path, .jtk-endpoint {
 				var message = {
 					'action': "sendStartGame",
 					'info': {}
+				};
+				me.air_console.message(AirConsole.SCREEN, message);
+			}
+
+            App.prototype.sendSetRoundCount = function sendSetRoundCount() {
+                var roundCount = document.getElementById('roundCountInputField').value;
+                console.log("sending", "roundCount", roundCount);
+				var message = {
+					'action': "sendSetRoundCount",
+					'info': roundCount
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
@@ -604,13 +618,6 @@ path, .jtk-endpoint {
         color: #555; 
         font-style: italic;
       }
-
-      @media only screen and (orientation:landscape){
-        body {
-        height: 100vw;
-        transform: rotate(90deg);
-        }
-      }
     </style>
 
   </head>
@@ -672,7 +679,7 @@ Others under Creative Commons 0 License from https://freesound.org
         <br>
         <br>
         <br>
-        While you wait, you may optionally submit some fun Would You Rather questions!
+        If this is your second time playing, you may submit some fun Would You Rather questions!
         <br>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
             <div style="display:flex;justify-content:center;">
@@ -701,6 +708,16 @@ Others under Creative Commons 0 License from https://freesound.org
     </div>
     <div class="view" id="waitingView" style="padding:50% 0;display:none">
         Submitted, now hang on tight for the next action
+    </div>
+    <div class="view" id="selectRoundCountView" style="padding:50% 0;display:none">
+        Select the number of rounds you'd like to play.
+        <br>
+        <input type="range" id="roundCountInputField" min="1" max="6" oninput="roundCountDisplayField.value = roundCountInputField.value">
+        <br>
+        <output id="roundCountDisplayField">6</output>
+        <br>
+        <br>
+        <div class="pseudo_button" onclick="window.app.sendSetRoundCount()" style="margin:5px">Set Round Count</div>
     </div>
     <div class="view" id="wouldYouRatherView" style="padding:50% 0;display:none">
         <div id="wouldYouRatherQuestion"> </div>

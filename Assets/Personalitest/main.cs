@@ -17,6 +17,7 @@ public class main : MonoBehaviour
     private static List<string[]> wouldYouRathers;
     private GameState gameState;
     public List<GameObject> welcomePanels;
+    public GameObject selectRoundNumberPanel;
     public GameObject wouldYouRatherPanel;
     public GameObject answerQuestionsPanel;
     public GameObject votingPanel;
@@ -123,6 +124,16 @@ public class main : MonoBehaviour
         }
         else if ("sendStartGame".Equals(action))
         {
+            GameObject.Find("WelcomeScreenPanel").SetActive(false);
+            selectRoundNumberPanel.SetActive(true);
+            selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text = 
+                "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
+            AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
+
+        }
+        else if ("sendSetRoundCount".Equals(action))
+        {
+            gameState.numRoundsPerGame = data["info"].ToObject<int>(); ;
             introAudioSource.Stop();
             mainLoopAudioSource.Play();
             StartCoroutine(ShowIntroInstrucitons(2));
@@ -357,8 +368,7 @@ public class main : MonoBehaviour
         introInstructionVideo.gameObject.SetActive(false);
         Destroy(instructionsCz);
         //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendVoting", new string[] { " " })));
-
-        GameObject.Find("WelcomeScreenPanel").SetActive(false);
+        selectRoundNumberPanel.SetActive(false);
         StartRound();
     }
 
@@ -904,7 +914,7 @@ public class main : MonoBehaviour
         }
         resultsPanel.GetComponentsInChildren<Image>()[0].GetComponentInChildren<GridLayoutGroup>().enabled = true;
         autoResizeGrid.enabled = true;
-        if (gameState.GetCurrentRoundNumber() == gameState.GetNumberOfPlayers() - 1)
+        if (gameState.GetCurrentRoundNumber() == gameState.numRoundsPerGame - 1)
         {
             AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " })));
             gameState.phoneViewGameState = PhoneViewGameState.SendAdvanceToResultsScreen;
@@ -1172,6 +1182,7 @@ class GameState
     public Dictionary<int, Player> players { get; set; }
     public List<Round> rounds { get; set; }
     public PhoneViewGameState phoneViewGameState;
+    public int numRoundsPerGame { get; set; }
 
     public GameState()
     {
