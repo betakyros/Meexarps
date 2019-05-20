@@ -27,6 +27,8 @@ public class main : MonoBehaviour
     public AudioSource mainLoopAudioSource;
     public AudioSource blipAudioSource;
     public RawImage instructionVideo;
+    public RawImage introInstructionVideo;
+    public VideoPlayer introVp;
     public VideoPlayer vp;
     //should make a different sound per person
     public AudioClip[] blips;
@@ -121,10 +123,9 @@ public class main : MonoBehaviour
         }
         else if ("sendStartGame".Equals(action))
         {
-            GameObject.Find("WelcomeScreenPanel").SetActive(false);
             introAudioSource.Stop();
             mainLoopAudioSource.Play();
-            StartRound();
+            StartCoroutine(ShowIntroInstrucitons(2));
         }
         else if ("sendSubmitWouldYouRather".Equals(action))
         {
@@ -210,7 +211,14 @@ public class main : MonoBehaviour
         }
         else if ("sendSkipInstructions".Equals(action))
         {
-            Destroy(instructionVideo.gameObject.GetComponent<CameraZoom>());
+            if (instructionVideo.gameObject.GetComponent<CameraZoom>() != null)
+            {
+                Destroy(instructionVideo.gameObject.GetComponent<CameraZoom>());
+            }
+            if (introInstructionVideo.gameObject.GetComponent<CameraZoom>() != null)
+            {
+                Destroy(introInstructionVideo.gameObject.GetComponent<CameraZoom>());
+            }
         }
         else if ("sendVoting".Equals(action))
         {
@@ -315,6 +323,43 @@ public class main : MonoBehaviour
     {
         AirConsole.instance.Broadcast(new JsonAction("sendWaitScreen", new[] { "This is a funny quote" }));
         gameState.phoneViewGameState = PhoneViewGameState.SendWaitScreen;
+    }
+
+    //todo remove parameter
+    private IEnumerator<WaitForSeconds> ShowIntroInstrucitons(float seconds)
+    {
+        //flash the instructions
+        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
+
+        Image[] images = votingPanel.GetComponentsInChildren<Image>();
+        introVp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "knowyourfriendsintrotutorial.mp4");
+
+        introVp.Prepare();
+        yield return new WaitForSeconds(1);
+        while (!introVp.isPrepared)
+        {
+            yield return new WaitForSeconds(1);
+            break;
+        }
+        introInstructionVideo.texture = introVp.texture;
+        introInstructionVideo.gameObject.SetActive(true);
+        CameraZoom instructionsCz = introInstructionVideo.gameObject.AddComponent<CameraZoom>();
+        instructionsCz.Setup(.5f, 64f, false, false, false, true);
+        introVp.Play();
+        //vp.Pause();
+        yield return new WaitForSeconds(1);
+        while (null != instructionsCz)
+        {
+            yield return new WaitForSeconds(1);
+        }
+        introVp.Pause();
+        yield return new WaitForSeconds(1);
+        introInstructionVideo.gameObject.SetActive(false);
+        Destroy(instructionsCz);
+        //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendVoting", new string[] { " " })));
+
+        GameObject.Find("WelcomeScreenPanel").SetActive(false);
+        StartRound();
     }
 
     //startRound sends one person a SendRetrieveQuestions message and sends the others would you rathers until the questions are complete
