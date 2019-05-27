@@ -100,7 +100,7 @@ public class main : MonoBehaviour
             if (!currentPlayer.Equals(default(KeyValuePair<int, Player>)))
             {
                 //prevent players from using the same name
-                if (gameState.GetCurrentRoundNumber() < 0)
+                if (gameState.phoneViewGameState.Equals(PhoneViewGameState.SendStartGameScreen))
                 {
                     AirConsole.instance.Message(from, new JsonAction("nameAlreadyTaken", new string[] { " " }));
                     return;
@@ -129,7 +129,7 @@ public class main : MonoBehaviour
             selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text = 
                 "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
-
+            gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
         }
         else if ("sendSetRoundCount".Equals(action))
         {
@@ -281,6 +281,12 @@ public class main : MonoBehaviour
             case PhoneViewGameState.SendStartGameScreen:
                 AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                 break;
+            case PhoneViewGameState.SendSelectRoundNumberScreen:
+                AirConsole.instance.Message(from, new JsonAction("selectRoundCountView", new string[] { gameState.GetNumberOfPlayers() + "" }));
+                break;
+            case PhoneViewGameState.SendSkipInstructionsScreen:
+                AirConsole.instance.Message(from, new JsonAction("sendSkipInstructions", new string[] { " " }));
+                break;
             case PhoneViewGameState.SendWaitScreen:
                 AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
                 break;
@@ -341,6 +347,7 @@ public class main : MonoBehaviour
     {
         //flash the instructions
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
+        gameState.phoneViewGameState = PhoneViewGameState.SendSkipInstructionsScreen;
 
         Image[] images = votingPanel.GetComponentsInChildren<Image>();
         introVp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "knowyourfriendsintrotutorial.mp4");
@@ -550,6 +557,7 @@ public class main : MonoBehaviour
         if (gameState.GetCurrentRoundNumber() == 0)
         {
             AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
+            gameState.phoneViewGameState = PhoneViewGameState.SendSkipInstructionsScreen;
 
             Image[] images = votingPanel.GetComponentsInChildren<Image>();
             vp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "knowyourfriendstutorialvideo.mp4");
@@ -1269,7 +1277,9 @@ enum PhoneViewGameState
     SendNextRoundScreen = 5,
     SendAdvanceToResultsScreen = 6,
     SendEndScreen = 7,
-    SendStartGameScreen
+    SendStartGameScreen = 8,
+    SendSelectRoundNumberScreen = 9,
+    SendSkipInstructionsScreen = 10
 }
 
 static class Resources
