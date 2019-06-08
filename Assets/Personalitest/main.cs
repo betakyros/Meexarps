@@ -507,17 +507,24 @@ public class main : MonoBehaviour
     {
         List<string> playerNames = new List<string>();
         List<string> anonymousPlayerNames = new List<string>();
+        int myPlayerNumber = gameState.players[playerDeviceId].playerNumber;
 
         foreach (Player p in gameState.players.Values)
         {
-            playerNames.Add(p.nickname);
+            if(p.playerNumber != myPlayerNumber)
+            {
+                playerNames.Add(p.nickname);
+            }
         }
 
         List<Answers> answersList = gameState.GetCurrentRound().answers;
         for (int i = 0; i < answersList.Count; i++)
         {
             Answers answers = answersList[i];
-            anonymousPlayerNames.Add(answers.anonymousPlayerName);
+            if(answers.playerNumber != myPlayerNumber)
+            {
+                anonymousPlayerNames.Add(answers.anonymousPlayerName);
+            }
         }
 
         //send data to the phones
@@ -596,10 +603,16 @@ public class main : MonoBehaviour
         }
 
         //send data to the phones
+        foreach (Player p in gameState.players.Values)
+        {
+            SendVoting(p.deviceId);
+        }
+        /*
         List<string> listToSend = new List<string>();
         listToSend.AddRange(playerNames);
         listToSend.AddRange(anonymousPlayerNames);
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendVoting", listToSend.ToArray())));
+        */
         gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
 
         StartCoroutine(DoZoom(2));
