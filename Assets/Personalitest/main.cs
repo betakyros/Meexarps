@@ -704,14 +704,17 @@ public class main : MonoBehaviour
             Dictionary<string, List<string>> wrongGuessNameToPlayerNames = new Dictionary<string, List<string>>();
             Dictionary<string, List<string>> wrongGuessNameToPlayerNamesForZoomInView = new Dictionary<string, List<string>>();
 
-            //answers is stooring device ids it should be playeriids
             Answers answers = answerList[i];
             string anonymousPlayerName = answers.anonymousPlayerName;
             string targetPlayerName = gameState.GetPlayerByPlayerNumber(answers.playerNumber).nickname;
             foreach (KeyValuePair<int, Dictionary<string, string>> playerVote in gameState.GetCurrentRound().votes)
             {
                 Player p = gameState.players[playerVote.Key];
-                if (playerVote.Value.ContainsKey(anonymousPlayerName))
+                if (p.playerNumber == answers.playerNumber)
+                {
+                    //ignore voting for yourself
+                }
+                else if (playerVote.Value.ContainsKey(anonymousPlayerName))
                 {
                     string currentGuess = playerVote.Value[anonymousPlayerName];
                     if (playerVote.Value.ContainsKey(anonymousPlayerName))
