@@ -507,30 +507,47 @@ public class main : MonoBehaviour
     {
         List<string> playerNames = new List<string>();
         List<string> anonymousPlayerNames = new List<string>();
+        List<string> playerAnswers = new List<string>();
         int myPlayerNumber = gameState.players[playerDeviceId].playerNumber;
+        List<Answers> answersList = gameState.GetCurrentRound().answers;
 
-        foreach (Player p in gameState.players.Values)
+        //add each playerName
+        foreach (Answers a in answersList)
         {
-            if(p.playerNumber != myPlayerNumber)
+            if(a.playerNumber != myPlayerNumber)
             {
-                playerNames.Add(p.nickname);
+                playerNames.Add(gameState.GetPlayerByPlayerNumber(a.playerNumber).nickname);
             }
         }
-
-        List<Answers> answersList = gameState.GetCurrentRound().answers;
+        //add each anonymous name
         for (int i = 0; i < answersList.Count; i++)
         {
             Answers answers = answersList[i];
-            if(answers.playerNumber != myPlayerNumber)
+            if (answers.playerNumber != myPlayerNumber)
             {
                 anonymousPlayerNames.Add(answers.anonymousPlayerName);
             }
         }
 
+        //add the set of answers to display as help text
+        /*TODO this is not in the same order as the anonymous names.*/
+        for (int i = 0; i < answersList.Count; i++)
+        {
+            Answers answers = answersList[i];
+            if (answers.playerNumber != myPlayerNumber)
+            {
+                playerAnswers.Add(string.Join("~~NEWLINE~~", answers.text));
+            }
+        }
+
         //send data to the phones
         List<string> listToSend = new List<string>();
+        playerNames.Shuffle();
+        anonymousPlayerNames.Shuffle();
         listToSend.AddRange(playerNames);
         listToSend.AddRange(anonymousPlayerNames);
+        /*TODO this is not in the same order as anonymous player names*/
+        listToSend.AddRange(playerAnswers);
         AirConsole.instance.Message(playerDeviceId, JsonUtility.ToJson(new JsonAction("sendVoting", listToSend.ToArray())));
     }
 
