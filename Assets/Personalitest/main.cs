@@ -1320,165 +1320,21 @@ static class Resources
 
     public static string GetAnonymousNames()
     {
-        return @"Derpy McDerpface
-Hugh Jass
-Anita Bath
-Personali Tea
-Seymour Butz
-Al Coholic
-Ivana Tinkle
-Miss Chiff
-Amanda Hugankiss
-Sir Render
-Ann Tickwittee
-Dee Plomasy
-Kim Yoonity
-Polly Tix
-Justin Case
-Sarah Nade
-Al E.Gater
-Arty Fischel
-Ben Dover
-Don Keigh
-Horace Cope
-Levy Tate
-Stan Dupp
-Warren Peace
-Sarah Nader
-Eura Snotball";
+        return System.IO.File.ReadAllText(prependTextResourceFilepath("anonymousNames.txt"));
     }
 
     public static string GetQuestions()
     {
-        return @"What is your DnD alignment (Lawful Evil, Chaotic Neutral, Neutral Neutral)?
-What is your favorite color?
-What is your favorite genre of movie?
-What is your favorite genre of video game?
-What is your favorite food?
-What is your favorite animal?
-What is your ideal group size?
-What is your preferred indoor temperature?
-What is your favorite outdoor activity?
-What is your favorite body part?
-What is something you look for in a romantic partner?
-What is one of your hobbies?
-What do you enjoy about traveling?
-What is one of your values?
-How do you support a sad friend?
-What do you do when something doesn't go as planned?
-How do you like to show affection?
-What kind of dreams do you have?
-What kind of nightmares do you have?
-What are your life goals?
-What kind of conversations do you like to have?
-Where would you go for a second date?
-What kinds of presents do you like to give?
-What is your favorite simple ingredient (for example, corn)?
-What is your favorite dessert?
-What is one thing you like about your parents?
-What is a trait of someone you admire?
-What is something you look forward to when you retire?
-How long would you wait in line for $50?
-What kind of super power would you want for your daily life?
-Which Harry Potter house would you be sorted into?
-You have just become the president. What is the newest top priority?
-What is something you are thankful for?
-What is your opinion of children?
-How important is physical appearance to you?
-What is one of your 'dealbreakers'?
-What are your thoughts about white lies?
-If you had to get a tatoo, what kind of tatoo would you get?
-What kind of music do you like?
-What do you like to do on your phone?
-What is the minimum amount of money you need to completely change your lifestyle?
-What do you want to do with your body after you die?
-If you could relive any schooling, what would you do differently?
-What do you like to do by yourself?
-What is the most awkward situation you've ever been in?
-Without saying what the category is, what are your top five?
-What is the weirdest dream you had?
-What is your favorite book genre?
-What do you do when you are sad?
-Without using any explicit language, what is your favorite expletive?";
+        return System.IO.File.ReadAllText(prependTextResourceFilepath("questions.txt"));
     }
 
     public static string GetWouldYouRathers()
     {
-        return @"Would you take the last slice of pizza?|Never|Absolutely
-Would you rather not need to eat, or not need to sleep?|Never Eat|Never Sleep
-On an average weekend, would you rather stay in or go out?|Stay In|Go Out
-When you are home alone, do you close the bathroom door?|Nope|There might be a killer!
-Would you rather be able to stop time for an hour or rewind 15 minutes?|Stop Time|Rewind Time
-Do you like pineapple on pizza?|Never|As God Intended
-Would you rather have someone cook for you or have someone take you out to a restaurant?|Cook|Go out
-Do you easily get upset by what other people say?|No|Yes
-Do you prefer to start a conversation or have someone else start one with you?|I like to start|I like to be approached
-At a party, would you rather meet someone new or stick to your crowd?|Meet new people!|Hang out with your friends!
-Do you relate to people who let their emotions guide them?|No|Yes
-Do you stay calm under pressure?|AHHHHHHH|Yes
-Does it take you a long time to decide what to watch on tv?|No|Yes
-When in a group of people you do not know, do you have any problems jumping into their conversation?|No|Yes
-Would you be willing to step on others to get ahead in life?|No|Yes
-When focusing on a task, are you likely to get distracted?|No|Yes
-Do you cry in front of others?|Never|Yes
-When making life choices, which do you listen to more, your heart or your head?|Heart|Head
-Do you prefer to understand practical things or theoretical things?|Practical|Theoretical
-Would you talk about politics with your parents?|Never|Yep
-Would you rather get revenge or forgive?|Revenge!|Forgive!
-Can you make decisions on a whim?|Let me think about that...|Yes!
-Do you focus on present realities or future possibilities?|Present|Future
-Are you good at understanding other people's feelings?|No|Yes
-Do you prefer to plan ahead or go with the flow?|Plan ahead|Go with the flow
-Would you rather explore space or the ocean?|Spaaaaace|Ocean
-Would you rather sit next to someone who smells or someone who is loud?|Give me the smells|I can handle the loudness
-Would you rather be rich with average intelligence or Intelligent with average wealth?|Rich!|Intelligent!
-Do you like Anime?|What is anime?|Yes
-Would you rather be able to professionaly play 3 instruments, or fluently speak 3 languages|Instruments|Language
-Would you date someone with a creepy mustache?|Probably|Very Yes
-Do you prefer zombies or aliens?|Zombies|Aliens
-Would you rather be able to fall asleep immediately or wake up at a specific time?|Sleep|Wake Up
-The Trolley Problem. Would you personally kill one person to save 5?|No|Yes
-Would you be willing to sit in a room for 8 hours a day for $25 an hour?|No|Yes
-Would you rather be slapped very hard, or slap someone very hard?|Be Slapped|Slap Someone
-Do you believe in love at first sight?|No|Yes
-Would you rather travel to the past or the future?|Past|Future
-Would you rather get eaten by a shark or get run over by a car? |Eaten by a shark|Get run over by a car
-Do you believe in life after love? | I can feel something inside me say... | I really don't think I'm strong enough
-Would you rather fight 10 horse-sized flies or 100 fly-sized pigs? | Flies | Pigs
-Is a Hot Pocket a big pizza roll or is a pizza roll a mini Hot Pocket? | Big pizza roll | Mini Hot Pocket
-If you were stranded on an island with Toad, would you eat him | Nah bruh | Ye duh 
-Would you rather live in an 80s teen movie or early 2000s teen movie?| 80s| 2000s
-Would you rather swim in jello or nacho cheese? |Jello|Nacho cheese
-Would you have a servant? | No, that's weird| SERVE ME PEASANT
-Broccoli|Gross|Amazing
-No pants during the winter or fleece pants (flants) during the summer?|I wanna freeze|I'll sweat thanks
-Would you rather receive a lump sum of money or a steady amount daily?| Lump Sum | Daily amount
-Doughnuts or cake?|DOUGHNUTS|CAKE
-Would you rather rave or mosh?|RAVE|MOSH
-Would you rather be a wizard or a superhero?|I'm Harry Potter!!!|I'm Spider Man!!!
-Starburst jelly beans or regular Starburst?| jelly beans | Starburst
-Would you rather have an elephant-sized cat or a cat-sized elephant?|I WANNA HOLD IT|I WANNA RIDE IT
-Backstreet boys or Nsync?|TELL ME WHY| BYE BYE BYE
-Do you desire more power?|No|Yes
-Would you rather relive your life with your current memories, or stay in the present but become a child?|Relive|Fountain of youth
-Are you easily embarassed?|No|Yes
-Are you good at dancing?|No|Yes
-Are you good at karaoke?|No|Yes
-Do you react loudly to movies?|No|Yes
-Would you rather always be 30 minutes early, or always 10 minutes late?|30 minutes early|10 minutes late
-Would you rather lose all your posessions, or all your photos?|Posessions|Photos
-Would you rather know how you die, or how anyone else dies?|I gotta know about me|I'm so curious about other people!
-Would you rather be famous when you are alive and forgotten when you die, or unknown when you are alive, but famous after you die?|Fame now!|Fame later!
-Would you rather be 1 foot shorter or 2 feet taller?|Shorter please|Taller for sure
-Would you live alone in the Matrix where you have complete control?|No|Yes
-On a deserted island, would you rather be alone, or with someone annoying?|Alone|Someone annoying
-Would you rather teleport or fly?|Teleport|Fly
-Would you rather control water or fire?|Water|Fire
-Would you rather lose all of your memories from birth to now or lose your ability to make new long term memories?|Goodbye old memories|Goodbye new memories
-Would you rather get one free round trip international plane ticket every year or be able to fly domestic anytime for free?|International|Domestic
-Would you rather be beautiful or rich?|Beautiful|Rich
-Would you rather look 10 years into the future, or 1000 years into the future?|10 years|1000 years
-Would you rather be a reverse centaur or a reverse mermaid/merman?|Neigh!|Blub!Would you rather snitch on your best friend for a crime they committed or go to jail for the crime they committed?|Snitch on them!|Cover for them!";
+        return System.IO.File.ReadAllText(prependTextResourceFilepath("wouldYouRathers.txt"));
+    }
 
+    private static string prependTextResourceFilepath(string filename)
+    {
+        return System.IO.Path.Combine(Application.streamingAssetsPath + "/", "textResources/" + filename);
     }
 }
