@@ -40,11 +40,32 @@ public class main : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //read the resources
         var newLinesRegex = new Regex(@"\r\n|\n|\r", RegexOptions.Singleline);
-        questions = newLinesRegex.Split(Resources.GetQuestions());
-        anonymousNames = newLinesRegex.Split(Resources.GetAnonymousNames());
-        string[] wouldYouRathersLines = newLinesRegex.Split(Resources.GetWouldYouRathers());
+        string rawQuestions;
+        string rawAnonymousNames;
+        string rawWouldYouRathers;
+        //read the resources
+        //if playing on AirConsole
+        if (TextAssetsContainer.isWebGl)
+        {
+            rawQuestions = TextAssetsContainer.rawQuestionsText;
+            rawAnonymousNames = TextAssetsContainer.rawAnonymousNamesText;
+            rawWouldYouRathers = TextAssetsContainer.rawWouldYouRatherText;
+            Debug.Log("rawQuestionsText: " + rawQuestions);
+            Debug.Log("rawAnonymousNames: " + rawAnonymousNames);
+            Debug.Log("rawWouldYouRathers: " + rawWouldYouRathers);
+        }
+        //if playing locally
+        else
+        {
+            
+            rawQuestions = Resources.GetQuestions();
+            rawAnonymousNames = Resources.GetAnonymousNames();
+            rawWouldYouRathers = Resources.GetWouldYouRathers();
+        }
+        questions = newLinesRegex.Split(rawQuestions);
+        anonymousNames = newLinesRegex.Split(rawAnonymousNames);
+        string[] wouldYouRathersLines = newLinesRegex.Split(rawWouldYouRathers);
         List<string[]> tempWouldYouRathers = new List<string[]>();
         foreach (string s in wouldYouRathersLines)
         {
@@ -1335,6 +1356,6 @@ static class Resources
 
     private static string prependTextResourceFilepath(string filename)
     {
-        return System.IO.Path.Combine(Application.streamingAssetsPath + "/", "textResources/" + filename);
+        return System.IO.Path.Combine(Application.streamingAssetsPath + "/", filename);
     }
 }
