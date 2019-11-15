@@ -11,7 +11,7 @@ public class main : MonoBehaviour
 {
     public Text gameStateText;
     public Text welcomeInstructionsText;
-    private static string[] questions;
+    private static List<QuestionCategory> questionCategories;
     private static string[] anonymousNames;
     //(question, left answer, right answer)
     private static List<string[]> wouldYouRathers;
@@ -33,6 +33,8 @@ public class main : MonoBehaviour
     public VideoPlayer vp;
     //should make a different sound per person
     public AudioClip[] blips;
+    private int currentCategoryIndex;
+    private int selectedCategory;
     private int currentQuestionIndex;
     private int currentWouldYouRatherIndex;
     private string gameCode;
@@ -63,7 +65,8 @@ public class main : MonoBehaviour
             rawAnonymousNames = Resources.GetAnonymousNames();
             rawWouldYouRathers = Resources.GetWouldYouRathers();
         }
-        questions = newLinesRegex.Split(rawQuestions);
+        questionCategories = new List<QuestionCategory>();
+        ParseQuestions(rawQuestions, newLinesRegex);
         anonymousNames = newLinesRegex.Split(rawAnonymousNames);
         string[] wouldYouRathersLines = newLinesRegex.Split(rawWouldYouRathers);
         List<string[]> tempWouldYouRathers = new List<string[]>();
@@ -72,7 +75,7 @@ public class main : MonoBehaviour
             tempWouldYouRathers.Add(s.Split('|'));
         }
         //randomize the order of the resources
-        questions.Shuffle();
+        questionCategories.Shuffle();
         anonymousNames.Shuffle();
         tempWouldYouRathers.Shuffle();
         wouldYouRathers = tempWouldYouRathers;
@@ -85,6 +88,30 @@ public class main : MonoBehaviour
         gameState = new GameState();
         currentQuestionIndex = 0;
         currentWouldYouRatherIndex = 0;
+    }
+
+    void ParseQuestions(string rawQuestions, Regex newLinesRegex)
+    {
+        string[] lines = newLinesRegex.Split(rawQuestions);
+        string currentCategoryName = null;
+        List<string> questions = null;
+        for (int i = 0; i < lines.Length; i++) 
+        {
+            if(lines[i] == "---")
+            {
+                if(currentCategoryName != null)
+                {
+                    questionCategories.Add(new QuestionCategory(questions.ToArray(), currentCategoryName));
+                }
+                i++;
+                currentCategoryName = lines[i];
+                questions = new List<string>();
+            } else
+            {
+                questions.Add(lines[i]);
+            }
+
+        }
     }
 
     void OnReady(string code)
@@ -183,6 +210,12 @@ public class main : MonoBehaviour
                 Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>(true)[indexOfFirstIcon + playerNumber].transform;
                 myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.70f * canvas.scaleFactor, myTransform.position.y);
             }
+        }
+        else if ("sendCategory".Equals(action))
+        {
+            int buttonNumber = data["info"]["buttonNumber"].ToObject<int>();
+            selectedCategory = currentCategoryIndex + buttonNumber - 1 - 5;
+            SendRetrieveQuestions(from);
         }
         else if ("sendRequestAnotherQuestion".Equals(action))
         {
@@ -315,7 +348,7 @@ public class main : MonoBehaviour
                 if (currentPlayerNumber == gameState.GetCurrentRoundNumber())
                 //if (currentPlayer.Value.playerNumber == gameState.GetCurrentRoundNumber())
                 {
-                    SendRetrieveQuestions(from);
+                    SendSelectCategory(from);
                 }
                 else
                 {
@@ -448,10 +481,22 @@ public class main : MonoBehaviour
 
         //controllers in the retrieve questions state will ignore would you rathers
         int currentPlayerTurnDeviceId = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).deviceId;
-        SendRetrieveQuestions(currentPlayerTurnDeviceId); 
+        SendSelectCategory(currentPlayerTurnDeviceId);
         
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         InvokeRepeating("SendWouldYouRather", 0f, 15f);
+    }
+
+    public void SendSelectCategory(int deviceId)
+    {
+        string[] categoriesToSend = new string[] {
+            questionCategories[currentCategoryIndex++].categoryName,
+            questionCategories[currentCategoryIndex++].categoryName,
+            questionCategories[currentCategoryIndex++].categoryName,
+            questionCategories[currentCategoryIndex++].categoryName,
+            questionCategories[currentCategoryIndex++].categoryName
+        };
+        AirConsole.instance.Message(deviceId, new JsonAction("sendSelectCategory", categoriesToSend));
     }
 
     public void SendRetrieveQuestions(int deviceId)
@@ -459,7 +504,8 @@ public class main : MonoBehaviour
         string[] questionsToSend = new string[] {
             GetNextQuestion(),
             GetNextQuestion(),
-            GetNextQuestion()
+            GetNextQuestion(),
+            questionCategories[selectedCategory].categoryName
         };
         AirConsole.instance.Message(deviceId, new JsonAction("sendRetrieveQuestions", questionsToSend));
     }
@@ -1035,7 +1081,8 @@ public class main : MonoBehaviour
 
     private string GetNextQuestion()
     {
-        return questions[currentQuestionIndex++ % questions.Length];
+        QuestionCategory qc = questionCategories[selectedCategory];
+        return qc.questions[currentQuestionIndex++ % qc.questions.Length];
     }
 }
 
@@ -1182,6 +1229,19 @@ public class Answers
     }
 }
 
+
+public class QuestionCategory
+{
+    public string[] questions { get; set; }
+    public string categoryName { get; set; }
+
+    public QuestionCategory(string[] qs, string cName)
+    {
+        questions = qs;
+        categoryName = cName;
+    }
+}
+
 class Round
 {
     public List<string> questions { get; set; }
@@ -1325,6 +1385,7 @@ enum PhoneViewGameState
 {
     SendQuestions = 0,
     SendWaitScreen = 1,
+    SendSelectCategory = 11,
     SendRetrieveQuestions = 2,
     SendWouldYouRather = 3,
     SendVoting = 4,
