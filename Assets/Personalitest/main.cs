@@ -38,6 +38,7 @@ public class main : MonoBehaviour
     private int currentQuestionIndex;
     private int currentWouldYouRatherIndex;
     private string gameCode;
+    private static int VIP_PLAYER_NUMBER = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -174,14 +175,15 @@ public class main : MonoBehaviour
         {
             GameObject.Find("WelcomeScreenPanel").SetActive(false);
             selectRoundNumberPanel.SetActive(true);
-            selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text = 
+            selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
                 "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
-            AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
+            //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
+            SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
             gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
         }
         else if ("sendSetRoundCount".Equals(action))
         {
-            gameState.numRoundsPerGame = data["info"].ToObject<int>(); ;
+            gameState.numRoundsPerGame = data["info"].ToObject<int>();
             introAudioSource.Stop();
             mainLoopAudioSource.Play();
             StartCoroutine(ShowIntroInstrucitons(2));
@@ -328,18 +330,54 @@ public class main : MonoBehaviour
         blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
     }
 
+    private int GetVipDeviceId()
+    {
+        return gameState.GetPlayerByPlayerNumber(0).deviceId;
+    }
+
+    private void SendMessageToVipAndSendWaitScreenToEveryoneElse(JsonAction jsonAction)
+    {
+        foreach(Player p in gameState.players.Values)
+        {
+            if(p.playerNumber == VIP_PLAYER_NUMBER)
+            {
+                AirConsole.instance.Message(p.deviceId, jsonAction);
+            }
+            else
+            {
+                AirConsole.instance.Message(p.deviceId, new JsonAction("sendWaitScreen", new string[] { " " }));
+            }
+        }
+    }
+
+    private void SendMessageIfVipElseSendWaitScreen(int from, int currentPlayerNumber, JsonAction jsonAction)
+    {
+        if (currentPlayerNumber == VIP_PLAYER_NUMBER)
+        {
+            AirConsole.instance.Message(from, jsonAction);
+        }
+        else
+        {
+            AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
+        }
+    }
+
     private void SendCurrentScreenForReconnect(int from, int currentPlayerNumber)
     {
+
         switch (gameState.phoneViewGameState)
         {
             case PhoneViewGameState.SendStartGameScreen:
                 AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                 break;
             case PhoneViewGameState.SendSelectRoundNumberScreen:
-                AirConsole.instance.Message(from, new JsonAction("selectRoundCountView", new string[] { gameState.GetNumberOfPlayers() + "" }));
+                SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber,
+                    new JsonAction("selectRoundCountView", new string[] { gameState.GetNumberOfPlayers() + "" })
+                );
                 break;
             case PhoneViewGameState.SendSkipInstructionsScreen:
-                AirConsole.instance.Message(from, new JsonAction("sendSkipInstructions", new string[] { " " }));
+                SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber,
+                    new JsonAction("sendSkipInstructions", new string[] { " " }));
                 break;
             case PhoneViewGameState.SendWaitScreen:
                 AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
@@ -369,13 +407,13 @@ public class main : MonoBehaviour
                 }
                 break;
             case PhoneViewGameState.SendNextRoundScreen:
-                AirConsole.instance.Message(from, new JsonAction("sendNextRoundScreen", new string[] { " " }));
+                SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber, new JsonAction("sendNextRoundScreen", new string[] { " " }));
                 break;
             case PhoneViewGameState.SendAdvanceToResultsScreen:
-                AirConsole.instance.Message(from, new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
+                SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber, new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
                 break;
             case PhoneViewGameState.SendEndScreen:
-                AirConsole.instance.Message(from, new JsonAction("sendEndScreen", new string[] { " " }));
+                SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber, new JsonAction("sendEndScreen", new string[] { " " }));
                 break;
             default:
                 AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
@@ -384,12 +422,6 @@ public class main : MonoBehaviour
     }
 
     /* Possible actions to send */
-
-    public void SendWaitScreenToOnePlayer(int playerNumber)
-    {
-        AirConsole.instance.Message(AirConsole.instance.GetControllerDeviceIds()[0], new JsonAction("sendWaitScreen", new[] { "This is a funny quote" }));
-    }
-
     public void SendWaitScreenToEveryone()
     {
         AirConsole.instance.Broadcast(new JsonAction("sendWaitScreen", new[] { "This is a funny quote" }));
@@ -400,7 +432,8 @@ public class main : MonoBehaviour
     private IEnumerator<WaitForSeconds> ShowIntroInstrucitons(float seconds)
     {
         //flash the instructions
-        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
+        SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendSkipInstructions", new string[] { " " }));
+        //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
         gameState.phoneViewGameState = PhoneViewGameState.SendSkipInstructionsScreen;
 
         Image[] images = votingPanel.GetComponentsInChildren<Image>();
@@ -490,11 +523,12 @@ public class main : MonoBehaviour
     public void SendSelectCategory(int deviceId)
     {
         string[] categoriesToSend = new string[] {
-            questionCategories[currentCategoryIndex++].categoryName,
-            questionCategories[currentCategoryIndex++].categoryName,
-            questionCategories[currentCategoryIndex++].categoryName,
-            questionCategories[currentCategoryIndex++].categoryName,
-            questionCategories[currentCategoryIndex++].categoryName
+            
+            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
+            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
+            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
+            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
+            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName
         };
         AirConsole.instance.Message(deviceId, new JsonAction("sendSelectCategory", categoriesToSend));
     }
@@ -647,7 +681,8 @@ public class main : MonoBehaviour
         //flash the instructions
         if (gameState.GetCurrentRoundNumber() == 0)
         {
-            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
+            SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendSkipInstructions", new string[] { " " }));
+            //            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
             gameState.phoneViewGameState = PhoneViewGameState.SendSkipInstructionsScreen;
 
             Image[] images = votingPanel.GetComponentsInChildren<Image>();
@@ -1024,12 +1059,14 @@ public class main : MonoBehaviour
         autoResizeGrid.enabled = true;
         if (gameState.GetCurrentRoundNumber() == gameState.numRoundsPerGame - 1)
         {
-            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " })));
+            SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
+//            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " })));
             gameState.phoneViewGameState = PhoneViewGameState.SendAdvanceToResultsScreen;
         }
         else
         {
-            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendNextRoundScreen", new string[] { " " })));
+            SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendNextRoundScreen", new string[] { " " }));
+            //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendNextRoundScreen", new string[] { " " })));
             gameState.phoneViewGameState = PhoneViewGameState.SendNextRoundScreen;
         }
     }
@@ -1059,7 +1096,8 @@ public class main : MonoBehaviour
             playerCounter++;
 
         }
-        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendEndScreen", new string[] { " "})));
+        SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendEndScreen", new string[] { " " }));
+        //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendEndScreen", new string[] { " "})));
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
     }
 
@@ -1081,7 +1119,7 @@ public class main : MonoBehaviour
 
     private string GetNextQuestion()
     {
-        QuestionCategory qc = questionCategories[selectedCategory];
+        QuestionCategory qc = questionCategories[selectedCategory % questionCategories.Count];
         return qc.questions[currentQuestionIndex++ % qc.questions.Length];
     }
 }
