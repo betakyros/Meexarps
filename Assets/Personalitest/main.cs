@@ -177,9 +177,29 @@ public class main : MonoBehaviour
             }
             // audience
             else {
-                Player p = new Player(name, from, gameState.GetNumberOfPlayers(), 0);
-                gameState.audienceMembers.Add(from, p);
-                welcomeScreenPanel.GetComponentsInChildren<Text>()[8].text = "Audience: " + gameState.audienceMembers.Count;
+                KeyValuePair<int, Player> audiencePlayer = gameState.GetAudienceByName(name);
+                if (!audiencePlayer.Equals(default(KeyValuePair<int, Player>)))
+                {
+                    //prevent players from using the same name
+                    if (gameState.phoneViewGameState.Equals(PhoneViewGameState.SendStartGameScreen))
+                    {
+                        AirConsole.instance.Message(from, new JsonAction("nameAlreadyTaken", new string[] { " " }));
+                        return;
+                    }
+                    //reconnect case
+                    else
+                    {
+                        gameState.audienceMembers.Remove(currentPlayer.Key);
+                        gameState.audienceMembers.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points));
+                        SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
+                    }
+                }
+                else
+                {
+                    Player p = new Player(name, from, gameState.GetNumberOfPlayers(), 0);
+                    gameState.audienceMembers.Add(from, p);
+                    welcomeScreenPanel.GetComponentsInChildren<Text>()[8].text = "Audience: " + gameState.audienceMembers.Count;
+                }
             }
         }
         else if ("sendStartGame".Equals(action))
@@ -465,7 +485,7 @@ public class main : MonoBehaviour
                 SendQuestions(from);
                 break;
             case PhoneViewGameState.SendVoting:
-                if (gameState.GetCurrentRound().votes.ContainsKey(from))
+                if (gameState.GetCurrentRound().votes.ContainsKey(from) || gameState.GetCurrentRound().audienceVotes.ContainsKey(from))
                 {
                     AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
                 }
@@ -546,7 +566,8 @@ public class main : MonoBehaviour
         //display only the active players without the current question writer
         int playerIconOffset = 5;
         Image[] playerIcons = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
-        for (int i = 5; i >= gameState.GetNumberOfPlayers(); i--)
+        //i = 6 also disables audience icon
+        for (int i = 6; i >= gameState.GetNumberOfPlayers(); i--)
         {
             playerIcons[playerIconOffset + i].gameObject.SetActive(false);
         }
@@ -555,11 +576,15 @@ public class main : MonoBehaviour
         {
             playerIcons[playerIconOffset + i].gameObject.SetActive(true);
         }
+        if(gameState.audienceMembers.Count > 0)
+        {
+            playerIcons[playerIconOffset + 6].gameObject.SetActive(true);
+        }
         //also set the current player's icon to inactive
         playerIcons[playerIconOffset + gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
 
         //set the current player's icon to true
-        int currentPlayerIconPanelOffset = 13;
+        int currentPlayerIconPanelOffset = 14;
         for (int i = 0; i < 6; i++)
         {
             if(i == gameState.GetCurrentRoundNumber())
@@ -572,7 +597,7 @@ public class main : MonoBehaviour
         }
 
         int playerTextOffset = 4;
-        int currentPlayerTextOffset = 11;
+        int currentPlayerTextOffset = 13;
         Text[] playerTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
@@ -634,9 +659,15 @@ public class main : MonoBehaviour
             myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f * canvas.scaleFactor, myTransform.position.y);
         }
         audienceWouldYouRathers.Clear();
-        Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>();
-        wouldYouRatherTexts[9].text = "0";
-        wouldYouRatherTexts[10].text = "0";
+        Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
+        if(gameState.audienceMembers.Count != 0)
+        {
+            wouldYouRatherTexts[10].text = "0";
+            wouldYouRatherTexts[11].text = "0";
+        } else
+        {
+
+        }
         string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Count];
         wouldYouRatherTexts[0].text = currentWouldYouRather[0];
         //left answer
@@ -1491,6 +1522,18 @@ class GameState
     public KeyValuePair<int, Player> GetPlayerByName(string playerName)
     {
         foreach (KeyValuePair<int, Player> p in players)
+        {
+            if (playerName == p.Value.nickname)
+            {
+                return p;
+            }
+        }
+        return default;
+    }
+
+    public KeyValuePair<int, Player> GetAudienceByName(string playerName)
+    {
+        foreach (KeyValuePair<int, Player> p in audienceMembers)
         {
             if (playerName == p.Value.nickname)
             {
