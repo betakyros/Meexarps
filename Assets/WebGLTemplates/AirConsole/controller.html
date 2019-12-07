@@ -375,6 +375,7 @@ path, .jtk-endpoint {
                     document.getElementById("selectCategoryButton3").innerText=payload.data[2];
                     document.getElementById("selectCategoryButton4").innerText=payload.data[3];
                     document.getElementById("selectCategoryButton5").innerText=payload.data[4];
+                    document.getElementById("selectCategoryButton6").innerText=payload.data[5];
                 } else if(myAction === "sendRetrieveQuestions") {
                     hideAllViews();
                     document.getElementById("retrieveQuestionsView").style.display = "block";
@@ -880,6 +881,7 @@ Others under Creative Commons 0 License from https://freesound.org
             <div id="selectCategoryButton3" class="pseudo_button" onclick="window.app.sendCategory(3)" style="margin:5px"></div>
             <div id="selectCategoryButton4" class="pseudo_button" onclick="window.app.sendCategory(4)" style="margin:5px"></div>
             <div id="selectCategoryButton5" class="pseudo_button" onclick="window.app.sendCategory(5)" style="margin:5px"></div>
+            <div id="selectCategoryButton6" class="pseudo_button" onclick="window.app.sendCategory(6)" style="margin:5px"></div>
         </div>
     </div>
     <div class="view" id="retrieveQuestionsView" style="padding:20% 0;display:none">

@@ -42,6 +42,7 @@ public class main : MonoBehaviour
     private static int VIP_PLAYER_NUMBER = 0;
     private static int AUDIENCE_THRESHOLD = 6;
     private Dictionary<int, int> audienceWouldYouRathers;
+    private bool writeMyOwnQuestions = false;
 
     // Start is called before the first frame update
     void Start()
@@ -272,12 +273,20 @@ public class main : MonoBehaviour
         {
             int buttonNumber = data["info"]["buttonNumber"].ToObject<int>();
             selectedCategory = currentCategoryIndex + buttonNumber - 1 - 5;
-            SendRetrieveQuestions(from);
+            SendRetrieveQuestions(from, buttonNumber == 6);
         }
         else if ("sendRequestAnotherQuestion".Equals(action))
         {
             string elementId = data["info"]["elementId"].ToString();
-            string nextQuestion = GetNextQuestion();
+            string nextQuestion;
+            if (writeMyOwnQuestions)
+            {
+                nextQuestion = GetRandomQuestion();
+            }
+            else
+            {
+                nextQuestion = GetNextQuestion();
+            }
             AirConsole.instance.Message(from, new JsonAction("sendAnotherQuestion", new string[] { elementId, nextQuestion }));
         }
         else if ("sendDecidedQuestions".Equals(action))
@@ -621,19 +630,35 @@ public class main : MonoBehaviour
             questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
             questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
             questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
-            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName
+            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
+            "I'll write my own"
         };
         AirConsole.instance.Message(deviceId, new JsonAction("sendSelectCategory", categoriesToSend));
     }
 
-    public void SendRetrieveQuestions(int deviceId)
+    public void SendRetrieveQuestions(int deviceId, bool writeMyOwnQuestions)
     {
-        string[] questionsToSend = new string[] {
-            GetNextQuestion(),
-            GetNextQuestion(),
-            GetNextQuestion(),
-            questionCategories[selectedCategory % questionCategories.Count].categoryName
-        };
+        string[] questionsToSend;
+        if (writeMyOwnQuestions)
+        {
+            questionsToSend = new string[] {
+                "",
+                "",
+                "",
+                "I'll write my own"
+            };
+            writeMyOwnQuestions = true;
+        }
+        else
+        {
+            questionsToSend = new string[] {
+                GetNextQuestion(),
+                GetNextQuestion(),
+                GetNextQuestion(),
+                questionCategories[selectedCategory % questionCategories.Count].categoryName
+            };
+            writeMyOwnQuestions = false;
+        }
         AirConsole.instance.Message(deviceId, new JsonAction("sendRetrieveQuestions", questionsToSend));
     }
 
@@ -1272,6 +1297,11 @@ public class main : MonoBehaviour
     {
         QuestionCategory qc = questionCategories[selectedCategory % questionCategories.Count];
         return qc.questions[currentQuestionIndex++ % qc.questions.Length];
+    }
+    private string GetRandomQuestion()
+    {
+        QuestionCategory qc = questionCategories[Random.Range(0, questionCategories.Count)];
+        return qc.questions[Random.Range(0, qc.questions.Length)];
     }
 }
 
