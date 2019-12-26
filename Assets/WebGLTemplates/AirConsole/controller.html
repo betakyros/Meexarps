@@ -339,6 +339,7 @@ path, .jtk-endpoint {
 		function App() {
 			var me = this;
 			me.air_console = new AirConsole({"orientation": "portrait", "synchronize_time":"true"});
+            var isVip = false;
             me.air_console.onMessage = function(from, data) {               
                 if(typeof data == 'string') {
                     payload = JSON.parse(data);
@@ -354,6 +355,12 @@ path, .jtk-endpoint {
                     console.log(payload.data);
                     hideAllViews();
                     document.getElementById("waitingView").style.display = "block";
+                } else if(myAction === "setIsVip") {
+                  isVip = true;
+                  document.getElementById("optionsButton").style.display = "block";
+                  document.getElementById("vipStartButtonDescription").style.display = "block";
+                  document.getElementById("nonVipStartButtonDescription").style.display = "none";
+                  document.getElementById("startGameButton").style.display = "inline-block";
                 } else if(myAction === "sendStartGameScreen") {
                     hideAllViews();
                     document.getElementById("startGameScreenView").style.display = "block";
@@ -664,9 +671,29 @@ path, .jtk-endpoint {
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
             
+            App.prototype.viewOptions = function viewOptions() {
+                document.getElementById("optionsView").style.display = "block";
+			}
+            App.prototype.hideOptions = function viewOptions() {
+                document.getElementById("optionsView").style.display = "none";
+			}
             App.prototype.viewCredits = function viewCredits() {
-                hideAllViews();
                 document.getElementById("creditsView").style.display = "block";
+			}
+            App.prototype.hideCredits = function hideCredits() {
+                document.getElementById("creditsView").style.display = "none";
+			}
+            App.prototype.saveOptions = function saveOptions() {
+                const optionsMap = {};
+                optionsMap["nsfwQuestions"] = document.getElementById("NsfwQuestionsCheckbox").checked;
+                optionsMap["anonymousNames"] = document.getElementById("anonymousNameCheckbox").checked;
+                console.log(optionsMap);
+                
+				var message = {
+					'action': "sendSaveOptions",
+					'info': optionsMap
+				};
+                me.air_console.message(AirConsole.SCREEN, message);
 			}
             App.prototype.returnToWelcomeScreen = function returnToWelcomeScreen() {
                 hideAllViews();
@@ -708,9 +735,18 @@ path, .jtk-endpoint {
         margin: 4px 0 0 0;
         overflow-wrap: break-word;
       }
-
+      
       .pseudo_button {
         display: inline-block;
+        background-color: grey;
+        border: 1px solid black;
+        padding: 4px;
+        cursor: hand;
+        cursor: pointer;
+      }
+      
+      .initially_hidden_pseudo_button {
+        display: none;
         background-color: grey;
         border: 1px solid black;
         padding: 4px;
@@ -743,9 +779,43 @@ path, .jtk-endpoint {
         color: #555; 
         font-style: italic;
       }
+      
+      .optionsButton {
+        position: absolute;
+        top: 8px;
+        right: 16px;
+        z-index: 100;
+      }
+      
+      .topLeft {
+        position: absolute;
+        top: 8px;
+        left: 16px;
+      }
+
+      .optionsView {      
+        padding: 50% 0px;
+        display: block;
+        position: fixed;
+        top: 5px;
+        bottom: 5px;
+        background-color: aliceblue;
+        width: 95%;
+      }
+
+      .creditsView {      
+        padding: 50% 0px;
+        position: fixed;
+        top: 5px;
+        bottom: 5px;
+        background-color: aliceblue;
+        width: 95%;
+        z-index: 101;
+      }
     </style>
   </head>
   <body style="background-color:#8cffd4; text-align: center;" onload="init()">
+        <div id="optionsButton" class="pseudo_button optionsButton" onclick="window.app.viewOptions()" style="display:none;">Options</div>
     <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
     <div class="view" id="welcomeScreenView" style="padding:50% 0;">
         Welcome to Know Your Friends!
@@ -769,11 +839,16 @@ path, .jtk-endpoint {
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
         <div class="pseudo_button" onclick="window.app.sendWelcomeInfo()">Submit Nickname!</div>
-        <p>
-        <p>
+    </div> 
+    <div class="view optionsView" id="optionsView" style="display:none">
+        <div class="pseudo_button topleft" onclick="window.app.hideOptions()" style="margin:5px">Close</div>
+        Nsfw Questions Enabled: <input type="checkbox" id="NsfwQuestionsCheckbox"> <br>
+        Anonymous Names Enabled: <input type="checkbox" id="anonymousNameCheckbox"> <br>
+        <div class="pseudo_button" onclick="window.app.saveOptions()">Save Options!</div>
         <div class="pseudo_button" onclick="window.app.viewCredits()">View Credits!</div>
+        <div class="pseudo_button" onclick="keyboard.setValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>
     </div>
-    <div class="view" id="creditsView" style="padding:50% 0;display:none;">
+        <div class="view creditsView" id="creditsView" style="padding:50% 0;display:none;">
         <div>
 Credits:
 <br>
@@ -796,13 +871,18 @@ Kitten Meow Sound | Mike Koenig
 Others under Creative Commons 0 License from https://freesound.org
         </div>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <div class="pseudo_button" onclick="window.app.returnToWelcomeScreen()">Return to Welcome Screen</div>
-    </div>
+        <div class="pseudo_button" onclick="window.app.hideCredits()">Close Credits</div>
+    </div>   
     <div class="view" id="startGameScreenView" style="padding:40% 0;display:none">
-        Hit this button to start the game!
+        <div id="vipStartButtonDescription" style="display:none">
+            Hit this button to start the game!
+        </div>
+        <div id="nonVipStartButtonDescription">
+            Wait for the VIP to start the game!
+        </div>
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <div class="pseudo_button" onclick="window.app.sendStartGame()">Start Game</div>
+        <div class="initially_hidden_pseudo_button" onclick="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
         <br>
         <br>
         <br>
@@ -850,7 +930,6 @@ Others under Creative Commons 0 License from https://freesound.org
         </div>        
         <br>
         <div class="pseudo_button" onclick="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
-
     </div>
     <div class="view" id="waitingView" style="padding:50% 0;display:none">
         Submitted, now hang on tight for the next action

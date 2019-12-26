@@ -4,15 +4,36 @@ What is your favorite simple ingredient (for example, corn)?
 What is your favorite dessert?
 What is your favorite restaurant?
 What type of cuisine do you like the most?
+What toppings do you put on top of your ice cream/froyo?
+What is your favorite food?
+What is a special dish you like to cook?
+What is your favorite kind of fried chicken?
+What do you eat most frequently?
+What is the most expensive thing you’ve eaten?
 ---
 Hobbies
-What is your favorite outdoor activity?
 What is your favorite genre of movie?
 What is your favorite genre of video game?
 What books do you like to read?
 What is one of your hobbies?
 What is your ideal group size?
-Where do you go on vacation the most?
+What do you like to do by yourself?
+What is your favorite book genre?
+What is your biggest collection of?
+How many unfinished side projects do you have right now?
+What is the most unbelievable thing you’ve done?
+---
+School/Work
+What is your most useful life hack?
+How would you describe your favorite subject/job to a child?
+What is something you look forward to when you retire?
+If you could relive any schooling, what would you do differently?
+What is your dream job?
+What is/was your favorite club in school?
+How do you like to learn?
+What distracts you from studying?
+What’s one thing you hate about a job?
+Why do you hate your least favorite class?
 ---
 Emotions
 What is the most shameful thing you’ve done in public?
@@ -21,18 +42,102 @@ What is your biggest fear?
 What do you use as your “security blanket”?
 What is the last thing that made you cry?
 When you get homesick, what do you miss the most?
+What do you do when you are sad?
+What is something that is a guaranteed “makes you cry”?
+What did someone do to make you angry?
+What doesn’t surprise you anymore that should?
 ---
 Music
 What is the last song you’ve had on repeat?
 What is your go to hype song?
 What is your favorite instrument?
+What kind of music do you like?
+What song do you like to dance to?
+What is the last concert you went to?
+What is your favorite musical?
+What is your favorite disney song?
+Who is your favorite musical artist?
+Rate your music ability on a scale of 1-10
+---
+Friendship
+How many years is your longest friendship?
+How would someone know when you are comfortable with them?
+How do you support a sad friend?
+What is a trait of someone you admire?
+What qualities do you enjoy most about your friends?
+How do you meet new people?
+What is your best ice breaker?
+What is your default activity with a friend?
 ---
 Family
 What family tradition did you grow up with would you want to continue with your own kids?
 What is a mandatory furnishing for your living room?
 What do you miss from grade school the most?
+What is one thing you like about your parents?
+What is your opinion of children?
 ---
 Body
 What is your preferred indoor temperature?
 What is your favorite body part?
 What do you think is your best physical feature?
+How important is physical appearance to you?
+If you had to get a tattoo, what kind of tattoo would you get?
+What do you want to do with your body after you die?
+What physical feature do you notice first on someone you just met?
+---
+Dating
+What is something you look for in a romantic partner?
+Where would you go for a second date?
+What kinds of presents do you like to give?
+What is one of your 'dealbreakers'?
+---
+Fantasy
+What is your DnD alignment (Lawful Evil, Chaotic Neutral, Neutral Neutral)? I like this question, but people who don’t play D&D won’t know how to answer
+What kind of superpower would you want for your daily life?
+Which Harry Potter house would you be sorted into?
+You have just become the president. What is the newest top priority?
+What RPG class represents your personality in real life?
+---
+Vacation
+What do you enjoy about traveling?
+Where do you go on vacation the most?
+If you could make a new national holiday, what would it be?
+Where is your next travel destination? 
+---
+Personality
+What is one of your values?
+What do you do when something doesn't go as planned?
+How do you like to show affection?
+What are your life goals?
+What is something you are thankful for?
+What is your nervous habit?
+Which social norm do you not understand?
+What motivation quote do you live by?
+---
+Talking
+What kind of conversations do you like to have?
+What are your thoughts about white lies?
+Without using any explicit language, what is your favorite expletive?
+If you could learn another language, what would it be?
+What is your favorite color?
+What is the nicest thing someone has said to you?
+---
+Money
+How long would you wait in line for $50?
+What is the minimum amount of money you need to completely change your lifestyle?
+What kinds of items do you splurge money on?
+---
+Personal History
+What is the most awkward situation you've ever been in?
+What smell reminds you of home?
+What is a goal you had to give up on or change?
+What did you miss out on during your childhood?
+What is the most wasteful thing you’re guilty of?
+What are your top three sins you’re guilty of? 
+What instrument(s) did you play in school?
+---
+Personal Routine
+What is a necessary part of your morning routine?
+What items are currently in the trunk of your car?
+What do you do with bugs in your house?
+How often do you make your bed?

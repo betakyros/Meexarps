@@ -89,6 +89,35 @@ public class Loader : MonoBehaviour
             }
         }
 
+        using (UnityWebRequest request = UnityWebRequest.Get(Path.Combine(assetPath, "nsfwQuestions.txt")))
+        {
+            yield return request.SendWebRequest();
+
+            if (request.isNetworkError || request.isHttpError)
+            {
+                // handle failure
+            }
+            else
+            {
+                try
+                {
+                    // entire file is returned via downloadHandler
+                    string fileContents = request.downloadHandler.text;
+                    Debug.Log("Loader questions: " + fileContents);
+                    // or
+                    //byte[] fileContents = request.downloadHandler.data;
+
+                    // do whatever you need to do with the file contents
+                    TextAssetsContainer.setRawQuestionsText(fileContents);
+                    isQuestionsLoaded = true;
+                }
+                catch (Exception x)
+                {
+                    Debug.Log("failed to load questions");
+                }
+            }
+        }
+
         using (UnityWebRequest request = UnityWebRequest.Get(Path.Combine(assetPath, "wouldYouRathers.txt")))
         {
             yield return request.SendWebRequest();

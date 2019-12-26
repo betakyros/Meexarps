@@ -36,6 +36,7 @@ public class main : MonoBehaviour
     public AudioClip[] blips;
     private int currentCategoryIndex;
     private int selectedCategory;
+    private List<int> sentCategoryIndices;
     private int currentQuestionIndex;
     private int currentWouldYouRatherIndex;
     private string gameCode;
@@ -43,12 +44,15 @@ public class main : MonoBehaviour
     private static int AUDIENCE_THRESHOLD = 6;
     private Dictionary<int, int> audienceWouldYouRathers;
     private bool writeMyOwnQuestions = false;
+    private Dictionary<string, bool> options = new Dictionary<string, bool>();
 
     // Start is called before the first frame update
     void Start()
     {
+        InitializeOptions();
         var newLinesRegex = new Regex(@"\r\n|\n|\r", RegexOptions.Singleline);
         string rawQuestions;
+        string rawNsfwQuestions;
         string rawAnonymousNames;
         string rawWouldYouRathers;
         //read the resources
@@ -56,22 +60,21 @@ public class main : MonoBehaviour
         if (TextAssetsContainer.isWebGl)
         {
             rawQuestions = TextAssetsContainer.rawQuestionsText;
+            rawNsfwQuestions = TextAssetsContainer.rawNsfwQuestionsText;
             rawAnonymousNames = TextAssetsContainer.rawAnonymousNamesText;
             rawWouldYouRathers = TextAssetsContainer.rawWouldYouRatherText;
-            Debug.Log("rawQuestionsText: " + rawQuestions);
-            Debug.Log("rawAnonymousNames: " + rawAnonymousNames);
-            Debug.Log("rawWouldYouRathers: " + rawWouldYouRathers);
         }
         //if playing locally
         else
         {
-            
+
             rawQuestions = Resources.GetQuestions();
+            rawNsfwQuestions = Resources.GetNsfwQuestions();
             rawAnonymousNames = Resources.GetAnonymousNames();
             rawWouldYouRathers = Resources.GetWouldYouRathers();
         }
         questionCategories = new List<QuestionCategory>();
-        ParseQuestions(rawQuestions, newLinesRegex);
+        ParseQuestions(rawQuestions, rawNsfwQuestions, newLinesRegex);
         anonymousNames = newLinesRegex.Split(rawAnonymousNames);
         string[] wouldYouRathersLines = newLinesRegex.Split(rawWouldYouRathers);
         List<string[]> tempWouldYouRathers = new List<string[]>();
@@ -96,23 +99,37 @@ public class main : MonoBehaviour
         audienceWouldYouRathers = new Dictionary<int, int>();
     }
 
-    void ParseQuestions(string rawQuestions, Regex newLinesRegex)
+    private void InitializeOptions()
     {
-        string[] lines = newLinesRegex.Split(rawQuestions);
+        options.Add("nsfwQuestions", false);
+        options.Add("anonymousNames", false);
+    }
+
+    void ParseQuestions(string rawQuestions, string rawNsfwQuestions, Regex newLinesRegex)
+    {
+        string[] questionsLines = newLinesRegex.Split(rawQuestions);
+        string[] nsfwQuestionsLines = newLinesRegex.Split(rawNsfwQuestions);
+        addLinesToCategory(questionsLines, false);
+        addLinesToCategory(nsfwQuestionsLines, true);
+    }
+
+    private static void addLinesToCategory(string[] lines, bool isNsfw)
+    {
         string currentCategoryName = null;
         List<string> questions = null;
-        for (int i = 0; i < lines.Length; i++) 
+        for (int i = 0; i < lines.Length; i++)
         {
-            if(lines[i] == "---")
+            if (lines[i] == "---")
             {
-                if(currentCategoryName != null)
+                if (currentCategoryName != null)
                 {
-                    questionCategories.Add(new QuestionCategory(questions.ToArray(), currentCategoryName));
+                    questionCategories.Add(new QuestionCategory(questions.ToArray(), currentCategoryName, isNsfw));
                 }
                 i++;
                 currentCategoryName = lines[i];
                 questions = new List<string>();
-            } else
+            }
+            else
             {
                 questions.Add(lines[i]);
             }
@@ -165,6 +182,11 @@ public class main : MonoBehaviour
                     gameState.players.Remove(currentPlayer.Key);
                     gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points));
                     SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
+
+                    if (currentPlayer.Value.playerNumber == 0)
+                    {
+                        SendIsVip(currentPlayer.Value);
+                    }
                 }
             }
             //new player
@@ -173,6 +195,12 @@ public class main : MonoBehaviour
                 //remove the nbsp
                 name = Regex.Replace(name, @"\u00a0", " ");
                 Player p = new Player(name, from, gameState.GetNumberOfPlayers(), 0);
+
+                if(p.playerNumber == 0)
+                {
+                    SendIsVip(p);
+                }
+
                 welcomePanels[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
                 gameState.players.Add(from, p);
             }
@@ -202,6 +230,11 @@ public class main : MonoBehaviour
                     welcomeScreenPanel.GetComponentsInChildren<Text>()[8].text = "Audience: " + gameState.audienceMembers.Count;
                 }
             }
+        }
+        else if ("sendSaveOptions".Equals(action))
+        {
+            options["nsfwQuestions"] = data["info"]["nsfwQuestions"].ToObject<bool>();
+            options["anonymousNames"] = data["info"]["anonymousNames"].ToObject<bool>();
         }
         else if ("sendStartGame".Equals(action))
         {
@@ -272,7 +305,7 @@ public class main : MonoBehaviour
         else if ("sendCategory".Equals(action))
         {
             int buttonNumber = data["info"]["buttonNumber"].ToObject<int>();
-            selectedCategory = currentCategoryIndex + buttonNumber - 1 - 5;
+            selectedCategory = sentCategoryIndices[buttonNumber - 1];
             SendRetrieveQuestions(from, buttonNumber == 6);
         }
         else if ("sendRequestAnotherQuestion".Equals(action))
@@ -353,11 +386,9 @@ public class main : MonoBehaviour
         }
         else if ("sendVoting".Equals(action))
         {
-            Debug.Log("received sendVoting from: " + from);
             Dictionary<string, string> myVotes = new Dictionary<string, string>();
             foreach (JProperty property in ((JObject)(data["info"])).Properties())
             {
-                Debug.Log("property: " + property);
                 string anonymousName = property.Value.ToString();
                 string playerName = property.Name.ToString();
                 myVotes.Add(anonymousName, playerName);
@@ -376,7 +407,6 @@ public class main : MonoBehaviour
                 votingPanel.SetActive(false);
                 resultsPanel.SetActive(true);
                 StartCoroutine(CalculateVoting(2));
-                Debug.Log("All Votes collected");
             }
         }
         else if ("sendNextRound".Equals(action))
@@ -402,6 +432,11 @@ public class main : MonoBehaviour
             //play a sound to confirm the input
             blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
         }
+    }
+
+    private static void SendIsVip(Player currentPlayer)
+    {
+        AirConsole.instance.Message(currentPlayer.deviceId, new JsonAction("setIsVip", new[] { "" }));
     }
 
     private bool isAudienceMember(int from)
@@ -624,16 +659,54 @@ public class main : MonoBehaviour
 
     public void SendSelectCategory(int deviceId)
     {
-        string[] categoriesToSend = new string[] {
-            
-            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
-            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
-            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
-            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
-            questionCategories[currentCategoryIndex++ % questionCategories.Count].categoryName,
-            "I'll write my own"
+        KeyValuePair<string, int>[] categoriesToSend = new KeyValuePair<string, int>[] {
+            GetNextCategoryName(),
+            GetNextCategoryName(),
+            GetNextCategoryName(),
+            GetNextCategoryName(),
+            GetNextCategoryName(),
+            new KeyValuePair<string, int> ("I'll write my own", -1)
         };
-        AirConsole.instance.Message(deviceId, new JsonAction("sendSelectCategory", categoriesToSend));
+        List<int> currentSentCategoryIndices = new List<int>();
+        currentSentCategoryIndices.Add(categoriesToSend[0].Value);
+        currentSentCategoryIndices.Add(categoriesToSend[1].Value);
+        currentSentCategoryIndices.Add(categoriesToSend[2].Value);
+        currentSentCategoryIndices.Add(categoriesToSend[3].Value);
+        currentSentCategoryIndices.Add(categoriesToSend[4].Value);
+        currentSentCategoryIndices.Add(categoriesToSend[5].Value);
+
+        sentCategoryIndices = currentSentCategoryIndices;
+
+        string[] stringifiedCategoriesToSend = new string[]
+        {
+            categoriesToSend[0].Key,
+            categoriesToSend[1].Key,
+            categoriesToSend[2].Key,
+            categoriesToSend[3].Key,
+            categoriesToSend[4].Key,
+            categoriesToSend[5].Key
+        };
+
+        AirConsole.instance.Message(deviceId, new JsonAction("sendSelectCategory", stringifiedCategoriesToSend));
+    }
+
+    private KeyValuePair<string, int> GetNextCategoryName()
+    {
+        QuestionCategory questionCategory;
+        int tempCurrentCategoryIndex;
+        if(options["nsfwQuestions"])
+        {
+            tempCurrentCategoryIndex = currentCategoryIndex;
+            questionCategory = questionCategories[currentCategoryIndex++ % questionCategories.Count];
+        } else
+        {
+            do
+            {
+                tempCurrentCategoryIndex = currentCategoryIndex;
+                questionCategory = questionCategories[currentCategoryIndex++ % questionCategories.Count];
+            } while (questionCategory.isNsfw);
+        }
+        return new KeyValuePair<string, int>(questionCategory.categoryName, tempCurrentCategoryIndex);
     }
 
     public void SendRetrieveQuestions(int deviceId, bool writeMyOwnQuestions)
@@ -1453,11 +1526,13 @@ public class QuestionCategory
 {
     public string[] questions { get; set; }
     public string categoryName { get; set; }
+    public bool isNsfw { get; set; }
 
-    public QuestionCategory(string[] qs, string cName)
+    public QuestionCategory(string[] qs, string cName, bool nsfw)
     {
         questions = qs;
         categoryName = cName;
+        isNsfw = nsfw;
     }
 }
 
@@ -1644,6 +1719,11 @@ static class Resources
     public static string GetQuestions()
     {
         return System.IO.File.ReadAllText(prependTextResourceFilepath("questions.txt"));
+    }
+
+    public static string GetNsfwQuestions()
+    {
+        return System.IO.File.ReadAllText(prependTextResourceFilepath("nsfwQuestions.txt"));
     }
 
     public static string GetWouldYouRathers()
