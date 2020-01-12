@@ -183,10 +183,12 @@ public class main : MonoBehaviour
                     gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points));
                     SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
 
-                    if (currentPlayer.Value.playerNumber == 0)
+                    /*
+                    if (currentPlayer.Value.playerNumber == VIP_PLAYER_NUMBER)
                     {
                         SendIsVip(currentPlayer.Value);
                     }
+                    */
                 }
             }
             //new player
@@ -230,6 +232,12 @@ public class main : MonoBehaviour
                     welcomeScreenPanel.GetComponentsInChildren<Text>()[8].text = "Audience: " + gameState.audienceMembers.Count;
                 }
             }
+        }
+        else if ("sendRetrieveOptions".Equals(action))
+        {
+            AirConsole.instance.Message(GetVipDeviceId(), JsonUtility.ToJson(
+                new JsonAction("sendRetrieveOptions", new[] { options["nsfwQuestions"].ToString(), options["anonymousNames"].ToString() })));
+
         }
         else if ("sendSaveOptions".Equals(action))
         {
@@ -496,11 +504,15 @@ public class main : MonoBehaviour
 
     private void SendCurrentScreenForReconnect(int from, int currentPlayerNumber)
     {
-
+        if (currentPlayerNumber == VIP_PLAYER_NUMBER)
+        {
+            SendIsVip(gameState.GetPlayerByPlayerNumber(currentPlayerNumber));
+        }
         switch (gameState.phoneViewGameState)
         {
             case PhoneViewGameState.SendStartGameScreen:
                 AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
+
                 break;
             case PhoneViewGameState.SendSelectRoundNumberScreen:
                 SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber,
@@ -784,8 +796,6 @@ public class main : MonoBehaviour
     public void SendQuestions(int playerDeviceId)
     {
         string[] questionsToSend = gameState.GetCurrentRound().questions.ToArray();
-
-        string actionData = JsonUtility.ToJson(new JsonAction("sendQuestions", questionsToSend));
 
         if (playerDeviceId < 0)
         {

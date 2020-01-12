@@ -361,6 +361,9 @@ path, .jtk-endpoint {
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("nonVipStartButtonDescription").style.display = "none";
                   document.getElementById("startGameButton").style.display = "inline-block";
+                } else if(myAction === "sendRetrieveOptions") {
+                    document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
+                    document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
                 } else if(myAction === "sendStartGameScreen") {
                     hideAllViews();
                     document.getElementById("startGameScreenView").style.display = "block";
@@ -672,6 +675,7 @@ path, .jtk-endpoint {
 			}
             
             App.prototype.viewOptions = function viewOptions() {
+                App.prototype.sendRetrieveOptions()
                 document.getElementById("optionsView").style.display = "block";
 			}
             App.prototype.hideOptions = function viewOptions() {
@@ -683,11 +687,17 @@ path, .jtk-endpoint {
             App.prototype.hideCredits = function hideCredits() {
                 document.getElementById("creditsView").style.display = "none";
 			}
+            App.prototype.sendRetrieveOptions = function sendRetrieveOptions() {
+				var message = {
+					'action': "sendRetrieveOptions",
+					'info': {}
+				};
+                me.air_console.message(AirConsole.SCREEN, message);
+			}
             App.prototype.saveOptions = function saveOptions() {
                 const optionsMap = {};
                 optionsMap["nsfwQuestions"] = document.getElementById("NsfwQuestionsCheckbox").checked;
                 optionsMap["anonymousNames"] = document.getElementById("anonymousNameCheckbox").checked;
-                console.log(optionsMap);
                 
 				var message = {
 					'action': "sendSaveOptions",
