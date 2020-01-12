@@ -613,6 +613,8 @@ public class main : MonoBehaviour
     //startRound sends one person a SendRetrieveQuestions message and sends the others would you rathers until the questions are complete
     public void StartRound()
     {
+        //reset the "Answer Set #" counter
+        anonymousPlayerNumberCount = 0;
         gameState.rounds.Add(new Round());
 
         //if starting from previous game
@@ -1361,8 +1363,14 @@ public class main : MonoBehaviour
     }
 
     private int anonymousNameCounter = 0;
+    private int anonymousPlayerNumberCount = 0;
     public string GenerateAnonymousPlayerName()
     {   
+        if(!options["anonymousNames"])
+        {
+            return "Answer Set " + ++anonymousPlayerNumberCount; 
+        }
+
         return anonymousNames[(anonymousNameCounter++)%anonymousNames.Length];
     }
 
