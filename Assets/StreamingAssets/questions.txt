@@ -10,6 +10,7 @@ What is a special dish you like to cook?
 What is your favorite kind of fried chicken?
 What do you eat most frequently?
 What is the most expensive thing you’ve eaten?
+Describe your spice tolerance.
 ---
 Hobbies
 What is your favorite genre of movie?
@@ -34,10 +35,11 @@ How do you like to learn?
 What distracts you from studying?
 What’s one thing you hate about a job?
 Why do you hate your least favorite class?
+If you could give a lecture on any topic, what would it be?
 ---
 Emotions
 What is the most shameful thing you’ve done in public?
-When was the last time you felt embarrassed? Over what? 
+When was the last time you felt embarrassed? Over what?
 What is your biggest fear?
 What do you use as your “security blanket”?
 What is the last thing that made you cry?
@@ -46,6 +48,7 @@ What do you do when you are sad?
 What is something that is a guaranteed “makes you cry”?
 What did someone do to make you angry?
 What doesn’t surprise you anymore that should?
+What is one of your intrusive thoughts?
 ---
 Music
 What is the last song you’ve had on repeat?
@@ -57,7 +60,19 @@ What is the last concert you went to?
 What is your favorite musical?
 What is your favorite disney song?
 Who is your favorite musical artist?
-Rate your music ability on a scale of 1-10
+Rate your music ability on a scale of 1-10?
+---
+Arguing
+What topic are you the strongest devil's advocate for?
+What is the last thing you’ve argued about?
+What is a topic you tend to avoid in conversation due to its controversial nature?
+What is something trivial that you would die on a hill for?
+What is something that a stranger could do that would annoy you enough to speak out?
+How do you resolve an argument?
+What is something annoying you do when you argue with people?
+How do you talk with someone who has the opposite political ideology to you?
+What was the last thing you’ve “Stormed off” about?
+How do you disengage from an argument?
 ---
 Friendship
 How many years is your longest friendship?
@@ -68,6 +83,8 @@ What qualities do you enjoy most about your friends?
 How do you meet new people?
 What is your best ice breaker?
 What is your default activity with a friend?
+What is your ideal friend group size?
+How many group chats are you in?
 ---
 Family
 What family tradition did you grow up with would you want to continue with your own kids?
@@ -75,6 +92,11 @@ What is a mandatory furnishing for your living room?
 What do you miss from grade school the most?
 What is one thing you like about your parents?
 What is your opinion of children?
+What kind of parent are you/do you think you’d be?
+Describe your family as a tv show.
+Where is your ideal place to raise a family
+Who is your non-family family (i.e. work family, school family)?
+What is your favorite fictional family?
 ---
 Body
 What is your preferred indoor temperature?
@@ -84,25 +106,45 @@ How important is physical appearance to you?
 If you had to get a tattoo, what kind of tattoo would you get?
 What do you want to do with your body after you die?
 What physical feature do you notice first on someone you just met?
+If you had to get a piercing, where would you get it?
+What is a weird thing you can do with your body?
+How physically affectionate are you?
 ---
 Dating
 What is something you look for in a romantic partner?
 Where would you go for a second date?
 What kinds of presents do you like to give?
 What is one of your 'dealbreakers'?
+What is the most sensitive thing you are willing to disclose on a first date?
+What is your love language (physical touch, gifts, acts of service, words of affirmation, quality time)?
+What is your ideal marriage proposal?
+How many third dates have you gone on?
+What is your favorite pick up line?
+What makes you dateable?
 ---
 Fantasy
-What is your DnD alignment (Lawful Evil, Chaotic Neutral, Neutral Neutral)? I like this question, but people who don’t play D&D won’t know how to answer
 What kind of superpower would you want for your daily life?
-Which Harry Potter house would you be sorted into?
+Which Harry Potter house would you be sorted into? Why?
 You have just become the president. What is the newest top priority?
-What RPG class represents your personality in real life?
+What RPG class represents your personality in real life (e.g. druid, rouge, barbarian)?
+What mythical creature would you want to own?
+Describe your personal dystopia?
+Which other races/species would you want to exist (dwarfs, elves, ogres)?
+What character trope would you fill (e.g. main character, comic relief, snarky rival)?
+What god from any culture best describes your personality?
+If you could take a future technology from any fandom, which tech would it be?
 ---
 Vacation
 What do you enjoy about traveling?
 Where do you go on vacation the most?
 If you could make a new national holiday, what would it be?
-Where is your next travel destination? 
+Where is your next travel destination?
+What is your dream vacation spot?
+What is your ideal vacation length?
+How many people do you like traveling with?
+How do you decide on your travel companions?
+What is a place you’d never travel?
+What is the weirdest thing you’ve bought or done while travelling?
 ---
 Personality
 What is one of your values?
@@ -113,19 +155,46 @@ What is something you are thankful for?
 What is your nervous habit?
 Which social norm do you not understand?
 What motivation quote do you live by?
+What do you think is your biggest flaw?
+What do you think is your biggest strength?
+What is your favorite letter? Why?
+If your life were a musical, what would one of your songs be?
 ---
 Talking
 What kind of conversations do you like to have?
 What are your thoughts about white lies?
 Without using any explicit language, what is your favorite expletive?
 If you could learn another language, what would it be?
-What is your favorite color?
+How frequently do you curse?
 What is the nicest thing someone has said to you?
+What do you do when you get bored of a conversation?
+How long is your optimal conversation?
+What is the strangest conversation topic you've had?
+What is the meanest thing you've ever said?
 ---
 Money
 How long would you wait in line for $50?
 What is the minimum amount of money you need to completely change your lifestyle?
 What kinds of items do you splurge money on?
+How much do you _really_ think you should earn?
+How much money would you bring with you into a casino?
+How much money would it take for you to poop in public?
+If you won 10 million dollars, what would you do next?
+Someone wants to buy all the clothes you're wearing right now. How much would you charge them?
+How much cash do you carry on you at any time?
+How much money can you lose and not care about? What is "effectively free"?
+---
+Phone
+What do you like to do on your phone?
+How long do your phone conversations last?
+How often do you use your phone while using the restroom?
+Who was the last person you called?
+What percent do you start charging your phone?
+How long could you go wihtout your phone?
+What is the app you use the most?
+What is a feature you wish your phone had?
+What app have you spent the most time using?
+What is the most recent picture you took on your phone?
 ---
 Personal History
 What is the most awkward situation you've ever been in?
@@ -133,11 +202,82 @@ What smell reminds you of home?
 What is a goal you had to give up on or change?
 What did you miss out on during your childhood?
 What is the most wasteful thing you’re guilty of?
-What are your top three sins you’re guilty of? 
+What are your top three sins you’re guilty of?
 What instrument(s) did you play in school?
+If you could regain a lost or stolen item, what would you choose?
+As a child, what did you want to be growing up?
+What invokes the most nostalgia for you?
+---
+Sleep
+What is the weirdest dream you had?
+What helps you sleep best at night?
+What is your favorite sleeping position?
+What is the scariest nightmare you’ve had?
+If you could create your own dream, what would it be?
+How long is the ideal nap?
+What is the loudest thing you could sleep through?
+What are the optimal sleeping conditions?
+How many pillows do you like to sleep with?
+How do you put your blanket on you when you sleep?
+---
+Pop Culture
+Which celebrity would you want a run-in with?
+What's a movie currently in theaters worth seeing?
+What is the oldest pop culture reference you can remember?
+What is your favorite meme?
+What is your favorite top 40s song?
+You are directing a romcom, who are your two lead actors and/or actresses?
+What is your favorite logo?
+What is your rapper name?
+What is your favorite tv show?
+What is the fanciest thing you own?
+What is your favorite form of social media?
 ---
 Personal Routine
-What is a necessary part of your morning routine?
+What is an unnecessary part of your morning routine?
 What items are currently in the trunk of your car?
 What do you do with bugs in your house?
 How often do you make your bed?
+How do you keep yourself awake when you get sleepy in the middle of the day?
+What is the most useless thing in your wallet right now?
+When was the last time you washed your bedsheets?
+What is your cheap and lazy meal?
+What is the longest you've gone without showering?
+What do you do when you take public transportation?
+What is the first thing you do when you're bored?
+---
+Nature
+What kind of weather makes you feel the most calm?
+What is your favorite outdoor activity?
+What is your favorite season and why?
+What natural disaster are you most afraid of?
+What is the prettiest type of natural scenery?
+What animal most represents your personality?
+If you were to get an exotic pet, what would you get?
+What is your favorite type of camping?
+What plants would you have in your garden?
+What tree most represents your personallity?
+---
+People currently playing
+Give the person to your right a nickname that describes their personality.
+Of the people currently playing, which would you want to be stuck with on a deserted island?
+Of the people currently playing, who do you trust the most with a secret?
+Of the people currently playing, who would you rob a bank with?
+Of the people currently playing, which two would you like to see on the same tv show?
+Of the people currently playing, who would be the most likely to die in a dumb accident?
+Of the people currently playing, who would you be willing to sacrafice
+Of the people currently playing, who would be the most willing to loan you money?
+Of the people currently playing, who do you think would survive the longest on a deserted island?
+Of the people currently playing, who would you want as a partner in the zombie apocolypse?
+---
+Role playing
+You just got to school and you realized you forgot your lunch and have no money. How do you get through the day?
+Two friends are arguing about politics at dinner. How do you react?
+A big bully comes around and makes fun of your shoes. How do you react?
+The monster in your closet is real! How do you sleep soundly at night?
+You learn you have magical abilities. How do you harness these powers to become rich?
+You find yourself in the pokemon world. What is your life goal?
+You find the gold at the end of a rainbow. What do you do next?
+You can send one message to every phone in the world. What do you say?
+You can switch lives with someone for a day. Who would you pick?
+You're given $1000 that you must spend immediately on a tangible item. What do you buy?
