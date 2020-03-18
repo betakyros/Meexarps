@@ -34,6 +34,8 @@ public class main : MonoBehaviour
     public VideoPlayer vp;
     //should make a different sound per person
     public AudioClip[] blips;
+    public Animator[] animators;
+
     private int currentCategoryIndex;
     private int selectedCategory;
     private List<int> sentCategoryIndices;
@@ -45,6 +47,7 @@ public class main : MonoBehaviour
     private Dictionary<int, int> audienceWouldYouRathers;
     private bool writeMyOwnQuestions = false;
     private Dictionary<string, bool> options = new Dictionary<string, bool>();
+    
 
     // Start is called before the first frame update
     void Start()
@@ -180,7 +183,7 @@ public class main : MonoBehaviour
                 else
                 {
                     gameState.players.Remove(currentPlayer.Key);
-                    gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points));
+                    gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points, animators[currentPlayer.Value.playerNumber]));
                     SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
 
                     /*
@@ -196,7 +199,8 @@ public class main : MonoBehaviour
             {
                 //remove the nbsp
                 name = Regex.Replace(name, @"\u00a0", " ");
-                Player p = new Player(name, from, gameState.GetNumberOfPlayers(), 0);
+                int newPlayerNumber = gameState.GetNumberOfPlayers();
+                Player p = new Player(name, from, newPlayerNumber, 0, animators[newPlayerNumber]);
 
                 if(p.playerNumber == 0)
                 {
@@ -221,15 +225,17 @@ public class main : MonoBehaviour
                     else
                     {
                         gameState.audienceMembers.Remove(currentPlayer.Key);
-                        gameState.audienceMembers.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points));
+                        gameState.audienceMembers.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points, animators[currentPlayer.Value.playerNumber]));
                         SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
                     }
                 }
                 else
                 {
-                    Player p = new Player(name, from, gameState.GetNumberOfPlayers(), 0);
+                    int playerNumber = gameState.GetNumberOfPlayers();
+                    Player p = new Player(name, from, playerNumber, 0, animators[playerNumber]);
                     gameState.audienceMembers.Add(from, p);
                     welcomeScreenPanel.GetComponentsInChildren<Text>()[8].text = "Audience: " + gameState.audienceMembers.Count;
+                    SendCurrentScreenForReconnect(from, p.playerNumber);
                 }
             }
         }
@@ -1050,6 +1056,10 @@ public class main : MonoBehaviour
             List<string> namesOfCorrectPeopleForZoomInView = new List<string>();
             Dictionary<string, List<string>> wrongGuessNameToPlayerNames = new Dictionary<string, List<string>>();
             Dictionary<string, List<string>> wrongGuessNameToPlayerNamesForZoomInView = new Dictionary<string, List<string>>();
+            //0 is sad, 1 is cheer
+            Dictionary<Player, MeexarpAction> playerAnimations = new Dictionary<Player, MeexarpAction>();
+
+
             int numberOfCorrectAudienceGuesses = 0;
             int numberOfWrongAudienceGuesses = 0;
 
@@ -1073,6 +1083,7 @@ public class main : MonoBehaviour
                             namesOfCorrectPeopleForZoomInView.Add("<color=green>" + p.nickname + "</color>");
                             namesOfCorrectPeople.Add("<b><size=" + increasedFontSize + "><color=green>" + p.nickname + "</color></size></b>");
                             p.points++;
+                            playerAnimations.Add(p, MeexarpAction.Cheer);
                         }
                         else
                         {
@@ -1083,6 +1094,7 @@ public class main : MonoBehaviour
                             }
                             wrongGuessNameToPlayerNamesForZoomInView[currentGuess].Add("<color=red>" + p.nickname + "</color>");
                             wrongGuessNameToPlayerNames[currentGuess].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
+                            playerAnimations.Add(p, MeexarpAction.Sad);
                         }
                     }
                 } else
@@ -1094,6 +1106,7 @@ public class main : MonoBehaviour
                     }
                     wrongGuessNameToPlayerNamesForZoomInView["none"].Add("<color=red>" + p.nickname + "</color>");
                     wrongGuessNameToPlayerNames["none"].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
+                    playerAnimations.Add(p, MeexarpAction.Sad);
                 }
             }
             //calculate audience votes
@@ -1295,9 +1308,15 @@ public class main : MonoBehaviour
                 myText.text += "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
             }
 
+
+            //play each animation
+            foreach (KeyValuePair<Player, MeexarpAction> playerAnimation in playerAnimations)
+            {
+                playerAnimation.Key.playAnimation(playerAnimation.Value);
+            }
+
             yield return new WaitForSeconds(waitForReadSeconds);
             //yield return new WaitForSeconds(zoomInTime);
-
             string audienceGuessesString = numberOfCorrectAudienceGuesses + numberOfWrongAudienceGuesses == 0 ? "" : "\n\n<color=green>" + numberOfCorrectAudienceGuesses + " </color>/<color=red>" + numberOfWrongAudienceGuesses + "</color> Audience";
 
             string tileTitle = anonymousPlayerName + " is " + targetPlayerName + "\n\n";
@@ -1352,11 +1371,26 @@ public class main : MonoBehaviour
             pointsSB.Append(pointSuffixStrings[p.playerNumber]);
             pointsSB.Append(" points");
             pointsSB.Append("\n");
-            int tilesOffset = 1;
+            int tilesOffset = 2;
             endScreenPanel.GetComponentsInChildren<Text>()[tilesOffset + playerCounter].text = pointsSB.ToString();
             playerCounter++;
 
         }
+        StringBuilder audiencePointsSB = new StringBuilder(100);
+
+        foreach (Player p in gameState.audienceMembers.Values)
+        {
+
+            audiencePointsSB.Append(p.nickname);
+            audiencePointsSB.Append(" has ");
+            audiencePointsSB.Append(p.points);
+            audiencePointsSB.Append(" ");
+            audiencePointsSB.Append(" points");
+            audiencePointsSB.Append("\n");
+            endScreenPanel.GetComponentsInChildren<Text>()[0].text = audiencePointsSB.ToString();
+
+        }
+
         SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendEndScreen", new string[] { " " }));
         //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendEndScreen", new string[] { " "})));
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
@@ -1466,23 +1500,26 @@ class Player
     public int playerNumber { get; set; }
     private int avatarId { get; set; }
     public int points { get; set; }
+    public Animator myAnimator { get; set; }
 
-    public Player(string n, int d, int pn, int a)
+    public Player(string n, int d, int pn, int a, Animator an)
     {
         nickname = n;
         deviceId = d;
         playerNumber = pn;
         avatarId = a;
         points = 0;
+        myAnimator = an;
     }
 
-    public Player(string n, int d, int pn, int a, int p)
+    public Player(string n, int d, int pn, int a, int p, Animator an)
     {
         nickname = n;
         deviceId = d;
         playerNumber = pn;
         avatarId = a;
         points = p;
+        myAnimator = an;
     }
 
     public override string ToString()
@@ -1494,6 +1531,18 @@ class Player
         sb.Append("avatarId: " + avatarId + "\n");
         sb.Append("points: " + points + "\n");
         return sb.ToString();
+    }
+
+    public void playAnimation(MeexarpAction meexarpActions)
+    {
+        if (meexarpActions == MeexarpAction.Cheer)
+        {
+            myAnimator.SetBool("isCheer", true);
+        }
+        else if (meexarpActions == MeexarpAction.Sad)
+        {
+            myAnimator.SetBool("isSad", true);
+        }
     }
 }
 
@@ -1724,6 +1773,12 @@ enum PhoneViewGameState
     SendStartGameScreen = 8,
     SendSelectRoundNumberScreen = 9,
     SendSkipInstructionsScreen = 10
+}
+
+enum MeexarpAction
+{
+    Sad = 0,
+    Cheer= 1
 }
 
 static class Resources
