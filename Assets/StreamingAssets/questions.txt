@@ -62,29 +62,17 @@ What is your favorite disney song?
 Who is your favorite musical artist?
 Rate your music ability on a scale of 1-10?
 ---
-Arguing
-What topic are you the strongest devil's advocate for?
-What is the last thing you’ve argued about?
-What is a topic you tend to avoid in conversation due to its controversial nature?
-What is something trivial that you would die on a hill for?
-What is something that a stranger could do that would annoy you enough to speak out?
-How do you resolve an argument?
-What is something annoying you do when you argue with people?
-How do you talk with someone who has the opposite political ideology to you?
-What was the last thing you’ve “Stormed off” about?
-How do you disengage from an argument?
----
 Friendship
-How many years is your longest friendship?
+What kind of food do you enjoy receiving as a gift from a friend?
 How would someone know when you are comfortable with them?
-How do you support a sad friend?
-What is a trait of someone you admire?
+Which element of friendship do you embody the most (Generosity, loyalty, kindness, honesty, fun, magic)?
+Tell me about yourself in 5 words.
 What qualities do you enjoy most about your friends?
 How do you meet new people?
 What is your best ice breaker?
 What is your default activity with a friend?
 What is your ideal friend group size?
-How many group chats are you in?
+What is a sign that you will like a person?
 ---
 Family
 What family tradition did you grow up with would you want to continue with your own kids?
@@ -99,16 +87,16 @@ Who is your non-family family (i.e. work family, school family)?
 What is your favorite fictional family?
 ---
 Body
-What is your preferred indoor temperature?
-What is your favorite body part?
+Describe your preferred indoor temperature without using numbers.
+What is your favorite exercise?
 What do you think is your best physical feature?
 How important is physical appearance to you?
 If you had to get a tattoo, what kind of tattoo would you get?
 What do you want to do with your body after you die?
 What physical feature do you notice first on someone you just met?
 If you had to get a piercing, where would you get it?
-What is a weird thing you can do with your body?
-How physically affectionate are you?
+What is your favorite stretching position?
+Name a celebrity you think looks attractive.
 ---
 Dating
 What is something you look for in a romantic partner?
@@ -145,6 +133,7 @@ How many people do you like traveling with?
 How do you decide on your travel companions?
 What is a place you’d never travel?
 What is the weirdest thing you’ve bought or done while travelling?
+Rank the following in order of enjoyment on vacation: Food, culture, nature, shopping, activities
 ---
 Personality
 What is one of your values?
@@ -222,16 +211,16 @@ How do you put your blanket on you when you sleep?
 ---
 Pop Culture
 Which celebrity would you want a run-in with?
-What's a movie currently in theaters worth seeing?
-What is the oldest pop culture reference you can remember?
 What is your favorite meme?
-What is your favorite top 40s song?
 You are directing a romcom, who are your two lead actors and/or actresses?
-What is your favorite logo?
 What is your rapper name?
 What is your favorite tv show?
 What is the fanciest thing you own?
 What is your favorite form of social media?
+What is the oldest pop culture reference you can remember?
+Where do you shop for clothes?
+What is something most people like that you don't like?
+What is your favorite commercial?
 ---
 Personal Routine
 What is an unnecessary part of your morning routine?
@@ -260,24 +249,24 @@ What tree most represents your personallity?
 ---
 People currently playing
 Give the person to your right a nickname that describes their personality.
-Of the people currently playing, which would you want to be stuck with on a deserted island?
-Of the people currently playing, who do you trust the most with a secret?
+Of the people currently playing, with whom would you want to be stuck on a deserted island?
 Of the people currently playing, who would you rob a bank with?
 Of the people currently playing, which two would you like to see on the same tv show?
 Of the people currently playing, who would be the most likely to die in a dumb accident?
-Of the people currently playing, who would you be willing to sacrafice
-Of the people currently playing, who would be the most willing to loan you money?
-Of the people currently playing, who do you think would survive the longest on a deserted island?
-Of the people currently playing, who would you want as a partner in the zombie apocolypse?
+Of the people currently playing, who would you want as a partner in the zombie apocalypse?
+Of the people currently playing, who would be a superhero and who would be their nemesis?
+Of the people currently playing, who is most likely to become president?
+Describe the movie in which the person to your right would star?
+Describe the person to your right with a song title.
 ---
 Role playing
 You just got to school and you realized you forgot your lunch and have no money. How do you get through the day?
-Two friends are arguing about politics at dinner. How do you react?
-A big bully comes around and makes fun of your shoes. How do you react?
-The monster in your closet is real! How do you sleep soundly at night?
-You learn you have magical abilities. How do you harness these powers to become rich?
+You learn you have magical abilities (your choice). How do you harness these powers to become rich?
 You find yourself in the pokemon world. What is your life goal?
-You find the gold at the end of a rainbow. What do you do next?
 You can send one message to every phone in the world. What do you say?
-You can switch lives with someone for a day. Who would you pick?
 You're given $1000 that you must spend immediately on a tangible item. What do you buy?
+You can switch lives with someone for a day. Who would you pick?
+You need to turn $1000 dollars into $10000 in a month, how do you do it?
+You wake up and realize all of your clothes are stolen and your communication devices are dead. How do you get to the store and buy some new clothes?
+You wake up in the 1000 years into future. What technology are you most excited to try out or see?
+You wake up in a hospital bed. Gasp! You've been in a coma for 10 years. What is the first question non-medical you ask upon waking up?
