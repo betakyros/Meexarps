@@ -209,6 +209,7 @@ public class main : MonoBehaviour
 
                 welcomePanels[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
                 gameState.players.Add(from, p);
+                sendWelcomeScreenInfo();
             }
             // audience
             else {
@@ -249,6 +250,10 @@ public class main : MonoBehaviour
         {
             options["nsfwQuestions"] = data["info"]["nsfwQuestions"].ToObject<bool>();
             options["anonymousNames"] = data["info"]["anonymousNames"].ToObject<bool>();
+        }
+        else if ("requestWelcomeScreenInfo".Equals(action))
+        {
+            sendWelcomeScreenInfo();
         }
         else if ("sendStartGame".Equals(action))
         {
@@ -443,8 +448,25 @@ public class main : MonoBehaviour
         }
         if(gameState.players.ContainsKey(from))
         {
-            //play a sound to confirm the input
-            blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
+            if (!"requestWelcomeScreenInfo".Equals(action)) {
+                //play a sound to confirm the input
+                blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
+            } 
+        }
+    }
+
+    private void sendWelcomeScreenInfo()
+    {
+        if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
+        {
+            int currNumPlayers = gameState.GetNumberOfPlayers();
+            if(currNumPlayers < 6)
+            {
+                AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "" + currNumPlayers }));
+            } else
+            {
+                AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "full" }));
+            }
         }
     }
 

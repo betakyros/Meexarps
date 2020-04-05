@@ -340,6 +340,13 @@ path, .jtk-endpoint {
 			var me = this;
 			me.air_console = new AirConsole({"orientation": "portrait", "synchronize_time":"true"});
             var isVip = false;
+            me.air_console.onConnect = function(device_id) {
+				var message = {
+					'action': "requestWelcomeScreenInfo",
+					'info': {}
+				};
+				me.air_console.message(AirConsole.SCREEN, message);
+            };
             me.air_console.onMessage = function(from, data) {               
                 if(typeof data == 'string') {
                     payload = JSON.parse(data);
@@ -348,6 +355,7 @@ path, .jtk-endpoint {
                 }
                 
                 myAction = payload.action;
+
                 /* THIS IS WHERE ACTIONS ARE RECEIVED */
                 
                 if(myAction === "sendWaitScreen") {
@@ -361,6 +369,12 @@ path, .jtk-endpoint {
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("nonVipStartButtonDescription").style.display = "none";
                   document.getElementById("startGameButton").style.display = "inline-block";
+                } else if(myAction === "sendWelcomeScreenInfo") {
+                    if(payload.data[0] == "full") {
+                        document.getElementById("welcomeScreenPlayerCount").innerText = "Our Meexarp team has reached capacity!\nYou will be joining as an audience member."
+                    } else {
+                        document.getElementById("welcomeScreenPlayerCount").innerText = payload.data[0] + "/6 Meexarps have joined the game"                    
+                    }
                 } else if(myAction === "sendRetrieveOptions") {
                     document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
                     document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
@@ -750,7 +764,7 @@ path, .jtk-endpoint {
         display: inline-block;
         background-color: grey;
         border: 1px solid black;
-        padding: 4px;
+        padding: 4px 20px;
         cursor: hand;
         cursor: pointer;
       }
@@ -822,20 +836,26 @@ path, .jtk-endpoint {
         width: 95%;
         z-index: 101;
       }
+      
+      .franklinInstructionText {
+        font-size:12px;
+        color: "#ababab";
+      }
     </style>
   </head>
-  <body style="background-color:#8cffd4; text-align: center;" onload="init()">
+  <body style="font-family: Roboto; background-color:#8cffd4; text-align: center;" onload="init()">
         <div id="optionsButton" class="pseudo_button optionsButton" onclick="window.app.viewOptions()" style="display:none;">Options</div>
     <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
-    <div class="view" id="welcomeScreenView" style="padding:50% 0;">
-        Welcome to Know Your Friends!
+    <div class="view" id="welcomeScreenView" style="padding:30% 0;">
+        <p style="font-size:20px;">Welcome to</p>
+        <div style="font-size:40px;">MEEXARPS</div>
         <br>
         <br>
         <!-- TODO make placeholder text italics -->
-        Enter a fun name but identifiable name
+        Choose a username for your Meexarp
         <br>
         <div id="nickname" class="textfield">
-            <div style="color:#aaa"><i>Identifiable name</i></div>
+            <div style="color:#aaa"><i>A fun but identifiable name</i></div>
         </div>
         <!--
         <div style="display:flex;justify-content:center;">
@@ -848,7 +868,11 @@ path, .jtk-endpoint {
         </div>
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <div class="pseudo_button" onclick="window.app.sendWelcomeInfo()">Submit Nickname!</div>
+        <div class="pseudo_button" onclick="window.app.sendWelcomeInfo()">Submit</div>
+        <br>
+        <br>
+        <div class="franklinInstructionText" id="welcomeScreenPlayerCount">0/6 Meexarps have joined the game</div>
+
     </div> 
     <div class="view optionsView" id="optionsView" style="display:none">
         <div class="pseudo_button topleft" onclick="window.app.hideOptions()" style="margin:5px">Close</div>
