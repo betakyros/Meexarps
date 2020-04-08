@@ -209,7 +209,7 @@ public class main : MonoBehaviour
 
                 welcomePanels[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
                 gameState.players.Add(from, p);
-                sendWelcomeScreenInfo();
+                sendWelcomeScreenInfo(from);
             }
             // audience
             else {
@@ -253,25 +253,32 @@ public class main : MonoBehaviour
         }
         else if ("requestWelcomeScreenInfo".Equals(action))
         {
-            sendWelcomeScreenInfo();
+            sendWelcomeScreenInfo(-1);
         }
         else if ("sendStartGame".Equals(action))
         {
-            GameObject.Find("WelcomeScreenPanel").SetActive(false);
+            gameState.numRoundsPerGame = data["info"]["roundCount"].ToObject<int>();
+            //GameObject.Find("WelcomeScreenPanel").SetActive(false);
+            /*
             selectRoundNumberPanel.SetActive(true);
             selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
                 "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
             SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
             gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
+            */
+            introAudioSource.Stop();
+            mainLoopAudioSource.Play();
+            StartCoroutine(ShowIntroInstrucitons(2));
         }
+        /*
         else if ("sendSetRoundCount".Equals(action))
         {
             gameState.numRoundsPerGame = data["info"].ToObject<int>();
             introAudioSource.Stop();
             mainLoopAudioSource.Play();
             StartCoroutine(ShowIntroInstrucitons(2));
-        }
+        }*/
         else if ("sendSubmitWouldYouRather".Equals(action))
         {
             List<string> wouldYouRather = new List<string>();
@@ -455,7 +462,7 @@ public class main : MonoBehaviour
         }
     }
 
-    private void sendWelcomeScreenInfo()
+    private void sendWelcomeScreenInfo(int from)
     {
         if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
         {
@@ -463,6 +470,11 @@ public class main : MonoBehaviour
             if(currNumPlayers < 6)
             {
                 AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "" + currNumPlayers }));
+                if (from > 0)
+                {
+                    Player myPlayer = gameState.players[from];
+                    AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
+                }
             } else
             {
                 AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "full" }));
