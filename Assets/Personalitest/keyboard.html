@@ -303,6 +303,7 @@ path, .jtk-endpoint {
         var playerName;
         var playerNumber;
         var myTimer = 0;
+        var answerQuestionsTimer = 0;
         var timeElapsed = 0;
 
         App.prototype.touchStart = function touchStart(text) {
@@ -471,6 +472,10 @@ path, .jtk-endpoint {
                     document.getElementById("question1").innerHTML = payload.data[0];
                     document.getElementById("question2").innerHTML = payload.data[1];
                     document.getElementById("question3").innerHTML = payload.data[2];
+                    answerQuestionsTimer = setInterval(function(){
+                        timeElapsed += 1;
+                        document.getElementById("answerQuestionsTimer").innerText = timeElapsed;
+                    }, 1000) ;
                 } else if(myAction === "sendSkipInstructions") {
                     hideAllViews();
                     document.getElementById("skipInstructionsView").style.display = "block";
@@ -674,6 +679,9 @@ path, .jtk-endpoint {
 				me.air_console.message(AirConsole.SCREEN, message);
                 hideAllViews();
                 document.getElementById("waitingView").style.display = "block";
+                timeElapsed = 0;
+                document.getElementById("answerQuestionsTimer").innerText = 0;
+                clearInterval(answerQuestionsTimer);
 			}
             
 			App.prototype.sendSkipInstructions = function sendSkipInstructions() {
@@ -1122,7 +1130,7 @@ that will be used later in the game.
                 onclick="window.app.setPlaceholder('retrieveQuestionsField3', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3', 'Give me a good question')"></span>
                 -->
             </div>
-        </div>        
+        </div> 
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:#9c9c9c">
             <div style="display:flex; flex-direction: row-reverse;" onclick="keyboard.setValue('retrieveQuestionsField3', '')">
                 Clear
@@ -1143,12 +1151,19 @@ that will be used later in the game.
     </div>
     <div class="view" id="submitAnswerView" style="padding:20% 0;display:none">
 
-        Answer the following questions honestly!
+        <!--Answer the following questions honestly! -->
+        <img style="height:10%;" src="./purple-alien_idle_transparent.gif" />
+        <br>
+        <div style="display:flex; justify-content:center;align-items:center;">
+            <img style="height:40px;" src="./icon_stopwatch.png" />
+
+            <div id="answerQuestionsTimer">0</div>
+        </div>
         <br>
         <br>
         <div id="question1"></div>
-        <div style="display:flex;justify-content:center;">
-            <div id="textfield1" class="textfield">
+        <div style="display:flex;justify-content:center;width:100%;">
+            <div id="textfield1" class="textfield" style="width:95%;">
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
             <!--
@@ -1156,10 +1171,16 @@ that will be used later in the game.
             onclick="window.app.setPlaceholder('textfield1', '')" onblur="window.app.setPlaceholder('textfield1', 'Answer me!')"></span>
             -->
         </div>
+        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
+            <div style="display:flex;" onclick="keyboard.setValue('textfield1', '')">
+                Clear
+                <img style="height:20px;" src="./icon_cross.png"/>
+            </div>
+        </div>
         <p>
         <div id="question2"></div>
-        <div style="display:flex;justify-content:center;">
-            <div id="textfield2" class="textfield">
+        <div style="display:flex;justify-content:center;width:100%;">
+            <div id="textfield2" class="textfield" style="width:95%;">
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
             <!--
@@ -1167,10 +1188,16 @@ that will be used later in the game.
             onclick="window.app.setPlaceholder('textfield2', '')" onblur="window.app.setPlaceholder('textfield2', 'Answer me!')"></span>
             -->
         </div>
+        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
+            <div style="display:flex;" onclick="keyboard.setValue('textfield2', '')">
+                Clear
+                <img style="height:20px;" src="./icon_cross.png"/>
+            </div>
+        </div>
         <p>
         <div id="question3"></div>
-        <div style="display:flex;justify-content:center;">
-            <div id="textfield3" class="textfield">
+        <div style="display:flex;justify-content:center;width:100%;">
+            <div id="textfield3" class="textfield" style="width:95%;">
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
             <!--
@@ -1178,8 +1205,14 @@ that will be used later in the game.
             onclick="window.app.setPlaceholder('textfield3', '')" onblur="window.app.setPlaceholder('textfield3', 'Answer me!')"></span>
             -->
         </div>
+        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
+            <div style="display:flex;" onclick="keyboard.setValue('textfield3', '')">
+                Clear
+                <img style="height:20px;" src="./icon_cross.png"/>
+            </div>
+        </div>
         <p>
-        <div class="pseudo_button" onclick="window.app.sendAnswer()">Submit Answer!</div>
+        <div class="pseudo_button" onclick="window.app.sendAnswer()">Submit</div>
     </div>
     <div id="answerSummaryForSelectedPlayer" style="width:100%; height:100%;display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;background-color:#0adada;display:none;padding:4px;">
         test
