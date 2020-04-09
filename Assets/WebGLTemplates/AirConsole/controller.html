@@ -128,7 +128,6 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 .targetWindowLabel {
     position: relative;
     bottom: 30px;
-    margin-left:250%;
     white-space: nowrap;
     direction: rtl;
 }
@@ -141,7 +140,6 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 
 .source-target-demo .window {
-    border: 2px dotted #346789;
     width: 1em;
     height: 1em;
     display:flex;
@@ -151,13 +149,12 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 
 .anonymousNameBox {
-    background-color: #558822;
+    /*background-color: #558822;*/
     cursor: move;
     left: 2em;
 }
 
 .playerNameBox {
-    background-color: #0d78bc;
     cursor: move;
     right: 2em;
 }
@@ -196,62 +193,65 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 
 /*TODO we could probably use display flex to do this*/
-#sourceWindow0 {
-    background-color: #0d78bc;
+.sourceWindow0 {
     top:3em;
 }
 
-#sourceWindow1 {
-    background-color: #0d78bc;
+.sourceWindow1 {
     top:8em;
 }
 
-#sourceWindow2 {
-    background-color: #0d78bc;
+.sourceWindow2 {
     top:13em;
 }
-#sourceWindow3 {
-    background-color: #0d78bc;
+.sourceWindow3 {
     top:18em;
 }
-#sourceWindow4 {
-    background-color: #0d78bc;
+.sourceWindow4 {
     top:23em;
 }
-#sourceWindow5 {
-    background-color: #0d78bc;
+.sourceWindow5 {
     top:28em;
 }
+
 /** SMALL WINDOW POSITIONS **/
-#targetWindow0 {
+.targetWindow0 {
     text-align: right;
     top: 3em;
 }
 
-#targetWindow1 {
+.targetWindow1 {
     text-align: right;
     top: 8em;
 }
 
-#targetWindow2 {
+.targetWindow2 {
     text-align: right;
     top: 13em;
 }
 
-#targetWindow3 {
+.targetWindow3 {
     text-align: right;
     top: 18em;
 }
 
-#targetWindow4 {
+.targetWindow4 {
     text-align: right;
     top: 23em;
 }
 
-#targetWindow5 {
+.targetWindow5 {
     text-align: right;
     top: 28em;
 }
+
+.alienImage {
+    height: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 /** JSPLUMB ARTEFACTS **/
 .jtk-endpoint {
     z-index: 32;
@@ -497,12 +497,22 @@ path, .jtk-endpoint {
                             var sourceElement = document.getElementById(sourceId);
                             sourceElement.style.display='block';
                             sourceElement.firstChild.innerHTML = payload.data[i];
+                            
+                            //add the image to the box
+                            var imageId = "sourceImage" + i;
+                            var img = document.getElementById(imageId);
+                            img.src = "./icon_questionMark.png";
 
                             var targetId = "targetWindow" + i;
                             var sourceElement = document.getElementById(targetId);
                             sourceElement.style.display='block';
                             sourceElement.firstChild.innerHTML = payload.data[thirdArray + i];
                             
+                            //add the image to the box
+                            var imageId = "targetImage" + i;
+                            var img = document.getElementById(imageId);
+                            img.src = "./purple-alien_idle_transparent.gif";
+
                             var answersSummary = sanitarize(payload.data[2*thirdArray + i]);
                             /*Work in progress. not sure how it made it into this commit. this is the answer summary to display on the phones*/
                             /*
@@ -1219,18 +1229,18 @@ that will be used later in the game.
     </div>
     <div class="view" id="submitVoteView" style="width:100%; height:100%;display:none;" >
          <div class="jtk-demo-canvas canvas-wide source-target-demo jtk-surface jtk-surface-nopan" id="canvas">
-            <div class="window anonymousNameBox" id="targetWindow0"><div class="sourceWindowLabel">target 1</div></div>
-            <div class="window anonymousNameBox" id="targetWindow1"><div class="sourceWindowLabel">target 2</div></div>
-            <div class="window anonymousNameBox" id="targetWindow2"><div class="sourceWindowLabel">target 3</div></div>
-            <div class="window anonymousNameBox" id="targetWindow3"><div class="sourceWindowLabel">target 4</div></div>
-            <div class="window anonymousNameBox" id="targetWindow4"><div class="sourceWindowLabel">target 5</div></div>
-            <div class="window anonymousNameBox" id="targetWindow5"><div class="sourceWindowLabel">target 6</div></div>
-            <div class="window playerNameBox" id="sourceWindow0"><div class="targetWindowLabel">source 1</div></div>
-            <div class="window playerNameBox" id="sourceWindow1"><div class="targetWindowLabel">source 2</div></div>
-            <div class="window playerNameBox" id="sourceWindow2"><div class="targetWindowLabel">source 3</div></div>
-            <div class="window playerNameBox" id="sourceWindow3"><div class="targetWindowLabel">source 4</div></div>
-            <div class="window playerNameBox" id="sourceWindow4"><div class="targetWindowLabel">source 5</div></div>
-            <div class="window playerNameBox" id="sourceWindow5"><div class="targetWindowLabel">source 6</div></div>
+            <div class="window anonymousNameBox targetWindow0" id="targetWindow0"><div class="sourceWindowLabel">target 1</div><img class="targetWindow0 alienImage "id="sourceImage0" class=></div>
+            <div class="window anonymousNameBox targetWindow1" id="targetWindow1"><div class="sourceWindowLabel">target 2</div><img class="targetWindow1 alienImage"id="sourceImage1"></div>
+            <div class="window anonymousNameBox targetWindow2" id="targetWindow2"><div class="sourceWindowLabel">target 3</div><img class="targetWindow2 alienImage"id="sourceImage2"></div>
+            <div class="window anonymousNameBox targetWindow3" id="targetWindow3"><div class="sourceWindowLabel">target 4</div><img class="targetWindow3 alienImage" id="sourceImage3"></div>
+            <div class="window anonymousNameBox targetWindow4" id="targetWindow4"><div class="sourceWindowLabel">target 5</div><img class="targetWindow4 alienImage" id="sourceImage4"></div>
+            <div class="window anonymousNameBox targetWindow5" id="targetWindow5"><div class="sourceWindowLabel">target 6</div><img class="targetWindow5 alienImage" id="sourceImage5"></div>
+            <div class="window playerNameBox sourceWindow0" id="sourceWindow0"><div class="targetWindowLabel">source 1</div><img id="targetImage0" class="alienImage sourceWindow0"></div>
+            <div class="window playerNameBox sourceWindow1" id="sourceWindow1"><div class="targetWindowLabel">source 2</div><img id="targetImage1" class="alienImage sourceWindow1"></div>
+            <div class="window playerNameBox sourceWindow2" id="sourceWindow2"><div class="targetWindowLabel">source 3</div><img id="targetImage2" class="alienImage sourceWindow2"></div>
+            <div class="window playerNameBox sourceWindow3" id="sourceWindow3"><div class="targetWindowLabel">source 4</div><img id="targetImage3" class="alienImage sourceWindow3"></div>
+            <div class="window playerNameBox sourceWindow4" id="sourceWindow4"><div class="targetWindowLabel">source 5</div><img id="targetImage4" class="alienImage sourceWindow4"></div>
+            <div class="window playerNameBox sourceWindow5" id="targetWindow0"><div class="targetWindowLabel">source 6</div><img id="targetImage5" class="alienImage sourceWindow5"></div>
         </div>
         <div class="pseudo_button" onclick="window.app.sendVoting()" style="bottom:1em; right:1em; position: absolute;">Submit Votes!</div>
     </div>
