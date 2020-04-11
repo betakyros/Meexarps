@@ -580,7 +580,7 @@ path, .jtk-endpoint {
                             var guessName = document.createElement('div');
                             if(personalRoundResults[i][1] == "~~~None~~~"){
                                 alienImage.src="./icon_questionMark.png";
-                                guessName.innerHTML="I don't know!'"
+                                guessName.innerHTML="I don't know!"
                             } else {
                                 alienImage.src="./purple-alien_idle_transparent.gif";
                                 guessName.innerHTML=personalRoundResults[i][1];
@@ -598,6 +598,8 @@ path, .jtk-endpoint {
                             yourGuessSide.appendChild(alienImage);
                             yourGuessSide.appendChild(guessName);
                         }
+                        document.getElementById("nextRoundButton").style.display = "none";
+                        document.getElementById("endScreenButton").style.display = "none";
                     displayElement(document.getElementById("roundResultsView"));
                         
                 } else if(myAction === "sendRevealNextPersonalRoundResult") {
@@ -623,10 +625,10 @@ path, .jtk-endpoint {
                         revealedCount++;                    
                     }
                 } else if(myAction === "sendNextRoundScreen") {
-                    displayElement(document.getElementById("nextRoundView"));   
+                    document.getElementById("nextRoundButton").style.display = "block";
                 } else if(myAction === "sendAdvanceToResultsScreen") {
-                    displayElement(document.getElementById("sendAdvanceToResultsScreen"));
-                } else if(myAction === "sendEndScreen") {
+                    document.getElementById("endScreenButton").style.display = "block";
+                } else if(myAction === "endScreenButton") {
                     displayElement(document.getElementById("endGameView"));
                 }
                 //IF YOU ADD A NEW STATE, YOU MUST ADD IT TO THE PHONEVIEWGAMESTATE SO RECONNECT WILL WORK
@@ -1358,18 +1360,8 @@ that will be used later in the game.
             <div style="width:33%;height:100%;flex-direction: column;align-items:center;" id="roundResultsYourGuess">
             </div>
         </div>
-    </div>
-    <div class="view" id="nextRoundView" style="padding:50% 0;display:none;">
-        Hit this button to start the next round!
-        <p>
-        <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <div class="pseudo_button" onclick="window.app.sendNextRound()">Continue to Next Round</div>
-    </div>
-    <div class="view" id="sendAdvanceToResultsScreen" style="padding:50% 0;display:none;">
-        Hit this button to show the summary screen!
-        <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <p>
-        <div class="pseudo_button" onclick="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
+        <div class="pseudo_button" style="display:none;width=50%;" id="nextRoundButton" onclick="window.app.sendNextRound()">Continue to Next Round</div>
+        <div class="pseudo_button" style="display:none;width=50%;" id="endScreenButton" onclick="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
     </div>
     <div class="view" id="endGameView" style="padding:50% 0;display:none;">
         Hit this button to restart the game!

@@ -554,6 +554,17 @@ public class main : MonoBehaviour
         }
     }
 
+    private void SendMessageToVip(JsonAction jsonAction)
+    {
+        foreach (Player p in gameState.players.Values)
+        {
+            if (p.playerNumber == VIP_PLAYER_NUMBER)
+            {
+                AirConsole.instance.Message(p.deviceId, jsonAction);
+            }
+        }
+    }
+
     private void SendCurrentScreenForReconnect(int from, int currentPlayerNumber)
     {
         if (currentPlayerNumber == VIP_PLAYER_NUMBER)
@@ -1482,20 +1493,20 @@ public class main : MonoBehaviour
         }
         resultsPanel.GetComponentsInChildren<Image>()[0].GetComponentInChildren<GridLayoutGroup>().enabled = true;
         autoResizeGrid.enabled = true;
-        /*
+        
         if (gameState.GetCurrentRoundNumber() == gameState.numRoundsPerGame - 1)
         {
-            SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
+            SendMessageToVip(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
 //            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " })));
             gameState.phoneViewGameState = PhoneViewGameState.SendAdvanceToResultsScreen;
         }
         else
         {
-            SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendNextRoundScreen", new string[] { " " }));
+            SendMessageToVip(new JsonAction("sendNextRoundScreen", new string[] { " " }));
             //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendNextRoundScreen", new string[] { " " })));
             gameState.phoneViewGameState = PhoneViewGameState.SendNextRoundScreen;
         }
-        */
+        
     }
 
     public void SendEndScreen()
