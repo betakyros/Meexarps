@@ -566,10 +566,15 @@ path, .jtk-endpoint {
                         yourGuessSide.innerHTML='';
                         for(var i = 0; i < thirdArray; i++) {
                             var alienImage = document.createElement('img'); 
-                            alienImage.src="./purple-alien_idle_transparent.gif";
-                            alienImage.className="yourGuessImage";
                             var guessName = document.createElement('div');
-                            guessName.innerHTML=personalRoundResults[i][1];
+                            if(personalRoundResults[i][1] == "~~~None~~~"){
+                                alienImage.src="./icon_questionMark.png";
+                                guessName.innerHTML="I don't know!'"
+                            } else {
+                                alienImage.src="./purple-alien_idle_transparent.gif";
+                                guessName.innerHTML=personalRoundResults[i][1];
+                            }
+                            alienImage.className="yourGuessImage";
 
                             var questionMarkImage = document.createElement('img');
                             questionMarkImage.src="./icon_questionMark.png";
@@ -584,7 +589,6 @@ path, .jtk-endpoint {
                         }
                         
                 } else if(myAction === "sendRevealNextPersonalRoundResult") {
-                //here
                     var currTargetName = payload.data[0];
                     if(currTargetName == playerName) {
                         haveIBeenRevealed = true;
@@ -1322,7 +1326,7 @@ that will be used later in the game.
             <div class="window playerNameBox sourceWindow2" id="sourceWindow2"><div class="targetWindowLabel">source 3</div><img id="targetImage2" class="alienImage sourceWindow2"></div>
             <div class="window playerNameBox sourceWindow3" id="sourceWindow3"><div class="targetWindowLabel">source 4</div><img id="targetImage3" class="alienImage sourceWindow3"></div>
             <div class="window playerNameBox sourceWindow4" id="sourceWindow4"><div class="targetWindowLabel">source 5</div><img id="targetImage4" class="alienImage sourceWindow4"></div>
-            <div class="window playerNameBox sourceWindow5" id="targetWindow0"><div class="targetWindowLabel">source 6</div><img id="targetImage5" class="alienImage sourceWindow5"></div>
+            <div class="window playerNameBox sourceWindow5" id="sourceWindow5"><div class="targetWindowLabel">source 6</div><img id="targetImage5" class="alienImage sourceWindow5"></div>
         </div>
         <div class="pseudo_button" onclick="window.app.sendVoting()" style="bottom:1em; right:1em; position: absolute;">Submit Votes!</div>
     </div>

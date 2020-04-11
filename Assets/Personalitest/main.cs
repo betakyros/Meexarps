@@ -232,11 +232,13 @@ public class main : MonoBehaviour
                 }
                 else
                 {
-                    int playerNumber = gameState.GetNumberOfPlayers();
-                    Player p = new Player(name, from, playerNumber, 0, animators[playerNumber]);
+                    int audienceNumber = 10 + gameState.GetNumberOfPlayers();
+                    //todo hard code the audience animator to 7 or give them no animations
+                    Player p = new Player(name, from, audienceNumber, 0, animators[1]);
                     gameState.audienceMembers.Add(from, p);
                     welcomeScreenPanel.GetComponentsInChildren<Text>()[8].text = "Audience: " + gameState.audienceMembers.Count;
                     SendCurrentScreenForReconnect(from, p.playerNumber);
+                    sendWelcomeScreenInfo(from);
                 }
             }
         }
@@ -470,14 +472,24 @@ public class main : MonoBehaviour
             if(currNumPlayers < 6)
             {
                 AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "" + currNumPlayers }));
-                if (from > 0)
-                {
-                    Player myPlayer = gameState.players[from];
-                    AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
-                }
             } else
             {
                 AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "full" }));
+            }
+            int currNumAudience = gameState.GetNumberOfAudience();
+
+            if (from > 0)
+            {
+                if (currNumAudience == 0)
+                {
+                    Player myPlayer = gameState.players[from];
+                    AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
+
+                } else 
+                {
+                    Player myPlayer = gameState.audienceMembers[from];
+                    AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
+                }
             }
         }
     }
@@ -1062,6 +1074,9 @@ public class main : MonoBehaviour
     private void sendEveryonePersonalizedRoundResults(List<Answers> answerList)
     {
         Round currentRound = gameState.GetCurrentRound();
+        
+        //todo dedupe this code
+        //players
         foreach (KeyValuePair<int, Dictionary<string, string>> playerVote in currentRound.votes)
         {
             Player currentPlayer = gameState.players[playerVote.Key];
@@ -1085,7 +1100,12 @@ public class main : MonoBehaviour
                 }
                 else
                 {
-                    personalRoundResults.Add(playerVote.Value[a.anonymousPlayerName]);
+                    if (playerVote.Value.ContainsKey(a.anonymousPlayerName)) {
+                        personalRoundResults.Add(playerVote.Value[a.anonymousPlayerName]);
+                    } else
+                    {
+                        personalRoundResults.Add("~~~None~~~");
+                    }
                 }
             }
             //actual
@@ -1103,6 +1123,39 @@ public class main : MonoBehaviour
             }
             //send the current player their answerset
             AirConsole.instance.Message(playerVote.Key, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
+        }
+        //audience
+        foreach (KeyValuePair<int, Dictionary<string, string>> audienceVote in currentRound.audienceVotes)
+        {
+            Player currentAudiencePlayer = gameState.audienceMembers[audienceVote.Key];
+            //construct the answer set
+            List<string> personalRoundResults = new List<string>();
+            //anon names
+            foreach (Answers a in answerList)
+            {
+                personalRoundResults.Add(a.anonymousPlayerName);
+
+            }
+            //guess
+            foreach (Answers a in answerList)
+            {
+                if (audienceVote.Value.ContainsKey(a.anonymousPlayerName))
+                {
+                    personalRoundResults.Add(audienceVote.Value[a.anonymousPlayerName]);
+                }
+                else
+                {
+                    personalRoundResults.Add("~~~None~~~");
+                }
+            }
+            //actual
+            foreach (Answers a in answerList)
+            {
+                int playerNum = a.playerNumber;
+                personalRoundResults.Add(gameState.GetPlayerByPlayerNumber(playerNum).nickname);
+            }
+            //send the current player their answerset
+            AirConsole.instance.Message(audienceVote.Key, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
 
         }
     }
@@ -1830,6 +1883,11 @@ class GameState
     public int GetNumberOfPlayers()
     {
         return players.Count;
+    }
+
+    public int GetNumberOfAudience()
+    {
+        return audienceMembers.Count;
     }
 
     public Round GetCurrentRound()
