@@ -580,7 +580,7 @@ path, .jtk-endpoint {
                             var guessName = document.createElement('div');
                             if(personalRoundResults[i][1] == "~~~None~~~"){
                                 alienImage.src="./icon_questionMark.png";
-                                guessName.innerHTML="I don't know!'"
+                                guessName.innerHTML="I don't know!"
                             } else {
                                 alienImage.src="./purple-alien_idle_transparent.gif";
                                 guessName.innerHTML=personalRoundResults[i][1];
@@ -1345,10 +1345,10 @@ that will be used later in the game.
         <div class="pseudo_button" onclick="window.app.sendVoting()" style="bottom:1em; right:1em; position: absolute;">Submit Votes!</div>
     </div>
     <div class="view" id="roundResultsView" style="width:100%; height:100%;display:none;" >
-        roundResultsView
-        <div style="display:flex; flex-direction:row;justify-content:space-evenly">
-            <div style= "width:45%;" class="franklinBanner">Alien</div>
-            <div style= "width:45%;"class="franklinBanner">Your guess</div>
+        
+        <div style="display:flex; flex-direction:row;justify-content:space-evenly; padding: 20px 0;height:7%;">
+            <div style= "width:45%;height:100%;position:relative;" class="franklinBanner">Alien</div>
+            <div style= "width:45%;height:100%;position:relative;" class="franklinBanner">Your guess</div>
         </div>
         <div style="display:flex; flex-direction:row;">
             <div style="width:33%;height:100%;flex-direction: column;align-items:center;" id="roundResultsAlienSide">
