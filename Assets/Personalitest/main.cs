@@ -655,6 +655,7 @@ public class main : MonoBehaviour
     {
         //reset the "Answer Set #" counter
         anonymousPlayerNumberCount = 0;
+        anonymousPlayerNumbers.Shuffle();
         gameState.rounds.Add(new Round());
 
         //if starting from previous game
@@ -908,7 +909,7 @@ public class main : MonoBehaviour
         //send data to the phones
         List<string> listToSend = new List<string>();
         playerNames.Shuffle();
-        anonymousPlayerNames.Shuffle();
+        //anonymousPlayerNames.Shuffle();
         listToSend.AddRange(playerNames);
         listToSend.AddRange(anonymousPlayerNames);
         /*TODO this is not in the same order as anonymous player names*/
@@ -1491,11 +1492,12 @@ public class main : MonoBehaviour
 
     private int anonymousNameCounter = 0;
     private int anonymousPlayerNumberCount = 0;
+    private int[] anonymousPlayerNumbers = new int[] {1, 2, 3, 4, 5, 6 };
     public string GenerateAnonymousPlayerName()
     {   
         if(!options["anonymousNames"])
         {
-            return "Answer Set " + ++anonymousPlayerNumberCount; 
+            return "Answer Set " + anonymousPlayerNumbers[anonymousPlayerNumberCount++]; 
         }
 
         return anonymousNames[(anonymousNameCounter++)%anonymousNames.Length];
