@@ -1058,11 +1058,60 @@ public class main : MonoBehaviour
         autoResizeGrid.enabled = true;
     }
 
+    private void sendEveryonePersonalizedRoundResults(List<Answers> answerList)
+    {
+        Round currentRound = gameState.GetCurrentRound();
+        foreach (KeyValuePair<int, Dictionary<string, string>> playerVote in currentRound.votes)
+        {
+            Player currentPlayer = gameState.players[playerVote.Key];
+            //construct the answer set
+            List<string> personalRoundResults = new List<string>();
+            //anon names
+            foreach (Answers a in answerList) {
+                if (currentPlayer.playerNumber.Equals(a.playerNumber)) {
+                    //skip
+                } else
+                {
+                    personalRoundResults.Add(a.anonymousPlayerName);
+                }
+            }
+            //guess
+            foreach (Answers a in answerList)
+            {
+                if (currentPlayer.playerNumber.Equals(a.playerNumber))
+                {
+                    //skip
+                }
+                else
+                {
+                    personalRoundResults.Add(playerVote.Value[a.anonymousPlayerName]);
+                }
+            }
+            //actual
+            foreach (Answers a in answerList)
+            {
+                if (currentPlayer.playerNumber.Equals(a.playerNumber))
+                {
+                    //skip
+                }
+                else
+                {
+                    int playerNum = a.playerNumber;
+                    personalRoundResults.Add(gameState.GetPlayerByPlayerNumber(playerNum).nickname);
+                }
+            }
+            //send the current player their answerset
+            AirConsole.instance.Message(playerVote.Key, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
+
+        }
+    }
 
     //todo remove parameter
     public IEnumerator<WaitForSeconds> CalculateVoting(int count)
     {
-        SendWaitScreenToEveryone();
+        //SendWaitScreenToEveryone();
+        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendPersonalResults", new string[] { " " })));
+        
         //set the anonymous names of each box
         List<Answers> answersList = gameState.GetCurrentRound().answers;
         for (int i = 0; i < answersList.Count; i++)
@@ -1073,6 +1122,9 @@ public class main : MonoBehaviour
             //todo set the text size to the same size as the panel
             myText.text = answers.anonymousPlayerName;
         }
+
+        //send each individual their personalized results
+        sendEveryonePersonalizedRoundResults(answersList);
 
         //give some time for the context switch
         yield return new WaitForSeconds(2);
@@ -1103,6 +1155,7 @@ public class main : MonoBehaviour
             foreach (KeyValuePair<int, Dictionary<string, string>> playerVote in gameState.GetCurrentRound().votes)
             {
                 Player p = gameState.players[playerVote.Key];
+
                 if (p.playerNumber == answers.playerNumber)
                 {
                     //ignore voting for yourself
@@ -1357,6 +1410,10 @@ public class main : MonoBehaviour
             myText.text = "\n<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + "</size></b>" + correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString()
                 + audienceGuessesString;
 
+            //reveal it on phones
+            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendRevealNextPersonalRoundResult", new string[] { targetPlayerName })));
+
+
             //wait for the shrink
             yield return new WaitForSeconds(zoomInTime);
             //1 second buffer
@@ -1371,6 +1428,7 @@ public class main : MonoBehaviour
         }
         resultsPanel.GetComponentsInChildren<Image>()[0].GetComponentInChildren<GridLayoutGroup>().enabled = true;
         autoResizeGrid.enabled = true;
+        /*
         if (gameState.GetCurrentRoundNumber() == gameState.numRoundsPerGame - 1)
         {
             SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
@@ -1383,6 +1441,7 @@ public class main : MonoBehaviour
             //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendNextRoundScreen", new string[] { " " })));
             gameState.phoneViewGameState = PhoneViewGameState.SendNextRoundScreen;
         }
+        */
     }
 
     public void SendEndScreen()
@@ -1666,6 +1725,18 @@ class Round
         }
         return sb.ToString();
 
+    }
+
+    public Answers getAnswerByAnonymousName(string anonName)
+    {
+        foreach(Answers a in answers)
+        {
+            if(a.anonymousPlayerName == anonName)
+            {
+                return a;
+            }
+        }
+        return null;
     }
     /*
         public Round(List<string> q, List<Answers> a)
