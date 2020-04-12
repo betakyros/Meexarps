@@ -340,6 +340,7 @@ path, .jtk-endpoint {
         var personalRoundResults = [];
         var revealedCount = 0;
         var haveIBeenRevealed = false;
+        var personalRoundResultsIsReconnect = false;
 
         App.prototype.touchStart = function touchStart(text) {
             showingAnswerHelpText = true;
@@ -556,7 +557,11 @@ path, .jtk-endpoint {
                     displayElement(document.getElementById("submitVoteView"));
 
                 } else if(myAction === "sendPersonalRoundResults") {
-
+                        var lastElement = payload.data[payload.data.length-1];
+                        
+                        personalRoundResultsIsReconnect = (lastElement == "~~~reconnect~~~");
+                        //remove the reconnect marker
+                        payload.data.pop();
                         personalRoundResults = [];
                         revealedCount = 0;
                         haveIBeenRevealed = false;
@@ -588,7 +593,11 @@ path, .jtk-endpoint {
                             alienImage.className="yourGuessImage";
 
                             var questionMarkImage = document.createElement('img');
-                            questionMarkImage.src="./icon_questionMark.png";
+                            if(personalRoundResultsIsReconnect) {
+                                questionMarkImage.src="./purple-alien_idle_transparent.gif";                                
+                            } else {
+                                questionMarkImage.src="./icon_questionMark.png";
+                            }
                             questionMarkImage.className="roundResultsImage";
                             var anonName = document.createElement('div');
                             anonName.innerHTML=personalRoundResults[i][0];
@@ -597,6 +606,19 @@ path, .jtk-endpoint {
                             alienSide.appendChild(anonName);
                             yourGuessSide.appendChild(alienImage);
                             yourGuessSide.appendChild(guessName);
+
+                            //if it's reconnect, fill in all the icons
+                            if(personalRoundResultsIsReconnect) {
+                                var rightOrWrong = document.getElementById("roundResultsRightOrWrong");
+                                var rightOrWrongImg = document.createElement('img');
+                                if(personalRoundResults[i][2]) {
+                                    rightOrWrongImg.src="./icon_circledCheck.png";
+                                } else {
+                                    rightOrWrongImg.src="./icon_circledCross.png";                    
+                                }
+                                rightOrWrongImg.className="roundResultsImage";
+                                rightOrWrong.appendChild(rightOrWrongImg);
+                            }
                         }
                         document.getElementById("nextRoundButton").style.display = "none";
                         document.getElementById("endScreenButton").style.display = "none";
@@ -604,7 +626,7 @@ path, .jtk-endpoint {
                         
                 } else if(myAction === "sendRevealNextPersonalRoundResult") {
                     var currTargetName = payload.data[0];
-                    if(currTargetName == playerName) {
+                    if(currTargetName == playerName || personalRoundResultsIsReconnect) {
                         haveIBeenRevealed = true;
                     } else {
                         var alienSide = document.getElementById("roundResultsAlienSide");
@@ -628,11 +650,11 @@ path, .jtk-endpoint {
                     document.getElementById("nextRoundButton").style.display = "block";
                 } else if(myAction === "sendAdvanceToResultsScreen") {
                     document.getElementById("endScreenButton").style.display = "block";
-                } else if(myAction === "endScreenButton") {
+                } else if(myAction === "sendEndScreen") {
                     displayElement(document.getElementById("endGameView"));
                 }
                 //IF YOU ADD A NEW STATE, YOU MUST ADD IT TO THE PHONEVIEWGAMESTATE SO RECONNECT WILL WORK
-                
+                //TODO  ADD A STATE FOR personalRoundResults AND endGameView
             }
 
             /* THIS IS WHERE RESPONSES ARE DEFINED */
@@ -1360,8 +1382,10 @@ that will be used later in the game.
             <div style="width:33%;height:100%;flex-direction: column;align-items:center;" id="roundResultsYourGuess">
             </div>
         </div>
-        <div class="pseudo_button" style="display:none;width=50%;" id="nextRoundButton" onclick="window.app.sendNextRound()">Continue to Next Round</div>
-        <div class="pseudo_button" style="display:none;width=50%;" id="endScreenButton" onclick="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
+        <div  style="display:flex; justify-content:center;">
+            <div class="pseudo_button" style="display:none;width:50%;" id="nextRoundButton" onclick="window.app.sendNextRound()">Continue to Next Round</div>
+            <div class="pseudo_button" style="display:none;width:50%;" id="endScreenButton" onclick="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
+        </div>
     </div>
     <div class="view" id="endGameView" style="padding:50% 0;display:none;">
         Hit this button to restart the game!

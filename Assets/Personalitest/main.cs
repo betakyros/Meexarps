@@ -156,7 +156,6 @@ public class main : MonoBehaviour
 
     void OnConnect(int from)
     {
-        Debug.Log("on connect +" + from);
         if (gameState.players.ContainsKey(from))
         {
             SendCurrentScreenForReconnect(from, gameState.players[from].playerNumber);
@@ -185,13 +184,7 @@ public class main : MonoBehaviour
                     gameState.players.Remove(currentPlayer.Key);
                     gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points, animators[currentPlayer.Value.playerNumber]));
                     SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
-
-                    /*
-                    if (currentPlayer.Value.playerNumber == VIP_PLAYER_NUMBER)
-                    {
-                        SendIsVip(currentPlayer.Value);
-                    }
-                    */
+                    sendWelcomeScreenInfo(from);
                 }
             }
             //new player
@@ -210,6 +203,7 @@ public class main : MonoBehaviour
                 welcomePanels[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
                 gameState.players.Add(from, p);
                 sendWelcomeScreenInfo(from);
+                SendCurrentScreenForReconnect(from, p.playerNumber);
             }
             // audience
             else {
@@ -225,14 +219,16 @@ public class main : MonoBehaviour
                     //reconnect case
                     else
                     {
-                        gameState.audienceMembers.Remove(currentPlayer.Key);
-                        gameState.audienceMembers.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points, animators[currentPlayer.Value.playerNumber]));
-                        SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
+                        gameState.audienceMembers.Remove(audiencePlayer.Key);
+                        //todo hard code the audience animator to 7 or give them no animations
+                        gameState.audienceMembers.Add(from, new Player(name, from, audiencePlayer.Value.playerNumber, 0, audiencePlayer.Value.points, audiencePlayer.Value.myAnimator));
+                        SendCurrentScreenForReconnect(from, audiencePlayer.Value.playerNumber);
                     }
                 }
+                //new Audience
                 else
                 {
-                    int audienceNumber = 10 + gameState.GetNumberOfPlayers();
+                    int audienceNumber = 10 + gameState.GetNumberOfAudience();
                     //todo hard code the audience animator to 7 or give them no animations
                     Player p = new Player(name, from, audienceNumber, 0, animators[1]);
                     gameState.audienceMembers.Add(from, p);
@@ -390,13 +386,12 @@ public class main : MonoBehaviour
             int tilesOffset = 1;
             Player currentPlayer = gameState.players[from];
             answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + currentPlayer.playerNumber].text = currentPlayer.nickname + "\n\n<color=green>Has Submitted</color>";
-
-
+            
             if (HasEveryoneSubmittedAnswers())
             {
                 answerQuestionsPanel.SetActive(false);
                 votingPanel.SetActive(true);
-
+                //TODO shuffle answers
                 SendVoting();
                 gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
             }
@@ -423,11 +418,11 @@ public class main : MonoBehaviour
             }
             if(isAudienceMember(from))
             {
-                gameState.GetCurrentRound().audienceVotes.Add(from, myVotes);
+                gameState.GetCurrentRound().audienceVotes.Add(gameState.audienceMembers[from].playerNumber, myVotes);
             }
             else
             {
-                gameState.GetCurrentRound().votes.Add(from, myVotes);
+                gameState.GetCurrentRound().votes.Add(gameState.players[from].playerNumber, myVotes);
             }
 
             if (HasEveryoneVoted())
@@ -466,30 +461,27 @@ public class main : MonoBehaviour
 
     private void sendWelcomeScreenInfo(int from)
     {
-        if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
+        int currNumPlayers = gameState.GetNumberOfPlayers();
+        if(currNumPlayers < 6)
         {
-            int currNumPlayers = gameState.GetNumberOfPlayers();
-            if(currNumPlayers < 6)
-            {
-                AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "" + currNumPlayers }));
-            } else
-            {
-                AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "full" }));
-            }
-            int currNumAudience = gameState.GetNumberOfAudience();
+            AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "" + currNumPlayers }));
+        } else
+        {
+            AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "full" }));
+        }
+        int currNumAudience = gameState.GetNumberOfAudience();
 
-            if (from > 0)
+        if (from > 0)
+        {
+            if (currNumAudience == 0)
             {
-                if (currNumAudience == 0)
-                {
-                    Player myPlayer = gameState.players[from];
-                    AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
+                Player myPlayer = gameState.players[from];
+                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
 
-                } else 
-                {
-                    Player myPlayer = gameState.audienceMembers[from];
-                    AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
-                }
+            } else 
+            {
+                Player myPlayer = gameState.audienceMembers[from];
+                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
             }
         }
     }
@@ -567,7 +559,13 @@ public class main : MonoBehaviour
 
     private void SendCurrentScreenForReconnect(int from, int currentPlayerNumber)
     {
-        if (currentPlayerNumber == VIP_PLAYER_NUMBER)
+        //null if they don't exist or are not a player
+        Player currentPlayer = gameState.GetPlayerByPlayerNumber(currentPlayerNumber);
+        //null if they don't exist or are not an audience
+        Player currentAudience = gameState.GetAudienceByPlayerNumber(currentPlayerNumber);
+        bool isVip = currentPlayerNumber == VIP_PLAYER_NUMBER;
+
+        if (isVip)
         {
             SendIsVip(gameState.GetPlayerByPlayerNumber(currentPlayerNumber));
         }
@@ -604,7 +602,7 @@ public class main : MonoBehaviour
                 SendQuestions(from);
                 break;
             case PhoneViewGameState.SendVoting:
-                if (gameState.GetCurrentRound().votes.ContainsKey(from) || gameState.GetCurrentRound().audienceVotes.ContainsKey(from))
+                if (gameState.GetCurrentRound().votes.ContainsKey(currentPlayerNumber) || gameState.GetCurrentRound().audienceVotes.ContainsKey(currentPlayerNumber))
                 {
                     AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
                 }
@@ -614,10 +612,21 @@ public class main : MonoBehaviour
                 }
                 break;
             case PhoneViewGameState.SendNextRoundScreen:
-                SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber, new JsonAction("sendNextRoundScreen", new string[] { " " }));
+                sendPersonalRoundResultsForReconnect(currentPlayer, currentAudience);
+                if (isVip)
+                {
+                    SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber, new JsonAction("sendNextRoundScreen", new string[] { " " }));
+                }
                 break;
             case PhoneViewGameState.SendAdvanceToResultsScreen:
-                SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber, new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
+                sendPersonalRoundResultsForReconnect(currentPlayer, currentAudience);
+                if (isVip)
+                {
+                    SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber, new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
+                }
+                break;
+            case PhoneViewGameState.SendPersonalRoundResultsScreen:
+                sendPersonalRoundResultsForReconnect(currentPlayer, currentAudience);
                 break;
             case PhoneViewGameState.SendEndScreen:
                 SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber, new JsonAction("sendEndScreen", new string[] { " " }));
@@ -626,6 +635,27 @@ public class main : MonoBehaviour
                 AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
                 break;
         }
+    }
+
+    private void sendPersonalRoundResultsForReconnect(Player currentPlayer, Player currentAudience)
+    {
+        Player toSend;
+        Dictionary<string, string> votesToUse;
+        if (currentPlayer == null)
+        {
+            toSend = currentAudience;
+            votesToUse = gameState.GetCurrentRound().audienceVotes[toSend.playerNumber];
+        }
+        else
+        {
+            toSend = currentPlayer;
+            votesToUse = gameState.GetCurrentRound().votes[toSend.playerNumber];
+        }
+        SendSinglePlayerPersonalizedRoundResults(
+            gameState.GetCurrentRound().answers,
+            votesToUse,
+            toSend,
+            true);
     }
 
     /* Possible actions to send */
@@ -1037,7 +1067,8 @@ public class main : MonoBehaviour
         AutoResizeGrid autoResizeGrid = FindObjectsOfType(typeof(AutoResizeGrid))[2] as AutoResizeGrid;
         autoResizeGrid.enabled = false;
         int panelOffset = 3;
-        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+        int numPlayersAtStart = gameState.GetNumberOfPlayers();
+        for (int i = 0; i < numPlayersAtStart; i++)
         {
 
             int answerPanelOffset = 3;
@@ -1090,85 +1121,75 @@ public class main : MonoBehaviour
         //players
         foreach (KeyValuePair<int, Dictionary<string, string>> playerVote in currentRound.votes)
         {
-            Player currentPlayer = gameState.players[playerVote.Key];
-            //construct the answer set
-            List<string> personalRoundResults = new List<string>();
-            //anon names
-            foreach (Answers a in answerList) {
-                if (currentPlayer.playerNumber.Equals(a.playerNumber)) {
-                    //skip
-                } else
-                {
-                    personalRoundResults.Add(a.anonymousPlayerName);
-                }
-            }
-            //guess
-            foreach (Answers a in answerList)
-            {
-                if (currentPlayer.playerNumber.Equals(a.playerNumber))
-                {
-                    //skip
-                }
-                else
-                {
-                    if (playerVote.Value.ContainsKey(a.anonymousPlayerName)) {
-                        personalRoundResults.Add(playerVote.Value[a.anonymousPlayerName]);
-                    } else
-                    {
-                        personalRoundResults.Add("~~~None~~~");
-                    }
-                }
-            }
-            //actual
-            foreach (Answers a in answerList)
-            {
-                if (currentPlayer.playerNumber.Equals(a.playerNumber))
-                {
-                    //skip
-                }
-                else
-                {
-                    int playerNum = a.playerNumber;
-                    personalRoundResults.Add(gameState.GetPlayerByPlayerNumber(playerNum).nickname);
-                }
-            }
-            //send the current player their answerset
-            AirConsole.instance.Message(playerVote.Key, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
+            Player currentPlayer = gameState.GetPlayerByPlayerNumber(playerVote.Key);
+            SendSinglePlayerPersonalizedRoundResults(answerList, playerVote.Value, currentPlayer, false);
         }
         //audience
         foreach (KeyValuePair<int, Dictionary<string, string>> audienceVote in currentRound.audienceVotes)
         {
-            Player currentAudiencePlayer = gameState.audienceMembers[audienceVote.Key];
-            //construct the answer set
-            List<string> personalRoundResults = new List<string>();
-            //anon names
-            foreach (Answers a in answerList)
+            Player currentAudiencePlayer = gameState.GetAudienceByPlayerNumber(audienceVote.Key);
+            SendSinglePlayerPersonalizedRoundResults(answerList, audienceVote.Value, currentAudiencePlayer, false);
+        }
+    }
+
+    private void SendSinglePlayerPersonalizedRoundResults(List<Answers> answerList, Dictionary<string, string> playerVote, Player currentPlayer, bool isReconnect)
+    {
+        //construct the answer set
+        List<string> personalRoundResults = new List<string>();
+        //anon names
+        foreach (Answers a in answerList)
+        {
+            if (currentPlayer.playerNumber.Equals(a.playerNumber))
+            {
+                //skip
+            }
+            else
             {
                 personalRoundResults.Add(a.anonymousPlayerName);
-
             }
-            //guess
-            foreach (Answers a in answerList)
+        }
+        //guess
+        foreach (Answers a in answerList)
+        {
+            if (currentPlayer.playerNumber.Equals(a.playerNumber))
             {
-                if (audienceVote.Value.ContainsKey(a.anonymousPlayerName))
+                //skip
+            }
+            else
+            {
+                if (playerVote.ContainsKey(a.anonymousPlayerName))
                 {
-                    personalRoundResults.Add(audienceVote.Value[a.anonymousPlayerName]);
+                    personalRoundResults.Add(playerVote[a.anonymousPlayerName]);
                 }
                 else
                 {
                     personalRoundResults.Add("~~~None~~~");
                 }
             }
-            //actual
-            foreach (Answers a in answerList)
+        }
+        //actual
+        foreach (Answers a in answerList)
+        {
+            if (currentPlayer.playerNumber.Equals(a.playerNumber))
+            {
+                //skip
+            }
+            else
             {
                 int playerNum = a.playerNumber;
                 personalRoundResults.Add(gameState.GetPlayerByPlayerNumber(playerNum).nickname);
             }
-            //send the current player their answerset
-            AirConsole.instance.Message(audienceVote.Key, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
-
         }
+
+        if (isReconnect)
+        {
+            personalRoundResults.Add("~~~reconnect~~~");
+        } else
+        {
+            personalRoundResults.Add("~~~notReconnect~~~");
+        }
+        //send the current player their answerset
+        AirConsole.instance.Message(currentPlayer.deviceId, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
     }
 
     //todo remove parameter
@@ -1176,7 +1197,8 @@ public class main : MonoBehaviour
     {
         //SendWaitScreenToEveryone();
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendPersonalResults", new string[] { " " })));
-        
+        gameState.phoneViewGameState = PhoneViewGameState.SendPersonalRoundResultsScreen;
+
         //set the anonymous names of each box
         List<Answers> answersList = gameState.GetCurrentRound().answers;
         for (int i = 0; i < answersList.Count; i++)
@@ -1219,7 +1241,7 @@ public class main : MonoBehaviour
             string targetPlayerName = gameState.GetPlayerByPlayerNumber(answers.playerNumber).nickname;
             foreach (KeyValuePair<int, Dictionary<string, string>> playerVote in gameState.GetCurrentRound().votes)
             {
-                Player p = gameState.players[playerVote.Key];
+                Player p = gameState.GetPlayerByPlayerNumber(playerVote.Key);
 
                 if (p.playerNumber == answers.playerNumber)
                 {
@@ -1264,7 +1286,7 @@ public class main : MonoBehaviour
             //calculate audience votes
             foreach (KeyValuePair<int, Dictionary<string, string>> playerVote in gameState.GetCurrentRound().audienceVotes)
             {
-                Player p = gameState.audienceMembers[playerVote.Key];
+                Player p = gameState.GetAudienceByPlayerNumber(playerVote.Key);
                 if (playerVote.Value.ContainsKey(anonymousPlayerName))
                 {
                     string currentGuess = playerVote.Value[anonymousPlayerName];
@@ -1862,6 +1884,18 @@ class GameState
         return null;
     }
 
+    public Player GetAudienceByPlayerNumber(int playerNumber)
+    {
+        foreach (Player p in audienceMembers.Values)
+        {
+            if (playerNumber == p.playerNumber)
+            {
+                return p;
+            }
+        }
+        return null;
+    }
+
     public KeyValuePair<int, Player> GetPlayerByName(string playerName)
     {
         foreach (KeyValuePair<int, Player> p in players)
@@ -1943,6 +1977,7 @@ enum PhoneViewGameState
     SendRetrieveQuestions = 2,
     SendWouldYouRather = 3,
     SendVoting = 4,
+    SendPersonalRoundResultsScreen = 44,
     SendNextRoundScreen = 5,
     SendAdvanceToResultsScreen = 6,
     SendEndScreen = 7,
