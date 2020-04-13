@@ -1554,6 +1554,7 @@ public class main : MonoBehaviour
             int tilesOffset = 2;
             endScreenPanel.GetComponentsInChildren<Text>()[tilesOffset + playerCounter].text = pointsSB.ToString();
             playerCounter++;
+            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points }));
 
         }
         StringBuilder audiencePointsSB = new StringBuilder(100);
@@ -1568,11 +1569,10 @@ public class main : MonoBehaviour
             audiencePointsSB.Append(" points");
             audiencePointsSB.Append("\n");
             endScreenPanel.GetComponentsInChildren<Text>()[0].text = audiencePointsSB.ToString();
+            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points }));
 
         }
-
-        SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendEndScreen", new string[] { " " }));
-        //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendEndScreen", new string[] { " "})));
+        
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
     }
 

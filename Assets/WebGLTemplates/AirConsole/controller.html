@@ -651,6 +651,12 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendAdvanceToResultsScreen") {
                     document.getElementById("endScreenButton").style.display = "block";
                 } else if(myAction === "sendEndScreen") {
+                    document.getElementById("endGameScreenViewUsername").innerText = playerName;
+                    var numPoints = payload.data[0];
+                    document.getElementById("endGameScreenViewPoints").innerText = numPoints;
+                    if(isVip) {
+                        document.getElementById("endGameScreenViewButton").style.display = "block";
+                    }
                     displayElement(document.getElementById("endGameView"));
                 }
                 //IF YOU ADD A NEW STATE, YOU MUST ADD IT TO THE PHONEVIEWGAMESTATE SO RECONNECT WILL WORK
@@ -1387,11 +1393,30 @@ that will be used later in the game.
             <div class="pseudo_button" style="display:none;width:50%;" id="endScreenButton" onclick="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
         </div>
     </div>
-    <div class="view" id="endGameView" style="padding:50% 0;display:none;">
-        Hit this button to restart the game!
-        <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <p>
-        <div class="pseudo_button" onclick="window.app.sendPlayAgain()">Continue to Next game</div>
+    <div class="view" id="endGameView" style="padding:20% 0;display:none;">
+
+        <!-- dynamically change this based on playernumber which we have in javascript -->
+        <img style="height:20%;" src="./purple-alien_idle_transparent.gif" />
+        
+        <div id="endGameScreenViewUsername">[Username]</div>
+        <br>
+        <br>
+        You correctly identified your friends
+        <div id="endGameScreenViewPoints" style="font-size:40px"></div>
+        times
+        <br>
+        <br>
+        <br>
+        Your best friend is
+        <br>
+        <br>
+        <div id="endGameScreenViewBestFriend" style="font-size:40px">[Username]</div>
+        <div id="endGameScreenViewButton" style="display:none;">
+            Hit this button to restart the game!
+            <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
+            <p>
+            <div class="pseudo_button" onclick="window.app.sendPlayAgain()">Continue to Next game</div>
+        </div>
     </div>
     <div id="my_keyboard"></div>
   </body>
