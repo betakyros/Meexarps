@@ -182,7 +182,7 @@ public class main : MonoBehaviour
                 else
                 {
                     gameState.players.Remove(currentPlayer.Key);
-                    gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points, animators[currentPlayer.Value.playerNumber]));
+                    gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points, animators[currentPlayer.Value.playerNumber], currentPlayer.Value.bestFriendPoints));
                     SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
                     sendWelcomeScreenInfo(from);
                 }
@@ -221,7 +221,7 @@ public class main : MonoBehaviour
                     {
                         gameState.audienceMembers.Remove(audiencePlayer.Key);
                         //todo hard code the audience animator to 7 or give them no animations
-                        gameState.audienceMembers.Add(from, new Player(name, from, audiencePlayer.Value.playerNumber, 0, audiencePlayer.Value.points, audiencePlayer.Value.myAnimator));
+                        gameState.audienceMembers.Add(from, new Player(name, from, audiencePlayer.Value.playerNumber, 0, audiencePlayer.Value.points, audiencePlayer.Value.myAnimator, audiencePlayer.Value.bestFriendPoints));
                         SendCurrentScreenForReconnect(from, audiencePlayer.Value.playerNumber);
                     }
                 }
@@ -1149,6 +1149,7 @@ public class main : MonoBehaviour
             }
         }
         //guess
+        List<string> guesses = new List<string>();
         foreach (Answers a in answerList)
         {
             if (currentPlayer.playerNumber.Equals(a.playerNumber))
@@ -1159,15 +1160,16 @@ public class main : MonoBehaviour
             {
                 if (playerVote.ContainsKey(a.anonymousPlayerName))
                 {
-                    personalRoundResults.Add(playerVote[a.anonymousPlayerName]);
+                    guesses.Add(playerVote[a.anonymousPlayerName]);
                 }
                 else
                 {
-                    personalRoundResults.Add("~~~None~~~");
+                    guesses.Add("~~~None~~~");
                 }
             }
         }
         //actual
+        List<string> actual = new List<string>();
         foreach (Answers a in answerList)
         {
             if (currentPlayer.playerNumber.Equals(a.playerNumber))
@@ -1177,19 +1179,37 @@ public class main : MonoBehaviour
             else
             {
                 int playerNum = a.playerNumber;
-                personalRoundResults.Add(gameState.GetPlayerByPlayerNumber(playerNum).nickname);
+                actual.Add(gameState.GetPlayerByPlayerNumber(playerNum).nickname);
             }
         }
 
         if (isReconnect)
         {
             personalRoundResults.Add("~~~reconnect~~~");
-        } else
+        }
+        else
         {
             personalRoundResults.Add("~~~notReconnect~~~");
         }
+
+        incrementBestFriends(currentPlayer, guesses, actual);
+
+        personalRoundResults.AddRange(guesses);
+        personalRoundResults.AddRange(actual);
         //send the current player their answerset
         AirConsole.instance.Message(currentPlayer.deviceId, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
+    }
+
+    private static void incrementBestFriends(Player currentPlayer, List<string> guesses, List<string> actual)
+    {
+        //calculate best friends
+        for (int i = 0; i < guesses.Count; i++)
+        {
+            if (guesses[i].Equals(actual[i]))
+            {
+                currentPlayer.IncrementBestFriendCounter(guesses[i]);
+            }
+        }
     }
 
     //todo remove parameter
@@ -1554,7 +1574,23 @@ public class main : MonoBehaviour
             int tilesOffset = 2;
             endScreenPanel.GetComponentsInChildren<Text>()[tilesOffset + playerCounter].text = pointsSB.ToString();
             playerCounter++;
-            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points }));
+
+            int currentBestFriendPoints = 0;
+            string currentBestFriend = "No one!";
+            //calculate best friends
+            foreach (KeyValuePair<string, int> bestFriendValue in p.bestFriendPoints)
+            {
+                int myPoints = bestFriendValue.Value;
+                Dictionary<string, int> theirBfp = gameState.GetPlayerByName(bestFriendValue.Key).Value.bestFriendPoints;
+                int theirPoints = theirBfp.ContainsKey(p.nickname) ? theirBfp[p.nickname] : 0;
+                if (myPoints + theirPoints > currentBestFriendPoints)
+                {
+                    currentBestFriend = bestFriendValue.Key;
+                    currentBestFriendPoints = myPoints + theirPoints;
+                }
+            }
+
+            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
 
         }
         StringBuilder audiencePointsSB = new StringBuilder(100);
@@ -1682,6 +1718,7 @@ class Player
     private int avatarId { get; set; }
     public int points { get; set; }
     public Animator myAnimator { get; set; }
+    public Dictionary<string, int> bestFriendPoints { get; set; }
 
     public Player(string n, int d, int pn, int a, Animator an)
     {
@@ -1691,9 +1728,10 @@ class Player
         avatarId = a;
         points = 0;
         myAnimator = an;
+        bestFriendPoints = new Dictionary<string, int>();
     }
 
-    public Player(string n, int d, int pn, int a, int p, Animator an)
+    public Player(string n, int d, int pn, int a, int p, Animator an, Dictionary<string, int> bfp)
     {
         nickname = n;
         deviceId = d;
@@ -1701,6 +1739,7 @@ class Player
         avatarId = a;
         points = p;
         myAnimator = an;
+        bestFriendPoints = bfp;
     }
 
     public override string ToString()
@@ -1723,6 +1762,17 @@ class Player
         else if (meexarpActions == MeexarpAction.Sad)
         {
             myAnimator.SetBool("isSad", true);
+        }
+    }
+
+    public void IncrementBestFriendCounter(string playerName)
+    {
+        if(bestFriendPoints.ContainsKey(playerName))
+        {
+            bestFriendPoints[playerName]++;
+        } else
+        {
+            bestFriendPoints.Add(playerName, 1);
         }
     }
 }

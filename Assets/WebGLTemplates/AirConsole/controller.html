@@ -653,7 +653,9 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendEndScreen") {
                     document.getElementById("endGameScreenViewUsername").innerText = playerName;
                     var numPoints = payload.data[0];
+                    var bestFriendName = payload.data[1];
                     document.getElementById("endGameScreenViewPoints").innerText = numPoints;
+                    document.getElementById("endGameScreenViewBestFriend").innerText = bestFriendName;
                     if(isVip) {
                         document.getElementById("endGameScreenViewButton").style.display = "block";
                     }
