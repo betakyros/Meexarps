@@ -1183,6 +1183,10 @@ public class main : MonoBehaviour
             }
         }
 
+        incrementBestFriends(currentPlayer, guesses, actual);
+        personalRoundResults.AddRange(guesses);
+        personalRoundResults.AddRange(actual);
+
         if (isReconnect)
         {
             personalRoundResults.Add("~~~reconnect~~~");
@@ -1192,10 +1196,7 @@ public class main : MonoBehaviour
             personalRoundResults.Add("~~~notReconnect~~~");
         }
 
-        incrementBestFriends(currentPlayer, guesses, actual);
 
-        personalRoundResults.AddRange(guesses);
-        personalRoundResults.AddRange(actual);
         //send the current player their answerset
         AirConsole.instance.Message(currentPlayer.deviceId, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
     }
