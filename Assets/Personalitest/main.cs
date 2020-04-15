@@ -649,7 +649,13 @@ public class main : MonoBehaviour
         else
         {
             toSend = currentPlayer;
-            votesToUse = gameState.GetCurrentRound().votes[toSend.playerNumber];
+            if(gameState.GetCurrentRound().votes.ContainsKey(toSend.playerNumber))
+            {
+                votesToUse = gameState.GetCurrentRound().votes[toSend.playerNumber];
+            } else
+            {
+                return;
+            }
         }
         SendSinglePlayerPersonalizedRoundResults(
             gameState.GetCurrentRound().answers,

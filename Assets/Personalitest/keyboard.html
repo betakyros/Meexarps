@@ -618,6 +618,7 @@ path, .jtk-endpoint {
                                 }
                                 rightOrWrongImg.className="roundResultsImage";
                                 rightOrWrong.appendChild(rightOrWrongImg);
+                                rightOrWrong.style.height="inherit";
                             }
                         }
                         document.getElementById("nextRoundButton").style.display = "none";
@@ -642,9 +643,11 @@ path, .jtk-endpoint {
                             rightOrWrongImg.src="./icon_circledCross.png";                    
                         }
                         rightOrWrongImg.className="roundResultsImage";
-                        rightOrWrong.appendChild(rightOrWrongImg);
+                        rightOrWrong.appendChild(rightOrWrongImg);                        
 
-                        revealedCount++;                    
+                        revealedCount++;
+                        var numAliens = alienSide.getElementsByTagName("img").length;
+                        rightOrWrong.style.height= (alienSide.clientHeight/numAliens * revealedCount) + "px";
                     }
                 } else if(myAction === "sendNextRoundScreen") {
                     document.getElementById("nextRoundButton").style.display = "block";
@@ -1385,7 +1388,7 @@ that will be used later in the game.
         <div style="display:flex; flex-direction:row;">
             <div style="width:33%;height:100%;flex-direction: column;align-items:center;" id="roundResultsAlienSide">
             </div>
-            <div style="width:33%;height:100%;flex-direction: column;align-items:center;display:flex;" id="roundResultsRightOrWrong">
+            <div style="width:33%;height:inherit;flex-direction: column;align-items:center;display:flex;justify-content:space-around;" id="roundResultsRightOrWrong">
             </div>
             <div style="width:33%;height:100%;flex-direction: column;align-items:center;" id="roundResultsYourGuess">
             </div>
