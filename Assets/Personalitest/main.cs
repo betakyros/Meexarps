@@ -1570,7 +1570,7 @@ public class main : MonoBehaviour
             string[] pointSuffixStrings = new string[] { "gazillion", "bajillion", "trazillion", "million", "foshizillion", "mozillion" };
 
             pointSuffixStrings.Shuffle<string>();
-            
+
             pointsSB.Append(p.nickname);
             pointsSB.Append(" has ");
             pointsSB.Append(p.points);
@@ -1581,21 +1581,7 @@ public class main : MonoBehaviour
             int tilesOffset = 2;
             endScreenPanel.GetComponentsInChildren<Text>()[tilesOffset + playerCounter].text = pointsSB.ToString();
             playerCounter++;
-
-            int currentBestFriendPoints = 0;
-            string currentBestFriend = "No one!";
-            //calculate best friends
-            foreach (KeyValuePair<string, int> bestFriendValue in p.bestFriendPoints)
-            {
-                int myPoints = bestFriendValue.Value;
-                Dictionary<string, int> theirBfp = gameState.GetPlayerByName(bestFriendValue.Key).Value.bestFriendPoints;
-                int theirPoints = theirBfp.ContainsKey(p.nickname) ? theirBfp[p.nickname] : 0;
-                if (myPoints + theirPoints > currentBestFriendPoints)
-                {
-                    currentBestFriend = bestFriendValue.Key;
-                    currentBestFriendPoints = myPoints + theirPoints;
-                }
-            }
+            string currentBestFriend = CalculateBestFriend(p);
 
             AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
 
@@ -1612,11 +1598,33 @@ public class main : MonoBehaviour
             audiencePointsSB.Append(" points");
             audiencePointsSB.Append("\n");
             endScreenPanel.GetComponentsInChildren<Text>()[0].text = audiencePointsSB.ToString();
-            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points }));
+            string currentBestFriend = CalculateBestFriend(p);
+
+            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
 
         }
         
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
+    }
+
+    private string CalculateBestFriend(Player p)
+    {
+        int currentBestFriendPoints = 0;
+        string currentBestFriend = "No one!";
+        //calculate best friends
+        foreach (KeyValuePair<string, int> bestFriendValue in p.bestFriendPoints)
+        {
+            int myPoints = bestFriendValue.Value;
+            Dictionary<string, int> theirBfp = gameState.GetPlayerByName(bestFriendValue.Key).Value.bestFriendPoints;
+            int theirPoints = theirBfp.ContainsKey(p.nickname) ? theirBfp[p.nickname] : 0;
+            if (myPoints + theirPoints > currentBestFriendPoints)
+            {
+                currentBestFriend = bestFriendValue.Key;
+                currentBestFriendPoints = myPoints + theirPoints;
+            }
+        }
+
+        return currentBestFriend;
     }
 
     private int anonymousNameCounter = 0;
