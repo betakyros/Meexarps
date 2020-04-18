@@ -1010,12 +1010,12 @@ public class main : MonoBehaviour
         {
             Answers answers = answersList[i];
             anonymousPlayerNames.Add(answers.anonymousPlayerName);
-            int answerPanelOffset = 3;
+            int answerPanelOffset = 1;
             Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + i];
             //todo set the text size to the same size as the panel
             myText.text = "\n" + answers.anonymousPlayerName + "\n\n";
         }
-        votingPanel.GetComponentsInChildren<Text>()[2].text = gameState.GetCurrentRound().PrintQuestions();
+        votingPanel.GetComponentsInChildren<Text>()[0].text = gameState.GetCurrentRound().PrintQuestions();
         
         //flash the instructions
         if (gameState.GetCurrentRoundNumber() == 0)
@@ -1052,9 +1052,9 @@ public class main : MonoBehaviour
             Destroy(instructionsCz);
             //reset the position of the child panels
             //questions panel
-            images[1].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+            images[0].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
             //votingpanelgrid
-            images[2].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+            images[1].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
         } else
         {
             yield return new WaitForSeconds(1);
@@ -1084,7 +1084,8 @@ public class main : MonoBehaviour
     //todo remove parameter
     private IEnumerator<WaitForSeconds> DoZoom(float seconds)
     {
-        votingPanel.GetComponentsInChildren<Image>()[2].GetComponentInChildren<GridLayoutGroup>().enabled = false;
+        int gridLayoutOffset = 2;
+        votingPanel.GetComponentsInChildren<Image>()[gridLayoutOffset].GetComponentInChildren<GridLayoutGroup>().enabled = false;
         AutoResizeGrid autoResizeGrid = FindObjectsOfType(typeof(AutoResizeGrid))[2] as AutoResizeGrid;
         autoResizeGrid.enabled = false;
         int panelOffset = 3;
@@ -1092,7 +1093,7 @@ public class main : MonoBehaviour
         for (int i = 0; i < numPlayersAtStart; i++)
         {
 
-            int answerPanelOffset = 3;
+            int answerPanelOffset = 2;
             Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset];
 
             //Camera zoom will make the current panel the last element, so we don't need to add i
@@ -1130,7 +1131,7 @@ public class main : MonoBehaviour
         {
             votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
         }
-        votingPanel.GetComponentsInChildren<Image>()[2].GetComponentInChildren<GridLayoutGroup>().enabled = true;
+        votingPanel.GetComponentsInChildren<Image>()[gridLayoutOffset].GetComponentInChildren<GridLayoutGroup>().enabled = true;
         autoResizeGrid.enabled = true;
     }
 

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class AutoResizeGrid : MonoBehaviour
@@ -31,9 +29,13 @@ public class AutoResizeGrid : MonoBehaviour
         {
                 for (int i = 0; i < numCols; i++)
             {
-                Vector3 originalPos= (container.transform.position + canvas.scaleFactor * new Vector3(((i - 1f) * newSize.x), (.5f - j) * newSize.y, 0));
-                container.GetComponentsInChildren<Image>()[panelsOffset + i + j * numCols].GetComponent<GentleShake>()
-                    .SetOriginalPosition(originalPos);
+                int nthChild = panelsOffset + i + j * numCols;
+                if (nthChild < container.GetComponentsInChildren<Image>().Length)
+                {
+                    Vector3 originalPos = (container.transform.position + canvas.scaleFactor * new Vector3(((i - 1f) * newSize.x), (.5f - j) * newSize.y, 0));
+                    container.GetComponentsInChildren<Image>()[panelsOffset + i + j * numCols].GetComponent<GentleShake>()
+                        .SetOriginalPosition(originalPos);
+                }
             }
         }
 
