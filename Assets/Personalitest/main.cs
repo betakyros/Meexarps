@@ -767,7 +767,7 @@ public class main : MonoBehaviour
         //Set the current player's name
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         string playerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
-        wouldYouRatherTexts[19].text = "It's" + playerName + "'s turn to write questions!";
+        wouldYouRatherTexts[19].text = "It's " + playerName + "'s turn to write questions!";
 
         int playerTextOffset = 4;
         int currentPlayerTextOffset = 13;
