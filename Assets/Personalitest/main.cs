@@ -750,6 +750,7 @@ public class main : MonoBehaviour
         //also set the current player's icon to inactive
         playerIcons[playerIconOffset + gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
 
+        /*
         //set the current player's icon to true
         int currentPlayerIconPanelOffset = 14;
         for (int i = 0; i < 6; i++)
@@ -762,6 +763,11 @@ public class main : MonoBehaviour
                 playerIcons[currentPlayerIconPanelOffset + i].gameObject.SetActive(false);
             }
         }
+        */
+        //Set the current player's name
+        Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
+        string playerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
+        wouldYouRatherTexts[19].text = "It's" + playerName + "'s turn to write questions!";
 
         int playerTextOffset = 4;
         int currentPlayerTextOffset = 13;
