@@ -17,6 +17,7 @@ public class main : MonoBehaviour
     private static List<string[]> wouldYouRathers;
     private GameState gameState;
     public List<GameObject> welcomePanels;
+    public GameObject splashScreenPanel;
     public GameObject welcomeScreenPanel;
     public GameObject selectRoundNumberPanel;
     public GameObject wouldYouRatherPanel;
@@ -100,6 +101,14 @@ public class main : MonoBehaviour
         currentQuestionIndex = 0;
         currentWouldYouRatherIndex = 0;
         audienceWouldYouRathers = new Dictionary<int, int>();
+        StartCoroutine(waitThreeSecondsThenDisplayWelcomeScreen());
+    }
+
+    private IEnumerator<WaitForSeconds> waitThreeSecondsThenDisplayWelcomeScreen()
+    {
+        yield return new WaitForSeconds(3);
+        FadeSplashScreen fadeSplashScreenScript = splashScreenPanel.AddComponent<FadeSplashScreen>();
+        fadeSplashScreenScript.Setup();
     }
 
     private void InitializeOptions()

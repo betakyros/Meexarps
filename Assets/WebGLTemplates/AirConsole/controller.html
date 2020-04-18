@@ -658,6 +658,11 @@ path, .jtk-endpoint {
                     var numPoints = payload.data[0];
                     var bestFriendName = payload.data[1];
                     document.getElementById("endGameScreenViewPoints").innerText = numPoints;
+                    if(numPoints == 1) {
+                        document.getElementById("endGameScreenViewTimes").innerText = "time";                                            
+                    } else {
+                        document.getElementById("endGameScreenViewTimes").innerText = "times";                    
+                    }
                     document.getElementById("endGameScreenViewBestFriend").innerText = bestFriendName;
                     if(isVip) {
                         document.getElementById("endGameScreenViewButton").style.display = "block";
@@ -1408,7 +1413,8 @@ that will be used later in the game.
         <br>
         You correctly identified your friends
         <div id="endGameScreenViewPoints" style="font-size:40px"></div>
-        times
+        <div id="endGameScreenViewTimes">times</div>
+        
         <br>
         <br>
         <br>
