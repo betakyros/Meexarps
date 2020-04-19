@@ -1716,6 +1716,11 @@ public class main : MonoBehaviour
         QuestionCategory qc = questionCategories[Random.Range(0, questionCategories.Count)];
         return qc.questions[Random.Range(0, qc.questions.Length)];
     }
+
+    public int getNumPlayers()
+    {
+        return gameState.GetNumberOfPlayers();
+    }
 }
 
 public static class IListExtensions
