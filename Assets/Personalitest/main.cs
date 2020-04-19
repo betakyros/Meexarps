@@ -449,15 +449,13 @@ public class main : MonoBehaviour
         {
             resultsPanel.SetActive(false);
             endScreenPanel.SetActive(true);
-            SendEndScreen();
-            Debug.Log("received sendPlayAgain");
+            SendEndScreen2();
         }
         else if ("sendPlayAgain".Equals(action))
         {
             gameState.ResetGameState();
             endScreenPanel.SetActive(false);
             StartRound();
-            Debug.Log("received sendPlayAgain");
         }
         if(gameState.players.ContainsKey(from))
         {
@@ -1301,6 +1299,9 @@ public class main : MonoBehaviour
                             namesOfCorrectPeople.Add("<b><size=" + increasedFontSize + "><color=green>" + p.nickname + "</color></size></b>");
                             p.points++;
                             playerAnimations.Add(p, MeexarpAction.Cheer);
+
+                            //keep track of total score
+                            gameState.totalCorrectGuesses++;
                         }
                         else
                         {
@@ -1312,6 +1313,8 @@ public class main : MonoBehaviour
                             wrongGuessNameToPlayerNamesForZoomInView[currentGuess].Add("<color=red>" + p.nickname + "</color>");
                             wrongGuessNameToPlayerNames[currentGuess].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
                             playerAnimations.Add(p, MeexarpAction.Sad);
+                            //keep track of total score
+                            gameState.totalWrongGuesses++;
                         }
                     }
                 } else
@@ -1324,6 +1327,8 @@ public class main : MonoBehaviour
                     wrongGuessNameToPlayerNamesForZoomInView["none"].Add("<color=red>" + p.nickname + "</color>");
                     wrongGuessNameToPlayerNames["none"].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
                     playerAnimations.Add(p, MeexarpAction.Sad);
+                    //keep track of total score
+                    gameState.totalWrongGuesses++;
                 }
             }
             //calculate audience votes
@@ -1519,10 +1524,13 @@ public class main : MonoBehaviour
             if(numberOfCorrectAudienceGuesses > 0)
             {
                 myText.text += "<size=15>\n\n</size><color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
+                gameState.totalAudienceCorrectGuesses += numberOfCorrectAudienceGuesses;
             }
             if(numberOfWrongAudienceGuesses > 0)
             {
                 myText.text += "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
+                gameState.totalAudienceWrongGuesses += numberOfWrongAudienceGuesses;
+
             }
 
 
@@ -1572,6 +1580,38 @@ public class main : MonoBehaviour
             gameState.phoneViewGameState = PhoneViewGameState.SendNextRoundScreen;
         }
         
+    }
+
+    public void SendEndScreen2()
+    {
+
+        foreach (Player p in gameState.players.Values)
+        {
+            string currentBestFriend = CalculateBestFriend(p);
+
+            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
+        }
+
+        foreach (Player p in gameState.audienceMembers.Values)
+        {
+            string currentBestFriend = CalculateBestFriend(p);
+
+            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
+        }
+
+        int offset = 1;
+        float correctPercent = ((float)gameState.totalCorrectGuesses) / ((float)(gameState.totalCorrectGuesses + gameState.totalWrongGuesses)) * 100.0f;
+        string friendshipStatus = "Just ok Friends";
+        string resultStatus = "2The board is impressed and will grant you the funds to continue your research. Congratulations!";
+        //set percentCorrectText
+        endScreenPanel.GetComponentsInChildren<Text>()[offset].text = "2Collectively, your team identified\n<b><size=90> " + correctPercent + "%</size> </b>\nof your teammates correctly!";
+        //set friendship status
+        endScreenPanel.GetComponentsInChildren<Text>()[offset + 1].text = "2You have achieved the status of\n<b><size=60> "+ friendshipStatus + " </size></b> ";
+        //set result text
+        endScreenPanel.GetComponentsInChildren<Text>()[offset + 2].text = resultStatus;
+
+
+        gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
     }
 
     public void SendEndScreen()
@@ -1944,6 +1984,10 @@ class GameState
     public List<Round> rounds { get; set; }
     public PhoneViewGameState phoneViewGameState;
     public int numRoundsPerGame { get; set; }
+    public int totalCorrectGuesses { get; set; }
+    public int totalWrongGuesses { get; set; }
+    public int totalAudienceCorrectGuesses { get; set; }
+    public int totalAudienceWrongGuesses { get; set; }
 
     public GameState()
     {
@@ -1951,6 +1995,15 @@ class GameState
         audienceMembers = new Dictionary<int, Player>();
         rounds = new List<Round>();
         phoneViewGameState = PhoneViewGameState.SendStartGameScreen;
+        ResetGuesses();
+    }
+
+    public void ResetGuesses()
+    {
+        totalWrongGuesses = 0;
+        totalCorrectGuesses = 0;
+        totalAudienceWrongGuesses = 0;
+        totalAudienceCorrectGuesses = 0;
     }
 
     public Player GetPlayerByPlayerNumber(int playerNumber)
@@ -2004,6 +2057,7 @@ class GameState
     public void ResetGameState()
     {
         rounds = new List<Round>();
+        ResetGuesses();
     }
 
     public int GetNumberOfPlayers()
