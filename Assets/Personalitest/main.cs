@@ -1504,7 +1504,7 @@ public class main : MonoBehaviour
             int waitForReadSeconds = 5;
             float waitForEachAnswer = .5f;
 
-            float totalWaitTime = 2 * waitForContextSeconds + 2 * waitForReadSeconds + (3 + wrongVotesCount) * waitForEachAnswer;
+            float totalWaitTime = 3 * waitForContextSeconds + 2 * waitForReadSeconds + (3 + wrongVotesCount) * waitForEachAnswer;
             cz.Setup(zoomInTime, totalWaitTime, true, true, false);
             yield return new WaitForSeconds(zoomInTime);
             yield return new WaitForSeconds(waitForContextSeconds);
@@ -1522,27 +1522,29 @@ public class main : MonoBehaviour
             yield return new WaitForSeconds(waitForReadSeconds);
 
             rightAndWrongPanelAnimator.SetBool("Open", true);
-            myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
+            yield return new WaitForSeconds(waitForContextSeconds);
+
+            //myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
             rightAndWrongPanelTitle.text = "Who did people guess " + anonymousPlayerName + " is\n";
             yield return new WaitForSeconds(waitForContextSeconds);
 
             foreach (string s in wrongVotesLines)
             {
-                myText.text += "<size=15>\n\n</size>" + s;
+                //myText.text += "<size=15>\n\n</size>" + s;
                 rightAndWrongPanelRightAndWrong.text += "<size=15>\n\n</size>" + s;
                 yield return new WaitForSeconds(waitForEachAnswer);
             }
-            myText.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
+            //myText.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
             rightAndWrongPanelRightAndWrong.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
             if(numberOfCorrectAudienceGuesses > 0)
             {
-                myText.text += "<size=15>\n\n</size><color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
+               // myText.text += "<size=15>\n\n</size><color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
                 rightAndWrongPanelAudienceRightAndWrong.text += "<size=15>\n\n</size><color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
                 gameState.totalAudienceCorrectGuesses += numberOfCorrectAudienceGuesses;
             }
             if(numberOfWrongAudienceGuesses > 0)
             {
-                myText.text += "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
+                //myText.text += "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
                 rightAndWrongPanelAudienceRightAndWrong.text += "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
                 gameState.totalAudienceWrongGuesses += numberOfWrongAudienceGuesses;
 
@@ -1562,7 +1564,7 @@ public class main : MonoBehaviour
             string tileTitle = anonymousPlayerName + " is " + targetPlayerName + "\n\n";
             myText.text = "\n<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + "</size></b>" + correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString()
                 + audienceGuessesString;
-
+            
             //reveal it on phones
             AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendRevealNextPersonalRoundResult", new string[] { targetPlayerName })));
 
@@ -1571,7 +1573,6 @@ public class main : MonoBehaviour
 
             //wait for the shrink
             yield return new WaitForSeconds(zoomInTime);
-
 
             //1 second buffer
             yield return new WaitForSeconds(1);
