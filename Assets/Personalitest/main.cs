@@ -1483,7 +1483,16 @@ public class main : MonoBehaviour
             Text myText = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset];
 
 
-            //display all results people
+            //display all results panel
+            int resultsPanelOffset = playerTileOffset + 6;
+            Animator rightAndWrongPanelAnimator = resultsPanel.GetComponentsInChildren<Animator>()[0];
+            Text rightAndWrongPanelTitle = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset];
+            Text rightAndWrongPanelRightAndWrong = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset+1];
+            Text rightAndWrongPanelAudienceRightAndWrong = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset+2];
+
+            rightAndWrongPanelTitle.text = "";
+            rightAndWrongPanelRightAndWrong.text = "";
+            rightAndWrongPanelAudienceRightAndWrong.text = "";
 
             //first, display the questions and answers again
             int playerPanelTileOffset = 2;
@@ -1512,27 +1521,32 @@ public class main : MonoBehaviour
             }
             yield return new WaitForSeconds(waitForReadSeconds);
 
+            rightAndWrongPanelAnimator.SetBool("Open", true);
             myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
+            rightAndWrongPanelTitle.text = "Who did people guess " + anonymousPlayerName + " is\n";
             yield return new WaitForSeconds(waitForContextSeconds);
 
             foreach (string s in wrongVotesLines)
             {
                 myText.text += "<size=15>\n\n</size>" + s;
+                rightAndWrongPanelRightAndWrong.text += "<size=15>\n\n</size>" + s;
                 yield return new WaitForSeconds(waitForEachAnswer);
             }
             myText.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
+            rightAndWrongPanelRightAndWrong.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
             if(numberOfCorrectAudienceGuesses > 0)
             {
                 myText.text += "<size=15>\n\n</size><color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
+                rightAndWrongPanelAudienceRightAndWrong.text += "<size=15>\n\n</size><color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
                 gameState.totalAudienceCorrectGuesses += numberOfCorrectAudienceGuesses;
             }
             if(numberOfWrongAudienceGuesses > 0)
             {
                 myText.text += "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
+                rightAndWrongPanelAudienceRightAndWrong.text += "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
                 gameState.totalAudienceWrongGuesses += numberOfWrongAudienceGuesses;
 
             }
-
 
             //play each animation
             foreach (KeyValuePair<Player, MeexarpAction> playerAnimation in playerAnimations)
@@ -1541,6 +1555,7 @@ public class main : MonoBehaviour
             }
 
             yield return new WaitForSeconds(waitForReadSeconds);
+
             //yield return new WaitForSeconds(zoomInTime);
             string audienceGuessesString = numberOfCorrectAudienceGuesses + numberOfWrongAudienceGuesses == 0 ? "" : "\n\n<color=green>" + numberOfCorrectAudienceGuesses + " </color>/<color=red>" + numberOfWrongAudienceGuesses + "</color> Audience";
 
@@ -1551,9 +1566,13 @@ public class main : MonoBehaviour
             //reveal it on phones
             AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendRevealNextPersonalRoundResult", new string[] { targetPlayerName })));
 
+            //close results side panel
+            rightAndWrongPanelAnimator.SetBool("Open", false);
 
             //wait for the shrink
             yield return new WaitForSeconds(zoomInTime);
+
+
             //1 second buffer
             yield return new WaitForSeconds(1);
             Destroy(cz);
