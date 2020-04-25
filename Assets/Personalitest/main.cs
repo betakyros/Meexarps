@@ -323,15 +323,16 @@ public class main : MonoBehaviour
             else
             {
                 playerNumber = gameState.players[from].playerNumber;
+                Image[] images = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
+                List<Image> iconTags = getPlayerIconTags(images, "WouldYouRatherPlayerIcon");
+                float xOffset = canvas.GetComponent<RectTransform>().rect.width * 0.2f * canvas.scaleFactor;
                 if (leftOrRight == 0)
                 {
-                    Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>(true)[indexOfFirstIcon + playerNumber].transform;
-                    myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.3f * canvas.scaleFactor, myTransform.position.y);
+                    movePlayerIcon(iconTags[playerNumber], -1 * xOffset);
                 }
                 else
                 {
-                    Transform myTransform = wouldYouRatherPanel.GetComponentsInChildren<Image>(true)[indexOfFirstIcon + playerNumber].transform;
-                    myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.70f * canvas.scaleFactor, myTransform.position.y);
+                    movePlayerIcon(iconTags[playerNumber], xOffset);
                 }
             }
         }
@@ -729,24 +730,30 @@ public class main : MonoBehaviour
         wouldYouRatherPanel.SetActive(true);
 
         //display only the active players without the current question writer
-        int playerIconOffset = 5;
+        int playerIconOffset = 14;
         Image[] playerIcons = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
+        List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+
         //i = 6 also disables audience icon
-        for (int i = 6; i >= gameState.GetNumberOfPlayers(); i--)
+        //for (int i = 6; i >= gameState.GetNumberOfPlayers(); i--)
+        for (int i = 5; i >= gameState.GetNumberOfPlayers(); i--)
         {
-            playerIcons[playerIconOffset + i].gameObject.SetActive(false);
+            //playerIcons[playerIconOffset + i].gameObject.SetActive(false);
+            playerIconsList[i].gameObject.SetActive(false);
         }
         //resert all active players to active
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
-            playerIcons[playerIconOffset + i].gameObject.SetActive(true);
+            //playerIcons[playerIconOffset + i].gameObject.SetActive(true);
+            playerIconsList[i].gameObject.SetActive(true);
         }
-        if(gameState.audienceMembers.Count > 0)
+        if (gameState.audienceMembers.Count > 0)
         {
             playerIcons[playerIconOffset + 6].gameObject.SetActive(true);
         }
         //also set the current player's icon to inactive
-        playerIcons[playerIconOffset + gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
+        //playerIcons[playerIconOffset + gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
+        playerIconsList[gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
 
         /*
         //set the current player's icon to true
@@ -765,23 +772,52 @@ public class main : MonoBehaviour
         //Set the current player's name
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         string playerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
-        wouldYouRatherTexts[19].text = "It's " + playerName + "'s turn to write questions!";
+        getPlayerIconTags(playerIcons, "Banner")[0].GetComponentInChildren<Text>().text = "It's " + playerName + "'s turn to write questions!";
 
         int playerTextOffset = 4;
         int currentPlayerTextOffset = 13;
         Text[] playerTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
-            playerTexts[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
-            playerTexts[currentPlayerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
+            //            playerTexts[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
+            //          playerTexts[currentPlayerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
+            playerIconsList[i].gameObject.GetComponentInChildren<Text>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
         }
 
         //controllers in the retrieve questions state will ignore would you rathers
         int currentPlayerTurnDeviceId = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).deviceId;
         SendSelectCategory(currentPlayerTurnDeviceId);
-        
+
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         InvokeRepeating("SendWouldYouRather", 0f, 15f);
+    }
+
+    public static List<Image> getPlayerIconTags(Image[] playerIcons, string tagName)
+    {
+        List<Image> playerIconsList = new List<Image>();
+        foreach (Image i in playerIcons)
+        {
+            if (i.tag == tagName)
+            {
+                playerIconsList.Add(i);
+            }
+        }
+
+        return playerIconsList;
+    }
+
+    private static List<Text> getTextTags(Text[] texts, string tagName)
+    {
+        List<Text> playerIconsList = new List<Text>();
+        foreach (Text i in texts)
+        {
+            if (i.tag == tagName)
+            {
+                playerIconsList.Add(i);
+            }
+        }
+
+        return playerIconsList;
     }
 
     public void SendSelectCategory(int deviceId)
@@ -874,14 +910,14 @@ public class main : MonoBehaviour
         //reset the icons
         int playerIconOffset = 5;
         Image[] playerIconPanels = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
+        List<Image> playerIconTags = getPlayerIconTags(playerIconPanels, "WouldYouRatherPlayerIcon");
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
             if (i == gameState.GetCurrentRoundNumber()) {
                 //don't do anything for the current player
                 continue;
             }
-            Transform myTransform = playerIconPanels[playerIconOffset + i].transform;
-            myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f * canvas.scaleFactor, myTransform.position.y);
+            movePlayerIcon(playerIconTags[i], 0);
         }
         audienceWouldYouRathers.Clear();
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
@@ -901,6 +937,15 @@ public class main : MonoBehaviour
         wouldYouRatherTexts[3].text = currentWouldYouRather[2];
         //Maybe send the possible answers here
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendWouldYouRather", new[] { " " })));
+    }
+
+    private void movePlayerIcon(Image playerIcon, float x)
+    {
+        Transform myTextTransform = playerIcon.GetComponentInChildren<Text>().transform;
+        Transform myIconTransform = playerIcon.GetComponentsInChildren<Image>()[1].transform;
+        //myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f * canvas.scaleFactor, myTransform.position.y);
+        myTextTransform.localPosition = new Vector2(x, myTextTransform.localPosition.y);
+        myIconTransform.localPosition = new Vector2(x, myIconTransform.localPosition.y);
     }
 
     public void SendQuestions()

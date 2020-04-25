@@ -7,6 +7,7 @@ public class AutoResizeGrid : MonoBehaviour
     public GameObject container;
     public int panelsOffset;
     public int padding;
+    public bool isWouldYouRather;
     
 
     // Start is called before the first frame update
@@ -18,9 +19,13 @@ public class AutoResizeGrid : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!container.activeInHierarchy)
+        {
+            return;
+        }
         int numCols, numRows;
 
-        int numPlayers = gameObject.GetComponent<main>().getNumPlayers();
+        int numPlayers = gameObject.GetComponent<main>().getNumPlayers() - (isWouldYouRather ? 1 : 0);
         int numGridCells = numPlayers == 0 ? 6 : numPlayers;
 
         switch (numPlayers)
@@ -54,12 +59,23 @@ public class AutoResizeGrid : MonoBehaviour
                 numRows = 2;
                 break;
         }
+
+        if(isWouldYouRather)
+        {
+            int temp = numCols;
+            numCols = numRows;
+            numRows = temp;
+        }
+
         float width = container.GetComponent<RectTransform>().rect.width - padding * 2;
         float height = container.GetComponent<RectTransform>().rect.height - padding * 2;
         Vector2 newSize = new Vector2(width / numCols, height / numRows);
         container.GetComponent<GridLayoutGroup>().cellSize = newSize;
-        Image[] images = container.GetComponentsInChildren<Image>(true);
-
+        Image[] images = container.GetComponentsInChildren<Image>(!isWouldYouRather);
+        if(isWouldYouRather)
+        {
+            images = main.getPlayerIconTags(images, "WouldYouRatherPlayerIcon").ToArray();
+        }
         int maxNumRows = 2;
         int maxNumCols = 3;
         //activate/disable cells
@@ -68,11 +84,12 @@ public class AutoResizeGrid : MonoBehaviour
             for (int i = 0; i < maxNumCols; i++)
             {
                 int nthGridElement = i + j * maxNumCols;
-                int nthChild = panelsOffset + nthGridElement;
+
+                int nthChild = (isWouldYouRather ? 0 : panelsOffset) + nthGridElement;
                 if(nthGridElement< numGridCells)
                 {
                     images[nthChild].gameObject.SetActive(true);
-                } else
+                } else if(!isWouldYouRather)
                 {
                     images[nthChild].gameObject.SetActive(false);
                 }
@@ -90,8 +107,11 @@ public class AutoResizeGrid : MonoBehaviour
                     float newXPos = numCols == 2 ? (-.5f + i) * newSize.x : (i - 1f) * newSize.x;
                     float newYPos = numRows == 1 ? 0 : (.5f - j) * newSize.y;
                     Vector3 originalPos = (container.transform.position + canvas.scaleFactor * new Vector3(newXPos, newYPos, 0));
-                    images[nthChild].GetComponent<GentleShake>()
-                        .SetOriginalPosition(originalPos);
+                    if(!isWouldYouRather)
+                    {
+                        images[nthChild].GetComponent<GentleShake>()
+                            .SetOriginalPosition(originalPos);
+                    }
                 }
             }
         }
