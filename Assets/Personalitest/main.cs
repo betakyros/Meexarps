@@ -1666,17 +1666,53 @@ public class main : MonoBehaviour
 
         int offset = 1;
         float correctPercent = ((float)gameState.totalCorrectGuesses) / ((float)(gameState.totalCorrectGuesses + gameState.totalWrongGuesses)) * 100.0f;
-        string friendshipStatus = "Just ok Friends";
-        string resultStatus = "2The board is impressed and will grant you the funds to continue your research. Congratulations!";
+        string[] friendshipStatusArray = { "Archnemeses", "Enemies", "Strangers", "Acquaintances", "Just \"Ok\" Friends", "Friends", "Best Friends" };
+        string[] resultsStatuses = { "The board is impressed and will grant you the funds to continue your research. Congratulations!" ,
+        "The board is unimpressed, but will allow you to continue your research in hopes that you’ll better discover friendship and will grand you the funds to continue your research."};
+
+        string friendshipStatus = CaluclateFriendshipStatus(correctPercent, friendshipStatusArray);
+        string resultStatus = correctPercent >= 60.0f ? resultsStatuses[0] : resultsStatuses[1];
+        
         //set percentCorrectText
-        endScreenPanel.GetComponentsInChildren<Text>()[offset].text = "2Collectively, your team identified\n<b><size=90> " + correctPercent + "%</size> </b>\nof your teammates correctly!";
+        endScreenPanel.GetComponentsInChildren<Text>()[offset].text = "Collectively, your team identified\n<b><size=90> " + correctPercent + "%</size> </b>\nof your teammates correctly!";
         //set friendship status
-        endScreenPanel.GetComponentsInChildren<Text>()[offset + 1].text = "2You have achieved the status of\n<b><size=60> "+ friendshipStatus + " </size></b> ";
+        endScreenPanel.GetComponentsInChildren<Text>()[offset + 1].text = "You have achieved the status of\n<b><size=60> " + friendshipStatus + " </size></b> ";
         //set result text
         endScreenPanel.GetComponentsInChildren<Text>()[offset + 2].text = resultStatus;
 
 
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
+    }
+
+    private static string CaluclateFriendshipStatus(float correctPercent, string[] friendshipStatusArray)
+    {
+        string friendshipStatus;
+        switch (correctPercent)
+        {
+            case float f when (f >= 90):
+                friendshipStatus = friendshipStatusArray[6];
+                break;
+            case float f when (f >= 70):
+                friendshipStatus = friendshipStatusArray[5];
+                break;
+            case float f when (f >= 60):
+                friendshipStatus = friendshipStatusArray[4];
+                break;
+            case float f when (f >= 40):
+                friendshipStatus = friendshipStatusArray[3];
+                break;
+            case float f when (f >= 30):
+                friendshipStatus = friendshipStatusArray[2];
+                break;
+            case float f when (f >= 20):
+                friendshipStatus = friendshipStatusArray[1];
+                break;
+            default:
+                friendshipStatus = friendshipStatusArray[0];
+                break;
+        }
+
+        return friendshipStatus;
     }
 
     public void SendEndScreen()
