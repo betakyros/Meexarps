@@ -8,6 +8,7 @@ public class AutoResizeGrid : MonoBehaviour
     public int panelsOffset;
     public int padding;
     public bool isWouldYouRather;
+    public bool isAnswerQuestionsGrid;
     
 
     // Start is called before the first frame update
@@ -71,8 +72,9 @@ public class AutoResizeGrid : MonoBehaviour
         float height = container.GetComponent<RectTransform>().rect.height - padding * 2;
         Vector2 newSize = new Vector2(width / numCols, height / numRows);
         container.GetComponent<GridLayoutGroup>().cellSize = newSize;
-        Image[] images = container.GetComponentsInChildren<Image>(!isWouldYouRather);
-        if(isWouldYouRather)
+        bool isWouldYouRatherOrAnswerQuestions = isWouldYouRather || isAnswerQuestionsGrid;
+        Image[] images = container.GetComponentsInChildren<Image>(!isWouldYouRatherOrAnswerQuestions);
+        if(isWouldYouRatherOrAnswerQuestions)
         {
             images = main.getPlayerIconTags(images, "WouldYouRatherPlayerIcon").ToArray();
         }
@@ -85,11 +87,11 @@ public class AutoResizeGrid : MonoBehaviour
             {
                 int nthGridElement = i + j * maxNumCols;
 
-                int nthChild = (isWouldYouRather ? 0 : panelsOffset) + nthGridElement;
+                int nthChild = (isWouldYouRatherOrAnswerQuestions ? 0 : panelsOffset) + nthGridElement;
                 if(nthGridElement< numGridCells)
                 {
                     images[nthChild].gameObject.SetActive(true);
-                } else if(!isWouldYouRather)
+                } else if(!isWouldYouRatherOrAnswerQuestions)
                 {
                     images[nthChild].gameObject.SetActive(false);
                 }
@@ -107,7 +109,7 @@ public class AutoResizeGrid : MonoBehaviour
                     float newXPos = numCols == 2 ? (-.5f + i) * newSize.x : (i - 1f) * newSize.x;
                     float newYPos = numRows == 1 ? 0 : (.5f - j) * newSize.y;
                     Vector3 originalPos = (container.transform.position + canvas.scaleFactor * new Vector3(newXPos, newYPos, 0));
-                    if(!isWouldYouRather)
+                    if(!isWouldYouRatherOrAnswerQuestions)
                     {
                         images[nthChild].GetComponent<GentleShake>()
                             .SetOriginalPosition(originalPos);

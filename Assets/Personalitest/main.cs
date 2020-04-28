@@ -365,12 +365,32 @@ public class main : MonoBehaviour
             answerQuestionsPanel.SetActive(true);
 
             //display the status of each player's submission
+            /*
             for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
             {
                 Player currentPlayer = gameState.GetPlayerByPlayerNumber(i);
                 int tilesOffset = 1;
                 answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + i].text = currentPlayer.nickname + "\n\n<color=red>Has Not Submitted</color>";
 
+            }
+            */
+
+            // inititalize the grid
+            Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
+            List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+            for (int i = 5; i >= gameState.GetNumberOfPlayers(); i--)
+            {
+                playerIconsList[i].gameObject.SetActive(false);
+            }
+            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+            {
+                playerIconsList[i].gameObject.SetActive(true);
+            }
+            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+            {
+                //            playerTexts[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
+                //          playerTexts[currentPlayerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
+                playerIconsList[i].gameObject.GetComponentInChildren<Text>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
             }
 
             List<string> myQuestions = new List<string>();
@@ -395,16 +415,18 @@ public class main : MonoBehaviour
 
             int tilesOffset = 1;
             Player currentPlayer = gameState.players[from];
+            /*
             answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + currentPlayer.playerNumber].text = currentPlayer.nickname + "\n\n<color=green>Has Submitted</color>";
-            
+            */
+            Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
+            List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+            movePlayerIcon(playerIconsList[currentPlayer.playerNumber], canvas.GetComponent<RectTransform>().rect.width * 0.4f * canvas.scaleFactor);
+
             if (HasEveryoneSubmittedAnswers())
             {
-                answerQuestionsPanel.SetActive(false);
-                votingPanel.SetActive(true);
-                //TODO shuffle answers
-                SendVoting();
-                gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
+                StartCoroutine(EndAnswerQuestionsPhase(2));
             }
+
         }
         else if ("sendSkipInstructions".Equals(action))
         {
@@ -741,7 +763,7 @@ public class main : MonoBehaviour
             //playerIcons[playerIconOffset + i].gameObject.SetActive(false);
             playerIconsList[i].gameObject.SetActive(false);
         }
-        //resert all active players to active
+        //reset all active players to active
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
             //playerIcons[playerIconOffset + i].gameObject.SetActive(true);
@@ -1278,8 +1300,39 @@ public class main : MonoBehaviour
         }
     }
 
-    //todo remove parameter
-    public IEnumerator<WaitForSeconds> CalculateVoting(int count)
+    public IEnumerator<WaitForSeconds> EndAnswerQuestionsPhase(int count)
+    {
+        Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
+        List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+
+        //everyone should cheer
+        foreach (Player p in gameState.players.Values)
+        {
+            playerIconsList[p.playerNumber].GetComponentInChildren<Animator>().SetBool("isCheer", true);
+            //playerIconsList[p.playerNumber].GetComponentInChildren<Animator>().SetBool("isCheer", false);
+            //p.playAnimation(MeexarpAction.Cheer);
+        }
+        int cheerAnimationLength = 1;
+        int waitAnimationLength = 3;
+        yield return new WaitForSeconds(cheerAnimationLength);
+
+
+        foreach (Player p in gameState.players.Values)
+        {
+            playerIconsList[p.playerNumber].GetComponentInChildren<Animator>().SetBool("isCheer", false);
+            //p.playAnimation(MeexarpAction.Cheer);
+        }
+        yield return new WaitForSeconds(waitAnimationLength);
+
+        answerQuestionsPanel.SetActive(false);
+        votingPanel.SetActive(true);
+        //TODO shuffle answers
+        SendVoting();
+        gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
+    }
+
+        //todo remove parameter
+        public IEnumerator<WaitForSeconds> CalculateVoting(int count)
     {
         //SendWaitScreenToEveryone();
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendPersonalResults", new string[] { " " })));
@@ -1935,10 +1988,12 @@ class Player
         if (meexarpActions == MeexarpAction.Cheer)
         {
             myAnimator.SetBool("isCheer", true);
+            myAnimator.SetBool("isCheer", false);
         }
         else if (meexarpActions == MeexarpAction.Sad)
         {
             myAnimator.SetBool("isSad", true);
+            myAnimator.SetBool("isSad", false);
         }
     }
 
