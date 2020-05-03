@@ -454,13 +454,13 @@ public class main : MonoBehaviour
             else
             {
                 gameState.GetCurrentRound().votes.Add(gameState.players[from].playerNumber, myVotes);
-            }
 
-            if (HasEveryoneVoted())
-            {
-                votingPanel.SetActive(false);
-                resultsPanel.SetActive(true);
-                StartCoroutine(CalculateVoting(2));
+                if (HasEveryoneVoted())
+                {
+                    votingPanel.SetActive(false);
+                    resultsPanel.SetActive(true);
+                    StartCoroutine(CalculateVoting(2));
+                }
             }
         }
         else if ("sendNextRound".Equals(action))
