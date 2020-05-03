@@ -308,7 +308,7 @@ public class main : MonoBehaviour
                 audienceWouldYouRathers[from] = leftOrRight;
                 foreach (int i in audienceWouldYouRathers.Values)
                 {
-                    if(i == 0)
+                    if (i == 0)
                     {
                         leftAudience++;
                     }
@@ -317,8 +317,7 @@ public class main : MonoBehaviour
                         rightAudience++;
                     }
                 }
-                wouldYouRatherPanel.GetComponentsInChildren<Text>(true)[10].text = leftAudience + "";
-                wouldYouRatherPanel.GetComponentsInChildren<Text>(true)[11].text = rightAudience + "";
+                SetAudienceWouldYouRatherCounters(leftAudience, rightAudience);
             }
             else
             {
@@ -487,6 +486,15 @@ public class main : MonoBehaviour
                 blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
             } 
         }
+    }
+
+    private void SetAudienceWouldYouRatherCounters(int leftAudience, int rightAudience)
+    {
+        Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
+        wouldYouRatherTexts[18].gameObject.SetActive(true);
+        wouldYouRatherTexts[19].gameObject.SetActive(true);
+        wouldYouRatherTexts[18].text = "Audience: " + leftAudience;
+        wouldYouRatherTexts[19].text = "Audience: " + rightAudience;
     }
 
     private void sendWelcomeScreenInfo(int from)
@@ -942,6 +950,10 @@ public class main : MonoBehaviour
             movePlayerIcon(playerIconTags[i], 0);
         }
         audienceWouldYouRathers.Clear();
+        if(gameState.audienceMembers.Count != 0)
+        {
+            SetAudienceWouldYouRatherCounters(0, 0);
+        }
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         if(gameState.audienceMembers.Count != 0)
         {
@@ -1182,7 +1194,7 @@ public class main : MonoBehaviour
                 shortTextSb.Append(answer);
                 if (j < answers.text.Length - 1 )
                 {
-                    myText.text += "<size=15>\n\n</size>";
+                    myText.text += "<size=15>\n</size>";
                     shortTextSb.Append("<size=15>\n\n</size>");
                 }
                 //wait four seconds between each answer to give it a punch
@@ -1192,9 +1204,13 @@ public class main : MonoBehaviour
             yield return new WaitForSeconds(2);
             Destroy(cz);
         }
-        for (int i = gameState.GetNumberOfPlayers(); i < 6; i++)
+        Image[] playerIcons = votingPanel.GetComponentsInChildren<Image>(true);
+        List<Image> playerIconsList = getPlayerIconTags(playerIcons, "AnswerQuestionsPane");
+        //reset the ordering of the panels
+        for (int i = 0; i < 6 - gameState.GetNumberOfPlayers(); i++)
         {
-            votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+            playerIconsList[i].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+            //votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
         }
         votingPanel.GetComponentsInChildren<Image>()[gridLayoutOffset].GetComponentInChildren<GridLayoutGroup>().enabled = true;
         autoResizeGrid.enabled = true;
@@ -1583,7 +1599,8 @@ public class main : MonoBehaviour
 
             //display all results panel
             int resultsPanelOffset = playerTileOffset + 6;
-            Animator rightAndWrongPanelAnimator = resultsPanel.GetComponentsInChildren<Animator>()[0];
+            Animator titleAndGridContainerAnimator = resultsPanel.GetComponentsInChildren<Animator>()[0];
+            Animator rightAndWrongPanelAnimator = resultsPanel.GetComponentsInChildren<Animator>()[1];
             Text rightAndWrongPanelTitle = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset];
             Text rightAndWrongPanelRightAndWrong = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset+1];
             Text rightAndWrongPanelAudienceRightAndWrong = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset+2];
@@ -1620,6 +1637,7 @@ public class main : MonoBehaviour
             yield return new WaitForSeconds(waitForReadSeconds);
 
             rightAndWrongPanelAnimator.SetBool("Open", true);
+            //titleAndGridContainerAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(waitForContextSeconds);
 
             //myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
@@ -1668,6 +1686,7 @@ public class main : MonoBehaviour
 
             //close results side panel
             rightAndWrongPanelAnimator.SetBool("Open", false);
+            //titleAndGridContainerAnimator.SetBool("Open", false);
 
             //wait for the shrink
             yield return new WaitForSeconds(zoomInTime);
@@ -1676,11 +1695,13 @@ public class main : MonoBehaviour
             yield return new WaitForSeconds(1);
             Destroy(cz);
         }
+        Image[] playerIcons = resultsPanel.GetComponentsInChildren<Image>(true);
+        List<Image> playerIconsList = getPlayerIconTags(playerIcons, "AnswerQuestionsPane");
+
         //reset the position of the other panels
-        for (int i = gameState.GetNumberOfPlayers(); i < 6; i++)
+        for (int i = 0; i < 6 - gameState.GetNumberOfPlayers(); i++)
         {
-            int playerPanelTileOffset = 2;
-            resultsPanel.GetComponentsInChildren<Image>()[playerPanelTileOffset].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+            playerIconsList[i].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
         }
         resultsPanel.GetComponentsInChildren<Image>()[0].GetComponentInChildren<GridLayoutGroup>().enabled = true;
         autoResizeGrid.enabled = true;
