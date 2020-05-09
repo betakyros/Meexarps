@@ -386,6 +386,7 @@ path, .jtk-endpoint {
 			var me = this;
 			me.air_console = new AirConsole({"orientation": "portrait", "synchronize_time":"true"});
             var isVip = false;
+            var useSystemKeyboard = false;
             me.air_console.onConnect = function(device_id) {
 				var message = {
 					'action': "requestWelcomeScreenInfo",
@@ -434,6 +435,7 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendRetrieveOptions") {
                     document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
                     document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
+                    document.getElementById("useSystemKeyboard").checked = useSystemKeyboard;//anonymousNames
                 } else if(myAction === "sendStartGameScreen") {
                     displayElement(document.getElementById("startGameScreenView"));
                 } else if(myAction === "nameAlreadyTaken") {
@@ -457,9 +459,9 @@ path, .jtk-endpoint {
                     document.getElementById("selectCategoryButton6").innerText=payload.data[5];
                     displayElement(document.getElementById("sendSelectCategoryView"));
                 } else if(myAction === "sendRetrieveQuestions") {
-                    keyboard.setValue("retrieveQuestionsField1", payload.data[0]);
-                    keyboard.setValue("retrieveQuestionsField2", payload.data[1]);
-                    keyboard.setValue("retrieveQuestionsField3", payload.data[2]);
+                    App.prototype.setKeyboardValue("retrieveQuestionsField1", payload.data[0]);
+                    App.prototype.setKeyboardValue("retrieveQuestionsField2", payload.data[1]);
+                    App.prototype.setKeyboardValue("retrieveQuestionsField3", payload.data[2]);
                     //document.getElementById("categoryDisplay").innerText=payload.data[3];
 
                     myTimer = setInterval(function(){
@@ -477,7 +479,7 @@ path, .jtk-endpoint {
                     /*
                     document.getElementById(payload.data[0]).innerText=payload.data[1];
                     */
-                    keyboard.setValue(payload.data[0], payload.data[1]);
+                    App.prototype.setKeyboardValue(payload.data[0], payload.data[1]);
                 } else if(myAction === "sendWouldYouRather") {
                     //if you are currently submiting questions, you don't get to play would you rather
                     if(
@@ -494,9 +496,9 @@ path, .jtk-endpoint {
                     }
                 } else if(myAction === "sendQuestions") {
                     //empty the text value fields
-                    keyboard.setValue("textfield1", "");
-                    keyboard.setValue("textfield2", "");
-                    keyboard.setValue("textfield3", "");
+                    App.prototype.setKeyboardValue("textfield1", "");
+                    App.prototype.setKeyboardValue("textfield2", "");
+                    App.prototype.setKeyboardValue("textfield3", "");
                     /*
                     document.getElementById("textfield1").innerHTML = "";
                     document.getElementById("textfield2").innerHTML = "";
@@ -678,7 +680,7 @@ path, .jtk-endpoint {
                 /*
                 var nickname = document.getElementById('nickname').innerText;
                 */
-                var nickname = keyboard.valueText("nickname");
+                var nickname = App.prototype.getKeyboardValue("nickname");
                 if(nickname) {
 				    console.log("sending", "welcomeInfo name: ", );
 				    var message = {
@@ -724,9 +726,9 @@ path, .jtk-endpoint {
 				var wouldYouRatherLeftSubmit = document.getElementById('wouldYouRatherLeftSubmit').innerText;
 				var wouldYouRatherRightSubmit = document.getElementById('wouldYouRatherRightSubmit').innerText;
 				*/
-                var wouldYouRatherQuestionSubmit = keyboard.valueText("wouldYouRatherSubmit");
-                var wouldYouRatherLeftSubmit = keyboard.valueText("wouldYouRatherLeftSubmit");
-                var wouldYouRatherRightSubmit = keyboard.valueText("wouldYouRatherRightSubmit");
+                var wouldYouRatherQuestionSubmit =  App.prototype.getKeyboardValue("wouldYouRatherSubmit");
+                var wouldYouRatherLeftSubmit = App.prototype.getKeyboardValue("wouldYouRatherLeftSubmit");
+                var wouldYouRatherRightSubmit = App.prototype.getKeyboardValue("wouldYouRatherRightSubmit");
                 if("" == wouldYouRatherQuestionSubmit ||
                     "" == wouldYouRatherLeftSubmit ||
                     "" == wouldYouRatherRightSubmit) {
@@ -742,9 +744,9 @@ path, .jtk-endpoint {
                     }
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
-                keyboard.setValue("wouldYouRatherSubmit", "");
-                keyboard.setValue("wouldYouRatherLeftSubmit", "");
-                keyboard.setValue("wouldYouRatherRightSubmit", "");
+                App.prototype.setKeyboardValue("wouldYouRatherSubmit", "");
+                App.prototype.setKeyboardValue("wouldYouRatherLeftSubmit", "");
+                App.prototype.setKeyboardValue("wouldYouRatherRightSubmit", "");
                 /*
 				document.getElementById('wouldYouRatherSubmit').innerText = "";
 				document.getElementById('wouldYouRatherLeftSubmit').innerText = "";
@@ -787,9 +789,9 @@ path, .jtk-endpoint {
 				var question2 = document.getElementById('retrieveQuestionsField2').innerText;
 				var question3 = document.getElementById('retrieveQuestionsField3').innerText;
 				*/
-                var question1 = keyboard.valueText("retrieveQuestionsField1");
-                var question2 = keyboard.valueText("retrieveQuestionsField2");
-                var question3 = keyboard.valueText("retrieveQuestionsField3");
+                var question1 = App.prototype.getKeyboardValue("retrieveQuestionsField1");
+                var question2 = App.prototype.getKeyboardValue("retrieveQuestionsField2");
+                var question3 = App.prototype.getKeyboardValue("retrieveQuestionsField3");
                 var message = {
 					'action': "sendDecidedQuestions",
 					'info': {
@@ -810,9 +812,9 @@ path, .jtk-endpoint {
 				var answerText2 = document.getElementById('textfield2').innerText;
 				var answerText3 = document.getElementById('textfield3').innerText;
                 */
-                var answerText1 = keyboard.valueText("textfield1");
-                var answerText2 = keyboard.valueText("textfield2");
-                var answerText3 = keyboard.valueText("textfield3");
+                var answerText1 = App.prototype.getKeyboardValue("textfield1");
+                var answerText2 = App.prototype.getKeyboardValue("textfield2");
+                var answerText3 = App.prototype.getKeyboardValue("textfield3");
 				var message = {
 					'action': "sendAnswers",
 					'info': {
@@ -871,7 +873,7 @@ path, .jtk-endpoint {
 			}
             
             App.prototype.viewOptions = function viewOptions() {
-                App.prototype.sendRetrieveOptions()
+                App.prototype.sendRetrieveOptions();
                 document.getElementById("optionsView").style.display = "block";
 			}
             App.prototype.hideOptions = function viewOptions() {
@@ -894,7 +896,7 @@ path, .jtk-endpoint {
                 const optionsMap = {};
                 optionsMap["nsfwQuestions"] = document.getElementById("NsfwQuestionsCheckbox").checked;
                 optionsMap["anonymousNames"] = document.getElementById("anonymousNameCheckbox").checked;
-                
+                useSystemKeyboard = document.getElementById("useSystemKeyboard").checked;
 				var message = {
 					'action': "sendSaveOptions",
 					'info': optionsMap
@@ -927,6 +929,15 @@ path, .jtk-endpoint {
             App.prototype.setPlaceholder = function setPlaceholder(elementId, value) {
                 document.getElementById(elementId).setAttribute('placeholder', value);
             }
+            
+            App.prototype.setKeyboardValue = function setKeyboardValue(elementId, value) {
+                keyboard.setValue(elementId, value);
+                //document.getElementById(elementId).innerText=value;
+			}
+            
+            App.prototype.getKeyboardValue = function getKeyboardValue(elementId) {
+                return keyboard.valueText(elementId);
+			}
 		}
     }
     </script>
@@ -1090,7 +1101,7 @@ path, .jtk-endpoint {
         <div class="pseudo_button" onclick="window.app.saveOptions()">Save Options!</div> <br>
         <br>
         <div class="pseudo_button" onclick="window.app.viewCredits()">View Credits!</div> <br>
-        <!--<div class="pseudo_button" onclick="keyboard.setValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+        <!--<div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
         <div class="view creditsView" id="creditsView" style="padding:50% 0;display:none;">
         <div>
@@ -1150,7 +1161,7 @@ that will be used later in the game.
                 -->
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('wouldYouRatherSubmit').innerText=''" style="margin:5px">Clear</div>-->
-            <div class="pseudo_button" onclick="keyboard.setValue('wouldYouRatherSubmit', '')" style="margin:5px">Clear</div>
+            <div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Clear</div>
         </div>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
             <div style="display:flex;justify-content:center;">
@@ -1163,7 +1174,7 @@ that will be used later in the game.
             -->
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('wouldYouRatherLeftSubmit').innerText=''" style="margin:5px">Clear</div>-->
-            <div class="pseudo_button" onclick="keyboard.setValue('wouldYouRatherLeftSubmit', '')" style="margin:5px">Clear</div>
+            <div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherLeftSubmit', '')" style="margin:5px">Clear</div>
         </div>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
             <div style="display:flex;justify-content:center;">
@@ -1176,7 +1187,7 @@ that will be used later in the game.
             -->
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('wouldYouRatherRightSubmit').innerText=''" style="margin:5px">Clear</div>-->
-            <div class="pseudo_button" onclick="keyboard.setValue('wouldYouRatherRightSubmit', '')" style="margin:5px">Clear</div>
+            <div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherRightSubmit', '')" style="margin:5px">Clear</div>
         </div>        
         <br>
         <div class="pseudo_button" onclick="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
@@ -1250,7 +1261,7 @@ that will be used later in the game.
             </div>
         </div>
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:#9c9c9c">
-            <div style="display:flex; flex-direction: row-reverse;" onclick="keyboard.setValue('retrieveQuestionsField1', '')">
+            <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField1', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
@@ -1272,7 +1283,7 @@ that will be used later in the game.
             <!--<div class="pseudo_button" onclick="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>-->
         </div>
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:#9c9c9c">
-            <div style="display:flex; flex-direction: row-reverse;" onclick="keyboard.setValue('retrieveQuestionsField2', '')">
+            <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField2', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
@@ -1293,7 +1304,7 @@ that will be used later in the game.
             </div>
         </div> 
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:#9c9c9c">
-            <div style="display:flex; flex-direction: row-reverse;" onclick="keyboard.setValue('retrieveQuestionsField3', '')">
+            <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField3', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
@@ -1333,7 +1344,7 @@ that will be used later in the game.
             -->
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
-            <div style="display:flex;" onclick="keyboard.setValue('textfield1', '')">
+            <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield1', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
@@ -1350,7 +1361,7 @@ that will be used later in the game.
             -->
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
-            <div style="display:flex;" onclick="keyboard.setValue('textfield2', '')">
+            <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield2', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
@@ -1367,7 +1378,7 @@ that will be used later in the game.
             -->
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
-            <div style="display:flex;" onclick="keyboard.setValue('textfield3', '')">
+            <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield3', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
