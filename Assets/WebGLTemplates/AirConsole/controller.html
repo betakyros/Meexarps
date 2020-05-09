@@ -1043,7 +1043,9 @@ path, .jtk-endpoint {
     </style>
   </head>
   <body style="font-family: Roboto; background-color:#8cffd4; text-align: center;" onload="init()">
-        <div id="optionsButton" class="pseudo_button optionsButton" onclick="window.app.viewOptions()" style="display:none;">Options</div>
+        <div id="optionsButton" class="optionsButton"  style="display:none;">
+            <img src="./icon_gear.png" onclick="window.app.viewOptions()" style="height:50px" />
+        </div>
     <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
     <div class="view" id="welcomeScreenView" style="padding:30% 0;">
         <p style="font-size:20px;">Welcome to</p>
@@ -1073,13 +1075,22 @@ path, .jtk-endpoint {
         <text class="franklinInstructionText" id="welcomeScreenPlayerCount">0/6 Meexarps have joined the game</text>
 
     </div> 
-    <div class="view optionsView" id="optionsView" style="display:none">
-        <div class="pseudo_button topleft" onclick="window.app.hideOptions()" style="margin:5px">Close</div>
-        Nsfw Questions Enabled: <input type="checkbox" id="NsfwQuestionsCheckbox"> <br>
-        Anonymous Names Enabled: <input type="checkbox" id="anonymousNameCheckbox"> <br>
-        <div class="pseudo_button" onclick="window.app.saveOptions()">Save Options!</div>
-        <div class="pseudo_button" onclick="window.app.viewCredits()">View Credits!</div>
-        <div class="pseudo_button" onclick="keyboard.setValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>
+    <div class="view optionsView" id="optionsView" style="display:none; z-index:1;">
+        <img class="topleft" src="./icon_backarrow.png" onclick="window.app.hideOptions()" style="height:50px" />
+        <div style="position: absolute;top: 13px;width:100%;font-size:30px;">Game Options</div>
+        <div id="checkboxes" style="text-align:left; margin: 0 0 0 20px;">
+            <input type="checkbox" id="NsfwQuestionsCheckbox">
+            <label for="NsfwQuestionsCheckbox"> Nsfw Questions Enabled</label><br>
+            <input type="checkbox" id="anonymousNameCheckbox"> 
+            <label for="anonymousNameCheckbox"> Anonymous Names Enabled</label><br>
+            <input type="checkbox" id="useSystemKeyboard"> 
+            <label for="useSystemKeyboard"> Use system keyboard (Not Recommended) </label><br>
+        </div>
+        <br>
+        <div class="pseudo_button" onclick="window.app.saveOptions()">Save Options!</div> <br>
+        <br>
+        <div class="pseudo_button" onclick="window.app.viewCredits()">View Credits!</div> <br>
+        <!--<div class="pseudo_button" onclick="keyboard.setValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
         <div class="view creditsView" id="creditsView" style="padding:50% 0;display:none;">
         <div>
