@@ -293,16 +293,37 @@ path, .jtk-endpoint {
         window.app = new App();
 
         keyboard = new AirConsoleKeyboard("my_keyboard");
-        keyboard.bind("nickname");
-        keyboard.bind("wouldYouRatherSubmit");
-        keyboard.bind("wouldYouRatherLeftSubmit");
-        keyboard.bind("wouldYouRatherRightSubmit");
-        keyboard.bind("retrieveQuestionsField1");
-        keyboard.bind("retrieveQuestionsField2");
-        keyboard.bind("retrieveQuestionsField3");
-        keyboard.bind("textfield1");
-        keyboard.bind("textfield2");
-        keyboard.bind("textfield3");
+
+        var allTextFieldIds = [
+        "nickname", 
+        "wouldYouRatherSubmit", 
+        "wouldYouRatherLeftSubmit", 
+        "wouldYouRatherRightSubmit", 
+        "retrieveQuestionsField1", 
+        "retrieveQuestionsField2", 
+        "retrieveQuestionsField3",
+        "textfield1", 
+        "textfield2",
+        "textfield3"
+        ];
+
+        function bindAll() {
+            allTextFieldIds.forEach(element => {
+                keyboard.bind(element);
+                document.getElementById(element).style.display = "flex";
+                document.getElementById(element+"-system").style.display = "none";
+            });
+        }
+        
+        function unbindAll() {
+            allTextFieldIds.forEach(element => {
+                keyboard.unbind(element);
+                document.getElementById(element).style.display = "none";
+                document.getElementById(element+"-system").style.display = "flex";
+            });
+        }
+
+        bindAll();
 
         function hideAllViews() {
             elements = document.getElementsByClassName("view");
@@ -896,12 +917,18 @@ path, .jtk-endpoint {
                 const optionsMap = {};
                 optionsMap["nsfwQuestions"] = document.getElementById("NsfwQuestionsCheckbox").checked;
                 optionsMap["anonymousNames"] = document.getElementById("anonymousNameCheckbox").checked;
+                var oldUseSystemKeyboard = useSystemKeyboard;
                 useSystemKeyboard = document.getElementById("useSystemKeyboard").checked;
 				var message = {
 					'action': "sendSaveOptions",
 					'info': optionsMap
 				};
                 me.air_console.message(AirConsole.SCREEN, message);
+                if(!oldUseSystemKeyboard && useSystemKeyboard) {
+                    unbindAll();
+                } else if(oldUseSystemKeyboard && !useSystemKeyboard) {
+                    bindAll();
+                }
 			}
             App.prototype.returnToWelcomeScreen = function returnToWelcomeScreen() {
                 hideAllViews();
@@ -931,12 +958,19 @@ path, .jtk-endpoint {
             }
             
             App.prototype.setKeyboardValue = function setKeyboardValue(elementId, value) {
-                keyboard.setValue(elementId, value);
-                //document.getElementById(elementId).innerText=value;
+                if(!useSystemKeyboard) {
+                    keyboard.setValue(elementId, value);                
+                } else {
+                    document.getElementById(elementId+"-system").innerText=value;                
+                }
 			}
             
             App.prototype.getKeyboardValue = function getKeyboardValue(elementId) {
-                return keyboard.valueText(elementId);
+                if(!useSystemKeyboard) {
+                    return keyboard.valueText(elementId);                
+                } else {
+                    return document.getElementById(elementId+"-system").innerText;                
+                }
 			}
 		}
     }
@@ -1069,12 +1103,10 @@ path, .jtk-endpoint {
         <div id="nickname" class="textfield">
             <div style="color:#aaa"><i>A fun but identifiable name</i></div>
         </div>
-        <!--
-        <div style="display:flex;justify-content:center;">
-            <span placeholder="Identifiable name" class="franklinInput" contenteditable="true" id="nickname" 
+        <div style="display:none;justify-content:center;">
+            <span placeholder="Identifiable name" class="franklinInput" contenteditable="true" id="nickname-system" 
             onclick="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', 'Identifiable name')"></span>
         </div>
-        -->
         <div class="view" id="nameAlreadyTakenView" style="display:none;color:red;font-style:italic;">
             That name is already taken, please choose another name
         </div>
@@ -1155,10 +1187,9 @@ that will be used later in the game.
                 <div id="wouldYouRatherSubmit" class="textfield">
                     <div style="color:#aaa"><i>Do you prefer...</i></div>
                 </div>
-                <!--
-                <span placeholder="Would You Rather Question" class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit" 
-                onclick="window.app.setPlaceholder('wouldYouRatherSubmit', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit', 'Would You Rather Question')"></span>
-                -->
+                <span style="display:none" placeholder="Would You Rather Question" class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit-system" 
+                    onclick="window.app.setPlaceholder('wouldYouRatherSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit-system', 'Do you prefer...')">
+                </span>
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('wouldYouRatherSubmit').innerText=''" style="margin:5px">Clear</div>-->
             <div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Clear</div>
@@ -1168,10 +1199,9 @@ that will be used later in the game.
                 <div id="wouldYouRatherLeftSubmit" class="textfield">
                     <div style="color:#aaa"><i>Apple pie</i></div>
                 </div>
-            <!--
-                <span placeholder="Option 1" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit" 
-                onclick="window.app.setPlaceholder('wouldYouRatherLeftSubmit', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit', 'Option 1')"></span>
-            -->
+                <span style="display:none" placeholder="Apple pie" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit-system" 
+                    onclick="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', 'Apple pie')">
+                </span>
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('wouldYouRatherLeftSubmit').innerText=''" style="margin:5px">Clear</div>-->
             <div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherLeftSubmit', '')" style="margin:5px">Clear</div>
@@ -1181,10 +1211,8 @@ that will be used later in the game.
                 <div id="wouldYouRatherRightSubmit" class="textfield">
                     <div style="color:#aaa"><i>Peach cobbler</i></div>
                 </div>
-            <!--
-                <span placeholder="Option 2" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmit" 
-                onclick="window.app.setPlaceholder('wouldYouRatherRightSubmit', '')" onblur="window.app.setPlaceholder('wouldYouRatherRightSubmit', 'Option 2')"></span>
-            -->
+                <span style="display:none" placeholder="Peach cobbler" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmit-system" 
+                onclick="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', 'Peach cobbler')"></span>
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('wouldYouRatherRightSubmit').innerText=''" style="margin:5px">Clear</div>-->
             <div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherRightSubmit', '')" style="margin:5px">Clear</div>
@@ -1254,10 +1282,9 @@ that will be used later in the game.
                 <div id="retrieveQuestionsField1" class="textfield" style="width:95%;">
                     <div style="color:#aaa"><i>Give me a good question</i></div>
                 </div>
-                <!--
-                <span placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1" 
-                onclick="window.app.setPlaceholder('retrieveQuestionsField1', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField1', 'Give me a good question')"></span>
-                -->
+                <span style="display:none" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1-system" 
+                    onclick="window.app.setPlaceholder('retrieveQuestionsField1-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField1-system', 'Give me a good question')">
+                </span>
             </div>
         </div>
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:#9c9c9c">
@@ -1275,10 +1302,9 @@ that will be used later in the game.
                 <div id="retrieveQuestionsField2" class="textfield" style="width: 95%;">
                     <div style="color:#aaa"><i>Give me a good question</i></div>
                 </div>
-                <!--
-                <span placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2" 
-                onclick="window.app.setPlaceholder('retrieveQuestionsField2', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField2', 'Give me a good question')"></span>
-                -->
+                <span style="display:none" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2-system" 
+                    onclick="window.app.setPlaceholder('retrieveQuestionsField2-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField2-system', 'Give me a good question')">
+                </span>
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>-->
         </div>
@@ -1297,10 +1323,9 @@ that will be used later in the game.
                 <div id="retrieveQuestionsField3" class="textfield" style="width: 95%;">
                     <div style="color:#aaa"><i>Give me a good question</i></div>
                 </div>
-                <!--
-                <span placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3" 
-                onclick="window.app.setPlaceholder('retrieveQuestionsField3', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3', 'Give me a good question')"></span>
-                -->
+                <span style="display:none" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3-system" 
+                    onclick="window.app.setPlaceholder('retrieveQuestionsField3-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3-system', 'Give me a good question')">
+                </span>
             </div>
         </div> 
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:#9c9c9c">
@@ -1338,10 +1363,8 @@ that will be used later in the game.
             <div id="textfield1" class="textfield" style="width:95%;">
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
-            <!--
-            <span placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1" 
-            onclick="window.app.setPlaceholder('textfield1', '')" onblur="window.app.setPlaceholder('textfield1', 'Answer me!')"></span>
-            -->
+            <span style="display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1-system" 
+            onclick="window.app.setPlaceholder('textfield1-system', '')" onblur="window.app.setPlaceholder('textfield1-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
             <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield1', '')">
@@ -1355,10 +1378,8 @@ that will be used later in the game.
             <div id="textfield2" class="textfield" style="width:95%;">
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
-            <!--
-            <span placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2" 
-            onclick="window.app.setPlaceholder('textfield2', '')" onblur="window.app.setPlaceholder('textfield2', 'Answer me!')"></span>
-            -->
+            <span style="display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2-system" 
+            onclick="window.app.setPlaceholder('textfield2-system', '')" onblur="window.app.setPlaceholder('textfield2-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
             <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield2', '')">
@@ -1372,10 +1393,8 @@ that will be used later in the game.
             <div id="textfield3" class="textfield" style="width:95%;">
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
-            <!--
-            <span placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3" 
-            onclick="window.app.setPlaceholder('textfield3', '')" onblur="window.app.setPlaceholder('textfield3', 'Answer me!')"></span>
-            -->
+            <span style="display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3-system" 
+            onclick="window.app.setPlaceholder('textfield3-system', '')" onblur="window.app.setPlaceholder('textfield3-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
             <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield3', '')">

@@ -58,15 +58,19 @@ AirConsoleKeyboard.DONE = 1;
 AirConsoleKeyboard.HIDE = 2;
 AirConsoleKeyboard.BACKSPACE = 3;
 AirConsoleKeyboard.CANCEL = 4;
+var bindingsFunctions = {};
 
 AirConsoleKeyboard.prototype.bind = function(input_id, opts) {
   var me = this;
   var input_div = document.getElementById(input_id);
-  input_div.addEventListener("click", function(event) {
+  bindingsFunctions[input_id] = function (event) {
+    console.log("addbinding");
     me.show(input_id, opts);
     event.stopPropagation();
     event.preventDefault();
-  });
+  };
+
+  input_div.addEventListener("click", bindingsFunctions[input_id]);
   if (!input_div.innerHTML) {
     input_div.innerHTML = "&nbsp;"
   }
@@ -74,6 +78,14 @@ AirConsoleKeyboard.prototype.bind = function(input_id, opts) {
   input_div.style.webkitUserSelect = "none";
   input_div.style.msUserSelect = "none";
   input_div.style.userSelect = "none";
+};
+
+AirConsoleKeyboard.prototype.unbind = function(input_id, opts) {
+  var input_div = document.getElementById(input_id);
+  input_div.removeEventListener("click", bindingsFunctions[input_id]);
+  if (!input_div.innerHTML) {
+    input_div.innerHTML = "&nbsp;"
+  }
 };
 
 AirConsoleKeyboard.prototype.valueText = function(input_id) {
