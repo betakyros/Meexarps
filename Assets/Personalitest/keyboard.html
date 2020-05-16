@@ -310,7 +310,7 @@ path, .jtk-endpoint {
         function bindAll() {
             allTextFieldIds.forEach(element => {
                 keyboard.bind(element);
-                document.getElementById(element).style.display = "flex";
+                document.getElementById(element).style.display = "inline-block";
                 document.getElementById(element+"-system").style.display = "none";
             });
         }
@@ -319,7 +319,7 @@ path, .jtk-endpoint {
             allTextFieldIds.forEach(element => {
                 keyboard.unbind(element);
                 document.getElementById(element).style.display = "none";
-                document.getElementById(element+"-system").style.display = "flex";
+                document.getElementById(element+"-system").style.display = "inline-block";
             });
         }
 
@@ -1187,9 +1187,8 @@ that will be used later in the game.
                 <div id="wouldYouRatherSubmit" class="textfield">
                     <div style="color:#aaa"><i>Do you prefer...</i></div>
                 </div>
-                <span style="display:none" placeholder="Would You Rather Question" class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit-system" 
-                    onclick="window.app.setPlaceholder('wouldYouRatherSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit-system', 'Do you prefer...')">
-                </span>
+                <span style="display:none" placeholder="Do you prefer..." class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit-system" 
+                    onclick="window.app.setPlaceholder('wouldYouRatherSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit-system', 'Do you prefer...')"></span>
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('wouldYouRatherSubmit').innerText=''" style="margin:5px">Clear</div>-->
             <div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Clear</div>
@@ -1200,8 +1199,7 @@ that will be used later in the game.
                     <div style="color:#aaa"><i>Apple pie</i></div>
                 </div>
                 <span style="display:none" placeholder="Apple pie" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit-system" 
-                    onclick="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', 'Apple pie')">
-                </span>
+                    onclick="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', 'Apple pie')"></span>
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('wouldYouRatherLeftSubmit').innerText=''" style="margin:5px">Clear</div>-->
             <div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherLeftSubmit', '')" style="margin:5px">Clear</div>
@@ -1363,7 +1361,7 @@ that will be used later in the game.
             <div id="textfield1" class="textfield" style="width:95%;">
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
-            <span style="display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1-system" 
+            <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1-system" 
             onclick="window.app.setPlaceholder('textfield1-system', '')" onblur="window.app.setPlaceholder('textfield1-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
@@ -1378,7 +1376,7 @@ that will be used later in the game.
             <div id="textfield2" class="textfield" style="width:95%;">
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
-            <span style="display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2-system" 
+            <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2-system" 
             onclick="window.app.setPlaceholder('textfield2-system', '')" onblur="window.app.setPlaceholder('textfield2-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
@@ -1393,7 +1391,7 @@ that will be used later in the game.
             <div id="textfield3" class="textfield" style="width:95%;">
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
-            <span style="display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3-system" 
+            <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3-system" 
             onclick="window.app.setPlaceholder('textfield3-system', '')" onblur="window.app.setPlaceholder('textfield3-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
