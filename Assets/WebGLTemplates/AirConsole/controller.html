@@ -427,13 +427,12 @@ path, .jtk-endpoint {
                 /* THIS IS WHERE ACTIONS ARE RECEIVED */
                 
                 if(myAction === "sendWaitScreen") {
-                    console.log("sendWaitScreen");
-                    console.log(payload.data);
                     hideAllViews();
                     document.getElementById("waitingView").style.display = "block";
                 } else if(myAction === "setIsVip") {
                   isVip = true;
-                  document.getElementById("optionsButton").style.display = "block";
+                  //document.getElementById("optionsButton").style.display = "block";
+                  document.getElementById("vipOptionsDiv").style.display = "block";
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("startGameButton").style.display = "inline-block";
                 } else if(myAction === "sendWelcomeScreenInfo") {
@@ -1088,7 +1087,7 @@ path, .jtk-endpoint {
     </style>
   </head>
   <body style="font-family: Roboto; background-color:#8cffd4; text-align: center;" onload="init()">
-        <div id="optionsButton" class="optionsButton"  style="display:none;">
+        <div id="optionsButton" class="optionsButton">
             <img src="./icon_gear.png" onclick="window.app.viewOptions()" style="height:50px" />
         </div>
     <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
@@ -1103,9 +1102,9 @@ path, .jtk-endpoint {
         <div id="nickname" class="textfield">
             <div style="color:#aaa"><i>A fun but identifiable name</i></div>
         </div>
-        <div style="display:none;justify-content:center;">
-            <span placeholder="Identifiable name" class="franklinInput" contenteditable="true" id="nickname-system" 
-            onclick="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', 'Identifiable name')"></span>
+        <div style="justify-content:center;">
+            <span style="display:none;" placeholder="A fun but identifiable name" class="franklinInput" contenteditable="true" id="nickname-system" 
+            onclick="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', 'A fun but identifiable name')"></span>
         </div>
         <div class="view" id="nameAlreadyTakenView" style="display:none;color:red;font-style:italic;">
             That name is already taken, please choose another name
@@ -1122,10 +1121,12 @@ path, .jtk-endpoint {
         <img class="topleft" src="./icon_backarrow.png" onclick="window.app.hideOptions()" style="z-index:2; height:50px" />
         <div style="position: absolute;top: 13px;width:100%;font-size:30px;">Game Options</div>
         <div id="checkboxes" style="text-align:left; margin: 0 0 0 20px;">
-            <input type="checkbox" id="NsfwQuestionsCheckbox">
-            <label for="NsfwQuestionsCheckbox"> Nsfw Questions Enabled</label><br>
-            <input type="checkbox" id="anonymousNameCheckbox"> 
-            <label for="anonymousNameCheckbox"> Anonymous Names Enabled</label><br>
+            <div style="display:none;" id="vipOptionsDiv">
+                <input type="checkbox" id="NsfwQuestionsCheckbox">
+                <label for="NsfwQuestionsCheckbox"> Nsfw Questions Enabled</label><br>
+                <input type="checkbox" id="anonymousNameCheckbox"> 
+                <label for="anonymousNameCheckbox"> Anonymous Names Enabled</label><br>
+            </div>
             <input type="checkbox" id="useSystemKeyboard"> 
             <label for="useSystemKeyboard"> Use system keyboard (Not Recommended) </label><br>
         </div>
