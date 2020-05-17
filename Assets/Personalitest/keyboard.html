@@ -445,7 +445,7 @@ path, .jtk-endpoint {
                             globalCurrNumPlayers = playerCount;
                             var option = document.createElement("option");
                             option.text = playerCount + (playerCount == 1 ? " round": " rounds");
-                            document.getElementById("roundCountInputField").add(option);                        
+                            //document.getElementById("roundCountInputField").add(option);                        
                         }
                     }
                 } else if(myAction === "sendWelcomeScreenInfoDetails") {
@@ -463,13 +463,15 @@ path, .jtk-endpoint {
                     document.getElementById("welcomeScreenView").style.display = "block";
                     document.getElementById("nameAlreadyTakenView").style.display = "block";
                 } 
-                /*else if(myAction === "selectRoundCountView") {
+                else if(myAction === "selectRoundCountView") {
                     hideAllViews();
-                    document.getElementById("roundCountInputField").setAttribute("max", payload.data);
-                    document.getElementById("roundCountInputField").value = payload.data;
-                    document.getElementById("roundCountDisplayField").value = payload.data;
+                    var numPlayers = payload.data;
+                    //document.getElementById("roundCountInputField").setAttribute("max", payload.data);
+                    //document.getElementById("roundCountInputField").value = payload.data;
+                    //document.getElementById("roundCountDisplayField").value = payload.data;
                     document.getElementById("selectRoundCountView").style.display = "block";
-                }*/
+                    App.prototype.clickRoundButton(numPlayers);
+                }
                 else if(myAction === "sendSelectCategory") {
                     document.getElementById("selectCategoryButton1").innerText=payload.data[0];
                     document.getElementById("selectCategoryButton2").innerText=payload.data[1];
@@ -719,24 +721,40 @@ path, .jtk-endpoint {
 			}
 
             App.prototype.sendStartGame = function sendStartGame() {
-                var roundCount = document.getElementById("roundCountInputField").value.charAt(0);
+                //var roundCount = document.getElementById("roundCountInputField").value.charAt(0);
 
 				var message = {
 					'action': "sendStartGame",
 					'info': {
-                      'roundCount': parseInt(roundCount, 10)
                     }
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
 
+            var roundCountValue = 1;
+            App.prototype.clickRoundButton = function clickRoundButton(roundNumberButton) {
+                console.log("clickRoundButton: "  + roundNumberButton);
+                roundCountValue = roundNumberButton;
+                for(var i = 0; i < globalCurrNumPlayers; i++) {
+                    document.getElementById("roundCountButton" + (i+1)).style.display = "block";
+                    if(i+1 == roundNumberButton) {
+                        document.getElementById("roundCountButton" + (i+1)).style.backgroundColor = "white";
+                    } else {
+                        document.getElementById("roundCountButton" + (i+1)).style.backgroundColor = "Transparent";
+                    }
+                }
+                document.getElementById("timeEstimateDiv").innerText = "With " + globalCurrNumPlayers + " players, it will take about " +
+                (3 + parseInt(globalCurrNumPlayers)) + " minutes per round (game length ~= " + ((3 + parseInt(globalCurrNumPlayers)) * roundCountValue) + " minutes). " + 
+                "Note: With fewer rounds, some players will not get to submit questions.";
+            }
+
             App.prototype.sendSetRoundCount = function sendSetRoundCount() {
-                var roundCount = document.getElementById('roundCountInputField').value;
-                console.log("sending", "roundCount", roundCount);
 				var message = {
 					'action': "sendSetRoundCount",
-					'info': roundCount
+					'info': roundCountValue
 				};
+                console.log("roundCountValue: " + roundCountValue);
+
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
 
@@ -1029,6 +1047,21 @@ path, .jtk-endpoint {
         color: #555; 
         font-style: italic;
       }
+
+      .roundCountButton {
+          background-color: Transparent;
+          border: none;
+          padding: 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 100%;
+          width: 50px;
+          height: 50px;
+        }
       
       .optionsButton {
         position: absolute;
@@ -1167,9 +1200,6 @@ Others under Creative Commons 0 License from https://freesound.org
         <div id="startGameScreenViewUsername"> Welcome, [Username]</div>
         <div id="vipStartButtonDescription" style="display:none">
             <br>
-            <select id="roundCountInputField">
-            </select>
-            <br>
             <br>
             <text class="franklinInstructionText">You are the VIP and can start the game<br>
                 when everyone is ready
@@ -1222,18 +1252,26 @@ that will be used later in the game.
     <div class="view" id="waitingView" style="padding:50% 0;display:none">
         Submitted, now hang on tight for the next action
     </div>
-    <!--
     <div class="view" id="selectRoundCountView" style="padding:50% 0;display:none">
         Select the number of rounds you'd like to play.
         <br>
+        <!--
         <input type="range" id="roundCountInputField" min="1" max="6" oninput="roundCountDisplayField.value = roundCountInputField.value">
+        -->
+        <div style="display:flex; flex-direction:row; justify-content:space-evenly;">
+            <button id="roundCountButton1" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(1)">1</button>
+            <button id="roundCountButton2" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(2)">2</button>
+            <button id="roundCountButton3" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(3)">3</button>
+            <button id="roundCountButton4" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(4)">4</button>
+            <button id="roundCountButton5" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(5)">5</button>
+            <button id="roundCountButton6" style="display:none;"class="roundCountButton" onclick="window.app.clickRoundButton(6)">6</button>
+        </div>
         <br>
-        <output id="roundCountDisplayField">6</output>
         <br>
+        <div class="pseudo_button" onclick="window.app.sendSetRoundCount()" style="margin:5px">Start Game</div>
         <br>
-        <div class="pseudo_button" onclick="window.app.sendSetRoundCount()" style="margin:5px">Set Round Count</div>
+        <div id="timeEstimateDiv"></div>
     </div>
-    -->
     <div class="view" id="wouldYouRatherView" style="padding:50% 0;display:none">
         <div id="wouldYouRatherQuestion"> </div>
         <br>

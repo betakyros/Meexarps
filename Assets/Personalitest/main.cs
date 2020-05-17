@@ -264,28 +264,28 @@ public class main : MonoBehaviour
         }
         else if ("sendStartGame".Equals(action))
         {
-            gameState.numRoundsPerGame = data["info"]["roundCount"].ToObject<int>();
+            //gameState.numRoundsPerGame = data["info"]["roundCount"].ToObject<int>();
             //GameObject.Find("WelcomeScreenPanel").SetActive(false);
-            /*
-            selectRoundNumberPanel.SetActive(true);
-            selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
-                "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
+            
+            //selectRoundNumberPanel.SetActive(true);
+            //selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
+            //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
-            SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
+            SendMessageToVip(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
             gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
-            */
+            /*
             introAudioSource.Stop();
             mainLoopAudioSource.Play();
             StartCoroutine(ShowIntroInstrucitons(2));
+            */
         }
-        /*
         else if ("sendSetRoundCount".Equals(action))
         {
             gameState.numRoundsPerGame = data["info"].ToObject<int>();
             introAudioSource.Stop();
             mainLoopAudioSource.Play();
             StartCoroutine(ShowIntroInstrucitons(2));
-        }*/
+        }
         else if ("sendSubmitWouldYouRather".Equals(action))
         {
             List<string> wouldYouRather = new List<string>();
