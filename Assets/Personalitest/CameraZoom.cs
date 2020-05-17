@@ -16,7 +16,7 @@ public class CameraZoom : MonoBehaviour
     // Time taken for the transition.
     float duration = 1.0f;
     float pauseDuration = 12.0f;
-    float maxFontSize = 50;
+    float maxFontSize = 40;
     bool gentleShake;
     bool resetAnchors;
     bool isMovie;
