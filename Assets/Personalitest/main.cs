@@ -174,6 +174,7 @@ public class main : MonoBehaviour
     void OnMessage(int from, JToken data)
     {
         string action = data["action"].ToString();
+        bool playSound = true;
         if ("sendWelcomeInfo".Equals(action))
         {
             string name = data["info"]["name"].ToString();
@@ -261,6 +262,7 @@ public class main : MonoBehaviour
         else if ("requestWelcomeScreenInfo".Equals(action))
         {
             sendWelcomeScreenInfo(-1);
+            playSound = false;
         }
         else if ("sendStartGame".Equals(action))
         {
@@ -343,6 +345,7 @@ public class main : MonoBehaviour
         }
         else if ("sendRequestAnotherQuestion".Equals(action))
         {
+            playSound = false;
             string elementId = data["info"]["elementId"].ToString();
             string nextQuestion;
             if (writeMyOwnQuestions)
@@ -481,7 +484,7 @@ public class main : MonoBehaviour
         }
         if(gameState.players.ContainsKey(from))
         {
-            if (!"requestWelcomeScreenInfo".Equals(action)) {
+            if (playSound) {
                 //play a sound to confirm the input
                 blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
             } 

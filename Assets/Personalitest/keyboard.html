@@ -946,7 +946,9 @@ path, .jtk-endpoint {
                 } else if(oldUseSystemKeyboard && !useSystemKeyboard) {
                     bindAll();
                 }
+                App.prototype.hideOptions();
 			}
+
             App.prototype.returnToWelcomeScreen = function returnToWelcomeScreen() {
                 hideAllViews();
                 document.getElementById("welcomeScreenView").style.display = "block";

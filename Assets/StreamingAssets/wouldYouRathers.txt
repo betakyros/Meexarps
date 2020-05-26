@@ -45,6 +45,7 @@ Would you rather date someone with no fingers or no lips?|No fingers? I guess?|N
 What is scarier to you? A completely open space with nothing around for miles, or a small enclosed space where you can barely stretch your arms?|Completely open space|Small enclosed space
 Would you rather hang out with a slightly dumb person or a slightly selfish person?|Slightly dumb|Slightly selfish
 The Trolley Problem. Would you personally kill one person to save 5?|No|Yes
+Would you rather live with your roomates parents for 4 weeks straight, or for the next 14 weeks have them visit for the weekend?|4 straight weeks|14 weekends
 Do you prefer zombies or aliens?|Zombies|Aliens
 Would you date someone with a creepy mustache?|Probably|Very Yes
 Would you have a servant?|No, that's weird|SERVE ME PEASANT
@@ -65,6 +66,7 @@ Do you prefer thin crust or deep dish pizza?|Thin crust|Deep dish
 Do you put ice in your drinks?|No|Yes
 Do you like surprises?|No|SURPRISE!
 Do you like the man bun?|Gross!|Cool!
+Do you think solving a rubik's cube is a cool skill?|Lame!|Cool!
 Do you like to tell cheesy jokes?|Meh|So a guy walks into a bar. OUCH!
 On an average weekend, would you rather stay in or go out?|Stay In|Go Out
 When you are home alone, do you close the bathroom door?|Nope|There might be a killer!
@@ -110,6 +112,7 @@ Would you press a button that would take 100 dollars from a random person in you
 Would you eat a bug?|What why would you ask this?|I'm always curious!
 Would you ever listen to a song you wrote yourself?|Nope!|Yea!
 Would you be willing to sit in a room for 8 hours a day for $25 an hour?|No|Yes
+Would you download a car?|Never!|Absolutely!
 Is a Hot Pocket a big pizza roll or is a pizza roll a mini Hot Pocket?|Big pizza roll|Mini Hot Pocket
 If you were stranded on an island with Toad from Mario, would you eat him|Nah bruh|Ye duh
 What do you call a cow with no legs? LEAN BEEF!|hah?|HAHAHAHAHA

@@ -946,7 +946,9 @@ path, .jtk-endpoint {
                 } else if(oldUseSystemKeyboard && !useSystemKeyboard) {
                     bindAll();
                 }
+                App.prototype.hideOptions();
 			}
+
             App.prototype.returnToWelcomeScreen = function returnToWelcomeScreen() {
                 hideAllViews();
                 document.getElementById("welcomeScreenView").style.display = "block";
@@ -1319,7 +1321,7 @@ that will be used later in the game.
                 <div id="retrieveQuestionsField1" class="textfield" style="width:95%;">
                     <div style="color:#aaa"><i>Give me a good question</i></div>
                 </div>
-                <span style="display:none" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1-system" 
+                <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1-system" 
                     onclick="window.app.setPlaceholder('retrieveQuestionsField1-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField1-system', 'Give me a good question')">
                 </span>
             </div>
@@ -1339,7 +1341,7 @@ that will be used later in the game.
                 <div id="retrieveQuestionsField2" class="textfield" style="width: 95%;">
                     <div style="color:#aaa"><i>Give me a good question</i></div>
                 </div>
-                <span style="display:none" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2-system" 
+                <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2-system" 
                     onclick="window.app.setPlaceholder('retrieveQuestionsField2-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField2-system', 'Give me a good question')">
                 </span>
             </div>
@@ -1360,7 +1362,7 @@ that will be used later in the game.
                 <div id="retrieveQuestionsField3" class="textfield" style="width: 95%;">
                     <div style="color:#aaa"><i>Give me a good question</i></div>
                 </div>
-                <span style="display:none" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3-system" 
+                <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3-system" 
                     onclick="window.app.setPlaceholder('retrieveQuestionsField3-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3-system', 'Give me a good question')">
                 </span>
             </div>
