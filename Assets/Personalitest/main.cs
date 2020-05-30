@@ -755,7 +755,7 @@ public class main : MonoBehaviour
     {
         //reset the "Answer Set #" counter
         anonymousPlayerNumberCount = 0;
-        anonymousPlayerNumbers.Shuffle();
+        anonymousPlayerNumbers.Shuffle(gameState.GetNumberOfPlayers());
         gameState.rounds.Add(new Round());
 
         //if starting from previous game
@@ -1090,12 +1090,12 @@ public class main : MonoBehaviour
         {
             Answers answers = answersList[i];
             anonymousPlayerNames.Add(answers.anonymousPlayerName);
-            int answerPanelOffset = 1;
+            int answerPanelOffset = 2;
             Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + i];
             //todo set the text size to the same size as the panel
             myText.text = "\n" + answers.anonymousPlayerName + "\n\n";
         }
-        votingPanel.GetComponentsInChildren<Text>()[0].text = gameState.GetCurrentRound().PrintQuestions();
+        votingPanel.GetComponentsInChildren<Text>()[1].text = gameState.GetCurrentRound().PrintQuestions();
         
         //flash the instructions
         if (gameState.GetCurrentRoundNumber() == 0)
@@ -1132,9 +1132,9 @@ public class main : MonoBehaviour
             Destroy(instructionsCz);
             //reset the position of the child panels
             //questions panel
-            images[0].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
-            //votingpanelgrid
             images[1].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
+            //votingpanelgrid
+            images[2].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
         } else
         {
             yield return new WaitForSeconds(1);
@@ -1908,7 +1908,12 @@ public static class IListExtensions
     /// </summary>
     public static void Shuffle<T>(this IList<T> ts)
     {
-        var count = ts.Count;
+        Shuffle(ts, ts.Count);
+    }
+
+    public static void Shuffle<T>(this IList<T> ts, int numToShuffle)
+    {
+        var count = numToShuffle;
         var last = count - 1;
         for (var i = 0; i < last; ++i)
         {
