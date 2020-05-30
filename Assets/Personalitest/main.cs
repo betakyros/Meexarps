@@ -970,10 +970,10 @@ public class main : MonoBehaviour
         return new KeyValuePair<string, int>(questionCategory.categoryName, tempCurrentCategoryIndex);
     }
 
-    public void SendRetrieveQuestions(int deviceId, bool writeMyOwnQuestions)
+    public void SendRetrieveQuestions(int deviceId, bool localWriteMyOwnQuestions)
     {
         string[] questionsToSend;
-        if (writeMyOwnQuestions)
+        if (localWriteMyOwnQuestions)
         {
             questionsToSend = new string[] {
                 "",
@@ -1962,7 +1962,11 @@ public class main : MonoBehaviour
     }
     private string GetRandomQuestion()
     {
-        QuestionCategory qc = questionCategories[Random.Range(0, questionCategories.Count)];
+        QuestionCategory qc;
+        do
+        {
+            qc = questionCategories[Random.Range(0, questionCategories.Count)];
+        } while ((!options["nsfwQuestions"] && qc.isNsfw));
         return qc.questions[Random.Range(0, qc.questions.Length)];
     }
 
