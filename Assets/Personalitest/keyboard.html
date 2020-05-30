@@ -471,7 +471,7 @@ path, .jtk-endpoint {
                     //document.getElementById("roundCountInputField").value = payload.data;
                     //document.getElementById("roundCountDisplayField").value = payload.data;
                     document.getElementById("selectRoundCountView").style.display = "block";
-                    App.prototype.clickRoundButton(numPlayers);
+                    App.prototype.clickRoundButton(parseInt(numPlayers, 10));
                 }
                 else if(myAction === "sendSelectCategory") {
                     document.getElementById("selectCategoryButton1").innerText=payload.data[0];
@@ -784,6 +784,7 @@ path, .jtk-endpoint {
             }
 
             App.prototype.sendSetRoundCount = function sendSetRoundCount() {
+                console.log("sendRoundCountButton: " + roundCountValue);
 				var message = {
 					'action': "sendSetRoundCount",
 					'info': roundCountValue
@@ -1301,7 +1302,7 @@ that will be used later in the game.
             <button id="roundCountButton3" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(3)">3</button>
             <button id="roundCountButton4" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(4)">4</button>
             <button id="roundCountButton5" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(5)">5</button>
-            <button id="roundCountButton6" style="display:none;"class="roundCountButton" onclick="window.app.clickRoundButton(6)">6</button>
+            <button id="roundCountButton6" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(6)">6</button>
         </div>
         <br>
         <br>
