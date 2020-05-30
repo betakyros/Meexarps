@@ -248,6 +248,65 @@ public class main : MonoBehaviour
                 }
             }
         }
+        else if ("forceAdvance".Equals(action))
+        {
+            switch (gameState.tvViewGameState)
+            {
+                case TvViewGameState.WelcomeScreen:
+                    gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
+                    gameState.numRoundsPerGame = 1;
+                    ExitWelcomeScreen();
+                    break;
+                case TvViewGameState.SubmitQuestionsScreen:
+                    List<string> randomQuestions = new List<string>();
+                    randomQuestions.Add(GetRandomQuestion());
+                    randomQuestions.Add(GetRandomQuestion());
+                    randomQuestions.Add(GetRandomQuestion());
+                    gameState.GetCurrentRound().questions = randomQuestions;
+                    PrepareSendQuestions();
+                    SendQuestions();
+                    break;
+                case TvViewGameState.AnswerQuestionsScreen:
+                    foreach(Player p in gameState.players.Values)
+                    {
+                        bool hasAnswers = false;
+                        foreach(Answers a in gameState.GetCurrentRound().answers)
+                        {
+                            if(a.playerNumber == p.playerNumber)
+                            {
+                                hasAnswers = true;
+                            }
+                        }
+                        if(!hasAnswers)
+                        {
+                            List<string> emptyAnswers = new List<string>();
+                            emptyAnswers.Add("");
+                            emptyAnswers.Add("");
+                            emptyAnswers.Add("");
+                            gameState.GetCurrentRound().answers.Add(
+                                new Answers(emptyAnswers.ToArray(), gameState.players[from].playerNumber, GenerateAnonymousPlayerName()));
+                        }
+                    }
+                    StartCoroutine(EndAnswerQuestionsPhase(2));
+                    break;
+                case TvViewGameState.VotingScreen:
+                    StartCoroutine(CalculateVoting(2));
+                    break;
+                case TvViewGameState.RoundResultsScreen:
+                    if (gameState.GetCurrentRoundNumber() == gameState.numRoundsPerGame - 1)
+                    {
+                        SendEndScreen2();
+                    } else
+                    {
+                        StartRound();
+                    }
+                    break;
+                case TvViewGameState.EndGameScreen:
+                    break;
+                default:
+                    break;
+            }
+        }
         else if ("sendRetrieveOptions".Equals(action))
         {
             AirConsole.instance.Message(GetVipDeviceId(), JsonUtility.ToJson(
@@ -283,10 +342,9 @@ public class main : MonoBehaviour
         }
         else if ("sendSetRoundCount".Equals(action))
         {
+            gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
             gameState.numRoundsPerGame = data["info"].ToObject<int>();
-            introAudioSource.Stop();
-            mainLoopAudioSource.Play();
-            StartCoroutine(ShowIntroInstrucitons(2));
+            ExitWelcomeScreen();
         }
         else if ("sendSubmitWouldYouRather".Equals(action))
         {
@@ -360,48 +418,13 @@ public class main : MonoBehaviour
         }
         else if ("sendDecidedQuestions".Equals(action))
         {
-            //Stop the would you rathers
-            CancelInvoke();
-
-            wouldYouRatherPanel.SetActive(false);
-            answerQuestionsPanel.SetActive(true);
-
-            //display the status of each player's submission
-            /*
-            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
-            {
-                Player currentPlayer = gameState.GetPlayerByPlayerNumber(i);
-                int tilesOffset = 1;
-                answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + i].text = currentPlayer.nickname + "\n\n<color=red>Has Not Submitted</color>";
-
-            }
-            */
-
-            // inititalize the grid
-            Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
-            List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
-            for (int i = 5; i >= gameState.GetNumberOfPlayers(); i--)
-            {
-                playerIconsList[i].gameObject.SetActive(false);
-            }
-            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
-            {
-                playerIconsList[i].gameObject.SetActive(true);
-            }
-            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
-            {
-                //            playerTexts[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
-                //          playerTexts[currentPlayerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
-                playerIconsList[i].gameObject.GetComponentInChildren<Text>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
-            }
+            PrepareSendQuestions();
 
             List<string> myQuestions = new List<string>();
             foreach (JProperty property in ((JObject)(data["info"])).Properties())
             {
-                Debug.Log("property: " + property);
                 myQuestions.Add(property.Value.ToString());
             }
-            Debug.Log("received sendDecidedQuestions from: " + from + " with questions: " + myQuestions);
             gameState.GetCurrentRound().questions = myQuestions;
             SendQuestions();
         }
@@ -460,8 +483,6 @@ public class main : MonoBehaviour
 
                 if (HasEveryoneVoted())
                 {
-                    votingPanel.SetActive(false);
-                    resultsPanel.SetActive(true);
                     StartCoroutine(CalculateVoting(2));
                 }
             }
@@ -472,8 +493,6 @@ public class main : MonoBehaviour
         }
         else if ("sendShowEndScreen".Equals(action))
         {
-            resultsPanel.SetActive(false);
-            endScreenPanel.SetActive(true);
             SendEndScreen2();
         }
         else if ("sendPlayAgain".Equals(action))
@@ -489,6 +508,51 @@ public class main : MonoBehaviour
                 blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
             } 
         }
+    }
+
+    private void PrepareSendQuestions()
+    {
+        //Stop the would you rathers
+        CancelInvoke();
+
+        wouldYouRatherPanel.SetActive(false);
+        answerQuestionsPanel.SetActive(true);
+
+        //display the status of each player's submission
+        /*
+        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+        {
+            Player currentPlayer = gameState.GetPlayerByPlayerNumber(i);
+            int tilesOffset = 1;
+            answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + i].text = currentPlayer.nickname + "\n\n<color=red>Has Not Submitted</color>";
+
+        }
+        */
+
+        // inititalize the grid
+        Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
+        List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+        for (int i = 5; i >= gameState.GetNumberOfPlayers(); i--)
+        {
+            playerIconsList[i].gameObject.SetActive(false);
+        }
+        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+        {
+            playerIconsList[i].gameObject.SetActive(true);
+        }
+        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+        {
+            //            playerTexts[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
+            //          playerTexts[currentPlayerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
+            playerIconsList[i].gameObject.GetComponentInChildren<Text>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
+        }
+    }
+
+    private void ExitWelcomeScreen()
+    {
+        introAudioSource.Stop();
+        mainLoopAudioSource.Play();
+        StartCoroutine(ShowIntroInstrucitons(2));
     }
 
     private void SetAudienceWouldYouRatherCounters(int leftAudience, int rightAudience)
@@ -822,6 +886,7 @@ public class main : MonoBehaviour
         SendSelectCategory(currentPlayerTurnDeviceId);
 
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
+        gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
         InvokeRepeating("SendWouldYouRather", 0f, 15f);
     }
 
@@ -998,6 +1063,7 @@ public class main : MonoBehaviour
         {
             SendMessageToPlayersAndSendWaitScreenToAudience(new JsonAction("sendQuestions", questionsToSend));
             gameState.phoneViewGameState = PhoneViewGameState.SendQuestions;
+            gameState.tvViewGameState = TvViewGameState.AnswerQuestionsScreen;
         } else
         {
             if (isAudienceMember(playerDeviceId))
@@ -1348,14 +1414,18 @@ public class main : MonoBehaviour
         //TODO shuffle answers
         SendVoting();
         gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
+        gameState.tvViewGameState = TvViewGameState.VotingScreen;
     }
 
         //todo remove parameter
-        public IEnumerator<WaitForSeconds> CalculateVoting(int count)
+    public IEnumerator<WaitForSeconds> CalculateVoting(int count)
     {
+        votingPanel.SetActive(false);
+        resultsPanel.SetActive(true);
         //SendWaitScreenToEveryone();
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendPersonalResults", new string[] { " " })));
         gameState.phoneViewGameState = PhoneViewGameState.SendPersonalRoundResultsScreen;
+        gameState.tvViewGameState = TvViewGameState.RoundResultsScreen;
 
         //set the anonymous names of each box
         List<Answers> answersList = gameState.GetCurrentRound().answers;
@@ -1373,7 +1443,6 @@ public class main : MonoBehaviour
 
         //give some time for the context switch
         yield return new WaitForSeconds(2);
-
 
         resultsPanel.GetComponentsInChildren<Image>()[0].GetComponentInChildren<GridLayoutGroup>().enabled = false;
         AutoResizeGrid autoResizeGrid = FindObjectsOfType(typeof(AutoResizeGrid))[3] as AutoResizeGrid;
@@ -1726,7 +1795,8 @@ public class main : MonoBehaviour
 
     public void SendEndScreen2()
     {
-
+        resultsPanel.SetActive(false);
+        endScreenPanel.SetActive(true);
         foreach (Player p in gameState.players.Values)
         {
             string currentBestFriend = CalculateBestFriend(p);
@@ -1759,6 +1829,7 @@ public class main : MonoBehaviour
 
 
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
+        gameState.tvViewGameState = TvViewGameState.EndGameScreen;
     }
 
     private static string CaluclateFriendshipStatus(float correctPercent, string[] friendshipStatusArray)
@@ -2173,6 +2244,7 @@ class GameState
     public Dictionary<int, Player> audienceMembers { get; set; }
     public List<Round> rounds { get; set; }
     public PhoneViewGameState phoneViewGameState;
+    public TvViewGameState tvViewGameState;
     public int numRoundsPerGame { get; set; }
     public int totalCorrectGuesses { get; set; }
     public int totalWrongGuesses { get; set; }
@@ -2184,6 +2256,7 @@ class GameState
         players = new Dictionary<int, Player>();
         audienceMembers = new Dictionary<int, Player>();
         rounds = new List<Round>();
+        tvViewGameState = TvViewGameState.WelcomeScreen;
         phoneViewGameState = PhoneViewGameState.SendStartGameScreen;
         ResetGuesses();
     }
@@ -2309,6 +2382,17 @@ enum PhoneViewGameState
     SendStartGameScreen = 8,
     SendSelectRoundNumberScreen = 9,
     SendSkipInstructionsScreen = 10
+}
+
+enum TvViewGameState
+{
+    WelcomeScreen = 0,
+    //SelectRoundCountScreen = 1,
+    SubmitQuestionsScreen = 2,
+    AnswerQuestionsScreen = 4,
+    VotingScreen = 5,
+    RoundResultsScreen = 6,
+    EndGameScreen = 7
 }
 
 enum MeexarpAction

@@ -956,6 +956,13 @@ path, .jtk-endpoint {
             App.prototype.viewCredits = function viewCredits() {
                 document.getElementById("creditsView").style.display = "block";
 			}
+            App.prototype.forceAdvance = function forceAdvance() {
+                var message = {
+					'action': "forceAdvance",
+					'info': {}
+				};
+                me.air_console.message(AirConsole.SCREEN, message);
+			}
             App.prototype.hideCredits = function hideCredits() {
                 document.getElementById("creditsView").style.display = "none";
 			}
@@ -1197,6 +1204,9 @@ path, .jtk-endpoint {
                 <label for="NsfwQuestionsCheckbox"> Nsfw Questions Enabled</label><br>
                 <input type="checkbox" id="anonymousNameCheckbox"> 
                 <label for="anonymousNameCheckbox"> Anonymous Names Enabled</label><br>
+                <br>
+                    <div class="pseudo_button" onclick="window.app.forceAdvance()">Move to the next phase (used if you encounter a bug or someone has to leave)</div> <br>
+                <br>
             </div>
             <input type="checkbox" id="useSystemKeyboard"> 
             <label for="useSystemKeyboard"> Use system keyboard (Not Recommended) </label><br>
@@ -1205,6 +1215,7 @@ path, .jtk-endpoint {
         <div class="pseudo_button" onclick="window.app.saveOptions()">Save Options!</div> <br>
         <br>
         <div class="pseudo_button" onclick="window.app.viewCredits()">View Credits!</div> <br>
+        <br>
         <!--<div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
         <div class="view creditsView" id="creditsView" style="padding:50% 0;display:none;">
