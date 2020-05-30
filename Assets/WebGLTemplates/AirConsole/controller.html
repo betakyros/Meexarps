@@ -360,6 +360,7 @@ path, .jtk-endpoint {
         var timeElapsed = 0;
         var personalRoundResults = [];
         var revealedCount = 0;
+        var currentUnrevealedNode;
         var haveIBeenRevealed = false;
         var personalRoundResultsIsReconnect = false;
 
@@ -581,83 +582,113 @@ path, .jtk-endpoint {
                     displayElement(document.getElementById("submitVoteView"));
 
                 } else if(myAction === "sendPersonalRoundResults") {
-                        var lastElement = payload.data[payload.data.length-1];
+                    var lastElement = payload.data[payload.data.length-1];
                         
-                        personalRoundResultsIsReconnect = (lastElement == "~~~reconnect~~~");
-                        //remove the reconnect marker
-                        payload.data.pop();
-                        personalRoundResults = [];
-                        revealedCount = 0;
-                        haveIBeenRevealed = false;
+                    personalRoundResultsIsReconnect = (lastElement == "~~~reconnect~~~");
+                    //remove the reconnect marker
+                    payload.data.pop();
+                    personalRoundResults = [];
+                    revealedCount = 0;
+                    haveIBeenRevealed = false;
 
-                        var thirdArray = payload.data.length/3;
-                        for(var i = 0; i < thirdArray; i++) {
-                            var anonName = payload.data[i];
-                            var guess = payload.data[thirdArray + i];
-                            var actual = payload.data[2*thirdArray + i];
-                            personalRoundResults[i] = [anonName, guess, actual == guess];
+                    var thirdArray = payload.data.length/3;
+                    for(var i = 0; i < thirdArray; i++) {
+                        var anonName = payload.data[i];
+                        var guess = payload.data[thirdArray + i];
+                        var actual = payload.data[2*thirdArray + i];
+                        personalRoundResults[i] = [anonName, guess, actual == guess];
+                    }
+                    /*
+                    var alienSide = document.getElementById("roundResultsAlienSide");
+                    var rightOrWrong = document.getElementById("roundResultsRightOrWrong");
+                    var yourGuessSide = document.getElementById("roundResultsYourGuess");
+                    alienSide.innerHTML='';
+                    rightOrWrong.innerHTML='';
+                    yourGuessSide.innerHTML='';*/
+                    var resultsContainer = document.getElementById("resultsContainer");
+                    resultsContainer.innerHTML='';
+                    for(var i = 0; i < thirdArray; i++) {
+                        var currentResultContainer = document.createElement("div");
+                        currentResultContainer.style.display = "flex";
+                        currentResultContainer.style.justifyContent = "space-between";
+
+                        var alienImage = document.createElement('img'); 
+                        var guessName = document.createElement('div');
+                        if(personalRoundResults[i][1] == "~~~None~~~"){
+                            alienImage.src="./icon_questionMark.png";
+                            guessName.innerHTML="I don't know!"
+                        } else {
+                            alienImage.src="./purple-alien_idle_transparent.gif";
+                            guessName.innerHTML=personalRoundResults[i][1];
                         }
+                        alienImage.className="yourGuessImage";
 
-                        var alienSide = document.getElementById("roundResultsAlienSide");
-                        var rightOrWrong = document.getElementById("roundResultsRightOrWrong");
-                        var yourGuessSide = document.getElementById("roundResultsYourGuess");
-                        alienSide.innerHTML='';
-                        rightOrWrong.innerHTML='';
-                        yourGuessSide.innerHTML='';
-                        for(var i = 0; i < thirdArray; i++) {
-                            var alienImage = document.createElement('img'); 
-                            var guessName = document.createElement('div');
-                            if(personalRoundResults[i][1] == "~~~None~~~"){
-                                alienImage.src="./icon_questionMark.png";
-                                guessName.innerHTML="I don't know!"
-                            } else {
-                                alienImage.src="./purple-alien_idle_transparent.gif";
-                                guessName.innerHTML=personalRoundResults[i][1];
-                            }
-                            alienImage.className="yourGuessImage";
-
-                            var questionMarkImage = document.createElement('img');
-                            if(personalRoundResultsIsReconnect) {
-                                questionMarkImage.src="./purple-alien_idle_transparent.gif";                                
-                            } else {
-                                questionMarkImage.src="./icon_questionMark.png";
-                            }
-                            questionMarkImage.className="roundResultsImage";
-                            var anonName = document.createElement('div');
-                            anonName.innerHTML=personalRoundResults[i][0];
-
-                            alienSide.appendChild(questionMarkImage);
-                            alienSide.appendChild(anonName);
-                            yourGuessSide.appendChild(alienImage);
-                            yourGuessSide.appendChild(guessName);
-
-                            //if it's reconnect, fill in all the icons
-                            if(personalRoundResultsIsReconnect) {
-                                var rightOrWrong = document.getElementById("roundResultsRightOrWrong");
-                                var rightOrWrongImg = document.createElement('img');
-                                if(personalRoundResults[i][2]) {
-                                    rightOrWrongImg.src="./icon_circledCheck.png";
-                                } else {
-                                    rightOrWrongImg.src="./icon_circledCross.png";                    
-                                }
-                                rightOrWrongImg.className="roundResultsImage";
-                                rightOrWrong.appendChild(rightOrWrongImg);
-                                rightOrWrong.style.height="inherit";
-                            }
+                        var questionMarkImage = document.createElement('img');
+                        if(personalRoundResultsIsReconnect) {
+                            questionMarkImage.src="./purple-alien_idle_transparent.gif";                                
+                        } else {
+                            questionMarkImage.src="./icon_questionMark.png";
                         }
-                        document.getElementById("nextRoundButton").style.display = "none";
-                        document.getElementById("endScreenButton").style.display = "none";
+                        questionMarkImage.className="roundResultsImage";
+                        var anonName = document.createElement('div');
+                        anonName.innerHTML=personalRoundResults[i][0];
+
+                        /*
+                        alienSide.appendChild(questionMarkImage);
+                        alienSide.appendChild(anonName);
+                        yourGuessSide.appendChild(alienImage);
+                        yourGuessSide.appendChild(guessName);
+                        */
+                        var alienSideDiv = document.createElement("div");
+                        alienSideDiv.appendChild(questionMarkImage);
+                        alienSideDiv.appendChild(anonName);
+                        alienSideDiv.style.width = "33%";
+
+                        var yourGuessDiv = document.createElement("div");
+                        yourGuessDiv.appendChild(alienImage);
+                        yourGuessDiv.appendChild(guessName);
+                        yourGuessDiv.style.width = "33%";
+
+                        currentResultContainer.appendChild(alienSideDiv);
+
+                        //if it's reconnect, fill in all the icons
+                        if(personalRoundResultsIsReconnect) {
+                            //var rightOrWrong = document.getElementById("roundResultsRightOrWrong");
+                            var rightOrWrong = document.createElemnt("div");
+                            var rightOrWrongImg = document.createElement('img');
+                            if(personalRoundResults[i][2]) {
+                                rightOrWrongImg.src="./icon_circledCheck.png";
+                            } else {
+                                rightOrWrongImg.src="./icon_circledCross.png";                    
+                            }
+                            rightOrWrongImg.className="roundResultsImage";
+                            rightOrWrong.appendChild(rightOrWrongImg);
+                            //rightOrWrong.style.height="inherit";
+                            currentResultContainer.appendChild(rightOrWrong);
+                        } else {
+                            //else append a filler div                            
+                            currentResultContainer.appendChild(document.createElement("div"));
+                        }
+                        currentResultContainer.appendChild(yourGuessDiv);
+                        resultsContainer.append(currentResultContainer);
+                    }
+                    currentUnrevealedNode = resultsContainer.firstChild;
+                    document.getElementById("nextRoundButton").style.display = "none";
+                    document.getElementById("endScreenButton").style.display = "none";
                     displayElement(document.getElementById("roundResultsView"));
-                        
                 } else if(myAction === "sendRevealNextPersonalRoundResult") {
                     var currTargetName = payload.data[0];
                     if(currTargetName == playerName || personalRoundResultsIsReconnect) {
                         haveIBeenRevealed = true;
                     } else {
+                    /*
                         var alienSide = document.getElementById("roundResultsAlienSide");
                         var rightOrWrong = document.getElementById("roundResultsRightOrWrong");
                         var currentAlien = alienSide.getElementsByTagName("img").item(revealedCount);
-                        currentAlien.src = "./purple-alien_idle_transparent.gif";
+                        */
+                        //currentAlien.src = "./purple-alien_idle_transparent.gif";
+                        var currentRow = currentUnrevealedNode.childNodes;
+                        currentRow[0].firstChild.src = "./purple-alien_idle_transparent.gif";
 
                         var rightOrWrongImg = document.createElement('img');
 
@@ -667,11 +698,15 @@ path, .jtk-endpoint {
                             rightOrWrongImg.src="./icon_circledCross.png";                    
                         }
                         rightOrWrongImg.className="roundResultsImage";
-                        rightOrWrong.appendChild(rightOrWrongImg);                        
+                        //rightOrWrong.appendChild(rightOrWrongImg);                        
+                        currentRow[1].appendChild(rightOrWrongImg);
 
                         revealedCount++;
+                        currentUnrevealedNode = currentUnrevealedNode.nextSibling;
+                        /*
                         var numAliens = alienSide.getElementsByTagName("img").length;
                         rightOrWrong.style.height= (alienSide.clientHeight/numAliens * revealedCount) + "px";
+                        */
                     }
                 } else if(myAction === "sendNextRoundScreen") {
                     document.getElementById("nextRoundButton").style.display = "block";
@@ -1464,21 +1499,25 @@ that will be used later in the game.
         </div>
         <div class="pseudo_button" onclick="window.app.sendVoting()" style="bottom:1em; right:1em; position: absolute;">Submit Votes!</div>
     </div>
-    <div class="view" id="roundResultsView" style="width:100%; height:100%;display:none;" >
+    <div class="view" id="roundResultsView" style="width:100%; height:100%;display:none;outline:1px solid;" >
         
         <div style="display:flex; flex-direction:row;justify-content:space-evenly; padding: 20px 0;height:7%;">
             <div style= "width:45%;height:100%;position:relative;" class="franklinBanner">Alien</div>
             <div style= "width:45%;height:100%;position:relative;" class="franklinBanner">Your guess</div>
         </div>
-        <div style="display:flex; flex-direction:row;">
-            <div style="width:33%;height:100%;flex-direction: column;align-items:center;" id="roundResultsAlienSide">
+        <div id="resultsContainer">
+        </div>
+        <!--
+        <div style="display:flex; flex-direction:row;outline:1px solid;">
+            <div style="width:33%;height:100%;flex-direction: column;align-items:center;outline:1px solid;" id="roundResultsAlienSide">
             </div>
-            <div style="width:33%;height:inherit;flex-direction: column;align-items:center;display:flex;justify-content:space-around;" id="roundResultsRightOrWrong">
+            <div style="width:33%;height:inherit;flex-direction: column;align-items:center;display:flex;justify-content:space-around;outline:1px solid;" id="roundResultsRightOrWrong">
             </div>
-            <div style="width:33%;height:100%;flex-direction: column;align-items:center;" id="roundResultsYourGuess">
+            <div style="width:33%;height:100%;flex-direction: column;align-items:center;outline:1px solid;" id="roundResultsYourGuess">
             </div>
         </div>
-        <div  style="display:flex; justify-content:center;">
+        -->
+        <div  style="display:flex; justify-content:center;outline:1px solid;">
             <div class="pseudo_button" style="display:none;width:50%;" id="nextRoundButton" onclick="window.app.sendNextRound()">Continue to Next Round</div>
             <div class="pseudo_button" style="display:none;width:50%;" id="endScreenButton" onclick="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
         </div>
