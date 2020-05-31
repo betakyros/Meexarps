@@ -53,6 +53,7 @@ public class main : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        ExceptionHandling.SetupExceptionHandling();
         InitializeOptions();
         var newLinesRegex = new Regex(@"\r\n|\n|\r", RegexOptions.Singleline);
         string rawQuestions;
