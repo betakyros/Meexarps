@@ -1062,6 +1062,13 @@ public class main : MonoBehaviour
 
         if (playerDeviceId < 0)
         {
+            Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
+            List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+            //reset all play player icons
+            foreach(Image i in playerIconsList)
+            {
+                movePlayerIcon(i, 0);
+            }
             SendMessageToPlayersAndSendWaitScreenToAudience(new JsonAction("sendQuestions", questionsToSend));
             gameState.phoneViewGameState = PhoneViewGameState.SendQuestions;
             gameState.tvViewGameState = TvViewGameState.AnswerQuestionsScreen;
