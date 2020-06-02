@@ -26,9 +26,12 @@ public class main : MonoBehaviour
     public GameObject resultsPanel;
     public GameObject endScreenPanel;
     public Canvas canvas;
-    public AudioSource introAudioSource;
+//    public AudioSource introAudioSource;
     public AudioSource mainLoopAudioSource;
     public AudioSource blipAudioSource;
+    public AudioSource[] welcomeScreenAudioSources;
+    private float onVolume = .4f;
+    private float offVolume = 0f;
     public RawImage instructionVideo;
     public RawImage introInstructionVideo;
     public VideoPlayer introVp;
@@ -49,10 +52,12 @@ public class main : MonoBehaviour
     private bool writeMyOwnQuestions = false;
     private Dictionary<string, bool> options = new Dictionary<string, bool>();
     
+    
 
     // Start is called before the first frame update
     void Start()
     {
+        StartAllLevels(welcomeScreenAudioSources);
         ExceptionHandling.SetupExceptionHandling();
         InitializeOptions();
         var newLinesRegex = new Regex(@"\r\n|\n|\r", RegexOptions.Singleline);
@@ -108,6 +113,7 @@ public class main : MonoBehaviour
     private IEnumerator<WaitForSeconds> waitThreeSecondsThenDisplayWelcomeScreen()
     {
         yield return new WaitForSeconds(3);
+        SetVolumeForLevel(welcomeScreenAudioSources, 1);
         FadeSplashScreen fadeSplashScreenScript = splashScreenPanel.AddComponent<FadeSplashScreen>();
         fadeSplashScreenScript.Setup();
     }
@@ -328,11 +334,12 @@ public class main : MonoBehaviour
         {
             //gameState.numRoundsPerGame = data["info"]["roundCount"].ToObject<int>();
             //GameObject.Find("WelcomeScreenPanel").SetActive(false);
-            
+
             //selectRoundNumberPanel.SetActive(true);
             //selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
             //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
+            SetVolumeForLevel(welcomeScreenAudioSources, 2);
             SendMessageToVip(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
             gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
             /*
@@ -551,7 +558,8 @@ public class main : MonoBehaviour
 
     private void ExitWelcomeScreen()
     {
-        introAudioSource.Stop();
+        StopAllLevels(welcomeScreenAudioSources);
+        //introAudioSource.Stop();
         mainLoopAudioSource.Play();
         StartCoroutine(ShowIntroInstrucitons(2));
     }
@@ -1988,6 +1996,40 @@ public class main : MonoBehaviour
     {
         return gameState.GetNumberOfPlayers();
     }
+
+    private void StartAllLevels(AudioSource[] audioSources)
+    {
+        audioSources[0].volume = onVolume;
+        foreach (AudioSource a in audioSources)
+        {
+            a.Play();
+        }
+    }
+
+    private void SetVolumeForLevel(AudioSource[] audioSources, int numLevelToPlay)
+    {
+        for(int i = 0; i < audioSources.Length; i++)
+        {
+            if(i == numLevelToPlay)
+            {
+                audioSources[i].volume = onVolume;
+            } else
+            {
+                audioSources[i].volume = offVolume;
+            }
+        }
+    }
+
+    private void StopAllLevels(AudioSource[] audioSources)
+    {
+        foreach (AudioSource a in audioSources)
+        {
+            a.volume = offVolume;
+            a.Stop();
+        }
+    }
+
+    
 }
 
 public static class IListExtensions
