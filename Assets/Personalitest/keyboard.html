@@ -371,6 +371,7 @@ path, .jtk-endpoint {
         var currentUnrevealedNode;
         var haveIBeenRevealed = false;
         var personalRoundResultsIsReconnect = false;
+        var selectedAlien = 0;
 
         App.prototype.touchStart = function touchStart(text) {
             showingAnswerHelpText = true;
@@ -460,6 +461,7 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendWelcomeScreenInfoDetails") {
                     playerName = payload.data[0];
                     playerNumber = payload.data[1];
+                    selectedAlien = payload.data[2];
                     document.getElementById("startGameScreenViewUsername").innerText = "Welcome, " + playerName + "!";
                 } else if(myAction === "sendRetrieveOptions") {
                     document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
@@ -575,7 +577,7 @@ path, .jtk-endpoint {
                             //add the image to the box
                             var imageId = "targetImage" + i;
                             var img = document.getElementById(imageId);
-                            img.src = "./purple-alien_idle_transparent.gif";
+                            img.src = App.prototype.getPlayerGif(0);
 
                             var answersSummary = sanitarize(payload.data[2*thirdArray + i]);
                             /*Work in progress. not sure how it made it into this commit. this is the answer summary to display on the phones*/
@@ -626,14 +628,14 @@ path, .jtk-endpoint {
                             alienImage.src="./icon_questionMark.png";
                             guessName.innerHTML="I don't know!"
                         } else {
-                            alienImage.src="./purple-alien_idle_transparent.gif";
+                            alienImage.src= App.prototype.getPlayerGif(0);
                             guessName.innerHTML=personalRoundResults[i][1];
                         }
                         alienImage.className="yourGuessImage";
 
                         var questionMarkImage = document.createElement('img');
                         if(personalRoundResultsIsReconnect) {
-                            questionMarkImage.src="./purple-alien_idle_transparent.gif";                                
+                            questionMarkImage.src= App.prototype.getPlayerGif(0);                                
                         } else {
                             questionMarkImage.src="./icon_questionMark.png";
                         }
@@ -694,9 +696,9 @@ path, .jtk-endpoint {
                         var rightOrWrong = document.getElementById("roundResultsRightOrWrong");
                         var currentAlien = alienSide.getElementsByTagName("img").item(revealedCount);
                         */
-                        //currentAlien.src = "./purple-alien_idle_transparent.gif";
+                        //currentAlien.src = "./alien_purple_idle_transparent.gif";
                         var currentRow = currentUnrevealedNode.childNodes;
-                        currentRow[0].firstChild.src = "./purple-alien_idle_transparent.gif";
+                        currentRow[0].firstChild.src = App.prototype.getPlayerGif(0);
 
                         var rightOrWrongImg = document.createElement('img');
 
@@ -752,7 +754,8 @@ path, .jtk-endpoint {
 					    'action': "sendWelcomeInfo",
 					    'info': {
                             'name': nickname,
-                            'avatarId': 0
+                            'avatarId': 0,
+                            'selectedAlien': 0
                         }
 				    };
 				    me.air_console.message(AirConsole.SCREEN, message);
@@ -1042,6 +1045,34 @@ path, .jtk-endpoint {
                     return document.getElementById(elementId+"-system").innerText;                
                 }
 			}
+            
+            App.prototype.getPlayerGif = function getPlayerGif(alienNumber) {
+                if(alienNumber == null) {
+                    alienNumber = selectedAlien;
+                }
+                switch(alienNumber) {
+                    case 0:
+                        return "./alien_purple_idle_transparent.gif";
+                        break;
+                    case 1:
+                        return "./alien_blue_idle_transparent.gif";
+                        break;
+                    case 2:
+                        return "./alien_green_idle_transparent.gif";
+                        break;
+                    case 3:
+                        return "./alien_purple_idle_transparent.gif";
+                        break;
+                    case 4:
+                        return "./alien_purple_idle_transparent.gif";
+                        break;
+                    case 5:
+                        return "./alien_purple_idle_transparent.gif";
+                        break;
+                    default:
+                        return "./alien_purple_idle_transparent.gif";
+                }
+			}
 		}
     }
     </script>
@@ -1182,7 +1213,6 @@ path, .jtk-endpoint {
         <div style="font-size:40px;">MEEXARPS</div>
         <br>
         <br>
-        <!-- TODO make placeholder text italics -->
         Choose a username for your Meexarp
         <br>
         <div id="nickname" class="textfield">
@@ -1253,7 +1283,7 @@ Others under Creative Commons 0 License from https://freesound.org
     </div>   
     <div class="view" id="startGameScreenView" style="padding:10% 0;display:none">
         <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:20%;" src="./purple-alien_idle_transparent.gif" />
+        <img style="height:20%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
         <div id="startGameScreenViewUsername"> Welcome, [Username]</div>
         <div id="vipStartButtonDescription" style="display:none">
             <br>
@@ -1333,7 +1363,7 @@ that will be used later in the game.
         <div id="wouldYouRatherQuestion"> </div>
         <br>
         <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:20%;" src="./purple-alien_idle_transparent.gif" />
+        <img style="height:20%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
         <br>
         <div class="pseudo_button" onclick="window.app.sendWouldYouRatherAnswer(0)">Left</div>
         <div class="pseudo_button" onclick="window.app.sendWouldYouRatherAnswer(1)">Right</div>
@@ -1362,7 +1392,7 @@ that will be used later in the game.
         <br>
         <br>
         -->
-        <img style="height:10%;" src="./purple-alien_idle_transparent.gif" />
+        <img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
         <br>
         <div style="display:flex; justify-content:center;align-items:center;">
             <img style="height:40px;" src="./icon_stopwatch.png" />
@@ -1443,7 +1473,7 @@ that will be used later in the game.
     <div class="view" id="submitAnswerView" style="padding:20% 0;display:none">
 
         <!--Answer the following questions honestly! -->
-        <img style="height:10%;" src="./purple-alien_idle_transparent.gif" />
+        <img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
         <br>
         <div style="display:flex; justify-content:center;align-items:center;">
             <img style="height:40px;" src="./icon_stopwatch.png" />
@@ -1545,7 +1575,7 @@ that will be used later in the game.
     <div class="view" id="endGameView" style="padding:20% 0;display:none;">
 
         <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:20%;" src="./purple-alien_idle_transparent.gif" />
+        <img style="height:20%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
         
         <div id="endGameScreenViewUsername">[Username]</div>
         <br>

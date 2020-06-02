@@ -199,9 +199,12 @@ public class main : MonoBehaviour
                 else
                 {
                     gameState.players.Remove(currentPlayer.Key);
-                    gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, currentPlayer.Value.points, animators[currentPlayer.Value.playerNumber], currentPlayer.Value.bestFriendPoints));
+                    gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, 
+                        currentPlayer.Value.points, animators[currentPlayer.Value.playerNumber], 
+                        currentPlayer.Value.bestFriendPoints, currentPlayer.Value.alienNumber));
                     SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
-                    sendWelcomeScreenInfo(from);
+                    int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
+                    sendWelcomeScreenInfo(from, selectedAlien);
                 }
             }
             //new player
@@ -219,7 +222,8 @@ public class main : MonoBehaviour
 
                 welcomePanels[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
                 gameState.players.Add(from, p);
-                sendWelcomeScreenInfo(from);
+                int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
+                sendWelcomeScreenInfo(from, selectedAlien);
                 SendCurrentScreenForReconnect(from, p.playerNumber);
             }
             // audience
@@ -238,7 +242,9 @@ public class main : MonoBehaviour
                     {
                         gameState.audienceMembers.Remove(audiencePlayer.Key);
                         //todo hard code the audience animator to 7 or give them no animations
-                        gameState.audienceMembers.Add(from, new Player(name, from, audiencePlayer.Value.playerNumber, 0, audiencePlayer.Value.points, audiencePlayer.Value.myAnimator, audiencePlayer.Value.bestFriendPoints));
+                        gameState.audienceMembers.Add(from, new Player(name, from, audiencePlayer.Value.playerNumber, 0, 
+                            audiencePlayer.Value.points, audiencePlayer.Value.myAnimator, audiencePlayer.Value.bestFriendPoints, 
+                            audiencePlayer.Value.alienNumber));
                         SendCurrentScreenForReconnect(from, audiencePlayer.Value.playerNumber);
                     }
                 }
@@ -251,7 +257,7 @@ public class main : MonoBehaviour
                     gameState.audienceMembers.Add(from, p);
                     welcomeScreenPanel.GetComponentsInChildren<Text>()[8].text = "Audience: " + gameState.audienceMembers.Count;
                     SendCurrentScreenForReconnect(from, p.playerNumber);
-                    sendWelcomeScreenInfo(from);
+                    sendWelcomeScreenInfo(from, -1);
                 }
             }
         }
@@ -327,7 +333,7 @@ public class main : MonoBehaviour
         }
         else if ("requestWelcomeScreenInfo".Equals(action))
         {
-            sendWelcomeScreenInfo(-1);
+            sendWelcomeScreenInfo(-1, -1);
             playSound = false;
         }
         else if ("sendStartGame".Equals(action))
@@ -573,7 +579,7 @@ public class main : MonoBehaviour
         wouldYouRatherTexts[19].text = "Audience: " + rightAudience;
     }
 
-    private void sendWelcomeScreenInfo(int from)
+    private void sendWelcomeScreenInfo(int from, int alienNumber)
     {
         int currNumPlayers = gameState.GetNumberOfPlayers();
         if(currNumPlayers < 6)
@@ -590,12 +596,12 @@ public class main : MonoBehaviour
             if (currNumAudience == 0)
             {
                 Player myPlayer = gameState.players[from];
-                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
+                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + alienNumber }));
 
             } else 
             {
                 Player myPlayer = gameState.audienceMembers[from];
-                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber }));
+                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + -1 }));
             }
         }
     }
@@ -2109,6 +2115,7 @@ class Player
     public int points { get; set; }
     public Animator myAnimator { get; set; }
     public Dictionary<string, int> bestFriendPoints { get; set; }
+    public int alienNumber { get; set; }
 
     public Player(string n, int d, int pn, int a, Animator an)
     {
@@ -2121,7 +2128,7 @@ class Player
         bestFriendPoints = new Dictionary<string, int>();
     }
 
-    public Player(string n, int d, int pn, int a, int p, Animator an, Dictionary<string, int> bfp)
+    public Player(string n, int d, int pn, int a, int p, Animator an, Dictionary<string, int> bfp, int selectedAlien)
     {
         nickname = n;
         deviceId = d;
@@ -2130,6 +2137,7 @@ class Player
         points = p;
         myAnimator = an;
         bestFriendPoints = bfp;
+        alienNumber = selectedAlien;
     }
 
     public override string ToString()
