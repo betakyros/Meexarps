@@ -888,7 +888,7 @@ public class main : MonoBehaviour
 
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
-        InvokeRepeating("SendWouldYouRather", 0f, 15f);
+        InvokeRepeating("SendWouldYouRather", 0f, 150f);
     }
 
     public static List<Image> getPlayerIconTags(Image[] playerIcons, string tagName)
@@ -1044,11 +1044,17 @@ public class main : MonoBehaviour
 
     private void movePlayerIcon(Image playerIcon, float x)
     {
+        //        playerIcon.transform.localPosition = new Vector2(x, playerIcon.transform.localPosition.y);
+        int transformIndex = 1;
+        Transform iconContainerTransform = playerIcon.GetComponentsInChildren<Transform>()[transformIndex].transform;
+        iconContainerTransform.localPosition = new Vector2(x, iconContainerTransform.transform.localPosition.y);
+        /*
         Transform myTextTransform = playerIcon.GetComponentInChildren<Text>().transform;
         Transform myIconTransform = playerIcon.GetComponentsInChildren<Image>()[1].transform;
         //myTransform.position = new Vector2(canvas.GetComponent<RectTransform>().rect.width * 0.50f * canvas.scaleFactor, myTransform.position.y);
         myTextTransform.localPosition = new Vector2(x, myTextTransform.localPosition.y);
         myIconTransform.localPosition = new Vector2(x, myIconTransform.localPosition.y);
+        */
     }
 
     public void SendQuestions()
