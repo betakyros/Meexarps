@@ -97,23 +97,20 @@ public class AutoResizeGrid : MonoBehaviour
                 }
             }
         }
-        //set position
+        //set original position
         for (int j = 0; j < numRows; j++)
         {
             for (int i = 0; i < numCols; i++)
             {
                 int nthGridElement = i + j * numCols;
                 int nthChild = panelsOffset + nthGridElement;
-                if (nthGridElement < numGridCells)
+                if (nthGridElement < numGridCells && !isWouldYouRatherOrAnswerQuestions)
                 {
                     float newXPos = numCols == 2 ? (-.5f + i) * newSize.x : (i - 1f) * newSize.x;
                     float newYPos = numRows == 1 ? 0 : (.5f - j) * newSize.y;
                     Vector3 originalPos = (container.transform.position + canvas.scaleFactor * new Vector3(newXPos, newYPos, 0));
-                    if(!isWouldYouRatherOrAnswerQuestions)
-                    {
-                        images[nthChild].GetComponent<GentleShake>()
+                    images[nthChild].GetComponent<GentleShake>()
                             .SetOriginalPosition(originalPos);
-                    }
                 }
             }
         }
