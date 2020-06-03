@@ -25,6 +25,7 @@ public class main : MonoBehaviour
     public GameObject votingPanel;
     public GameObject resultsPanel;
     public GameObject endScreenPanel;
+    public GameObject errorPanel;
     public Canvas canvas;
 //    public AudioSource introAudioSource;
     public AudioSource mainLoopAudioSource;
@@ -58,7 +59,7 @@ public class main : MonoBehaviour
     void Start()
     {
         StartAllLevels(welcomeScreenAudioSources);
-        ExceptionHandling.SetupExceptionHandling();
+        ExceptionHandling.SetupExceptionHandling(errorPanel);
         InitializeOptions();
         var newLinesRegex = new Regex(@"\r\n|\n|\r", RegexOptions.Singleline);
         string rawQuestions;

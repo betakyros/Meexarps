@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
-using UnityEditor;
-
-public class ExceptionHandling : MonoBehaviour
+using UnityEngine.UI;
+public class ExceptionHandling
 {
+    private static GameObject errorPanel;
+
     static bool isExceptionHandlingSetup;
-    public static void SetupExceptionHandling()
+    public static void SetupExceptionHandling(GameObject ePanel)
     {
         if (!isExceptionHandlingSetup)
         {
+            errorPanel = ePanel;
             isExceptionHandlingSetup = true;
             Application.logMessageReceived += HandleException;
         }
@@ -17,7 +19,10 @@ public class ExceptionHandling : MonoBehaviour
     {
         if (type == LogType.Exception)
         {
-            EditorUtility.DisplayDialog("ERROR", condition + "\n" + stackTrace,"ok");
+            errorPanel.SetActive(true);
+            Text errorText = errorPanel.GetComponentInChildren<Text>();
+            errorText.text = "ERROR: " + condition + "\n" + stackTrace;
+            Debug.Log("ERROR: " + condition + "\n" + stackTrace);
         }
     }
 }
