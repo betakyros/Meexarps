@@ -341,8 +341,6 @@ path, .jtk-endpoint {
         }
         
         function resizeElement(e) {
-            console.log(playerName + " : e.clientHeight : " + e.clientHeight);
-            console.log(playerName + " : window.innerHeight : " + window.innerHeight);
             if(e.clientHeight > window.innerHeight) {
                 var scaleFactor = window.innerHeight/e.clientHeight;
                 e.style.transform = "scale(" + scaleFactor + ")";
@@ -373,6 +371,7 @@ path, .jtk-endpoint {
         var personalRoundResultsIsReconnect = false;
         var selectedAlien = -1;
         var availableAliens = [true,true,true,true,true,true];
+        var playerNameToAlienNumberDictionary;
 
         App.prototype.touchStart = function touchStart(text) {
             showingAnswerHelpText = true;
@@ -576,8 +575,8 @@ path, .jtk-endpoint {
                             sourcesAndTargets[i].style.display='none';
                         }
 
-                        var thirdArray = payload.data.length/3;
-                        for(var i = 0; i < thirdArray; i++) {
+                        var numAnswers = payload.data.length/4;
+                        for(var i = 0; i < numAnswers; i++) {
                             var sourceId = "sourceWindow" + i;
                             var sourceElement = document.getElementById(sourceId);
                             sourceElement.style.display='block';
@@ -591,15 +590,16 @@ path, .jtk-endpoint {
                             var targetId = "targetWindow" + i;
                             var sourceElement = document.getElementById(targetId);
                             sourceElement.style.display='block';
-                            sourceElement.firstChild.innerHTML = payload.data[thirdArray + i];
+                            sourceElement.firstChild.innerHTML = payload.data[numAnswers + i];
                             
                             //add the image to the box
                             var imageId = "targetImage" + i;
                             var img = document.getElementById(imageId);
                             //todo create a map of playerNames to aliens
-                            img.src = App.prototype.getPlayerGif(0);
+                            var alienImage = payload.data[3*numAnswers + i]
+                            img.src = App.prototype.getPlayerGif(parseInt(alienImage));
 
-                            var answersSummary = sanitarize(payload.data[2*thirdArray + i]);
+                            var answersSummary = sanitarize(payload.data[2*numAnswers + i]);
                             /*Work in progress. not sure how it made it into this commit. this is the answer summary to display on the phones*/
                             /*
                             console.log(answersSummary)
@@ -620,12 +620,14 @@ path, .jtk-endpoint {
                     personalRoundResults = [];
                     revealedCount = 0;
                     haveIBeenRevealed = false;
-
-                    var thirdArray = payload.data.length/3;
-                    for(var i = 0; i < thirdArray; i++) {
+                    playerNameToAlienNumberDictionary = {};
+                    var fourthArray = payload.data.length/4;
+                    for(var i = 0; i < fourthArray; i++) {
                         var anonName = payload.data[i];
-                        var guess = payload.data[thirdArray + i];
-                        var actual = payload.data[2*thirdArray + i];
+                        var guess = payload.data[fourthArray + i];
+                        var actual = payload.data[2*fourthArray + i];
+                        var actualAlienNumbers = payload.data[3*fourthArray + i];
+                        playerNameToAlienNumberDictionary[actual] = parseInt(actualAlienNumbers);
                         personalRoundResults[i] = [anonName, guess, actual == guess];
                     }
                     /*
@@ -637,7 +639,7 @@ path, .jtk-endpoint {
                     yourGuessSide.innerHTML='';*/
                     var resultsContainer = document.getElementById("resultsContainer");
                     resultsContainer.innerHTML='';
-                    for(var i = 0; i < thirdArray; i++) {
+                    for(var i = 0; i < fourthArray; i++) {
                         var currentResultContainer = document.createElement("div");
                         currentResultContainer.style.display = "flex";
                         currentResultContainer.style.justifyContent = "space-between";
@@ -648,14 +650,20 @@ path, .jtk-endpoint {
                             alienImage.src="./icon_questionMark.png";
                             guessName.innerHTML="I don't know!"
                         } else {
-                            alienImage.src= App.prototype.getPlayerGif(0);
-                            guessName.innerHTML=personalRoundResults[i][1];
+                            var guessNameText = personalRoundResults[i][1];
+                            alienImage.src= App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[guessNameText]);
+                            guessName.innerHTML=guessNameText;
+                            console.log("guessNameText: " + guessNameText + " alienImage.src: " + 
+                                alienImage.src +
+                                " playerNameToAlienNumberDictionary[guessName]: " + playerNameToAlienNumberDictionary[guessName]);
                         }
                         alienImage.className="yourGuessImage";
 
                         var questionMarkImage = document.createElement('img');
                         if(personalRoundResultsIsReconnect) {
-                            questionMarkImage.src= App.prototype.getPlayerGif(0);                                
+                            questionMarkImage.src= App.prototype.getPlayerGif(
+                                parseInt(payload.data[3*fourthArray + i])
+                            );                                
                         } else {
                             questionMarkImage.src="./icon_questionMark.png";
                         }
@@ -718,7 +726,7 @@ path, .jtk-endpoint {
                         */
                         //currentAlien.src = "./alien_purple_idle_transparent.gif";
                         var currentRow = currentUnrevealedNode.childNodes;
-                        currentRow[0].firstChild.src = App.prototype.getPlayerGif(0);
+                        currentRow[0].firstChild.src = App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[currTargetName]);
 
                         var rightOrWrongImg = document.createElement('img');
 
@@ -727,16 +735,11 @@ path, .jtk-endpoint {
                         } else {
                             rightOrWrongImg.src="./icon_circledCross.png";                    
                         }
-                        rightOrWrongImg.className="roundResultsImage";
-                        //rightOrWrong.appendChild(rightOrWrongImg);                        
+                        rightOrWrongImg.className="roundResultsImage";                     
                         currentRow[1].appendChild(rightOrWrongImg);
 
                         revealedCount++;
                         currentUnrevealedNode = currentUnrevealedNode.nextSibling;
-                        /*
-                        var numAliens = alienSide.getElementsByTagName("img").length;
-                        rightOrWrong.style.height= (alienSide.clientHeight/numAliens * revealedCount) + "px";
-                        */
                     }
                 } else if(myAction === "sendNextRoundScreen") {
                     document.getElementById("nextRoundButton").style.display = "block";
@@ -1096,13 +1099,13 @@ path, .jtk-endpoint {
                         return "./alien_green_idle_transparent.gif";
                         break;
                     case 3:
-                        return "./alien_purple_idle_transparent.gif";
+                        return "./alien_orange_idle_transparent.gif";
                         break;
                     case 4:
-                        return "./alien_purple_idle_transparent.gif";
+                        return "./alien_red_idle_transparent.gif";
                         break;
                     case 5:
-                        return "./alien_purple_idle_transparent.gif";
+                        return "./alien_yellow_idle_transparent.gif";
                         break;
                     default:
                         console.log("Error, hit default case for myAlienGif");

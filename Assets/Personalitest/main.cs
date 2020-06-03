@@ -1181,7 +1181,7 @@ public class main : MonoBehaviour
     //send voting screen for reconnecting players
     public void SendVoting(int playerDeviceId)
     {
-        List<string> playerNames = new List<string>();
+        List<string[]> playerNames = new List<string[]>();
         List<string> anonymousPlayerNames = new List<string>();
         List<string> playerAnswers = new List<string>();
         int myPlayerNumber = -1;
@@ -1196,7 +1196,10 @@ public class main : MonoBehaviour
         {
             if(a.playerNumber != myPlayerNumber)
             {
-                playerNames.Add(gameState.GetPlayerByPlayerNumber(a.playerNumber).nickname);
+                Player p = gameState.GetPlayerByPlayerNumber(a.playerNumber);
+                string nickName = p.nickname;
+                string alienNumber = "" + p.alienNumber; 
+                playerNames.Add(new[] { nickName, alienNumber });
             }
         }
         //add each anonymous name
@@ -1223,11 +1226,20 @@ public class main : MonoBehaviour
         //send data to the phones
         List<string> listToSend = new List<string>();
         playerNames.Shuffle();
+
         //anonymousPlayerNames.Shuffle();
-        listToSend.AddRange(playerNames);
+        List<string> pNames = new List<string>();
+        List<string> alienNumbers = new List<string>();
+        foreach (string[] playerName in playerNames)
+        {
+            pNames.Add(playerName[0]);
+            alienNumbers.Add(playerName[1]);
+        }
+        listToSend.AddRange(pNames);
         listToSend.AddRange(anonymousPlayerNames);
         /*TODO this is not in the same order as anonymous player names*/
         listToSend.AddRange(playerAnswers);
+        listToSend.AddRange(alienNumbers);
         AirConsole.instance.Message(playerDeviceId, JsonUtility.ToJson(new JsonAction("sendVoting", listToSend.ToArray())));
     }
 
@@ -1436,6 +1448,7 @@ public class main : MonoBehaviour
         }
         //actual
         List<string> actual = new List<string>();
+        List<string> actualAlienNumbers = new List<string>();
         foreach (Answers a in answerList)
         {
             if (currentPlayer.playerNumber.Equals(a.playerNumber))
@@ -1445,13 +1458,16 @@ public class main : MonoBehaviour
             else
             {
                 int playerNum = a.playerNumber;
-                actual.Add(gameState.GetPlayerByPlayerNumber(playerNum).nickname);
+                Player p = gameState.GetPlayerByPlayerNumber(playerNum);
+                actual.Add(p.nickname);
+                actualAlienNumbers.Add("" + p.alienNumber);
             }
         }
 
         incrementBestFriends(currentPlayer, guesses, actual);
         personalRoundResults.AddRange(guesses);
         personalRoundResults.AddRange(actual);
+        personalRoundResults.AddRange(actualAlienNumbers);
 
         if (isReconnect)
         {
