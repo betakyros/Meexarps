@@ -2049,18 +2049,18 @@ public class main : MonoBehaviour
         int currentBestFriendPoints = 0;
         string currentBestFriend = "No one!";
         //calculate best friends
-        foreach (KeyValuePair<string, int> bestFriendValue in p.bestFriendPoints)
+        foreach (Player otherPlayer in gameState.players.Values)
         {
-            int myPoints = bestFriendValue.Value;
-            Dictionary<string, int> theirBfp = gameState.GetPlayerByName(bestFriendValue.Key).Value.bestFriendPoints;
+            Dictionary<string, int> myBfp = p.bestFriendPoints;
+            int myPoints = myBfp.ContainsKey(otherPlayer.nickname) ? myBfp[otherPlayer.nickname] : 0;
+            Dictionary<string, int> theirBfp = otherPlayer.bestFriendPoints;
             int theirPoints = theirBfp.ContainsKey(p.nickname) ? theirBfp[p.nickname] : 0;
             if (myPoints + theirPoints > currentBestFriendPoints)
             {
-                currentBestFriend = bestFriendValue.Key;
+                currentBestFriend = otherPlayer.nickname;
                 currentBestFriendPoints = myPoints + theirPoints;
             }
         }
-
         return currentBestFriend;
     }
 
