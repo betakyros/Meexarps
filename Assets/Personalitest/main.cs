@@ -226,7 +226,7 @@ public class main : MonoBehaviour
                 Player p = new Player(name, from, newPlayerNumber, 0, animators[newPlayerNumber], selectedAlien);
                 if(selectedAlien > -1)
                 {
-                    gameState.alienSelections.Add(selectedAlien, new[] { -1, p.playerNumber });
+                    gameState.alienSelections[selectedAlien] = new[] { -1, p.playerNumber };
                 } else
                 {
                     for(int i = 0; i < 6; i++)

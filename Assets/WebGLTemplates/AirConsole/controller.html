@@ -476,6 +476,13 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendWelcomeScreenInfoDetails") {
                     playerName = payload.data[0];
                     playerNumber = payload.data[1];
+                    selectedAlien = parseInt(payload.data[2]);
+                    var myAlienGifs = document.getElementsByClassName("myAlienGif");
+                    Array.prototype.forEach.call(myAlienGifs, currentElement => {
+                        console.log("currentElement.src1: " + currentElement.src + " selectedAlien: " + selectedAlien);
+                        currentElement.src = App.prototype.getPlayerGif(selectedAlien);
+                        console.log("currentElement.src2: " + currentElement.src + " App.prototype.getPlayerGif(selectedAlien): " + App.prototype.getPlayerGif(selectedAlien));
+                    });
                     document.getElementById("startGameScreenViewUsername").innerText = "Welcome, " + playerName + "!";
                 } else if(myAction === "sendRetrieveOptions") {
                     document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
@@ -591,6 +598,7 @@ path, .jtk-endpoint {
                             //add the image to the box
                             var imageId = "targetImage" + i;
                             var img = document.getElementById(imageId);
+                            //todo create a map of playerNames to aliens
                             img.src = App.prototype.getPlayerGif(0);
 
                             var answersSummary = sanitarize(payload.data[2*thirdArray + i]);
@@ -769,7 +777,7 @@ path, .jtk-endpoint {
 					    'info': {
                             'name': nickname,
                             'avatarId': 0,
-                            'selectedAlien': 0
+                            'selectedAlien': selectedAlien
                         }
 				    };
 				    me.air_console.message(AirConsole.SCREEN, message);
@@ -1103,6 +1111,7 @@ path, .jtk-endpoint {
                 }
 			}
 
+            //populate the alienButtons
             for(var i = 0; i < 6; i++) {
                 document.getElementById("alienButton"+i).src = App.prototype.getPlayerGif(i);
             }
