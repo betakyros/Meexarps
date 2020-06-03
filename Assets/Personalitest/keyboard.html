@@ -1263,15 +1263,17 @@ path, .jtk-endpoint {
       }
 
       .franklinBanner {
-        height: 7%; 
+        height: 10%; 
         position: fixed; 
-        width: 100%;
-        top: 0;
+        width:120%; 
+        margin-left:-10%;
+        top: 50px;
         left: 0;
         background-color: #CBDAFF;
         display: flex;
         align-items: center; 
         justify-content:center;
+        font-size: 17px;
       }
 
       .view {
@@ -1293,7 +1295,7 @@ path, .jtk-endpoint {
         <br>
         Select your Meexarp
         <br>
-        <div class="franklinBanner" style="height:10%; width:120%; margin-left:-10%; position: relative;">
+        <div class="franklinBanner" style="position: inherit; margin-top: 8px; margin-bottom: 8px;">
             <div style = "display:flex; justify-content:space-evenly;  width:85%; height:100%;" >
                 <img id="alienButton0" class="alienButton" onclick="window.app.clickAlienButton(0)">
                 <img id="alienButton1" class="alienButton" onclick="window.app.clickAlienButton(1)">
@@ -1303,8 +1305,6 @@ path, .jtk-endpoint {
                 <img id="alienButton5" class="alienButton" onclick="window.app.clickAlienButton(5)">
             </div>
         </div>
-        <br>
-        <br>
         Choose a username for your Meexarp
         <br>
         <div id="nickname" class="textfield" style="margin: 8px;">
@@ -1378,7 +1378,7 @@ Others under Creative Commons 0 License from https://freesound.org
         <!-- dynamically change this based on playernumber which we have in javascript -->
         <img style="height:10%; " class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
         
-        <div class="franklinBanner" style="height:10%; width:120%; margin-left:-10%; margin-bottom: 15px; position: relative;">
+        <div class="franklinBanner" style="height:10%;  margin-bottom: 15px; position: inherit;">
             <div style = "font-size: 26px; display: flex; align-items: center; justify-content:center; width:85%; height:100%;" id="startGameScreenViewUsername"> Welcome, [Username]</div>
         </div>
         
@@ -1457,16 +1457,20 @@ that will be used later in the game.
         <br>
         <div id="timeEstimateDiv"></div>
     </div>
-    <div class="view" id="wouldYouRatherView" style="padding:50% 0;display:none">
-        <div id="wouldYouRatherQuestion"> </div>
+    <div class="view" id="wouldYouRatherView" style="padding-top:30%;display:none">
+        <div class="franklinBanner" style="height:18%;">
+            <div style="width:85%;">Pick a side for the "Would you rather"</div>
+        </div>
+        <br>
         <br>
         <!-- dynamically change this based on playernumber which we have in javascript -->
         <img style="height:20%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
         <br>
+        <br>
         <div class="pseudo_button" onclick="window.app.sendWouldYouRatherAnswer(0)">Left</div>
         <div class="pseudo_button" onclick="window.app.sendWouldYouRatherAnswer(1)">Right</div>
     </div>
-    <div class="view" id="sendSelectCategoryView" style="padding:20% 0;display:none">
+    <div class="view" id="sendSelectCategoryView" style="padding-top:30%;display:none">
         <div class="franklinBanner"> It's your turn to write questions!</div>
         <br>
         Select a category
@@ -1481,24 +1485,23 @@ that will be used later in the game.
             <div id="selectCategoryButton6" class="pseudo_button" onclick="window.app.sendCategory(6)" style="margin:5px"></div>
         </div>
     </div>
-    <div class="view" id="retrieveQuestionsView" style="padding:20% 0;display:none">
-        <div class="franklinBanner"> It's your turn to write questions!</div>
+    <div class="view" id="retrieveQuestionsView" style="padding-top:30%;display:none">
+        <div class="franklinBanner" style> It's your turn to write questions!</div>
         <!--
         Write somethings you'd like to know about your friends! 
         <br>
         Use a default question, modify it or write your own!
         <br>
         <br>
-        -->
         <img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
-        <br>
-        <div style="display:flex; justify-content:center;align-items:center;">
+        -->
+        <div style="display:flex; justify-content:flex-end;align-items:center;">
             <img style="height:40px;" src="./icon_stopwatch.png" />
 
-            <div id="retrieveQuestionsTimer">0</div>
+            <div style="width:10%;" id="retrieveQuestionsTimer">0</div>
         </div>
         <!--<div id="categoryDisplay"></div>-->
-        <br>
+        <div style="width:100%; text-align:left;"> QUESTION 1</div>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:100%;">
             <div style="display:flex;justify-content:center;width:100%;">
                 <div id="retrieveQuestionsField1" class="textfield" style="width:95%;">
@@ -1509,7 +1512,7 @@ that will be used later in the game.
                 </span>
             </div>
         </div>
-        <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:#9c9c9c">
+        <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black;">
             <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField1', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
@@ -1519,6 +1522,7 @@ that will be used later in the game.
                 <img style="height:20px;" src="./icon_refresh.png"/>
             </div>
         </div>
+        <div style="width:100%; text-align:left;"> QUESTION 2</div>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:100%;">
             <div style="display:flex;justify-content:center;width:100%;">
                 <div id="retrieveQuestionsField2" class="textfield" style="width: 95%;">
@@ -1530,7 +1534,7 @@ that will be used later in the game.
             </div>
             <!--<div class="pseudo_button" onclick="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>-->
         </div>
-        <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:#9c9c9c">
+        <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
             <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField2', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
@@ -1540,6 +1544,7 @@ that will be used later in the game.
                 <img style="height:20px;" src="./icon_refresh.png"/>
             </div>
         </div>
+        <div style="width:100%; text-align:left;"> QUESTION 3</div>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:100%;">
             <div style="display:flex;justify-content:center;width:100%;">
                 <div id="retrieveQuestionsField3" class="textfield" style="width: 95%;">
@@ -1550,7 +1555,7 @@ that will be used later in the game.
                 </span>
             </div>
         </div> 
-        <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:#9c9c9c">
+        <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
             <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField3', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
