@@ -449,6 +449,7 @@ path, .jtk-endpoint {
                     var playerCount = payload.data[0];
                     if(playerCount == "full") {
                         document.getElementById("welcomeScreenPlayerCount").innerText = "Our Meexarp team has reached capacity!\nYou will be joining as an audience member.";
+                        globalCurrNumPlayers = 6;
                     } else {
                         document.getElementById("welcomeScreenPlayerCount").innerText = playerCount + "/6 Meexarps have joined the game";
                         if(globalCurrNumPlayers != playerCount) {
@@ -820,6 +821,7 @@ path, .jtk-endpoint {
             App.prototype.clickRoundButton = function clickRoundButton(roundNumberButton) {
                 roundCountValue = roundNumberButton;
                 for(var i = 0; i < globalCurrNumPlayers; i++) {
+                    console.log("i: " + i + " roundNumberButton: " + roundNumberButton);
                     document.getElementById("roundCountButton" + (i+1)).style.display = "block";
                     if(i+1 == roundNumberButton) {
                         document.getElementById("roundCountButton" + (i+1)).style.backgroundColor = "white";
