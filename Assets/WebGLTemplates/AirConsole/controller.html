@@ -1268,7 +1268,7 @@ path, .jtk-endpoint {
         width: 100%;
         top: 0;
         left: 0;
-        background-color: lightgrey;
+        background-color: #CBDAFF;
         display: flex;
         align-items: center; 
         justify-content:center;
@@ -1280,33 +1280,41 @@ path, .jtk-endpoint {
       }
     </style>
   </head>
-  <body style="font-family: Autour One; font-size: 14px; background-color:#8cffd4; text-align: center;" onload="init()">
+  <body style="font-family: Autour One; font-size: 14px; background-color:#6CA7FF; text-align: center;" onload="init()">
         <div id="optionsButton" class="optionsButton">
             <img src="./icon_gear.png" onclick="window.app.viewOptions()" style="height:50px" />
         </div>
     <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
-    <div class="view" id="welcomeScreenView" style="padding:30% 0;">
+    <div class="view" id="welcomeScreenView" style="padding:13% 0 0 0;">
         <p style="font-size:20px;">Welcome to</p>
         <div style="font-size:40px;">MEEXARPS</div>
-        <div style = "display:flex; justify-content:space-evenly; background-color: #CBDAFF; width:100%; height:10%;" >
-            <img id="alienButton0" class="alienButton" onclick="window.app.clickAlienButton(0)">
-            <img id="alienButton1" class="alienButton" onclick="window.app.clickAlienButton(1)">
-            <img id="alienButton2" class="alienButton" onclick="window.app.clickAlienButton(2)">
-            <img id="alienButton3" class="alienButton" onclick="window.app.clickAlienButton(3)">
-            <img id="alienButton4" class="alienButton" onclick="window.app.clickAlienButton(4)">
-            <img id="alienButton5" class="alienButton" onclick="window.app.clickAlienButton(5)">
+        <br>
+        <br>
+        <br>
+        Select your Meexarp
+        <br>
+        <div class="franklinBanner" style="height:10%; width:120%; margin-left:-10%; position: relative;">
+            <div style = "display:flex; justify-content:space-evenly;  width:85%; height:100%;" >
+                <img id="alienButton0" class="alienButton" onclick="window.app.clickAlienButton(0)">
+                <img id="alienButton1" class="alienButton" onclick="window.app.clickAlienButton(1)">
+                <img id="alienButton2" class="alienButton" onclick="window.app.clickAlienButton(2)">
+                <img id="alienButton3" class="alienButton" onclick="window.app.clickAlienButton(3)">
+                <img id="alienButton4" class="alienButton" onclick="window.app.clickAlienButton(4)">
+                <img id="alienButton5" class="alienButton" onclick="window.app.clickAlienButton(5)">
+            </div>
         </div>
         <br>
         <br>
         Choose a username for your Meexarp
         <br>
-        <div id="nickname" class="textfield">
-            <div style="color:#aaa"><i>A fun but identifiable name</i></div>
+        <div id="nickname" class="textfield" style="margin: 8px;">
+            <div style="color:#aaa"><i></i></div>
         </div>
-        <div style="justify-content:center;">
-            <span style="display:none;" placeholder="A fun but identifiable name" class="franklinInput" contenteditable="true" id="nickname-system" 
-            onclick="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', 'A fun but identifiable name')"></span>
+        <div style="margin: 8px;" style="justify-content:center;">
+            <span style="display:none;" placeholder="username" class="franklinInput" contenteditable="true" id="nickname-system" 
+            onclick="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', '')"></span>
         </div>
+        <div class="franklinInstructionText" style="font-size:9px;">To rejoin an existing game, please enter the same username</div>
         <div class="view" id="nameAlreadyTakenView" style="display:none;color:red;font-style:italic;">
             That name is already taken, please choose another name
         </div>
@@ -1368,19 +1376,12 @@ Others under Creative Commons 0 License from https://freesound.org
     </div>   
     <div class="view" id="startGameScreenView" style="padding:10% 0;display:none">
         <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:20%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
-        <div id="startGameScreenViewUsername"> Welcome, [Username]</div>
-        <div id="vipStartButtonDescription" style="display:none">
-            <br>
-            <br>
-            <text class="franklinInstructionText">You are the VIP and can start the game<br>
-                when everyone is ready
-            </text>
+        <img style="height:10%; " class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
+        
+        <div class="franklinBanner" style="height:10%; width:120%; margin-left:-10%; margin-bottom: 15px; position: relative;">
+            <div style = "font-size: 26px; display: flex; align-items: center; justify-content:center; width:85%; height:100%;" id="startGameScreenViewUsername"> Welcome, [Username]</div>
         </div>
-        <p>
-        <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <div class="initially_hidden_pseudo_button" onclick="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
-        <br>
+        
         While you’re waiting to start the game,
 feel free to submit some “Would You Rather Questions”
 that will be used later in the game.
@@ -1420,6 +1421,18 @@ that will be used later in the game.
         </div>        
         <br>
         <div class="pseudo_button" onclick="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
+        <br>
+        <div id="vipStartButtonDescription" style="display:none">
+            <br>
+            <br>
+            <text>You are the VIP and can start the game<br>
+                when everyone is ready
+            </text>
+        </div>
+        <p>
+        <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
+        <div class="initially_hidden_pseudo_button" onclick="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
+        <br>
     </div>
     <div class="view" id="waitingView" style="padding:50% 0;display:none">
         Submitted, now hang on tight for the next action

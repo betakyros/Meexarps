@@ -364,12 +364,14 @@ public class main : MonoBehaviour
         }
         else if ("sendRetrieveOptions".Equals(action))
         {
+            //todo fix bug where you select options before submitting username
             AirConsole.instance.Message(GetVipDeviceId(), JsonUtility.ToJson(
                 new JsonAction("sendRetrieveOptions", new[] { options["nsfwQuestions"].ToString(), options["anonymousNames"].ToString() })));
 
         }
         else if ("sendSaveOptions".Equals(action))
         {
+            //todo fix bug where you select options before submitting username
             options["nsfwQuestions"] = data["info"]["nsfwQuestions"].ToObject<bool>();
             options["anonymousNames"] = data["info"]["anonymousNames"].ToObject<bool>();
         }
