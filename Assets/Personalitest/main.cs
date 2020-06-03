@@ -104,6 +104,7 @@ public class main : MonoBehaviour
         AirConsole.instance.onReady += OnReady;
         AirConsole.instance.onMessage += OnMessage;
         AirConsole.instance.onConnect += OnConnect;
+        AirConsole.instance.onDisconnect += OnDisconnect;
         gameState = new GameState();
         currentQuestionIndex = 0;
         currentWouldYouRatherIndex = 0;
@@ -177,6 +178,12 @@ public class main : MonoBehaviour
         {
             SendCurrentScreenForReconnect(from, gameState.players[from].playerNumber);
         }
+    }
+
+    void OnDisconnect(int from)
+    {
+        removeDeviceIdFromAlienSelections(from);
+        BroadcastSelectedAliens(gameState.alienSelections);
     }
 
     void OnMessage(int from, JToken data)
@@ -320,6 +327,26 @@ public class main : MonoBehaviour
                 default:
                     break;
             }
+        }
+        else if ("sendSelectAlien".Equals(action))
+        {
+            playSound = false;
+            int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
+            if (gameState.alienSelections.ContainsKey(selectedAlien))
+            {
+                AirConsole.instance.Message(from, JsonUtility.ToJson(
+                    new JsonAction("sendAlienSelectionFailed", new[] { ""})));
+            } else
+            {
+                //remove the previous selection
+                removeDeviceIdFromAlienSelections(from);
+                if(selectedAlien > -1)
+                {
+                    gameState.alienSelections.Add(selectedAlien, new[] { from, -1 });
+                }
+                BroadcastSelectedAliens(gameState.alienSelections);
+            }
+
         }
         else if ("sendRetrieveOptions".Equals(action))
         {
@@ -525,6 +552,29 @@ public class main : MonoBehaviour
         }
     }
 
+    private static void BroadcastSelectedAliens(Dictionary<int, int[]> alienSelections)
+    {
+        string selectedAliens = "";
+        foreach (int alienNumber in alienSelections.Keys)
+        {
+            selectedAliens += alienNumber;
+        }
+        AirConsole.instance.Broadcast(new JsonAction("sendAlienSelectionSuccess", new[] { selectedAliens }));
+    }
+
+    private void removeDeviceIdFromAlienSelections(int from)
+    {
+        Dictionary<int, int[]> alienSelections = gameState.alienSelections;
+        foreach (KeyValuePair<int, int[]> alienSelection in alienSelections)
+        {
+            if (alienSelection.Value[0] == from)
+            {
+                alienSelections.Remove(alienSelection.Key);
+                break;
+            }
+        }
+    }
+
     private void PrepareSendQuestions()
     {
         //Stop the would you rathers
@@ -586,6 +636,7 @@ public class main : MonoBehaviour
         if(currNumPlayers < 6)
         {
             AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "" + currNumPlayers }));
+            BroadcastSelectedAliens(gameState.alienSelections);
         } else
         {
             AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "full" }));
@@ -2310,6 +2361,9 @@ class GameState
 {
     //Dictionary<deviceId, Player>
     public Dictionary<int, Player> players { get; set; }
+    //alienNumber, [from, playerNumber]. 
+    //If either from or playernumber is defined the alien is taken
+    public Dictionary<int, int[]> alienSelections { get; set; }
     public Dictionary<int, Player> audienceMembers { get; set; }
     public List<Round> rounds { get; set; }
     public PhoneViewGameState phoneViewGameState;
@@ -2323,6 +2377,7 @@ class GameState
     public GameState()
     {
         players = new Dictionary<int, Player>();
+        alienSelections = new Dictionary<int, int[]>();
         audienceMembers = new Dictionary<int, Player>();
         rounds = new List<Round>();
         tvViewGameState = TvViewGameState.WelcomeScreen;
