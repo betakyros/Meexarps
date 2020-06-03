@@ -223,21 +223,24 @@ public class main : MonoBehaviour
                 //remove the nbsp
                 name = Regex.Replace(name, @"\u00a0", " ");
                 int newPlayerNumber = gameState.GetNumberOfPlayers();
-                Player p = new Player(name, from, newPlayerNumber, 0, animators[selectedAlien], selectedAlien);
                 if(selectedAlien > -1)
                 {
-                    gameState.alienSelections[selectedAlien] = new[] { -1, p.playerNumber };
+                    gameState.alienSelections[selectedAlien] = new[] { -1, newPlayerNumber };
                 } else
                 {
+                    //select the next available alien
                     for(int i = 0; i < 6; i++)
                     {
                         if(!gameState.alienSelections.ContainsKey(i))
                         {
                             selectedAlien = i;
-                            gameState.alienSelections.Add(i, new[] { -1, p.playerNumber });
+                            gameState.alienSelections.Add(i, new[] { -1, newPlayerNumber });
+                            break;
                         }
                     }
                 }
+                Player p = new Player(name, from, newPlayerNumber, 0, animators[selectedAlien], selectedAlien);
+
                 if (p.playerNumber == 0)
                 {
                     SendIsVip(p);
@@ -665,12 +668,14 @@ public class main : MonoBehaviour
             if (currNumAudience == 0)
             {
                 Player myPlayer = gameState.players[from];
-                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + alienNumber }));
+                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", 
+                    new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + alienNumber }));
 
             } else 
             {
                 Player myPlayer = gameState.audienceMembers[from];
-                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + -1 }));
+                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", 
+                    new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + -1 }));
             }
         }
     }
