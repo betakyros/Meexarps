@@ -960,8 +960,6 @@ path, .jtk-endpoint {
 					'info': {}
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
-                hideAllViews();
-                document.getElementById("waitingView").style.display = "block";
 			}
             
             //data is a map of playerIds to anonymous playerIds
@@ -1486,7 +1484,7 @@ that will be used later in the game.
         </div>
     </div>
     <div class="view" id="retrieveQuestionsView" style="padding-top:30%;display:none">
-        <div class="franklinBanner" style> It's your turn to write questions!</div>
+        <div class="franklinBanner"> It's your turn to write questions!</div>
         <!--
         Write somethings you'd like to know about your friends! 
         <br>
@@ -1573,18 +1571,17 @@ that will be used later in the game.
         <p>
         <div class="pseudo_button" onclick="window.app.sendSkipInstructions()">Skip Instructions</div>
     </div>
-    <div class="view" id="submitAnswerView" style="padding:20% 0;display:none">
-
+    <div class="view" id="submitAnswerView" style="padding-top:30%;display:none">
+        <div class="franklinBanner">
+            <div style="width:85%;">Answer these questions!</div>
+        </div>
         <!--Answer the following questions honestly! -->
-        <img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
-        <br>
-        <div style="display:flex; justify-content:center;align-items:center;">
+        <!--<img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />-->
+        <div style="display:flex; justify-content:flex-end;align-items:center;margin:8px;">
             <img style="height:40px;" src="./icon_stopwatch.png" />
 
-            <div id="answerQuestionsTimer">0</div>
+            <div style="width:10%;" id="answerQuestionsTimer">0</div>
         </div>
-        <br>
-        <br>
         <div id="question1"></div>
         <div style="display:flex;justify-content:center;width:100%;">
             <div id="textfield1" class="textfield" style="width:95%;">
@@ -1593,7 +1590,7 @@ that will be used later in the game.
             <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1-system" 
             onclick="window.app.setPlaceholder('textfield1-system', '')" onblur="window.app.setPlaceholder('textfield1-system', 'Answer me!')"></span>
         </div>
-        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
+        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
             <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield1', '')">
                 <img style="height:20px;" src="./icon_cross.png"/>
                 Clear
@@ -1608,7 +1605,7 @@ that will be used later in the game.
             <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2-system" 
             onclick="window.app.setPlaceholder('textfield2-system', '')" onblur="window.app.setPlaceholder('textfield2-system', 'Answer me!')"></span>
         </div>
-        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
+        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
             <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield2', '')">
                 <img style="height:20px;" src="./icon_cross.png"/>
                 Clear
@@ -1623,7 +1620,7 @@ that will be used later in the game.
             <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3-system" 
             onclick="window.app.setPlaceholder('textfield3-system', '')" onblur="window.app.setPlaceholder('textfield3-system', 'Answer me!')"></span>
         </div>
-        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:#9c9c9c">
+        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
             <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield3', '')">
                 <img style="height:20px;" src="./icon_cross.png"/>
                 Clear
