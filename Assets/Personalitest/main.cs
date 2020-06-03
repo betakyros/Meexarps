@@ -208,7 +208,7 @@ public class main : MonoBehaviour
                 {
                     gameState.players.Remove(currentPlayer.Key);
                     gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, 
-                        currentPlayer.Value.points, animators[currentPlayer.Value.playerNumber], 
+                        currentPlayer.Value.points, animators[currentPlayer.Value.alienNumber], 
                         currentPlayer.Value.bestFriendPoints, currentPlayer.Value.alienNumber));
                     SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
                     int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
@@ -223,7 +223,7 @@ public class main : MonoBehaviour
                 //remove the nbsp
                 name = Regex.Replace(name, @"\u00a0", " ");
                 int newPlayerNumber = gameState.GetNumberOfPlayers();
-                Player p = new Player(name, from, newPlayerNumber, 0, animators[newPlayerNumber], selectedAlien);
+                Player p = new Player(name, from, newPlayerNumber, 0, animators[selectedAlien], selectedAlien);
                 if(selectedAlien > -1)
                 {
                     gameState.alienSelections[selectedAlien] = new[] { -1, p.playerNumber };
@@ -618,6 +618,7 @@ public class main : MonoBehaviour
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
             playerIconsList[i].gameObject.SetActive(true);
+            updatePlayerAnimator(playerIconsList[i].GetComponentInChildren<Animator>(), i);
         }
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
@@ -924,6 +925,8 @@ public class main : MonoBehaviour
         {
             //playerIcons[playerIconOffset + i].gameObject.SetActive(true);
             playerIconsList[i].gameObject.SetActive(true);
+            //GameObject g = playerIconsList[i].GetComponentInChildren<Animator>().gameObject;
+            updatePlayerAnimator(playerIconsList[i].GetComponentInChildren<Animator>(), i);
         }
         if (gameState.audienceMembers.Count > 0)
         {
@@ -969,6 +972,11 @@ public class main : MonoBehaviour
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
         InvokeRepeating("SendWouldYouRather", 0f, 150f);
+    }
+
+    private void updatePlayerAnimator(Animator a, int playerNumber)
+    {
+        a.runtimeAnimatorController = gameState.GetPlayerByPlayerNumber(playerNumber).myAnimator.runtimeAnimatorController;
     }
 
     public static List<Image> getPlayerIconTags(Image[] playerIcons, string tagName)
