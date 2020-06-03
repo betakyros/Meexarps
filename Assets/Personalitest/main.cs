@@ -218,19 +218,33 @@ public class main : MonoBehaviour
             //new player
             else if (gameState.GetNumberOfPlayers() < 6)
             {
+                int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
+
                 //remove the nbsp
                 name = Regex.Replace(name, @"\u00a0", " ");
                 int newPlayerNumber = gameState.GetNumberOfPlayers();
-                Player p = new Player(name, from, newPlayerNumber, 0, animators[newPlayerNumber]);
-
-                if(p.playerNumber == 0)
+                Player p = new Player(name, from, newPlayerNumber, 0, animators[newPlayerNumber], selectedAlien);
+                if(selectedAlien > -1)
+                {
+                    gameState.alienSelections.Add(selectedAlien, new[] { -1, p.playerNumber });
+                } else
+                {
+                    for(int i = 0; i < 6; i++)
+                    {
+                        if(!gameState.alienSelections.ContainsKey(i))
+                        {
+                            selectedAlien = i;
+                            gameState.alienSelections.Add(i, new[] { -1, p.playerNumber });
+                        }
+                    }
+                }
+                if (p.playerNumber == 0)
                 {
                     SendIsVip(p);
                 }
 
                 welcomePanels[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
                 gameState.players.Add(from, p);
-                int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
                 sendWelcomeScreenInfo(from, selectedAlien);
                 SendCurrentScreenForReconnect(from, p.playerNumber);
             }
@@ -261,7 +275,7 @@ public class main : MonoBehaviour
                 {
                     int audienceNumber = 10 + gameState.GetNumberOfAudience();
                     //todo hard code the audience animator to 7 or give them no animations
-                    Player p = new Player(name, from, audienceNumber, 0, animators[1]);
+                    Player p = new Player(name, from, audienceNumber, 0, animators[1], -1);
                     gameState.audienceMembers.Add(from, p);
                     welcomeScreenPanel.GetComponentsInChildren<Text>()[8].text = "Audience: " + gameState.audienceMembers.Count;
                     SendCurrentScreenForReconnect(from, p.playerNumber);
@@ -2169,7 +2183,7 @@ class Player
     public Dictionary<string, int> bestFriendPoints { get; set; }
     public int alienNumber { get; set; }
 
-    public Player(string n, int d, int pn, int a, Animator an)
+    public Player(string n, int d, int pn, int a, Animator an, int selectedAlien)
     {
         nickname = n;
         deviceId = d;
@@ -2178,6 +2192,7 @@ class Player
         points = 0;
         myAnimator = an;
         bestFriendPoints = new Dictionary<string, int>();
+        alienNumber = selectedAlien; //todo i dont think i need this
     }
 
     public Player(string n, int d, int pn, int a, int p, Animator an, Dictionary<string, int> bfp, int selectedAlien)
