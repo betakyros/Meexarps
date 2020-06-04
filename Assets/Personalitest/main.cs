@@ -985,7 +985,7 @@ public class main : MonoBehaviour
 
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
-        InvokeRepeating("SendWouldYouRather", 0f, 150f);
+        InvokeRepeating("SendWouldYouRather", 0f, 15f);
     }
 
     private void updatePlayerAnimator(Animator a, int playerNumber)
