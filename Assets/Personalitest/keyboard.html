@@ -973,8 +973,8 @@ path, .jtk-endpoint {
             
                 const voteMap = {};
                 window.instance.select().each(function(connection){
-                    var anonymousName = document.getElementById(connection.sourceId).firstChild.innerHTML;
-                    var playerName = document.getElementById(connection.targetId).firstChild.innerHTML;
+                    var anonymousName = document.getElementById(connection.sourceId).getElementsByClassName("sourceWindowLabel")[0].innerHTML;
+                    var playerName = document.getElementById(connection.targetId).getElementsByClassName("targetWindowLabel")[0].innerHTML;
                     voteMap[playerName] = anonymousName;
                     //voteMap.set(anonymousName, playerName);
                 })
