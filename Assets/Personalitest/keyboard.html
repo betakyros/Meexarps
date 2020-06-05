@@ -110,20 +110,16 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 
 /** ELEMENTS **/
+/*
 .window {
     position: absolute;
 }
-
+*/
 .sourceWindowLabel {
-    position: relative;
-    bottom: 30px;
-    margin-left:-130%;
     white-space: nowrap;
 }
 
 .targetWindowLabel {
-    position: relative;
-    bottom: 30px;
     white-space: nowrap;
     direction: rtl;
 }
@@ -136,8 +132,6 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 
 .source-target-demo .window {
-    width: 1em;
-    height: 1em;
     display:flex;
     align-items: center;
     justify-content: center;
@@ -145,14 +139,26 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 
 .anonymousNameBox {
-    /*background-color: #558822;*/
-    cursor: move;
-    left: 2em;
+    height: 40px;
+    display:flex; 
+    justify-content:center; 
+    flex-direction:column;
+    width:20%;
 }
 
 .playerNameBox {
-    cursor: move;
-    right: 2em;
+    height: 40px;
+    display:flex; 
+    justify-content:center; 
+    flex-direction:column;
+    width:20%;
+}
+
+.votingRow {
+    display: flex; 
+    flex:none; 
+    justify-content:space-between; 
+    margin-top:5px;
 }
 
 /** ENABLE/DISABLE LINK **/
@@ -189,6 +195,7 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 
 /*TODO we could probably use display flex to do this*/
+/*
 .sourceWindow0 {
     top:10em;
 }
@@ -209,8 +216,9 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 .sourceWindow5 {
     top:35em;
 }
-
+*/
 /** SMALL WINDOW POSITIONS **/
+/*
 .targetWindow0 {
     text-align: right;
     top: 10em;
@@ -240,14 +248,11 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
     text-align: right;
     top: 35em;
 }
-
+*/
 .alienImage {
     height: 40px;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
-
+/*
 .yourGuessImage {
     height: 40px;
     width:40px;
@@ -262,7 +267,7 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
     top: 0;
     left: 0;
 }
-
+*/
 /** JSPLUMB ARTEFACTS **/
 .jtk-endpoint {
     z-index: 32;
@@ -583,7 +588,7 @@ path, .jtk-endpoint {
                             var sourceId = "sourceWindow" + i;
                             var sourceElement = document.getElementById(sourceId);
                             sourceElement.style.display='block';
-                            sourceElement.firstChild.innerHTML = payload.data[i];
+                            sourceElement.getElementsByClassName("targetWindowLabel")[0].innerHTML = payload.data[i];
                             
                             //add the image to the box
                             var imageId = "sourceImage" + i;
@@ -593,7 +598,7 @@ path, .jtk-endpoint {
                             var targetId = "targetWindow" + i;
                             var sourceElement = document.getElementById(targetId);
                             sourceElement.style.display='block';
-                            sourceElement.firstChild.innerHTML = payload.data[numAnswers + i];
+                            sourceElement.getElementsByClassName("sourceWindowLabel")[0].innerHTML = payload.data[numAnswers + i];
                             
                             //add the image to the box
                             var imageId = "targetImage" + i;
@@ -1298,7 +1303,7 @@ path, .jtk-endpoint {
         Select your Meexarp
         <br>
         <div class="franklinBanner" style="position: inherit; margin-top: 8px; margin-bottom: 8px;">
-            <div style = "display:flex; justify-content:space-evenly;  width:85%; height:100%;" >
+            <div style = "display:flex; justify-content:space-evenly;  width:80%; height:100%;" >
                 <img id="alienButton0" class="alienButton" onclick="window.app.clickAlienButton(0)">
                 <img id="alienButton1" class="alienButton" onclick="window.app.clickAlienButton(1)">
                 <img id="alienButton2" class="alienButton" onclick="window.app.clickAlienButton(2)">
@@ -1636,25 +1641,74 @@ that will be used later in the game.
     <div id="answerSummaryForSelectedPlayer" style="width:100%; display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;background-color:#0adada;display:none;padding:4px;">
         test
     </div>
-    <div class="view" id="submitVoteView" style="padding-top:30%; width:100%; height:80%;display:none;" >
-        <div class="franklinBanner">
+    <div class="view" id="submitVoteView" style="padding-top:20%; width:100%; height:80%;display:none;" >
+        <div class="franklinBanner" style="position:inherit">
             <div style="width:85%;">Match the aliens to your friends</div>
         </div>
-         <div class="jtk-demo-canvas canvas-wide source-target-demo jtk-surface jtk-surface-nopan" id="canvas">
-            <div class="window anonymousNameBox targetWindow0" id="targetWindow0"><div class="sourceWindowLabel">target 1</div><img class="targetWindow0 alienImage "id="sourceImage0" class=></div>
-            <div class="window anonymousNameBox targetWindow1" id="targetWindow1"><div class="sourceWindowLabel">target 2</div><img class="targetWindow1 alienImage"id="sourceImage1"></div>
-            <div class="window anonymousNameBox targetWindow2" id="targetWindow2"><div class="sourceWindowLabel">target 3</div><img class="targetWindow2 alienImage"id="sourceImage2"></div>
-            <div class="window anonymousNameBox targetWindow3" id="targetWindow3"><div class="sourceWindowLabel">target 4</div><img class="targetWindow3 alienImage" id="sourceImage3"></div>
-            <div class="window anonymousNameBox targetWindow4" id="targetWindow4"><div class="sourceWindowLabel">target 5</div><img class="targetWindow4 alienImage" id="sourceImage4"></div>
-            <div class="window anonymousNameBox targetWindow5" id="targetWindow5"><div class="sourceWindowLabel">target 6</div><img class="targetWindow5 alienImage" id="sourceImage5"></div>
-            <div class="window playerNameBox sourceWindow0" id="sourceWindow0"><div class="targetWindowLabel">source 1</div><img id="targetImage0" class="alienImage sourceWindow0"></div>
-            <div class="window playerNameBox sourceWindow1" id="sourceWindow1"><div class="targetWindowLabel">source 2</div><img id="targetImage1" class="alienImage sourceWindow1"></div>
-            <div class="window playerNameBox sourceWindow2" id="sourceWindow2"><div class="targetWindowLabel">source 3</div><img id="targetImage2" class="alienImage sourceWindow2"></div>
-            <div class="window playerNameBox sourceWindow3" id="sourceWindow3"><div class="targetWindowLabel">source 4</div><img id="targetImage3" class="alienImage sourceWindow3"></div>
-            <div class="window playerNameBox sourceWindow4" id="sourceWindow4"><div class="targetWindowLabel">source 5</div><img id="targetImage4" class="alienImage sourceWindow4"></div>
-            <div class="window playerNameBox sourceWindow5" id="sourceWindow5"><div class="targetWindowLabel">source 6</div><img id="targetImage5" class="alienImage sourceWindow5"></div>
+         <div class="jtk-demo-canvas canvas-wide source-target-demo jtk-surface jtk-surface-nopan" 
+            style="display:flex;width:100%;height:90%;flex-direction:column;" id="canvas">
+            <div class="votingRow">
+                <div class="window anonymousNameBox targetWindow0" id="targetWindow0">
+                    <div class="sourceWindowLabel">target 1</div>
+                    <img class="targetWindow0 alienImage "id="sourceImage0">
+                </div>
+                <div class="window playerNameBox sourceWindow0" id="sourceWindow0">
+                    <div class="targetWindowLabel">source 1</div>
+                    <img id="targetImage0" class="alienImage sourceWindow0">
+                </div>
+            </div>
+            <div class="votingRow">
+                <div class="window anonymousNameBox targetWindow1" id="targetWindow1">
+                    <div class="sourceWindowLabel">target 2</div>
+                    <img class="targetWindow1 alienImage"id="sourceImage1">
+                </div>
+                <div class="window playerNameBox sourceWindow1" id="sourceWindow1">
+                    <div class="targetWindowLabel">source 2</div>
+                    <img id="targetImage1" class="alienImage sourceWindow1">
+                </div>
+            </div>
+            <div class="votingRow">
+                <div class="window anonymousNameBox targetWindow2" id="targetWindow2">
+                    <div class="sourceWindowLabel">target 3</div>
+                    <img class="targetWindow2 alienImage"id="sourceImage2">
+                </div>
+                <div class="window playerNameBox sourceWindow2" id="sourceWindow2">
+                    <div class="targetWindowLabel">source 3</div>
+                    <img id="targetImage2" class="alienImage sourceWindow2">
+                </div>
+            </div>
+            <div class="votingRow">
+                <div class="window anonymousNameBox targetWindow3" id="targetWindow3">
+                    <div class="sourceWindowLabel">target 4</div>
+                    <img class="targetWindow3 alienImage" id="sourceImage3">
+                </div>
+                <div class="window playerNameBox sourceWindow3" id="sourceWindow3">
+                    <div class="targetWindowLabel">source 4</div>
+                    <img id="targetImage3" class="alienImage sourceWindow3">
+                </div>
+            </div>
+            <div class="votingRow">
+                <div class="window anonymousNameBox targetWindow4" id="targetWindow4">
+                    <div class="sourceWindowLabel">target 5</div>
+                    <img class="targetWindow4 alienImage" id="sourceImage4">
+                </div>
+                <div class="window playerNameBox sourceWindow4" id="sourceWindow4">
+                    <div class="targetWindowLabel">source 5</div>
+                    <img id="targetImage4" class="alienImage sourceWindow4">
+                </div>
+            </div>
+            <div class="votingRow">
+                <div class="window anonymousNameBox targetWindow5" id="targetWindow5">
+                    <div class="sourceWindowLabel">target 6</div>
+                    <img class="targetWindow5 alienImage" id="sourceImage5">
+                </div>
+                <div class="window playerNameBox sourceWindow5" id="sourceWindow5">
+                    <div class="targetWindowLabel">source 6</div>
+                    <img id="targetImage5" class="alienImage sourceWindow5">
+                </div>
+            </div>
         </div>
-        <div class="pseudo_button" onclick="window.app.sendVoting()" style="bottom:1em; right:1em; position: absolute;">Submit Votes!</div>
+        <div class="pseudo_button" onclick="window.app.sendVoting()">Submit Votes!</div>
     </div>
     <div class="view" id="roundResultsView" style="width:100%; height:85%;display:none; padding-top: 15%;" >
         
