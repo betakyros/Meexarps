@@ -252,7 +252,7 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 .alienImage {
     height: 40px;
 }
-/*
+
 .yourGuessImage {
     height: 40px;
     width:40px;
@@ -661,9 +661,6 @@ path, .jtk-endpoint {
                             var guessNameText = personalRoundResults[i][1];
                             alienImage.src= App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[guessNameText]);
                             guessName.innerHTML=guessNameText;
-                            console.log("guessNameText: " + guessNameText + " alienImage.src: " + 
-                                alienImage.src +
-                                " playerNameToAlienNumberDictionary[guessName]: " + playerNameToAlienNumberDictionary[guessName]);
                         }
                         alienImage.className="yourGuessImage";
 
@@ -1464,7 +1461,7 @@ that will be used later in the game.
         <div id="timeEstimateDiv"></div>
     </div>
     <div class="view" id="wouldYouRatherView" style="padding-top:45px;display:none">
-        <div class="franklinBanner" style="height:18%;">
+        <div class="franklinBanner" style="height:13%;">
             <div style="width:85%;">Pick a side for the "Would you rather"</div>
         </div>
         <br>
@@ -1645,7 +1642,7 @@ that will be used later in the game.
             <div style="width:85%;">Match the aliens to your friends</div>
         </div>
          <div class="jtk-demo-canvas canvas-wide source-target-demo jtk-surface jtk-surface-nopan" 
-            style="display:flex;width:100%;height:90%;flex-direction:column;" id="canvas">
+            style="display:flex;width:100%;height:80%;flex-direction:column;" id="canvas">
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow0" id="targetWindow0">
                     <div class="sourceWindowLabel">target 1</div>

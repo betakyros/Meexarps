@@ -252,7 +252,7 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 .alienImage {
     height: 40px;
 }
-/*
+
 .yourGuessImage {
     height: 40px;
     width:40px;
@@ -661,9 +661,6 @@ path, .jtk-endpoint {
                             var guessNameText = personalRoundResults[i][1];
                             alienImage.src= App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[guessNameText]);
                             guessName.innerHTML=guessNameText;
-                            console.log("guessNameText: " + guessNameText + " alienImage.src: " + 
-                                alienImage.src +
-                                " playerNameToAlienNumberDictionary[guessName]: " + playerNameToAlienNumberDictionary[guessName]);
                         }
                         alienImage.className="yourGuessImage";
 
