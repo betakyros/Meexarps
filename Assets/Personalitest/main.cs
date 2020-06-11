@@ -31,7 +31,7 @@ public class main : MonoBehaviour
     public AudioSource mainLoopAudioSource;
     public AudioSource blipAudioSource;
     public AudioSource[] welcomeScreenAudioSources;
-    private float onVolume = .4f;
+    private float onVolume = .04f;
     private float offVolume = 0f;
     public RawImage instructionVideo;
     public RawImage introInstructionVideo;
@@ -1953,7 +1953,7 @@ public class main : MonoBehaviour
         string resultStatus = correctPercent >= 60.0f ? resultsStatuses[0] : resultsStatuses[1];
         
         //set percentCorrectText
-        endScreenPanel.GetComponentsInChildren<Text>()[offset].text = "Collectively, your team identified\n<b><size=90> " + correctPercent + "%</size> </b>\nof your teammates correctly!";
+        endScreenPanel.GetComponentsInChildren<Text>()[offset].text = "Collectively, your team identified\n<b><size=90> " + correctPercent.ToString("n2") + "%</size> </b>\nof your teammates correctly!";
         //set friendship status
         endScreenPanel.GetComponentsInChildren<Text>()[offset + 1].text = "You have achieved the status of\n<b><size=60> " + friendshipStatus + " </size></b> ";
         //set result text
