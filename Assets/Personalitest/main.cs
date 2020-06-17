@@ -246,7 +246,14 @@ public class main : MonoBehaviour
                     SendIsVip(p);
                 }
 
-                welcomePanels[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
+                Image[] playerIcons = welcomeScreenPanel.GetComponentsInChildren<Image>(true);
+                List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+
+                playerIconsList[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
+                Image image = playerIconsList[gameState.GetNumberOfPlayers()].GetComponentsInChildren<Image>(true)[1];
+                image.gameObject.SetActive(true);
+                updatePlayerAnimator(image.GetComponentInChildren<Animator>(), p);
+
                 gameState.players.Add(from, p);
                 sendWelcomeScreenInfo(from, selectedAlien);
                 SendCurrentScreenForReconnect(from, p.playerNumber);
@@ -990,7 +997,12 @@ public class main : MonoBehaviour
 
     private void updatePlayerAnimator(Animator a, int playerNumber)
     {
-        a.runtimeAnimatorController = gameState.GetPlayerByPlayerNumber(playerNumber).myAnimator.runtimeAnimatorController;
+        updatePlayerAnimator(a, gameState.GetPlayerByPlayerNumber(playerNumber));
+    }
+
+    private void updatePlayerAnimator(Animator a, Player p)
+    {
+        a.runtimeAnimatorController = p.myAnimator.runtimeAnimatorController;
     }
 
     public static List<Image> getPlayerIconTags(Image[] playerIcons, string tagName)
