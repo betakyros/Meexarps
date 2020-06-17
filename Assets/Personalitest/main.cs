@@ -2059,7 +2059,8 @@ public class main : MonoBehaviour
     private string CalculateBestFriend(Player p)
     {
         int currentBestFriendPoints = 0;
-        string currentBestFriend = "No one!";
+        List<string> currentBestFriends = new List<string>();
+        currentBestFriends.Add("No one!");
         //calculate best friends
         foreach (Player otherPlayer in gameState.players.Values)
         {
@@ -2069,11 +2070,27 @@ public class main : MonoBehaviour
             int theirPoints = theirBfp.ContainsKey(p.nickname) ? theirBfp[p.nickname] : 0;
             if (myPoints + theirPoints > currentBestFriendPoints)
             {
-                currentBestFriend = otherPlayer.nickname;
+                currentBestFriends.Clear();
+                currentBestFriends.Add(otherPlayer.nickname);
+//                currentBestFriend = otherPlayer.nickname;
                 currentBestFriendPoints = myPoints + theirPoints;
             }
+            else if (myPoints + theirPoints == currentBestFriendPoints)
+            {
+                currentBestFriends.Add(otherPlayer.nickname);
+            }
         }
-        return currentBestFriend;
+
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < currentBestFriends.Count; i++)
+        {
+            if(i != 0)
+            {
+                sb.Append("~~split~~");
+            }
+            sb.Append(currentBestFriends[i]);
+        }
+        return sb.ToString();
     }
 
     private int anonymousNameCounter = 0;

@@ -753,14 +753,39 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendEndScreen") {
                     document.getElementById("endGameScreenViewUsername").innerText = playerName;
                     var numPoints = payload.data[0];
-                    var bestFriendName = payload.data[1];
+                    var bestFriendNames = payload.data[1].split("~~split~~");
+                    var plural = false;
+                    if(bestFriendNames.length > 1) {
+                        plural = true;
+                    }
+
                     document.getElementById("endGameScreenViewPoints").innerText = numPoints;
                     if(numPoints == 1) {
                         document.getElementById("endGameScreenViewTimes").innerText = "time";                                            
                     } else {
                         document.getElementById("endGameScreenViewTimes").innerText = "times";                    
                     }
-                    document.getElementById("endGameScreenViewBestFriend").innerText = bestFriendName;
+
+                    if(plural) {
+                        document.getElementById("endGameScreenViewBestFriendDescription").innerText = "Your best friends are";
+                        var bestFriendsString ="";
+                        for(var currentBestFriendIndex = 0; currentBestFriendIndex < bestFriendNames.length; currentBestFriendIndex++){
+                            if(currentBestFriendIndex != 0){
+                                if(currentBestFriendIndex == bestFriendNames.length - 1) {
+                                    bestFriendsString += " and "
+                                } else {
+                                    bestFriendsString += ", ";
+                                }
+                            }
+                            bestFriendsString+=bestFriendNames[currentBestFriendIndex];
+                        }
+                        document.getElementById("endGameScreenViewBestFriend").innerText = bestFriendsString;
+
+                    } else {
+                        document.getElementById("endGameScreenViewBestFriendDescription").innerText = "Your best friend is";
+                        document.getElementById("endGameScreenViewBestFriend").innerText = bestFriendNames[0];
+                    }                    
+                    
                     if(isVip) {
                         document.getElementById("endGameScreenViewButton").style.display = "block";
                     }
@@ -1747,7 +1772,7 @@ that will be used later in the game.
         <br>
         <br>
         <br>
-        Your best friend is
+        <div id="endGameScreenViewBestFriendDescription">Your best friend is</div>
         <br>
         <div id="endGameScreenViewBestFriend" style="font-size:40px">[Username]</div>
         <div id="endGameScreenViewButton" style="display:none;">
