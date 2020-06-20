@@ -500,6 +500,10 @@ path, .jtk-endpoint {
                     document.getElementById("welcomeScreenView").style.display = "block";
                     document.getElementById("nameAlreadyTakenView").style.display = "block";
                 } 
+                /* If we aren't currently playing, ignore the rest of the possible commands */
+                else if(playerName == null) {
+                    return;
+                }
                 else if(myAction === "selectRoundCountView") {
                     hideAllViews();
                     var numPlayers = payload.data;
