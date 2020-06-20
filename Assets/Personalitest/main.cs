@@ -900,7 +900,7 @@ public class main : MonoBehaviour
         introInstructionVideo.texture = introVp.texture;
         introInstructionVideo.gameObject.SetActive(true);
         CameraZoom instructionsCz = introInstructionVideo.gameObject.AddComponent<CameraZoom>();
-        instructionsCz.Setup(.5f, 64f, false, false, false, true);
+        instructionsCz.Setup(.5f, 64f, false, false, false, true, false);
         introVp.Play();
         //vp.Pause();
         yield return new WaitForSeconds(1);
@@ -1323,7 +1323,7 @@ public class main : MonoBehaviour
             instructionVideo.texture = vp.texture;
             instructionVideo.gameObject.SetActive(true);
             CameraZoom instructionsCz = instructionVideo.gameObject.AddComponent<CameraZoom>();
-            instructionsCz.Setup(1f, 16f, false, false, false, true);
+            instructionsCz.Setup(1f, 16f, false, false, false, true, false);
             vp.Play();
             //vp.Pause();
             yield return new WaitForSeconds(1);
@@ -1399,11 +1399,11 @@ public class main : MonoBehaviour
             {
                 string answer = answers.text[j];
 
-                myText.text += "<color=grey><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<b>" + answer + "</b>";
+                myText.text += "<color=grey><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<size=5>\n</size><b>" + answer + "</b>";
                 shortTextSb.Append(answer);
                 if (j < answers.text.Length - 1 )
                 {
-                    myText.text += "<size=15>\n</size>";
+                    myText.text += "<size=25>\n\n</size>";
                     shortTextSb.Append("<size=15>\n\n</size>");
                 }
                 //wait four seconds between each answer to give it a punch
@@ -1827,7 +1827,7 @@ public class main : MonoBehaviour
 
             //first, display the questions and answers again
             int playerPanelTileOffset = 2;
-            myText.text = "\n" + anonymousPlayerName + "'s answers\n\n";
+            myText.text = "\n" + anonymousPlayerName + "'s answers\n<size=25>\n</size>";
             CameraZoom cz = resultsPanel.GetComponentsInChildren<Image>()[playerPanelTileOffset].gameObject.AddComponent<CameraZoom>();
 
             int zoomInTime = 1;
@@ -1836,7 +1836,12 @@ public class main : MonoBehaviour
             float waitForEachAnswer = .5f;
 
             float totalWaitTime = 3 * waitForContextSeconds + 2 * waitForReadSeconds + (3 + wrongVotesCount) * waitForEachAnswer;
-            cz.Setup(zoomInTime, totalWaitTime, true, true, false);
+            cz.Setup(zoomInTime, totalWaitTime, true, true, false, false, true);
+
+            rightAndWrongPanelTitle.text = "<b><size=" + (increasedFontSize + 3) + ">" + anonymousPlayerName +
+                " is <size=" + (increasedFontSize + 8) + ">???</size>\n\n" + " </size></b>";
+
+            rightAndWrongPanelAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(zoomInTime);
             yield return new WaitForSeconds(waitForContextSeconds);
             for (int j = 0; j < answers.text.Length; j++)
@@ -1847,16 +1852,15 @@ public class main : MonoBehaviour
                 myText.text += "<color=grey><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<b>" + answer + "</b>";
                 if (j < answers.text.Length - 1)
                 {
-                    myText.text += "<size=15>\n\n</size>";
+                    myText.text += "<size=25>\n\n</size>";
                 }
             }
             yield return new WaitForSeconds(waitForReadSeconds);
 
-            rightAndWrongPanelAnimator.SetBool("Open", true);
             //titleAndGridContainerAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(waitForContextSeconds);
 
-            string tileTitle = anonymousPlayerName + " is <size=" + (increasedFontSize + 8) + ">" + targetPlayerName + "</size>\n\n";
+            string tileTitle = anonymousPlayerName + " is <color=blue><size=" + (increasedFontSize + 8) + ">" + targetPlayerName + "</size></color>\n\n";
             //myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
             rightAndWrongPanelTitle.text = "<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + " </size></b>";
             yield return new WaitForSeconds(waitForContextSeconds);
@@ -1955,7 +1959,7 @@ public class main : MonoBehaviour
             AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
         }
 
-        int offset = 1;
+        int offset = 0;
         float correctPercent = ((float)gameState.totalCorrectGuesses) / ((float)(gameState.totalCorrectGuesses + gameState.totalWrongGuesses)) * 100.0f;
         string[] friendshipStatusArray = { "Archnemeses", "Enemies", "Strangers", "Acquaintances", "Just \"Ok\" Friends", "Friends", "Best Friends" };
         string[] resultsStatuses = { "The board is impressed and will grant you the funds to continue your research. Congratulations!" ,

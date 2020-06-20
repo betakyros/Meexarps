@@ -20,7 +20,7 @@ public class CameraZoom : MonoBehaviour
     bool gentleShake;
     bool resetAnchors;
     bool isMovie;
-
+    bool isResultsScreen;
     float startTime;
     Vector3 originalPosition;
 
@@ -30,10 +30,10 @@ public class CameraZoom : MonoBehaviour
 
     public void Setup(float initialGrowDuration, float initialPauseDuration, bool setAsLastSibling, bool setGentleShake, bool setResetAnchors)
     {
-        Setup(initialGrowDuration, initialPauseDuration, setAsLastSibling, setGentleShake, setResetAnchors, false);
+        Setup(initialGrowDuration, initialPauseDuration, setAsLastSibling, setGentleShake, setResetAnchors, false, false);
     }
 
-    public void Setup(float initialGrowDuration, float initialPauseDuration, bool setAsLastSibling, bool setGentleShake, bool setResetAnchors, bool setIsMovie)
+    public void Setup(float initialGrowDuration, float initialPauseDuration, bool setAsLastSibling, bool setGentleShake, bool setResetAnchors, bool setIsMovie, bool isResultsScreen)
     {
         isMovie = setIsMovie;
 
@@ -69,6 +69,7 @@ public class CameraZoom : MonoBehaviour
             myRectTransform.anchorMax = new Vector2(0f, 0f);
             myRectTransform.anchorMin = new Vector2(0f, 0f);
         }
+        this.isResultsScreen = isResultsScreen;
     }
 
     void Update()
@@ -76,7 +77,13 @@ public class CameraZoom : MonoBehaviour
         RectTransform myPanelTransform = GetComponent<RectTransform>();
         Image myImage = gameObject.GetComponent<Image>();
         float canvasHeight = canvas.GetComponent<RectTransform>().rect.height;
-        float canvasWidth = canvas.GetComponent<RectTransform>().rect.width;
+        float canvasWidth = !isResultsScreen ? 
+            canvas.GetComponent<RectTransform>().rect.width : 
+            canvas.GetComponent<RectTransform>().rect.width / 3 * 2;
+        float canvasXPosition = !isResultsScreen ?
+            canvas.transform.position.x :
+            canvas.transform.position.x / 3 * 2;
+
         // Calculate the fraction of the total duration that has passed.
         float timePassed = Time.time - startTime;
 
@@ -95,7 +102,7 @@ public class CameraZoom : MonoBehaviour
             currentWidth = Mathf.SmoothStep(originalWidth, canvasWidth, t);
             currentHeight = Mathf.SmoothStep(originalHeight, canvasHeight, t);
 
-            currentX = Mathf.SmoothStep(originalPosition.x, canvas.transform.position.x, t);
+            currentX = Mathf.SmoothStep(originalPosition.x, canvasXPosition, t);
             currentY = Mathf.SmoothStep(originalPosition.y, canvas.transform.position.y, t);
 
             if (!isMovie)
@@ -121,7 +128,7 @@ public class CameraZoom : MonoBehaviour
             currentHeight = Mathf.SmoothStep(canvasHeight, originalHeight, t);
 
 
-            currentX = Mathf.SmoothStep(canvas.transform.position.x, originalPosition.x, t);
+            currentX = Mathf.SmoothStep(canvasXPosition, originalPosition.x, t);
             currentY = Mathf.SmoothStep(canvas.transform.position.y, originalPosition.y, t);
 
             if (!isMovie)
