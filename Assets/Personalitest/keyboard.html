@@ -453,6 +453,11 @@ path, .jtk-endpoint {
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("startGameButton").style.display = "inline-block";
                 } else if(myAction === "sendWelcomeScreenInfo") {
+                    if(playerName == null) {
+                        hideAllViews();
+                        document.getElementById("welcomeScreenView").style.display = "block";                  
+                    }
+
                     var playerCount = payload.data[0];
                     if(playerCount == "full") {
                         document.getElementById("welcomeScreenPlayerCount").innerText = "Our Meexarp team has reached capacity!\nYou will be joining as an audience member.";
@@ -465,7 +470,7 @@ path, .jtk-endpoint {
                             option.text = playerCount + (playerCount == 1 ? " round": " rounds");
                             //document.getElementById("roundCountInputField").add(option);                        
                         }
-                    }
+                    }  
                 } else if(myAction === "sendAlienSelectionFailed") {
                     //TODO update some message if the selection fails
                 } else if(myAction === "sendAlienSelectionSuccess") {
@@ -499,7 +504,13 @@ path, .jtk-endpoint {
                     hideAllViews();
                     document.getElementById("welcomeScreenView").style.display = "block";
                     document.getElementById("nameAlreadyTakenView").style.display = "block";
-                } 
+                } else if(myAction === "sendSkipIntro") {
+                    hideAllViews();
+                    displayElement(document.getElementById("skipIntroView"));
+                } else if(myAction === "sendSkipInstructions") {
+                    hideAllViews();
+                    displayElement(document.getElementById("skipInstructionsView"));
+                }
                 /* If we aren't currently playing, ignore the rest of the possible commands */
                 else if(playerName == null) {
                     return;
@@ -575,8 +586,6 @@ path, .jtk-endpoint {
                         document.getElementById("answerQuestionsTimer").innerText = timeElapsed;
                     }, 1000) ;
                     displayElement(document.getElementById("submitAnswerView"));
-                } else if(myAction === "sendSkipInstructions") {
-                    displayElement(document.getElementById("skipInstructionsView"));
                 } else if(myAction === "sendVoting") {
 
                         //reset jsplumb
@@ -1601,6 +1610,10 @@ that will be used later in the game.
         </div>
         <p>
         <div class="pseudo_button" onclick="window.app.sendDecidedQuestions()">Send out the questions!</div>
+    </div>
+    <div class="view" id="skipIntroView" style="padding:50% 0;display:none;">
+        <p>
+        <div class="pseudo_button" onclick="window.app.sendSkipInstructions()">Skip Intro</div>
     </div>
     <div class="view" id="skipInstructionsView" style="padding:50% 0;display:none;">
         Watch the instructions on the screen or press this button to skip the video

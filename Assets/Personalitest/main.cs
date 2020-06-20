@@ -18,6 +18,7 @@ public class main : MonoBehaviour
     private GameState gameState;
     public List<GameObject> welcomePanels;
     public GameObject splashScreenPanel;
+    public GameObject storyPanel;
     public GameObject welcomeScreenPanel;
     public GameObject selectRoundNumberPanel;
     public GameObject wouldYouRatherPanel;
@@ -115,9 +116,14 @@ public class main : MonoBehaviour
     private IEnumerator<WaitForSeconds> waitThreeSecondsThenDisplayWelcomeScreen()
     {
         yield return new WaitForSeconds(3);
+
         SetVolumeForLevel(welcomeScreenAudioSources, 1);
         FadeSplashScreen fadeSplashScreenScript = splashScreenPanel.AddComponent<FadeSplashScreen>();
-        fadeSplashScreenScript.Setup();
+        fadeSplashScreenScript.Setup(3.0f);
+        yield return new WaitForSeconds(15);
+        FadeSplashScreen fadeStoryScreenScript = storyPanel.AddComponent<FadeSplashScreen>();
+        fadeStoryScreenScript.Setup(3.0f);
+        sendWelcomeScreenInfo(-1, -1);
     }
 
     private void InitializeOptions()
@@ -390,7 +396,13 @@ public class main : MonoBehaviour
         }
         else if ("requestWelcomeScreenInfo".Equals(action))
         {
-            sendWelcomeScreenInfo(-1, -1);
+            if(storyPanel.activeSelf)
+            {
+                AirConsole.instance.Broadcast(new JsonAction("sendSkipIntro", new string[] { " " }));
+            } else
+            {
+                sendWelcomeScreenInfo(-1, -1);
+            }
             playSound = false;
         }
         else if ("sendStartGame".Equals(action))
@@ -526,6 +538,11 @@ public class main : MonoBehaviour
         }
         else if ("sendSkipInstructions".Equals(action))
         {
+            if(storyPanel.activeSelf)
+            {
+                storyPanel.SetActive(false);
+                sendWelcomeScreenInfo(-1, -1);
+            }
             if (instructionVideo.gameObject.GetComponent<CameraZoom>() != null)
             {
                 Destroy(instructionVideo.gameObject.GetComponent<CameraZoom>());

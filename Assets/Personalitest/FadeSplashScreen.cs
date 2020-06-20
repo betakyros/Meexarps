@@ -14,7 +14,7 @@ public class FadeSplashScreen : MonoBehaviour
     public Vector2 originalMaxAnchor;
 
     // Time taken for the transition.
-    float duration = 3.0f;
+    float duration;
     float startTime;
 
     void Start()
@@ -22,8 +22,9 @@ public class FadeSplashScreen : MonoBehaviour
     }
     
 
-    public void Setup()
+    public void Setup(float d)
     {
+        duration = d;
         RectTransform myRectTransform = gameObject.GetComponent<RectTransform>();
 
         startTime = Time.time;
