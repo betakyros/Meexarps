@@ -164,14 +164,14 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: ba5b723c1f98ab64c8a20f0f1a76b417, type: 3}
     m_FontSize: 12
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 1
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: No Player
 --- !u!1 &2975878208315894119
