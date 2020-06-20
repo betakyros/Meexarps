@@ -2072,16 +2072,19 @@ public class main : MonoBehaviour
             int myPoints = myBfp.ContainsKey(otherPlayer.nickname) ? myBfp[otherPlayer.nickname] : 0;
             Dictionary<string, int> theirBfp = otherPlayer.bestFriendPoints;
             int theirPoints = theirBfp.ContainsKey(p.nickname) ? theirBfp[p.nickname] : 0;
-            if (myPoints + theirPoints > currentBestFriendPoints)
+            if(myPoints + theirPoints > 0)
             {
-                currentBestFriends.Clear();
-                currentBestFriends.Add(otherPlayer.nickname);
-//                currentBestFriend = otherPlayer.nickname;
-                currentBestFriendPoints = myPoints + theirPoints;
-            }
-            else if (myPoints + theirPoints == currentBestFriendPoints)
-            {
-                currentBestFriends.Add(otherPlayer.nickname);
+                if (myPoints + theirPoints > currentBestFriendPoints)
+                {
+                    currentBestFriends.Clear();
+                    currentBestFriends.Add(otherPlayer.nickname);
+    //                currentBestFriend = otherPlayer.nickname;
+                    currentBestFriendPoints = myPoints + theirPoints;
+                }
+                else if (myPoints + theirPoints == currentBestFriendPoints)
+                {
+                    currentBestFriends.Add(otherPlayer.nickname);
+                }
             }
         }
 
