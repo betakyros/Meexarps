@@ -84,14 +84,14 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
             filterExclude:true,
             maxConnections: 1,
             anchor:"Right",
-            endpoint:[ "Dot", { radius: 15, cssClass:"large-green" } ]
+            endpoint:[ "Dot", { radius: 25, cssClass:"large-green" } ]
         });
 
         // configure the .playerNameBoxs as targets.
         instance.makeTarget(playerNameBoxs, {
             dropOptions: { hoverClass: "hover" },
             anchor:"Left",
-            endpoint:[ "Dot", { radius: 15, cssClass:"small-blue" } ]
+            endpoint:[ "Dot", { radius: 25, cssClass:"small-blue" } ]
         });
         /*
         // and finally connect a couple of small windows, just so its obvious what's going on when this demo loads.           
