@@ -1399,7 +1399,7 @@ public class main : MonoBehaviour
             {
                 string answer = answers.text[j];
 
-                myText.text += "<i>" + gameState.GetCurrentRound().questions[j] + "</i>\n<b>" + answer + "</b>";
+                myText.text += "<color=grey><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<b>" + answer + "</b>";
                 shortTextSb.Append(answer);
                 if (j < answers.text.Length - 1 )
                 {
@@ -1844,7 +1844,7 @@ public class main : MonoBehaviour
                 yield return new WaitForSeconds(waitForEachAnswer);
                 string answer = answers.text[j];
 
-                myText.text += "<i>" + gameState.GetCurrentRound().questions[j] + "</i>\n<b>" + answer + "</b>";
+                myText.text += "<color=grey><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<b>" + answer + "</b>";
                 if (j < answers.text.Length - 1)
                 {
                     myText.text += "<size=15>\n\n</size>";
@@ -1856,8 +1856,9 @@ public class main : MonoBehaviour
             //titleAndGridContainerAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(waitForContextSeconds);
 
+            string tileTitle = anonymousPlayerName + " is <size=" + (increasedFontSize + 8) + ">" + targetPlayerName + "</size>\n\n";
             //myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
-            rightAndWrongPanelTitle.text = "Who did people guess " + anonymousPlayerName + " is\n";
+            rightAndWrongPanelTitle.text = "<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + " </size></b>";
             yield return new WaitForSeconds(waitForContextSeconds);
 
             foreach (string s in wrongVotesLines)
@@ -1893,7 +1894,6 @@ public class main : MonoBehaviour
             //yield return new WaitForSeconds(zoomInTime);
             string audienceGuessesString = numberOfCorrectAudienceGuesses + numberOfWrongAudienceGuesses == 0 ? "" : "\n\n<color=green>" + numberOfCorrectAudienceGuesses + " </color>/<color=red>" + numberOfWrongAudienceGuesses + "</color> Audience";
 
-            string tileTitle = anonymousPlayerName + " is " + targetPlayerName + "\n\n";
             myText.text = "\n<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + "</size></b>" + correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString()
                 + audienceGuessesString;
             
