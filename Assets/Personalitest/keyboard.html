@@ -292,6 +292,45 @@ path, .jtk-endpoint {
     fill: Transparent;
 }
 
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #CBDAFF;
+  color: black;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  bottom: 30px;
+  font-size: 17px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
     </style>
     <script type="text/javascript">
     var keyboard;
@@ -911,6 +950,9 @@ path, .jtk-endpoint {
                         wouldYouRatherRightSubmit
                     }
 				};
+                var x = document.getElementById("snackbar");
+                x.className = "show";
+                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
 				me.air_console.message(AirConsole.SCREEN, message);
                 App.prototype.setKeyboardValue("wouldYouRatherSubmit", "");
                 App.prototype.setKeyboardValue("wouldYouRatherLeftSubmit", "");
@@ -1472,6 +1514,9 @@ that will be used later in the game.
             <text>You are the VIP and can start the game<br>
                 when everyone is ready
             </text>
+        </div>
+        <div style="display:flex; justify-content:center; width: 100%">
+            <div id="snackbar">Would you rather submitted</div>
         </div>
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
