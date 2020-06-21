@@ -139,19 +139,19 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 
 .anonymousNameBox {
-    height: 40px;
     display:flex; 
     justify-content:center; 
     flex-direction:column;
     width:20%;
+    margin-bottom: 2px;
 }
 
 .playerNameBox {
-    height: 40px;
     display:flex; 
     justify-content:center; 
     flex-direction:column;
     width:20%;
+    margin-bottom: 2px;
 }
 
 .votingRow {
@@ -263,7 +263,7 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 
 .roundResultsImage {
     height: 40px;
-    width:40px;
+    width: 40px;
     top: 0;
     left: 0;
 }
@@ -662,6 +662,7 @@ path, .jtk-endpoint {
                     resultsContainer.innerHTML='';
                     for(var i = 0; i < fourthArray; i++) {
                         var currentResultContainer = document.createElement("div");
+                        currentResultContainer.style.marginBottom = "10px";
                         currentResultContainer.style.display = "flex";
                         currentResultContainer.style.justifyContent = "space-between";
 
@@ -1689,62 +1690,62 @@ that will be used later in the game.
             style="display:flex;width:100%;height:80%;flex-direction:column;" id="canvas">
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow0" id="targetWindow0">
-                    <div class="sourceWindowLabel">target 1</div>
                     <img class="targetWindow0 alienImage "id="sourceImage0">
+                    <div class="sourceWindowLabel">target 1</div>
                 </div>
                 <div class="window playerNameBox sourceWindow0" id="sourceWindow0">
-                    <div class="targetWindowLabel">source 1</div>
                     <img id="targetImage0" class="alienImage sourceWindow0">
+                    <div class="targetWindowLabel">source 1</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow1" id="targetWindow1">
-                    <div class="sourceWindowLabel">target 2</div>
                     <img class="targetWindow1 alienImage"id="sourceImage1">
+                    <div class="sourceWindowLabel">target 2</div>
                 </div>
                 <div class="window playerNameBox sourceWindow1" id="sourceWindow1">
-                    <div class="targetWindowLabel">source 2</div>
                     <img id="targetImage1" class="alienImage sourceWindow1">
+                    <div class="targetWindowLabel">source 2</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow2" id="targetWindow2">
-                    <div class="sourceWindowLabel">target 3</div>
                     <img class="targetWindow2 alienImage"id="sourceImage2">
+                    <div class="sourceWindowLabel">target 3</div>
                 </div>
                 <div class="window playerNameBox sourceWindow2" id="sourceWindow2">
-                    <div class="targetWindowLabel">source 3</div>
                     <img id="targetImage2" class="alienImage sourceWindow2">
+                    <div class="targetWindowLabel">source 3</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow3" id="targetWindow3">
-                    <div class="sourceWindowLabel">target 4</div>
                     <img class="targetWindow3 alienImage" id="sourceImage3">
+                    <div class="sourceWindowLabel">target 4</div>
                 </div>
                 <div class="window playerNameBox sourceWindow3" id="sourceWindow3">
-                    <div class="targetWindowLabel">source 4</div>
                     <img id="targetImage3" class="alienImage sourceWindow3">
+                    <div class="targetWindowLabel">source 4</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow4" id="targetWindow4">
-                    <div class="sourceWindowLabel">target 5</div>
                     <img class="targetWindow4 alienImage" id="sourceImage4">
+                    <div class="sourceWindowLabel">target 5</div>
                 </div>
                 <div class="window playerNameBox sourceWindow4" id="sourceWindow4">
-                    <div class="targetWindowLabel">source 5</div>
                     <img id="targetImage4" class="alienImage sourceWindow4">
+                    <div class="targetWindowLabel">source 5</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow5" id="targetWindow5">
-                    <div class="sourceWindowLabel">target 6</div>
                     <img class="targetWindow5 alienImage" id="sourceImage5">
+                    <div class="sourceWindowLabel">target 6</div>
                 </div>
                 <div class="window playerNameBox sourceWindow5" id="sourceWindow5">
-                    <div class="targetWindowLabel">source 6</div>
                     <img id="targetImage5" class="alienImage sourceWindow5">
+                    <div class="targetWindowLabel">source 6</div>
                 </div>
             </div>
         </div>
