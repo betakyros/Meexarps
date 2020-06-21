@@ -532,6 +532,7 @@ public class main : MonoBehaviour
 
             if (HasEveryoneSubmittedAnswers())
             {
+                gameState.GetCurrentRound().answers.Sort((a,b) => a.anonymousPlayerName.CompareTo(b.anonymousPlayerName));
                 StartCoroutine(EndAnswerQuestionsPhase(2));
             }
 
@@ -1306,7 +1307,7 @@ public class main : MonoBehaviour
             playerNames.Add(p.nickname);
         }
 
-        gameState.GetCurrentRound().answers.Shuffle();
+        //gameState.GetCurrentRound().answers.Shuffle();
 
         List<Answers> answersList = gameState.GetCurrentRound().answers;
         for (int i = 0; i < answersList.Count; i++)
