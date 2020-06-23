@@ -212,11 +212,12 @@ public class main : MonoBehaviour
                 //reconnect case
                 else
                 {
+                    Player cp = currentPlayer.Value;
                     gameState.players.Remove(currentPlayer.Key);
-                    gameState.players.Add(from, new Player(name, from, currentPlayer.Value.playerNumber, 0, 
-                        currentPlayer.Value.points, animators[currentPlayer.Value.alienNumber], 
-                        currentPlayer.Value.bestFriendPoints, currentPlayer.Value.alienNumber));
-                    SendCurrentScreenForReconnect(from, currentPlayer.Value.playerNumber);
+                    gameState.players.Add(from, new Player(name, from, cp.playerNumber, 0,
+                        cp.points, cp.numWrong, animators[cp.alienNumber],
+                        cp.bestFriendPoints, cp.alienNumber));
+                    SendCurrentScreenForReconnect(from, cp.playerNumber);
                     int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
                     sendWelcomeScreenInfo(from, selectedAlien);
                 }
@@ -279,11 +280,12 @@ public class main : MonoBehaviour
                     else
                     {
                         gameState.audienceMembers.Remove(audiencePlayer.Key);
+                        Player ap = audiencePlayer.Value;
                         //todo hard code the audience animator to 7 or give them no animations
-                        gameState.audienceMembers.Add(from, new Player(name, from, audiencePlayer.Value.playerNumber, 0, 
-                            audiencePlayer.Value.points, audiencePlayer.Value.myAnimator, audiencePlayer.Value.bestFriendPoints, 
-                            audiencePlayer.Value.alienNumber));
-                        SendCurrentScreenForReconnect(from, audiencePlayer.Value.playerNumber);
+                        gameState.audienceMembers.Add(from, new Player(name, from, ap.playerNumber, 0,
+                            ap.points, ap.numWrong, ap.myAnimator, ap.bestFriendPoints,
+                            ap.alienNumber));
+                        SendCurrentScreenForReconnect(from, ap.playerNumber);
                     }
                 }
                 //new Audience
@@ -1171,7 +1173,8 @@ public class main : MonoBehaviour
         //right answer
         wouldYouRatherTexts[3].text = currentWouldYouRather[2];
         //Maybe send the possible answers here
-        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendWouldYouRather", new[] { " " })));
+        string waitingForPlayerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
+        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendWouldYouRather", new[] { waitingForPlayerName })));
     }
 
     private void movePlayerIcon(Image playerIcon, float x)
@@ -1653,6 +1656,7 @@ public class main : MonoBehaviour
                         }
                         else
                         {
+                            p.numWrong++;
                             if(!wrongGuessNameToPlayerNames.ContainsKey(currentGuess))
                             {
                                 wrongGuessNameToPlayerNamesForZoomInView.Add(currentGuess, new List<string>());
@@ -1695,6 +1699,7 @@ public class main : MonoBehaviour
                         }
                         else
                         {
+                            p.numWrong++;
                             numberOfWrongAudienceGuesses++;
                         }
                     }
@@ -1967,14 +1972,14 @@ public class main : MonoBehaviour
         {
             string currentBestFriend = CalculateBestFriend(p);
 
-            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
+            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, (p.numWrong + p.points).ToString(), currentBestFriend }));
         }
 
         foreach (Player p in gameState.audienceMembers.Values)
         {
             string currentBestFriend = CalculateBestFriend(p);
 
-            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
+            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, (p.numWrong + p.points).ToString(), currentBestFriend }));
         }
 
         int offset = 0;
@@ -2271,6 +2276,7 @@ class Player
     public int playerNumber { get; set; }
     private int avatarId { get; set; }
     public int points { get; set; }
+    public int numWrong { get; set; }
     public Animator myAnimator { get; set; }
     public Dictionary<string, int> bestFriendPoints { get; set; }
     public int alienNumber { get; set; }
@@ -2282,18 +2288,20 @@ class Player
         playerNumber = pn;
         avatarId = a;
         points = 0;
+        numWrong = 0;
         myAnimator = an;
         bestFriendPoints = new Dictionary<string, int>();
         alienNumber = selectedAlien; //todo i dont think i need this
     }
 
-    public Player(string n, int d, int pn, int a, int p, Animator an, Dictionary<string, int> bfp, int selectedAlien)
+    public Player(string n, int d, int pn, int a, int p, int nw, Animator an, Dictionary<string, int> bfp, int selectedAlien)
     {
         nickname = n;
         deviceId = d;
         playerNumber = pn;
         avatarId = a;
         points = p;
+        numWrong = nw;
         myAnimator = an;
         bestFriendPoints = bfp;
         alienNumber = selectedAlien;

@@ -418,6 +418,7 @@ path, .jtk-endpoint {
         var selectedAlien = -1;
         var availableAliens = [true,true,true,true,true,true];
         var playerNameToAlienNumberDictionary;
+        var hasSeenTutorial = [false, false];
 
         App.prototype.touchStart = function touchStart(text) {
             showingAnswerHelpText = true;
@@ -594,6 +595,7 @@ path, .jtk-endpoint {
                     */
                     App.prototype.setKeyboardValue(payload.data[0], payload.data[1]);
                 } else if(myAction === "sendWouldYouRather") {
+                    var questionWriterName = payload.data[0];
                     //if you are currently submiting questions, you don't get to play would you rather
                     if(
                         (
@@ -605,6 +607,12 @@ path, .jtk-endpoint {
                         payload.data == "reconnecting"
                     ) 
                     {
+                        if(!hasSeenTutorial[0]){
+                            App.prototype.showTutorial("This is the would you rather phase. You are waiting for " + 
+                                questionWriterName.bold().fontcolor("blue") + " to write questions. This phase does not affect the point values, but will " +
+                                "help you pass the time!");
+                            hasSeenTutorial[0] = true;
+                        }
                         displayElement(document.getElementById("wouldYouRatherView"));
                     }
                 } else if(myAction === "sendQuestions") {
@@ -626,7 +634,14 @@ path, .jtk-endpoint {
                     }, 1000) ;
                     displayElement(document.getElementById("submitAnswerView"));
                 } else if(myAction === "sendVoting") {
-
+                    if(!hasSeenTutorial[1]) {
+                        App.prototype.showTutorial("It is now time to guess who is who! Look at the TV to" +
+                        " read your team mate's answers. Then drag the guess on the left to the player on " +
+                        "the right. You can change your guess by dragging where the line meets the icons" +
+                        "\n\n TODO: I'M DEBATING IF THIS TUTORIAL AND THE VIDEO TOGETHER IS A GOOD " +
+                        "EXPERIENCE. \n\n TODO:when ui is finalized, use a series of images");   
+                        hasSeenTutorial[1] = true;
+                    }
                         //reset jsplumb
                         window.instance.deleteEveryConnection();
                         //hide all inner children
@@ -806,7 +821,8 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendEndScreen") {
                     document.getElementById("endGameScreenViewUsername").innerText = playerName;
                     var numPoints = payload.data[0];
-                    var bestFriendNames = payload.data[1].split("~~split~~");
+                    var numTotal = payload.data[1];
+                    var bestFriendNames = payload.data[2].split("~~split~~");
                     var plural = false;
                     if(bestFriendNames.length > 1) {
                         plural = true;
@@ -814,9 +830,9 @@ path, .jtk-endpoint {
 
                     document.getElementById("endGameScreenViewPoints").innerText = numPoints;
                     if(numPoints == 1) {
-                        document.getElementById("endGameScreenViewTimes").innerText = "time";                                            
+                        document.getElementById("endGameScreenViewTimes").innerText = "time out of " + numTotal;                                            
                     } else {
-                        document.getElementById("endGameScreenViewTimes").innerText = "times";                    
+                        document.getElementById("endGameScreenViewTimes").innerText = "times out of " + numTotal;                    
                     }
 
                     if(plural) {
@@ -1084,8 +1100,16 @@ path, .jtk-endpoint {
                 App.prototype.sendRetrieveOptions();
                 document.getElementById("optionsView").style.display = "block";
 			}
-            App.prototype.hideOptions = function viewOptions() {
+            App.prototype.hideOptions = function hideOptions() {
                 document.getElementById("optionsView").style.display = "none";
+			}
+            
+            App.prototype.showTutorial = function showTutorial(instructionText) {
+                document.getElementById("tutorialText").innerHTML = instructionText;
+                document.getElementById("tutorialView").style.display = "flex";
+			}
+            App.prototype.hideTutorial = function hideTutorial() {
+                document.getElementById("tutorialView").style.display = "none";
 			}
             App.prototype.viewCredits = function viewCredits() {
                 document.getElementById("creditsView").style.display = "block";
@@ -1330,7 +1354,7 @@ path, .jtk-endpoint {
         position: fixed;
         top: 5px;
         bottom: 5px;
-        background-color: aliceblue;
+        background-color: #CBDAFF;
         width: 95%;
       }
 
@@ -1373,7 +1397,7 @@ path, .jtk-endpoint {
             <img src="./icon_gear.png" onclick="window.app.viewOptions()" style="height:50px" />
         </div>
     <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
-    <div class="view" id="welcomeScreenView" style="padding-top:45px;">
+    <div class="view" id="welcomeScreenView" style="padding-top:45px;display:none;">
         <p style="font-size:20px;">Welcome to</p>
         <div style="font-size:40px;">MEEXARPS</div>
         <br>
@@ -1432,6 +1456,16 @@ path, .jtk-endpoint {
         <div class="pseudo_button" onclick="window.app.saveOptions()">Save Options!</div> <br>
         <br>
         <div class="pseudo_button" onclick="window.app.viewCredits()">View Credits!</div> <br>
+        <br>
+        <!--<div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+    </div>
+    <div id="tutorialView" style="display:none; z-index:2;position:absolute;background-color:#CBDAFF; 
+    padding:5px;width:95%;height:95%;flex-direction:column;justify-content:center;">
+        <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+        <br>
+        <div id="tutorialText"> </div>
+        <br>
+        <div class="pseudo_button" onclick="window.app.hideTutorial()">Got it</div> <br>
         <br>
         <!--<div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
