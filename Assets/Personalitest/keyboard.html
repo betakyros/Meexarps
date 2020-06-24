@@ -401,15 +401,15 @@ path, .jtk-endpoint {
             resizeElement(e);
         }
 
-        var timer;
+        //var timer;
         var touchduration = 1000;        
         var showingAnswerHelpText = false;
         var globalCurrNumPlayers = 0;
         var playerName;
         var playerNumber;
-        var myTimer = 0;
-        var answerQuestionsTimer = 0;
-        var timeElapsed = 0;
+        //var myTimer = 0;
+        //var answerQuestionsTimer = 0;
+        //var timeElapsed = 0;
         var personalRoundResults = [];
         var revealedCount = 0;
         var currentUnrevealedNode;
@@ -422,9 +422,11 @@ path, .jtk-endpoint {
 
         App.prototype.touchStart = function touchStart(text) {
             showingAnswerHelpText = true;
+            /*
             timer = setTimeout(function() {
                 showAnswerHelpText(text);
             }, touchduration);
+            */
         }        
 
         /*work in progress. not sure how this made it into this commit?*/
@@ -450,7 +452,7 @@ path, .jtk-endpoint {
         App.prototype.hideAnswerHelpText = function hideAnswerHelpText() {
         console.log("hide answer help text");
             if(showingAnswerHelpText) {
-                clearTimeout(timer);
+                //clearTimeout(timer);
                 document.getElementById("answerSummaryForSelectedPlayer").style.display = "none";
                 document.getElementById("submitVoteView").style.display = "block";
                 showingAnswerHelpText = false;
@@ -577,12 +579,12 @@ path, .jtk-endpoint {
                     App.prototype.setKeyboardValue("retrieveQuestionsField2", payload.data[1]);
                     App.prototype.setKeyboardValue("retrieveQuestionsField3", payload.data[2]);
                     //document.getElementById("categoryDisplay").innerText=payload.data[3];
-
+                    /*
                     myTimer = setInterval(function(){
                         timeElapsed += 1;
                         document.getElementById("retrieveQuestionsTimer").innerText = timeElapsed;
                     }, 1000) ;
-
+                    */
                     /*
                     document.getElementById("retrieveQuestionsField1").innerText=payload.data[0];
                     document.getElementById("retrieveQuestionsField2").innerText=payload.data[1];
@@ -628,16 +630,19 @@ path, .jtk-endpoint {
                     document.getElementById("question1").innerHTML = payload.data[0];
                     document.getElementById("question2").innerHTML = payload.data[1];
                     document.getElementById("question3").innerHTML = payload.data[2];
+                    /*
                     answerQuestionsTimer = setInterval(function(){
                         timeElapsed += 1;
                         document.getElementById("answerQuestionsTimer").innerText = timeElapsed;
                     }, 1000) ;
+                    */
                     displayElement(document.getElementById("submitAnswerView"));
                 } else if(myAction === "sendVoting") {
                     if(!hasSeenTutorial[1]) {
                         App.prototype.showTutorial("It is now time to guess who is who! Look at the TV to" +
-                        " read your team mate's answers. Then drag the guess on the left to the player on " +
-                        "the right. You can change your guess by dragging where the line meets the icons" +
+                        " read your team mate's answers. \n\nThen drag the guess on the left to the player on " +
+                        "the right. You can change your guess by dragging where the line meets the icons." +
+                        "\n\n Tap on the images to remove a connection." +
                         "\n\n TODO: I'M DEBATING IF THIS TUTORIAL AND THE VIDEO TOGETHER IS A GOOD " +
                         "EXPERIENCE. \n\n TODO:when ui is finalized, use a series of images");   
                         hasSeenTutorial[1] = true;
@@ -1027,9 +1032,11 @@ path, .jtk-endpoint {
                     }
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
+                /*
                 timeElapsed = 0;
                 document.getElementById("retrieveQuestionsTimer").innerText = 0;
                 clearInterval(myTimer);
+                */
 			}
             
 			App.prototype.sendAnswer = function sendAnswer() {
@@ -1053,8 +1060,10 @@ path, .jtk-endpoint {
                 hideAllViews();
                 document.getElementById("waitingView").style.display = "block";
                 timeElapsed = 0;
+                /*
                 document.getElementById("answerQuestionsTimer").innerText = 0;
                 clearInterval(answerQuestionsTimer);
+                */
 			}
             
 			App.prototype.sendSkipInstructions = function sendSkipInstructions() {
@@ -1222,6 +1231,10 @@ path, .jtk-endpoint {
                 }
 			}
 
+            App.prototype.deleteSingleConnection = function deleteSingleConnection(el) {
+                window.instance.deleteConnectionsForElement(el);
+			}
+            
             //populate the alienButtons
             for(var i = 0; i < 6; i++) {
                 document.getElementById("alienButton"+i).src = App.prototype.getPlayerGif(i);
@@ -1460,7 +1473,7 @@ path, .jtk-endpoint {
         <!--<div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
     <div id="tutorialView" style="display:none; z-index:2;position:absolute;background-color:#CBDAFF; 
-    padding:5px;width:95%;height:95%;flex-direction:column;justify-content:center;">
+    padding:5px;width:95%;height:95%;flex-direction:column;justify-content:center;white-space:pre-line;">
         <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
         <br>
         <div id="tutorialText"> </div>
@@ -1621,7 +1634,7 @@ that will be used later in the game.
         <div style="display:flex; justify-content:flex-end;align-items:center;">
             <img style="height:40px;" src="./icon_stopwatch.png" />
 
-            <div style="width:10%;" id="retrieveQuestionsTimer">0</div>
+            <!--<div style="width:10%;" id="retrieveQuestionsTimer">0</div>-->
         </div>
         <!--<div id="categoryDisplay"></div>-->
         <div style="width:100%; text-align:left;"> QUESTION 1</div>
@@ -1709,7 +1722,7 @@ that will be used later in the game.
         <div style="display:flex; justify-content:flex-end;align-items:center;margin:8px 0;">
             <img style="height:40px;" src="./icon_stopwatch.png" />
 
-            <div style="width:10%;" id="answerQuestionsTimer">0</div>
+            <!--<div style="width:10%;" id="answerQuestionsTimer">0</div>-->
         </div>
         <div id="question1" style="word-break: break-word;"></div>
         <div style="display:flex;justify-content:center;width:100%;">
@@ -1769,61 +1782,61 @@ that will be used later in the game.
             style="display:flex;width:100%;height:80%;flex-direction:column;" id="canvas">
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow0" id="targetWindow0">
-                    <img class="targetWindow0 alienImage "id="sourceImage0">
+                    <img class="targetWindow0 alienImage "id="sourceImage0" onclick="window.app.deleteSingleConnection('targetWindow0')">
                     <div class="sourceWindowLabel">target 1</div>
                 </div>
                 <div class="window playerNameBox sourceWindow0" id="sourceWindow0">
-                    <img id="targetImage0" class="alienImage sourceWindow0">
+                    <img id="targetImage0" class="alienImage sourceWindow0" onclick="window.app.deleteSingleConnection('sourceWindow0')">
                     <div class="targetWindowLabel">source 1</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow1" id="targetWindow1">
-                    <img class="targetWindow1 alienImage"id="sourceImage1">
+                    <img class="targetWindow1 alienImage"id="sourceImage1" onclick="window.app.deleteSingleConnection('targetWindow1')">
                     <div class="sourceWindowLabel">target 2</div>
                 </div>
                 <div class="window playerNameBox sourceWindow1" id="sourceWindow1">
-                    <img id="targetImage1" class="alienImage sourceWindow1">
+                    <img id="targetImage1" class="alienImage sourceWindow1" onclick="window.app.deleteSingleConnection('sourceWindow1')">
                     <div class="targetWindowLabel">source 2</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow2" id="targetWindow2">
-                    <img class="targetWindow2 alienImage"id="sourceImage2">
+                    <img class="targetWindow2 alienImage"id="sourceImage2" onclick="window.app.deleteSingleConnection('targetWindow2')">
                     <div class="sourceWindowLabel">target 3</div>
                 </div>
                 <div class="window playerNameBox sourceWindow2" id="sourceWindow2">
-                    <img id="targetImage2" class="alienImage sourceWindow2">
+                    <img id="targetImage2" class="alienImage sourceWindow2" onclick="window.app.deleteSingleConnection('sourceWindow2')">
                     <div class="targetWindowLabel">source 3</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow3" id="targetWindow3">
-                    <img class="targetWindow3 alienImage" id="sourceImage3">
+                    <img class="targetWindow3 alienImage" id="sourceImage3" onclick="window.app.deleteSingleConnection('targetWindow3')">
                     <div class="sourceWindowLabel">target 4</div>
                 </div>
                 <div class="window playerNameBox sourceWindow3" id="sourceWindow3">
-                    <img id="targetImage3" class="alienImage sourceWindow3">
+                    <img id="targetImage3" class="alienImage sourceWindow3" onclick="window.app.deleteSingleConnection('sourceWindow3')">
                     <div class="targetWindowLabel">source 4</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow4" id="targetWindow4">
-                    <img class="targetWindow4 alienImage" id="sourceImage4">
+                    <img class="targetWindow4 alienImage" id="sourceImage4" onclick="window.app.deleteSingleConnection('targetWindow4')">
                     <div class="sourceWindowLabel">target 5</div>
                 </div>
                 <div class="window playerNameBox sourceWindow4" id="sourceWindow4">
-                    <img id="targetImage4" class="alienImage sourceWindow4">
+                    <img id="targetImage4" class="alienImage sourceWindow4" onclick="window.app.deleteSingleConnection('sourceWindow4')">
                     <div class="targetWindowLabel">source 5</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow5" id="targetWindow5">
-                    <img class="targetWindow5 alienImage" id="sourceImage5">
+                    <img class="targetWindow5 alienImage" id="sourceImage5" onclick="window.app.deleteSingleConnection('targetWindow5')">
                     <div class="sourceWindowLabel">target 6</div>
                 </div>
                 <div class="window playerNameBox sourceWindow5" id="sourceWindow5">
-                    <img id="targetImage5" class="alienImage sourceWindow5">
+                    <img id="targetImage5" class="alienImage sourceWindow5" onclick="window.app.deleteSingleConnection('sourceWindow5')">
                     <div class="targetWindowLabel">source 6</div>
                 </div>
             </div>

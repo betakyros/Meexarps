@@ -530,7 +530,7 @@ public class main : MonoBehaviour
             */
             Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
             List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
-            movePlayerIcon(playerIconsList[currentPlayer.playerNumber], canvas.GetComponent<RectTransform>().rect.width * 0.4f * canvas.scaleFactor);
+            movePlayerIcon(playerIconsList[currentPlayer.playerNumber], canvas.GetComponent<RectTransform>().rect.width * 0.6f * canvas.scaleFactor);
 
             if (HasEveryoneSubmittedAnswers())
             {
@@ -1680,6 +1680,7 @@ public class main : MonoBehaviour
                     wrongGuessNameToPlayerNames["none"].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
                     playerAnimations.Add(p, MeexarpAction.Sad);
                     //keep track of total score
+                    p.numWrong++;
                     gameState.totalWrongGuesses++;
                 }
             }
