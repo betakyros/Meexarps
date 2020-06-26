@@ -141,6 +141,8 @@ AirConsoleKeyboard.prototype.switchLayout = function(layout) {
   }
 };
 
+var oldAlignItems;
+
 AirConsoleKeyboard.prototype.show = function(input_id, opts) {
   if (input_id == this.active_input_id) {
     this.setCarret();
@@ -159,6 +161,11 @@ AirConsoleKeyboard.prototype.show = function(input_id, opts) {
   if (opts.onShow) {
     opts.onShow(input_id);
   }
+  var keyboardHeight = document.getElementById("my_keyboard").clientHeight
+  document.getElementById("bodyElement").style.height = "calc(100% - " + keyboardHeight + "px)";
+  oldAlignItems = document.getElementById("bodyElement").style.alignItems;
+  document.getElementById("bodyElement").style.alignItems = "flex-end";
+  document.getElementById(input_id).scrollIntoView(false);
 };
 
 AirConsoleKeyboard.prototype.softHide = function() {
@@ -183,6 +190,8 @@ AirConsoleKeyboard.prototype.hide = function() {
   }
   this.active_input_id = undefined;
   this.active_input_div = undefined;
+  document.getElementById("bodyElement").style.height = "";
+  document.getElementById("bodyElement").style.alignItems = oldAlignItems;
 }
 
 AirConsoleKeyboard.prototype.setCarret = function(position) {
