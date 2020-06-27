@@ -1398,7 +1398,7 @@ path, .jtk-endpoint {
         height: calc(100% - 45px);
         overflow-y: scroll;
         width:100%;
-        padding: 2px;
+        padding: 4px;
       }
 
       .view::-webkit-scrollbar {
@@ -1456,9 +1456,9 @@ path, .jtk-endpoint {
         <text class="franklinInstructionText" id="welcomeScreenPlayerCount">0/6 Meexarps have joined the game</text>
 
     </div> 
-    <div class="view optionsView" id="optionsView" style="display:none; z-index:1;">
+    <div class="view optionsView" id="optionsView" style="display:none; z-index:1;padding-top:45px;">
         <img class="topleft" src="./icon_backarrow.png" onclick="window.app.hideOptions()" style="z-index:2; height:50px" />
-        <div style="position: absolute;top: 13px;width:100%;font-size:30px;">Game Options</div>
+        <div style="position: width:100%;font-size:30px;">Game Options</div>
         <div id="checkboxes" style="text-align:left; margin: 0 0 0 20px;">
             <div style="display:none;" id="vipOptionsDiv">
                 <input type="checkbox" id="NsfwQuestionsCheckbox">
@@ -1592,7 +1592,7 @@ that will be used later in the game.
     <div class="view" id="waitingView" style="display:none">
         Submitted, now hang on tight for the next action
     </div>
-    <div class="view" id="selectRoundCountView" style="display:none">
+    <div class="view" id="selectRoundCountView" style="display:none; align-self:center;">
         Select the number of rounds you'd like to play.
         <br>
         <!--
@@ -1670,11 +1670,11 @@ that will be used later in the game.
             </div>
         </div>
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black;">
-            <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField1', '')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField1', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
-            <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField1')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField1')">
                 New
                 <img style="height:20px;" src="./icon_refresh.png"/>
             </div>
@@ -1692,11 +1692,11 @@ that will be used later in the game.
             <!--<div class="pseudo_button" onclick="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>-->
         </div>
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
-            <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField2', '')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField2', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
-            <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField2')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField2')">
                 New
                 <img style="height:20px;" src="./icon_refresh.png"/>
             </div>
@@ -1713,11 +1713,11 @@ that will be used later in the game.
             </div>
         </div> 
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
-            <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField3', '')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField3', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
-            <div style="display:flex; flex-direction: row-reverse;" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField3')">
+            <div style="display:flex;align-items:center; flex-direction: row-reverse;" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField3')">
                 New
                 <img style="height:20px;" src="./icon_refresh.png"/>
             </div>
@@ -1734,7 +1734,7 @@ that will be used later in the game.
         <p>
         <div class="pseudo_button" onclick="window.app.sendSkipInstructions()">Skip Instructions</div>
     </div>
-    <div class="view" id="submitAnswerView" style="align-self:flex-start; paddint-top: 52px; display:none">
+    <div class="view" id="submitAnswerView" style="align-self:flex-start; padding-top: 52px; display:none">
         <div class="franklinBanner">
             <div style="width:85%;">Answer these questions!</div>
         </div>
@@ -1754,7 +1754,7 @@ that will be used later in the game.
             onclick="window.app.setPlaceholder('textfield1-system', '')" onblur="window.app.setPlaceholder('textfield1-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
-            <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield1', '')">
+            <div style="display:flex;align-items:center;" onclick="window.app.setKeyboardValue('textfield1', '')">
                 <img style="height:20px;" src="./icon_cross.png"/>
                 Clear
             </div>
@@ -1769,7 +1769,7 @@ that will be used later in the game.
             onclick="window.app.setPlaceholder('textfield2-system', '')" onblur="window.app.setPlaceholder('textfield2-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
-            <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield2', '')">
+            <div style="display:flex;align-items:center;" onclick="window.app.setKeyboardValue('textfield2', '')">
                 <img style="height:20px;" src="./icon_cross.png"/>
                 Clear
             </div>
@@ -1784,7 +1784,7 @@ that will be used later in the game.
             onclick="window.app.setPlaceholder('textfield3-system', '')" onblur="window.app.setPlaceholder('textfield3-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
-            <div style="display:flex;" onclick="window.app.setKeyboardValue('textfield3', '')">
+            <div style="display:flex;align-items:center;" onclick="window.app.setKeyboardValue('textfield3', '')">
                 <img style="height:20px;" src="./icon_cross.png"/>
                 Clear
             </div>
