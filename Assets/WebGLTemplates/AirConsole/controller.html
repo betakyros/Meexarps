@@ -478,7 +478,6 @@ path, .jtk-endpoint {
                 if(myAction === "sendWaitScreen") {
                     hideAllViews();
                     document.getElementById("waitingView").style.display = "block";
-                    console.log("sendWaitScreen: " + payload.data[0]);
                     if(!payload.data[0] || payload.data[0] == " ") {
                         document.getElementById("waitingFor").innerHTML= "";
                     } else {
@@ -498,7 +497,9 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendWelcomeScreenInfo") {
                     if(playerName == null) {
                         hideAllViews();
-                        document.getElementById("welcomeScreenView").style.display = "block";                  
+                        document.getElementById("welcomeScreenView").style.display = "block";             
+                        console.log(me.air_console.getNickname());
+                        App.prototype.setKeyboardValue("nickname", me.air_console.getNickname());
                     }
 
                     var playerCount = payload.data[0];
@@ -891,7 +892,6 @@ path, .jtk-endpoint {
                 */
                 var nickname = App.prototype.getKeyboardValue("nickname");
                 if(nickname) {
-				    console.log("sending", "welcomeInfo name: ", );
 				    var message = {
 					    'action': "sendWelcomeInfo",
 					    'info': {
@@ -939,7 +939,6 @@ path, .jtk-endpoint {
             App.prototype.clickRoundButton = function clickRoundButton(roundNumberButton) {
                 roundCountValue = roundNumberButton;
                 for(var i = 0; i < globalCurrNumPlayers; i++) {
-                    console.log("i: " + i + " roundNumberButton: " + roundNumberButton);
                     document.getElementById("roundCountButton" + (i+1)).style.display = "block";
                     if(i+1 == roundNumberButton) {
                         document.getElementById("roundCountButton" + (i+1)).style.backgroundColor = "white";
@@ -953,12 +952,10 @@ path, .jtk-endpoint {
             }
 
             App.prototype.sendSetRoundCount = function sendSetRoundCount() {
-                console.log("sendRoundCountButton: " + roundCountValue);
 				var message = {
 					'action': "sendSetRoundCount",
 					'info': roundCountValue
 				};
-                console.log("roundCountValue: " + roundCountValue);
 
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
@@ -1181,7 +1178,6 @@ path, .jtk-endpoint {
 			}
             
             App.prototype.sendShowEndScreen = function sendShowEndScreen() {
-				console.log("sending", "sendShowEndScreen");
 				var message = {
 					'action': "sendShowEndScreen",
 					'info': {}
@@ -1190,7 +1186,6 @@ path, .jtk-endpoint {
 			}
             
             App.prototype.sendPlayAgain = function sendPlayAgain() {
-				console.log("sending", "playAgain");
 				var message = {
 					'action': "sendPlayAgain",
 					'info': {}
