@@ -478,7 +478,8 @@ path, .jtk-endpoint {
                 if(myAction === "sendWaitScreen") {
                     hideAllViews();
                     document.getElementById("waitingView").style.display = "block";
-                    if(payload.data[0] == " ") {
+                    console.log("sendWaitScreen: " + payload.data[0]);
+                    if(!payload.data[0] || payload.data[0] == " ") {
                         document.getElementById("waitingFor").innerHTML= "";
                     } else {
                         var waitingForNames="";
