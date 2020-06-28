@@ -277,7 +277,7 @@ path, .jtk-endpoint {
     fill: Transparent;
 }
 
-#snackbar {
+.snackbar {
   visibility: hidden;
   min-width: 250px;
   background-color: #CBDAFF;
@@ -291,7 +291,7 @@ path, .jtk-endpoint {
   font-size: 17px;
 }
 
-#snackbar.show {
+.snackbar.show {
   visibility: visible;
   -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
   animation: fadein 0.5s, fadeout 0.5s 2.5s;
@@ -451,6 +451,8 @@ path, .jtk-endpoint {
 			var me = this;
 			me.air_console = new AirConsole({"orientation": "portrait", "synchronize_time":"true"});
             var isVip = false;
+            //if playerNumber >= 10, then you are audience
+            var isAudience = false;
             var useSystemKeyboard = false;
             me.air_console.onConnect = function(device_id) {
 				var message = {
@@ -531,6 +533,9 @@ path, .jtk-endpoint {
                         currentElement.src = App.prototype.getPlayerGif(selectedAlien);
                     });
                     document.getElementById("startGameScreenViewUsername").innerText = "Welcome, " + playerName + "!";
+                    if(playerNumber >= 10) {
+                        isAudience = true;
+                    }
                 } else if(myAction === "sendRetrieveOptions") {
                     document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
                     document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
@@ -687,6 +692,11 @@ path, .jtk-endpoint {
                         }
                     displayElement(document.getElementById("submitVoteView"));
 
+                } else if(myAction === "forceCollectAnswers") {
+                    var x = document.getElementById("snackbar2");
+                    x.classList.add("show");
+                    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                    App.prototype.sendVoting(false);
                 } else if(myAction === "sendPersonalRoundResults") {
                     var lastElement = payload.data[payload.data.length-1];
                         
@@ -969,7 +979,7 @@ path, .jtk-endpoint {
                     }
 				};
                 var x = document.getElementById("snackbar");
-                x.className = "show";
+                x.classList.add("show");
                 setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
 				me.air_console.message(AirConsole.SCREEN, message);
                 App.prototype.setKeyboardValue("wouldYouRatherSubmit", "");
@@ -1072,7 +1082,7 @@ path, .jtk-endpoint {
 			}
             
             //data is a map of playerIds to anonymous playerIds
-            App.prototype.sendVoting = function sendVoting() {
+            App.prototype.sendVoting = function sendVoting(shouldShowWaitScreen) {
             
                 const voteMap = {};
                 window.instance.select().each(function(connection){
@@ -1081,7 +1091,6 @@ path, .jtk-endpoint {
                     voteMap[playerName] = anonymousName;
                     //voteMap.set(anonymousName, playerName);
                 })
-                console.log(voteMap);
                 
 				var message = {
 					'action': "sendVoting",
@@ -1090,8 +1099,10 @@ path, .jtk-endpoint {
                 
 				me.air_console.message(AirConsole.SCREEN, message);
 			
-                hideAllViews();
-                document.getElementById("waitingView").style.display = "block";
+                if(shouldShowWaitScreen) {
+                    hideAllViews();
+                    document.getElementById("waitingView").style.display = "block";                
+                }
             }
             
             App.prototype.sendNextRound = function sendNextRound() {
@@ -1221,6 +1232,9 @@ path, .jtk-endpoint {
                         break;
                     case 5:
                         return "./alien_yellow_idle_transparent.gif";
+                        break;
+                    case 6:
+                        return "./alien_audience_idle_transparent.gif";
                         break;
                     default:
                         console.log("Error, hit default case for myAlienGif");
@@ -1595,7 +1609,7 @@ that will be used later in the game.
             </text>
         </div>
         <div style="display:flex; justify-content:center; width: 100%">
-            <div id="snackbar">Would you rather submitted</div>
+            <div id="snackbar" class="snackbar">Would you rather submitted</div>
         </div>
         <p>
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
@@ -1876,7 +1890,11 @@ that will be used later in the game.
                 </div>
             </div>
         </div>
-        <div class="pseudo_button" onclick="window.app.sendVoting()">Submit Votes!</div>
+        <!-- When the audience runs out of time, show a snackbar -->
+        <div style="display:flex; justify-content:center; width: 100%">
+            <div id="snackbar2" class="snackbar">Time's up! Autosubmitting in 10 seconds...</div>
+        </div>
+        <div class="pseudo_button" onclick="window.app.sendVoting(true)">Submit Votes!</div>
     </div>
     <div class="view" id="roundResultsView" style="width:100%; height:calc(100% - 45px);display:none; padding-top: 52px;align-self:flex-start;" >
         

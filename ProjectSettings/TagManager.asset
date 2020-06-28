@@ -7,6 +7,7 @@ TagManager:
   - WouldYouRatherPlayerIcon
   - Banner
   - AnswerQuestionsPane
+  - AudienceCounter
   layers:
   - Default
   - TransparentFX

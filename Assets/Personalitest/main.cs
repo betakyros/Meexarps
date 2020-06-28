@@ -50,9 +50,11 @@ public class main : MonoBehaviour
     private string gameCode;
     private static int VIP_PLAYER_NUMBER = 0;
     private static int AUDIENCE_THRESHOLD = 6;
+    private static int AUDIENCE_ALIEN_NUMBER = 6;
     private Dictionary<int, int> audienceWouldYouRathers;
     private bool writeMyOwnQuestions = false;
     private Dictionary<string, bool> options = new Dictionary<string, bool>();
+
     
     
 
@@ -295,7 +297,9 @@ public class main : MonoBehaviour
                     //todo hard code the audience animator to 7 or give them no animations
                     Player p = new Player(name, from, audienceNumber, 0, animators[1], -1);
                     gameState.audienceMembers.Add(from, p);
-                    welcomeScreenPanel.GetComponentsInChildren<Text>()[8].text = "Audience: " + gameState.audienceMembers.Count;
+                    ;
+
+                    GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<Text>().text = "Audience: " + gameState.audienceMembers.Count;
                     SendCurrentScreenForReconnect(from, p.playerNumber);
                     sendWelcomeScreenInfo(from, -1);
                 }
@@ -343,7 +347,7 @@ public class main : MonoBehaviour
                     StartCoroutine(EndAnswerQuestionsPhase(2));
                     break;
                 case TvViewGameState.VotingScreen:
-                    StartCoroutine(CalculateVoting(2));
+                    StartCoroutine(CalculateVoting(false));
                     break;
                 case TvViewGameState.RoundResultsScreen:
                     if (gameState.GetCurrentRoundNumber() == gameState.numRoundsPerGame - 1)
@@ -574,6 +578,7 @@ public class main : MonoBehaviour
                 Player currentPlayer = gameState.players[from];
                 votes.Add(currentPlayer.playerNumber, myVotes);
 
+                //Send everyone who has already submitted the list of players who have not yet submitted
                 List<string> playersWhoHaventSubmitted = new List<string>();
                 foreach (Player p in gameState.players.Values)
                 {
@@ -587,9 +592,19 @@ public class main : MonoBehaviour
                     AirConsole.instance.Message(gameState.GetPlayerByPlayerNumber(playerNum).deviceId, 
                         new JsonAction("sendWaitScreen", playersWhoHaventSubmitted.ToArray()));
                 }
+
                 if (HasEveryoneVoted())
                 {
-                    StartCoroutine(CalculateVoting(2));
+                    bool shouldWaitForAudience = false;
+                    foreach(Player audienceMember in gameState.audienceMembers.Values) {
+                        if (!gameState.GetCurrentRound().audienceVotes.ContainsKey(audienceMember.playerNumber))
+                        {
+                            shouldWaitForAudience = true;
+                            AirConsole.instance.Message(audienceMember.deviceId,
+                                new JsonAction("forceCollectAnswers", new[] { "" }));
+                        }
+                    }
+                    StartCoroutine(CalculateVoting(shouldWaitForAudience));
                 }
             }
         }
@@ -698,10 +713,10 @@ public class main : MonoBehaviour
     private void sendWelcomeScreenInfo(int from, int alienNumber)
     {
         int currNumPlayers = gameState.GetNumberOfPlayers();
-        if(currNumPlayers < 6)
+        BroadcastSelectedAliens(gameState.alienSelections);
+        if (currNumPlayers < 6)
         {
             AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "" + currNumPlayers }));
-            BroadcastSelectedAliens(gameState.alienSelections);
         } else
         {
             AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "full" }));
@@ -720,7 +735,7 @@ public class main : MonoBehaviour
             {
                 Player myPlayer = gameState.audienceMembers[from];
                 AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", 
-                    new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + -1 }));
+                    new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + AUDIENCE_ALIEN_NUMBER }));
             }
         }
     }
@@ -1598,8 +1613,10 @@ public class main : MonoBehaviour
     }
 
         //todo remove parameter
-    public IEnumerator<WaitForSeconds> CalculateVoting(int count)
+    public IEnumerator<WaitForSeconds> CalculateVoting(bool shouldWaitForAudience)
     {
+        yield return new WaitForSeconds(10);
+
         votingPanel.SetActive(false);
         resultsPanel.SetActive(true);
         //SendWaitScreenToEveryone();
