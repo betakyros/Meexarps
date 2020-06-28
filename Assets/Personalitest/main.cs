@@ -570,8 +570,23 @@ public class main : MonoBehaviour
             }
             else
             {
-                gameState.GetCurrentRound().votes.Add(gameState.players[from].playerNumber, myVotes);
+                Dictionary<int, Dictionary<string, string>> votes = gameState.GetCurrentRound().votes;
+                Player currentPlayer = gameState.players[from];
+                votes.Add(currentPlayer.playerNumber, myVotes);
 
+                List<string> playersWhoHaventSubmitted = new List<string>();
+                foreach (Player p in gameState.players.Values)
+                {
+                    if(!votes.ContainsKey(p.playerNumber))
+                    {
+                        playersWhoHaventSubmitted.Add(p.nickname);
+                    }
+                }
+                foreach (int playerNum in votes.Keys)
+                {
+                    AirConsole.instance.Message(gameState.GetPlayerByPlayerNumber(playerNum).deviceId, 
+                        new JsonAction("sendWaitScreen", playersWhoHaventSubmitted.ToArray()));
+                }
                 if (HasEveryoneVoted())
                 {
                     StartCoroutine(CalculateVoting(2));

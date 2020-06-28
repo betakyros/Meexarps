@@ -480,6 +480,16 @@ path, .jtk-endpoint {
                 if(myAction === "sendWaitScreen") {
                     hideAllViews();
                     document.getElementById("waitingView").style.display = "block";
+                    if(payload.data[0] == " ") {
+                        document.getElementById("waitingFor").innerHTML= "";
+                    } else {
+                        var waitingForNames="";
+                        payload.data.forEach(element => {
+                            waitingForNames += element;
+                            waitingForNames += "<br\>";
+                        });
+                        document.getElementById("waitingFor").innerHTML = "Waiting for the following player(s): " + "<br\>" + waitingForNames; 
+                    }
                 } else if(myAction === "setIsVip") {
                   isVip = true;
                   //document.getElementById("optionsButton").style.display = "block";
@@ -1591,6 +1601,7 @@ that will be used later in the game.
     </div>
     <div class="view" id="waitingView" style="display:none">
         Submitted, now hang on tight for the next action
+        <div id="waitingFor"></div>
     </div>
     <div class="view" id="selectRoundCountView" style="display:none; align-self:center;">
         Select the number of rounds you'd like to play.
