@@ -677,6 +677,7 @@ path, .jtk-endpoint {
                             //add the image to the box
                             var imageId = "targetImage" + i;
                             var img = document.getElementById(imageId);
+                            img.classList.add("votingAlienImage");
                             //todo create a map of playerNames to aliens
                             var alienImage = payload.data[3*numAnswers + i]
                             img.src = App.prototype.getPlayerGif(parseInt(alienImage));
@@ -735,9 +736,10 @@ path, .jtk-endpoint {
                         } else {
                             var guessNameText = personalRoundResults[i][1];
                             alienImage.src= App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[guessNameText]);
+                            alienImage.classList.add("votingAlienImage");
                             guessName.innerHTML=guessNameText;
                         }
-                        alienImage.className="yourGuessImage";
+                        alienImage.classList.add("yourGuessImage");
 
                         var questionMarkImage = document.createElement('img');
                         if(personalRoundResultsIsReconnect) {
@@ -807,7 +809,7 @@ path, .jtk-endpoint {
                         //currentAlien.src = "./alien_purple_idle_transparent.gif";
                         var currentRow = currentUnrevealedNode.childNodes;
                         currentRow[0].firstChild.src = App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[currTargetName]);
-
+                        currentRow[0].firstChild.classList.add("votingAlienImage");
                         var rightOrWrongImg = document.createElement('img');
 
                         if(personalRoundResults[revealedCount][2]) {
@@ -1344,6 +1346,14 @@ path, .jtk-endpoint {
       }
       
       .alienButton-selected {
+        background-color: White;
+        border: 2px;
+        border-color: #4254F3;
+        border-style: solid;
+      }
+      
+      .votingAlienImage {
+        border-radius: 100%;  
         background-color: White;
         border: 2px;
         border-color: #4254F3;
