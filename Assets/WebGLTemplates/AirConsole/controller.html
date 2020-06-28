@@ -693,10 +693,14 @@ path, .jtk-endpoint {
                     displayElement(document.getElementById("submitVoteView"));
 
                 } else if(myAction === "forceCollectAnswers") {
-                    var x = document.getElementById("snackbar2");
-                    x.classList.add("show");
-                    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-                    App.prototype.sendVoting(false);
+                    var isSecondCall = payload.data[0];
+                    if (isSecondCall) {
+                        App.prototype.sendVoting(false);
+                    } else {                    
+                        var x = document.getElementById("snackbar2");
+                        x.classList.add("show");
+                        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                    }
                 } else if(myAction === "sendPersonalRoundResults") {
                     var lastElement = payload.data[payload.data.length-1];
                         

@@ -570,7 +570,15 @@ public class main : MonoBehaviour
             }
             if(isAudienceMember(from))
             {
-                gameState.GetCurrentRound().audienceVotes.Add(gameState.audienceMembers[from].playerNumber, myVotes);
+                Dictionary<int, Dictionary<string, string>> audienceVotes = gameState.GetCurrentRound().audienceVotes;
+                int audiencePlayerNumber = gameState.audienceMembers[from].playerNumber;
+                if (!audienceVotes.ContainsKey(audiencePlayerNumber))
+                {
+                    audienceVotes.Add(audiencePlayerNumber, myVotes);
+                } else
+                {
+                    audienceVotes[audiencePlayerNumber] = myVotes;
+                }
             }
             else
             {
@@ -601,7 +609,7 @@ public class main : MonoBehaviour
                         {
                             shouldWaitForAudience = true;
                             AirConsole.instance.Message(audienceMember.deviceId,
-                                new JsonAction("forceCollectAnswers", new[] { "" }));
+                                new JsonAction("forceCollectAnswers", new[] { "false" }));
                         }
                     }
                     StartCoroutine(CalculateVoting(shouldWaitForAudience));
@@ -1616,7 +1624,16 @@ public class main : MonoBehaviour
     public IEnumerator<WaitForSeconds> CalculateVoting(bool shouldWaitForAudience)
     {
         yield return new WaitForSeconds(10);
-
+        //autocollect responses from each audience member
+        foreach (Player audienceMember in gameState.audienceMembers.Values)
+        {
+            if (!gameState.GetCurrentRound().audienceVotes.ContainsKey(audienceMember.playerNumber))
+            {
+                shouldWaitForAudience = true;
+                AirConsole.instance.Message(audienceMember.deviceId,
+                    new JsonAction("forceCollectAnswers", new[] { "true" }));
+            }
+        }
         votingPanel.SetActive(false);
         resultsPanel.SetActive(true);
         //SendWaitScreenToEveryone();
@@ -2031,6 +2048,30 @@ public class main : MonoBehaviour
         //set result text
         endScreenPanel.GetComponentsInChildren<Text>()[offset + 2].text = resultStatus;
 
+        if(gameState.audienceMembers.Count == 0)
+        {
+            //TODO Should the card dissapear?
+        } else
+        {
+            //set audience scores
+            //first sort the audience scores
+            List<Player> sortedAudienceScores = new List<Player>(gameState.audienceMembers.Values);
+            sortedAudienceScores.Sort((pair1, pair2) => pair2.points.CompareTo(pair1.points));
+            //display the top 5 audience members
+            StringBuilder audienceScoresSb = new StringBuilder(100);
+            int numAudienceScoresToDisplay = System.Math.Min(5, sortedAudienceScores.Count);
+            audienceScoresSb.Append("Audience Scores");
+            if (sortedAudienceScores.Count > 5)
+            {
+                audienceScoresSb.Append("\n<size=12>(top 5)</size>");
+            }
+            for (int i = 0; i < numAudienceScoresToDisplay; i++)
+            {
+                audienceScoresSb.Append("\n<size=20>" + sortedAudienceScores[i].nickname + "    " + sortedAudienceScores[i].points + "</size>");
+            }
+
+            GameObject.FindWithTag("AudienceScoreCard").GetComponentInChildren<Text>().text = audienceScoresSb.ToString();
+        }
 
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
         gameState.tvViewGameState = TvViewGameState.EndGameScreen;
