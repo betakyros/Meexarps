@@ -1430,7 +1430,7 @@ path, .jtk-endpoint {
             <img src="./icon_gear.png" onclick="window.app.viewOptions()" style="height:50px" />
         </div>
     <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
-    <div class="view" id="welcomeScreenView" style="display:none;">
+    <div class="view" id="welcomeScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
         <p style="font-size:20px;">Welcome to</p>
         <div style="font-size:40px;">MEEXARPS</div>
         <br>
@@ -1527,7 +1527,7 @@ Others under Creative Commons 0 License from https://freesound.org
         <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
         <div class="pseudo_button" onclick="window.app.hideCredits()">Close Credits</div>
     </div>   
-    <div class="view" id="startGameScreenView" style="display:none">
+    <div class="view" id="startGameScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
         <!-- dynamically change this based on playernumber which we have in javascript -->
         <img style="height:9vh; " class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
         
