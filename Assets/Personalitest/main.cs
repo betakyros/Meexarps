@@ -473,7 +473,7 @@ public class main : MonoBehaviour
                 playerNumber = gameState.players[from].playerNumber;
                 Image[] images = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
                 List<Image> iconTags = getPlayerIconTags(images, "WouldYouRatherPlayerIcon");
-                float xOffset = canvas.GetComponent<RectTransform>().rect.width * 0.2f * canvas.scaleFactor;
+                float xOffset = canvas.GetComponent<RectTransform>().rect.width * 0.2f/* * canvas.scaleFactor*/;
                 if (leftOrRight == 0)
                 {
                     movePlayerIcon(iconTags[playerNumber], -1 * xOffset);
@@ -534,7 +534,10 @@ public class main : MonoBehaviour
             */
             Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
             List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
-            movePlayerIcon(playerIconsList[currentPlayer.playerNumber], canvas.GetComponent<RectTransform>().rect.width * 0.6f * canvas.scaleFactor);
+
+
+            float newLocalX = (canvas.GetComponent<RectTransform>().rect.width * .6f) /* canvas.scaleFactor*/;
+            movePlayerIcon(playerIconsList[currentPlayer.playerNumber], newLocalX);
 
             if (HasEveryoneSubmittedAnswers())
             {
