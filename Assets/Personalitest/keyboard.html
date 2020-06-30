@@ -698,15 +698,17 @@ path, .jtk-endpoint {
                     displayElement(document.getElementById("submitVoteView"));
 
                 } else if(myAction === "forceCollectAnswers") {
+                console.log("force collect answers: " + payload.data[0]);
                     var isSecondCall = payload.data[0];
                     if (isSecondCall == "true") {
                         App.prototype.sendVoting(false);
-                    } else {                    
+                    } else {
                         var x = document.getElementById("snackbar2");
                         x.classList.add("show");
                         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
                     }
                 } else if(myAction === "sendPersonalRoundResults") {
+                    console.log("sendPersonalRoundResults");
                     var lastElement = payload.data[payload.data.length-1];
                         
                     personalRoundResultsIsReconnect = (lastElement == "~~~reconnect~~~");

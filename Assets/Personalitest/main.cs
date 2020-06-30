@@ -1645,10 +1645,14 @@ public class main : MonoBehaviour
                     new JsonAction("forceCollectAnswers", new[] { "true" }));
             }
         }
+        if (shouldWaitForAudience)
+        {
+            yield return new WaitForSeconds(1);
+        }
         votingPanel.SetActive(false);
         resultsPanel.SetActive(true);
         //SendWaitScreenToEveryone();
-        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendPersonalResults", new string[] { " " })));
+        //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendPersonalRoundResults", new string[] { " " })));
         gameState.phoneViewGameState = PhoneViewGameState.SendPersonalRoundResultsScreen;
         gameState.tvViewGameState = TvViewGameState.RoundResultsScreen;
 
