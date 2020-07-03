@@ -117,7 +117,7 @@ Fantasy
 What kind of superpower would you want for your daily life?
 Which Harry Potter house would you be sorted into? Why?
 You have just become the president. What is the newest top priority?
-What RPG class represents your personality in real life (e.g. druid, rouge, barbarian)?
+What RPG class represents your personality in real life (e.g. druid, rogue, barbarian)?
 What mythical creature would you want to own?
 Describe your personal dystopia?
 Which fictional world would you want to live in?
@@ -197,7 +197,7 @@ What are your top three sins you're guilty of?
 What instrument(s) did you play in school?
 If you could regain a lost or stolen item, what would you choose?
 As a child, what did you want to be growing up?
-What is something that invokes a nostalgic memoory of childhood?
+What is something that invokes a nostalgic memory of childhood?
 ---
 Sleep
 What happens in your most recurring dream?

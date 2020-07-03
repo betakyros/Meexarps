@@ -2063,11 +2063,14 @@ public class main : MonoBehaviour
         //set result text
         endScreenPanel.GetComponentsInChildren<Text>()[offset + 2].text = resultStatus;
 
-        if(gameState.audienceMembers.Count == 0)
+        if (gameState.audienceMembers.Count == 0)
         {
-            //TODO Should the card dissapear?
-        } else
+            GameObject.FindWithTag("AudienceScoreCard").SetActive(false);
+        }
+        else
         {
+            GameObject.FindWithTag("PercentCorrectAndStatusContainer").gameObject.GetComponent<RectTransform>().anchorMax
+                = new Vector2(.7f, .95f);
             //set audience scores
             //first sort the audience scores
             List<Player> sortedAudienceScores = new List<Player>(gameState.audienceMembers.Values);
