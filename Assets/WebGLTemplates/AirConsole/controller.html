@@ -493,6 +493,7 @@ path, .jtk-endpoint {
                   isVip = true;
                   //document.getElementById("optionsButton").style.display = "block";
                   document.getElementById("vipOptionsDiv").style.display = "block";
+                  document.getElementById("submitWouldYouRatherButton").classList.add("secondaryButton");
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("startGameButton").style.display = "inline-block";
                 } else if(myAction === "sendWelcomeScreenInfo") {
@@ -1285,6 +1286,13 @@ path, .jtk-endpoint {
         border-radius: 50px;
         font-family: "Autour One";
       }
+
+      .secondaryButton {
+          border: black;
+          border-width: thin;
+          border-style: solid;
+          background-color: transparent;
+      }
       
       .initially_hidden_pseudo_button {
         display: none;
@@ -1605,7 +1613,7 @@ that will be used later in the game.
             </div>
         </div>
         <br>
-        <div class="pseudo_button" onmousedown="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
+        <div id="submitWouldYouRatherButton" class="pseudo_button" onmousedown="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
         <br>
         <div id="vipStartButtonDescription" style="display:none">
             <br>
