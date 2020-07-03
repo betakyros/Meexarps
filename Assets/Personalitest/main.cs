@@ -717,8 +717,8 @@ public class main : MonoBehaviour
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         wouldYouRatherTexts[18].gameObject.SetActive(true);
         wouldYouRatherTexts[19].gameObject.SetActive(true);
-        wouldYouRatherTexts[18].text = "Audience: " + leftAudience;
-        wouldYouRatherTexts[19].text = "Audience: " + rightAudience;
+        wouldYouRatherTexts[18].text = "" + leftAudience;
+        wouldYouRatherTexts[19].text = "" + rightAudience;
     }
 
     private void sendWelcomeScreenInfo(int from, int alienNumber)
