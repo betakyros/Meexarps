@@ -372,6 +372,7 @@ path, .jtk-endpoint {
             for (var i = 0; i < elements.length; i++) {
                 elements[i].style.display ="none";
             }
+            //keyboard.hide();
         }
         
         function resizeElement(e) {
@@ -1446,7 +1447,7 @@ path, .jtk-endpoint {
   <body id="bodyElement" style="font-family: Autour One; font-size: 14px; background-color:#6CA7FF; text-align: center;overflow-y:scroll;
   display:flex; justify-content:center;align-items:center;margin:0;" onload="init()">
         <div id="optionsButton" class="optionsButton">
-            <img src="./icon_gear.png" onclick="window.app.viewOptions()" style="height:50px" />
+            <img src="./icon_gear.png" onmousedown="window.app.viewOptions()" style="height:50px" />
         </div>
     <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
     <div class="view" id="welcomeScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
@@ -1459,12 +1460,12 @@ path, .jtk-endpoint {
         <br>
         <div class="franklinBanner" style="position: inherit; margin-top: 8px; margin-bottom: 8px; padding: 0;">
             <div style = "display:flex; justify-content:space-evenly;  width:80%; height:100%;" >
-                <img id="alienButton0" class="alienButton" onclick="window.app.clickAlienButton(0)">
-                <img id="alienButton1" class="alienButton" onclick="window.app.clickAlienButton(1)">
-                <img id="alienButton2" class="alienButton" onclick="window.app.clickAlienButton(2)">
-                <img id="alienButton3" class="alienButton" onclick="window.app.clickAlienButton(3)">
-                <img id="alienButton4" class="alienButton" onclick="window.app.clickAlienButton(4)">
-                <img id="alienButton5" class="alienButton" onclick="window.app.clickAlienButton(5)">
+                <img id="alienButton0" class="alienButton" onmousedown="window.app.clickAlienButton(0)">
+                <img id="alienButton1" class="alienButton" onmousedown="window.app.clickAlienButton(1)">
+                <img id="alienButton2" class="alienButton" onmousedown="window.app.clickAlienButton(2)">
+                <img id="alienButton3" class="alienButton" onmousedown="window.app.clickAlienButton(3)">
+                <img id="alienButton4" class="alienButton" onmousedown="window.app.clickAlienButton(4)">
+                <img id="alienButton5" class="alienButton" onmousedown="window.app.clickAlienButton(5)">
             </div>
         </div>
         Choose a username for your Meexarp
@@ -1474,22 +1475,22 @@ path, .jtk-endpoint {
         </div>
         <div style="margin: 8px;" style="justify-content:center;">
             <span style="display:none;" placeholder="username" class="franklinInput" contenteditable="true" id="nickname-system" 
-            onclick="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', '')"></span>
+            onmousedown="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', '')"></span>
         </div>
         <div class="franklinInstructionText" style="font-size:9px;">To rejoin an existing game, please enter the same username</div>
         <div class="view" id="nameAlreadyTakenView" style="display:none;color:red;font-style:italic;">
             That name is already taken, please choose another name
         </div>
         <p>
-        <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <div class="pseudo_button" onclick="window.app.sendWelcomeInfo()">Submit</div>
+        <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
+        <div class="pseudo_button" onmousedown="window.app.sendWelcomeInfo()">Submit</div>
         <br>
         <br>
         <text class="franklinInstructionText" id="welcomeScreenPlayerCount">0/6 Meexarps have joined the game</text>
 
     </div> 
     <div class="view optionsView" id="optionsView" style="display:none; z-index:1;padding-top:45px;">
-        <img class="topleft" src="./icon_backarrow.png" onclick="window.app.hideOptions()" style="z-index:2; height:50px" />
+        <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideOptions()" style="z-index:2; height:50px" />
         <div style="position: width:100%;font-size:30px;">Game Options</div>
         <div id="checkboxes" style="text-align:left; margin: 0 0 0 20px;">
             <div style="display:none;" id="vipOptionsDiv">
@@ -1498,18 +1499,18 @@ path, .jtk-endpoint {
                 <input type="checkbox" id="anonymousNameCheckbox"> 
                 <label for="anonymousNameCheckbox"> Anonymous Names Enabled</label><br>
                 <br>
-                    <div class="pseudo_button" onclick="window.app.forceAdvance()">Move to the next phase (used if you encounter a bug or someone has to leave)</div> <br>
+                    <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Move to the next phase (used if you encounter a bug or someone has to leave)</div> <br>
                 <br>
             </div>
             <input type="checkbox" id="useSystemKeyboard"> 
             <label for="useSystemKeyboard"> Use system keyboard (Not Recommended) </label><br>
         </div>
         <br>
-        <div class="pseudo_button" onclick="window.app.saveOptions()">Save Options!</div> <br>
+        <div class="pseudo_button" onmousedown="window.app.saveOptions()">Save Options!</div> <br>
         <br>
-        <div class="pseudo_button" onclick="window.app.viewCredits()">View Credits!</div> <br>
+        <div class="pseudo_button" onmousedown="window.app.viewCredits()">View Credits!</div> <br>
         <br>
-        <!--<div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+        <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
     <div id="tutorialView" style="display:none; z-index:2;position:absolute;background-color:#CBDAFF; 
     padding:5px;width:95%;height:95%;flex-direction:column;justify-content:center;white-space:pre-line;">
@@ -1517,9 +1518,9 @@ path, .jtk-endpoint {
         <br>
         <div id="tutorialText"> </div>
         <br>
-        <div class="pseudo_button" onclick="window.app.hideTutorial()">Got it</div> <br>
+        <div class="pseudo_button" onmousedown="window.app.hideTutorial()">Got it</div> <br>
         <br>
-        <!--<div class="pseudo_button" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+        <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
         <div class="view creditsView" id="creditsView" style="display:none;">
         <div>
@@ -1543,8 +1544,8 @@ Kitten Meow Sound | Mike Koenig
 <br>
 Others under Creative Commons 0 License from https://freesound.org
         </div>
-        <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <div class="pseudo_button" onclick="window.app.hideCredits()">Close Credits</div>
+        <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
+        <div class="pseudo_button" onmousedown="window.app.hideCredits()">Close Credits</div>
     </div>   
     <div class="view" id="startGameScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
         <!-- dynamically change this based on playernumber which we have in javascript -->
@@ -1564,11 +1565,11 @@ that will be used later in the game.
                     <div style="color:#aaa"><i>Do you prefer...</i></div>
                 </div>
                 <span style="display:none" placeholder="Do you prefer..." class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit-system" 
-                    onclick="window.app.setPlaceholder('wouldYouRatherSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit-system', 'Do you prefer...')"></span>
+                    onmousedown="window.app.setPlaceholder('wouldYouRatherSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit-system', 'Do you prefer...')"></span>
             </div>
         </div>
         <div style="display:flex; flex-direction: row-reverse;">
-            <div style="display:flex;align-items: center; flex-direction: row-reverse;width:min-content;" onclick="window.app.setKeyboardValue('wouldYouRatherSubmit', '')">
+            <div style="display:flex;align-items: center; flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
@@ -1579,11 +1580,11 @@ that will be used later in the game.
                     <div style="color:#aaa"><i>Apple pie</i></div>
                 </div>
                 <span style="display:none" placeholder="Apple pie" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit-system" 
-                    onclick="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', 'Apple pie')"></span>
+                    onmousedown="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', 'Apple pie')"></span>
             </div>
         </div>
         <div style="display:flex; flex-direction: row-reverse;">
-            <div style="display:flex;align-items: center; flex-direction: row-reverse; width:min-content;" onclick="window.app.setKeyboardValue('wouldYouRatherLeftSubmit', '')">
+            <div style="display:flex;align-items: center; flex-direction: row-reverse; width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherLeftSubmit', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
@@ -1594,17 +1595,17 @@ that will be used later in the game.
                     <div style="color:#aaa"><i>Peach cobbler</i></div>
                 </div>
                 <span style="display:none" placeholder="Peach cobbler" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmit-system" 
-                onclick="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', 'Peach cobbler')"></span>
+                onmousedown="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', 'Peach cobbler')"></span>
             </div>
         </div>   
         <div style="display:flex; flex-direction: row-reverse;">
-            <div style="display:flex; align-items: center;flex-direction: row-reverse;width:min-content;" onclick="window.app.setKeyboardValue('wouldYouRatherRightSubmit', '')">
+            <div style="display:flex; align-items: center;flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherRightSubmit', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
         </div>
         <br>
-        <div class="pseudo_button" onclick="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
+        <div class="pseudo_button" onmousedown="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
         <br>
         <div id="vipStartButtonDescription" style="display:none">
             <br>
@@ -1617,8 +1618,8 @@ that will be used later in the game.
             <div id="snackbar" class="snackbar">Would you rather submitted</div>
         </div>
         <p>
-        <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
-        <div class="initially_hidden_pseudo_button" onclick="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
+        <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
+        <div class="initially_hidden_pseudo_button" onmousedown="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
         <br>
     </div>
     <div class="view" id="waitingView" style="display:none">
@@ -1632,16 +1633,16 @@ that will be used later in the game.
         <input type="range" id="roundCountInputField" min="1" max="6" oninput="roundCountDisplayField.value = roundCountInputField.value">
         -->
         <div style="display:flex; flex-direction:row; justify-content:space-evenly;">
-            <button id="roundCountButton1" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(1)">1</button>
-            <button id="roundCountButton2" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(2)">2</button>
-            <button id="roundCountButton3" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(3)">3</button>
-            <button id="roundCountButton4" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(4)">4</button>
-            <button id="roundCountButton5" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(5)">5</button>
-            <button id="roundCountButton6" style="display:none;" class="roundCountButton" onclick="window.app.clickRoundButton(6)">6</button>
+            <button id="roundCountButton1" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(1)">1</button>
+            <button id="roundCountButton2" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(2)">2</button>
+            <button id="roundCountButton3" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(3)">3</button>
+            <button id="roundCountButton4" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(4)">4</button>
+            <button id="roundCountButton5" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(5)">5</button>
+            <button id="roundCountButton6" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(6)">6</button>
         </div>
         <br>
         <br>
-        <div class="pseudo_button" onclick="window.app.sendSetRoundCount()" style="margin:5px">Start Game</div>
+        <div class="pseudo_button" onmousedown="window.app.sendSetRoundCount()" style="margin:5px">Start Game</div>
         <br>
         <div id="timeEstimateDiv"></div>
     </div>
@@ -1655,8 +1656,8 @@ that will be used later in the game.
         <img style="height:20%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
         <br>
         <br>
-        <div class="pseudo_button" onclick="window.app.sendWouldYouRatherAnswer(0)">Left</div>
-        <div class="pseudo_button" onclick="window.app.sendWouldYouRatherAnswer(1)">Right</div>
+        <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(0)">Left</div>
+        <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(1)">Right</div>
     </div>
     <div class="view" id="sendSelectCategoryView" style="padding-top:52px;align-self:flex-start;display:none">
         <div class="franklinBanner"> It's your turn to write questions!</div>
@@ -1665,12 +1666,12 @@ that will be used later in the game.
         <br>
         <br>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;flex-direction:column;">
-            <div id="selectCategoryButton1" class="pseudo_button" onclick="window.app.sendCategory(1)" style="margin:5px"></div>
-            <div id="selectCategoryButton2" class="pseudo_button" onclick="window.app.sendCategory(2)" style="margin:5px"></div>
-            <div id="selectCategoryButton3" class="pseudo_button" onclick="window.app.sendCategory(3)" style="margin:5px"></div>
-            <div id="selectCategoryButton4" class="pseudo_button" onclick="window.app.sendCategory(4)" style="margin:5px"></div>
-            <div id="selectCategoryButton5" class="pseudo_button" onclick="window.app.sendCategory(5)" style="margin:5px"></div>
-            <div id="selectCategoryButton6" class="pseudo_button" onclick="window.app.sendCategory(6)" style="margin:5px"></div>
+            <div id="selectCategoryButton1" class="pseudo_button" onmousedown="window.app.sendCategory(1)" style="margin:5px"></div>
+            <div id="selectCategoryButton2" class="pseudo_button" onmousedown="window.app.sendCategory(2)" style="margin:5px"></div>
+            <div id="selectCategoryButton3" class="pseudo_button" onmousedown="window.app.sendCategory(3)" style="margin:5px"></div>
+            <div id="selectCategoryButton4" class="pseudo_button" onmousedown="window.app.sendCategory(4)" style="margin:5px"></div>
+            <div id="selectCategoryButton5" class="pseudo_button" onmousedown="window.app.sendCategory(5)" style="margin:5px"></div>
+            <div id="selectCategoryButton6" class="pseudo_button" onmousedown="window.app.sendCategory(6)" style="margin:5px"></div>
         </div>
     </div>
     <div class="view" id="retrieveQuestionsView" style="display:none; align-self: flex-start; padding-top:52px;">
@@ -1698,16 +1699,16 @@ that will be used later in the game.
                     <div style="color:#aaa"><i>Give me a good question</i></div>
                 </div>
                 <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1-system" 
-                    onclick="window.app.setPlaceholder('retrieveQuestionsField1-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField1-system', 'Give me a good question')">
+                    onmousedown="window.app.setPlaceholder('retrieveQuestionsField1-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField1-system', 'Give me a good question')">
                 </span>
             </div>
         </div>
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black;">
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField1', '')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField1', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField1')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField1')">
                 New
                 <img style="height:20px;" src="./icon_refresh.png"/>
             </div>
@@ -1719,17 +1720,17 @@ that will be used later in the game.
                     <div style="color:#aaa"><i>Give me a good question</i></div>
                 </div>
                 <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2-system" 
-                    onclick="window.app.setPlaceholder('retrieveQuestionsField2-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField2-system', 'Give me a good question')">
+                    onmousedown="window.app.setPlaceholder('retrieveQuestionsField2-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField2-system', 'Give me a good question')">
                 </span>
             </div>
-            <!--<div class="pseudo_button" onclick="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>-->
+            <!--<div class="pseudo_button" onmousedown="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>-->
         </div>
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField2', '')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField2', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField2')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField2')">
                 New
                 <img style="height:20px;" src="./icon_refresh.png"/>
             </div>
@@ -1741,31 +1742,31 @@ that will be used later in the game.
                     <div style="color:#aaa"><i>Give me a good question</i></div>
                 </div>
                 <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3-system" 
-                    onclick="window.app.setPlaceholder('retrieveQuestionsField3-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3-system', 'Give me a good question')">
+                    onmousedown="window.app.setPlaceholder('retrieveQuestionsField3-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3-system', 'Give me a good question')">
                 </span>
             </div>
         </div> 
         <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onclick="window.app.setKeyboardValue('retrieveQuestionsField3', '')">
+            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField3', '')">
                 Clear
                 <img style="height:20px;" src="./icon_cross.png"/>
             </div>
-            <div style="display:flex;align-items:center; flex-direction: row-reverse;" onclick="window.app.sendRequestAnotherQuestion('retrieveQuestionsField3')">
+            <div style="display:flex;align-items:center; flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField3')">
                 New
                 <img style="height:20px;" src="./icon_refresh.png"/>
             </div>
         </div>
         <p>
-        <div class="pseudo_button" onclick="window.app.sendDecidedQuestions()">Send out the questions!</div>
+        <div class="pseudo_button" onmousedown="window.app.sendDecidedQuestions()">Send out the questions!</div>
     </div>
     <div class="view" id="skipIntroView" style="display:none;">
         <p>
-        <div class="pseudo_button" onclick="window.app.sendSkipInstructions()">Skip Intro</div>
+        <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Intro</div>
     </div>
     <div class="view" id="skipInstructionsView" style="display:none;">
         Watch the instructions on the screen or press this button to skip the video
         <p>
-        <div class="pseudo_button" onclick="window.app.sendSkipInstructions()">Skip Instructions</div>
+        <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Instructions</div>
     </div>
     <div class="view" id="submitAnswerView" style="align-self:flex-start; padding-top: 52px; display:none">
         <div class="franklinBanner">
@@ -1784,10 +1785,10 @@ that will be used later in the game.
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
             <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1-system" 
-            onclick="window.app.setPlaceholder('textfield1-system', '')" onblur="window.app.setPlaceholder('textfield1-system', 'Answer me!')"></span>
+            onmousedown="window.app.setPlaceholder('textfield1-system', '')" onblur="window.app.setPlaceholder('textfield1-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
-            <div style="display:flex;align-items:center;" onclick="window.app.setKeyboardValue('textfield1', '')">
+            <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield1', '')">
                 <img style="height:20px;" src="./icon_cross.png"/>
                 Clear
             </div>
@@ -1799,10 +1800,10 @@ that will be used later in the game.
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
             <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2-system" 
-            onclick="window.app.setPlaceholder('textfield2-system', '')" onblur="window.app.setPlaceholder('textfield2-system', 'Answer me!')"></span>
+            onmousedown="window.app.setPlaceholder('textfield2-system', '')" onblur="window.app.setPlaceholder('textfield2-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
-            <div style="display:flex;align-items:center;" onclick="window.app.setKeyboardValue('textfield2', '')">
+            <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield2', '')">
                 <img style="height:20px;" src="./icon_cross.png"/>
                 Clear
             </div>
@@ -1814,16 +1815,16 @@ that will be used later in the game.
                 <div style="color:#aaa"><i>Answer me!</i></div>
             </div>
             <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3-system" 
-            onclick="window.app.setPlaceholder('textfield3-system', '')" onblur="window.app.setPlaceholder('textfield3-system', 'Answer me!')"></span>
+            onmousedown="window.app.setPlaceholder('textfield3-system', '')" onblur="window.app.setPlaceholder('textfield3-system', 'Answer me!')"></span>
         </div>
         <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
-            <div style="display:flex;align-items:center;" onclick="window.app.setKeyboardValue('textfield3', '')">
+            <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield3', '')">
                 <img style="height:20px;" src="./icon_cross.png"/>
                 Clear
             </div>
         </div>
         <p>
-        <div class="pseudo_button" onclick="window.app.sendAnswer()">Submit</div>
+        <div class="pseudo_button" onmousedown="window.app.sendAnswer()">Submit</div>
     </div>
     <!--<div id="answerSummaryForSelectedPlayer" style="width:100%; display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;background-color:#0adada;display:none;padding:4px;">
         test 
@@ -1836,61 +1837,61 @@ that will be used later in the game.
             style="display:flex;width:100%;height:80%;flex-direction:column;" id="canvas">
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow0" id="targetWindow0">
-                    <img class="targetWindow0 alienImage "id="sourceImage0" onclick="window.app.deleteSingleConnection('targetWindow0')">
+                    <img class="targetWindow0 alienImage "id="sourceImage0" onmousedown="window.app.deleteSingleConnection('targetWindow0')">
                     <div class="sourceWindowLabel">target 1</div>
                 </div>
                 <div class="window playerNameBox sourceWindow0" id="sourceWindow0">
-                    <img id="targetImage0" class="alienImage sourceWindow0" onclick="window.app.deleteSingleConnection('sourceWindow0')">
+                    <img id="targetImage0" class="alienImage sourceWindow0" onmousedown="window.app.deleteSingleConnection('sourceWindow0')">
                     <div class="targetWindowLabel">source 1</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow1" id="targetWindow1">
-                    <img class="targetWindow1 alienImage"id="sourceImage1" onclick="window.app.deleteSingleConnection('targetWindow1')">
+                    <img class="targetWindow1 alienImage"id="sourceImage1" onmousedown="window.app.deleteSingleConnection('targetWindow1')">
                     <div class="sourceWindowLabel">target 2</div>
                 </div>
                 <div class="window playerNameBox sourceWindow1" id="sourceWindow1">
-                    <img id="targetImage1" class="alienImage sourceWindow1" onclick="window.app.deleteSingleConnection('sourceWindow1')">
+                    <img id="targetImage1" class="alienImage sourceWindow1" onmousedown="window.app.deleteSingleConnection('sourceWindow1')">
                     <div class="targetWindowLabel">source 2</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow2" id="targetWindow2">
-                    <img class="targetWindow2 alienImage"id="sourceImage2" onclick="window.app.deleteSingleConnection('targetWindow2')">
+                    <img class="targetWindow2 alienImage"id="sourceImage2" onmousedown="window.app.deleteSingleConnection('targetWindow2')">
                     <div class="sourceWindowLabel">target 3</div>
                 </div>
                 <div class="window playerNameBox sourceWindow2" id="sourceWindow2">
-                    <img id="targetImage2" class="alienImage sourceWindow2" onclick="window.app.deleteSingleConnection('sourceWindow2')">
+                    <img id="targetImage2" class="alienImage sourceWindow2" onmousedown="window.app.deleteSingleConnection('sourceWindow2')">
                     <div class="targetWindowLabel">source 3</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow3" id="targetWindow3">
-                    <img class="targetWindow3 alienImage" id="sourceImage3" onclick="window.app.deleteSingleConnection('targetWindow3')">
+                    <img class="targetWindow3 alienImage" id="sourceImage3" onmousedown="window.app.deleteSingleConnection('targetWindow3')">
                     <div class="sourceWindowLabel">target 4</div>
                 </div>
                 <div class="window playerNameBox sourceWindow3" id="sourceWindow3">
-                    <img id="targetImage3" class="alienImage sourceWindow3" onclick="window.app.deleteSingleConnection('sourceWindow3')">
+                    <img id="targetImage3" class="alienImage sourceWindow3" onmousedown="window.app.deleteSingleConnection('sourceWindow3')">
                     <div class="targetWindowLabel">source 4</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow4" id="targetWindow4">
-                    <img class="targetWindow4 alienImage" id="sourceImage4" onclick="window.app.deleteSingleConnection('targetWindow4')">
+                    <img class="targetWindow4 alienImage" id="sourceImage4" onmousedown="window.app.deleteSingleConnection('targetWindow4')">
                     <div class="sourceWindowLabel">target 5</div>
                 </div>
                 <div class="window playerNameBox sourceWindow4" id="sourceWindow4">
-                    <img id="targetImage4" class="alienImage sourceWindow4" onclick="window.app.deleteSingleConnection('sourceWindow4')">
+                    <img id="targetImage4" class="alienImage sourceWindow4" onmousedown="window.app.deleteSingleConnection('sourceWindow4')">
                     <div class="targetWindowLabel">source 5</div>
                 </div>
             </div>
             <div class="votingRow">
                 <div class="window anonymousNameBox targetWindow5" id="targetWindow5">
-                    <img class="targetWindow5 alienImage" id="sourceImage5" onclick="window.app.deleteSingleConnection('targetWindow5')">
+                    <img class="targetWindow5 alienImage" id="sourceImage5" onmousedown="window.app.deleteSingleConnection('targetWindow5')">
                     <div class="sourceWindowLabel">target 6</div>
                 </div>
                 <div class="window playerNameBox sourceWindow5" id="sourceWindow5">
-                    <img id="targetImage5" class="alienImage sourceWindow5" onclick="window.app.deleteSingleConnection('sourceWindow5')">
+                    <img id="targetImage5" class="alienImage sourceWindow5" onmousedown="window.app.deleteSingleConnection('sourceWindow5')">
                     <div class="targetWindowLabel">source 6</div>
                 </div>
             </div>
@@ -1899,7 +1900,7 @@ that will be used later in the game.
         <div style="display:flex; justify-content:center; width: 100%">
             <div id="snackbar2" class="snackbar">Time's up! Autosubmitting in 10 seconds...</div>
         </div>
-        <div class="pseudo_button" onclick="window.app.sendVoting(true)">Submit Votes!</div>
+        <div class="pseudo_button" onmousedown="window.app.sendVoting(true)">Submit Votes!</div>
     </div>
     <div class="view" id="roundResultsView" style="width:100%; height:calc(100% - 45px);display:none; padding-top: 52px;align-self:flex-start;" >
         
@@ -1921,8 +1922,8 @@ that will be used later in the game.
         -->
         <br>
         <div  style="display:flex; justify-content:center;">
-            <div class="pseudo_button" style="display:none;width:50%;" id="nextRoundButton" onclick="window.app.sendNextRound()">Continue to Next Round</div>
-            <div class="pseudo_button" style="display:none;width:50%;" id="endScreenButton" onclick="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
+            <div class="pseudo_button" style="display:none;width:50%;" id="nextRoundButton" onmousedown="window.app.sendNextRound()">Continue to Next Round</div>
+            <div class="pseudo_button" style="display:none;width:50%;" id="endScreenButton" onmousedown="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
         </div>
     </div>
     <div class="view" id="endGameView" style="padding-top:52px;align-self:flex-start;display:none;">
@@ -1945,9 +1946,9 @@ that will be used later in the game.
         <div id="endGameScreenViewBestFriend" style="font-size:40px">[Username]</div>
         <div id="endGameScreenViewButton" style="display:none;">
             Hit this button to restart the game!
-            <!-- TODO dont use onclick handler. try using whatever airconsole control library -->
+            <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
             <p>
-            <div class="pseudo_button" onclick="window.app.sendPlayAgain()">Continue to Next game</div>
+            <div class="pseudo_button" onmousedown="window.app.sendPlayAgain()">Continue to Next game</div>
         </div>
     </div>
     <div id="my_keyboard"></div>
