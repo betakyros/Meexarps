@@ -535,8 +535,6 @@ path, .jtk-endpoint {
                     playerName = payload.data[0];
                     playerNumber = payload.data[1];
                     selectedAlien = parseInt(payload.data[2]);
-                    console.log("PlayerName:" + playerName);
-                    console.log("Selected Alien:" + selectedAlien);
                     var myAlienGifs = document.getElementsByClassName("myAlienGif");
                     Array.prototype.forEach.call(myAlienGifs, currentElement => {
                         currentElement.src = App.prototype.getPlayerGif(selectedAlien);
@@ -793,7 +791,7 @@ path, .jtk-endpoint {
                         //if it's reconnect, fill in all the icons
                         if(personalRoundResultsIsReconnect) {
                             //var rightOrWrong = document.getElementById("roundResultsRightOrWrong");
-                            var rightOrWrong = document.createElemnt("div");
+                            var rightOrWrong = document.createElement("div");
                             var rightOrWrongImg = document.createElement('img');
                             if(personalRoundResults[i][2]) {
                                 rightOrWrongImg.src="./icon_circledCheck.png";

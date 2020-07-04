@@ -233,8 +233,6 @@ public class main : MonoBehaviour
                         cp.points, cp.numWrong, animators[cp.alienNumber],
                         cp.bestFriendPoints, cp.alienNumber));
                     SendCurrentScreenForReconnect(from, cp.playerNumber);
-                    int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
-                    sendWelcomeScreenInfo(from, selectedAlien);
                 }
             }
             //new player
@@ -604,26 +602,18 @@ public class main : MonoBehaviour
                 Dictionary<int, Dictionary<string, string>> votes = gameState.GetCurrentRound().votes;
                 Player currentPlayer = gameState.players[from];
                 votes.Add(currentPlayer.playerNumber, myVotes);
-
-                //Send everyone who has already submitted the list of players who have not yet submitted
-                List<string> playersWhoHaventSubmitted = new List<string>();
-                foreach (Player p in gameState.players.Values)
-                {
-                    if(!votes.ContainsKey(p.playerNumber))
-                    {
-                        playersWhoHaventSubmitted.Add(p.nickname);
-                    }
-                }
+                List<string> playersWhoHaventSubmitted = calculatePlayersWhoHaventSubmitted(votes);
                 foreach (int playerNum in votes.Keys)
                 {
-                    AirConsole.instance.Message(gameState.GetPlayerByPlayerNumber(playerNum).deviceId, 
+                    AirConsole.instance.Message(gameState.GetPlayerByPlayerNumber(playerNum).deviceId,
                         new JsonAction("sendWaitScreen", playersWhoHaventSubmitted.ToArray()));
                 }
 
                 if (HasEveryoneVoted())
                 {
                     bool shouldWaitForAudience = false;
-                    foreach(Player audienceMember in gameState.audienceMembers.Values) {
+                    foreach (Player audienceMember in gameState.audienceMembers.Values)
+                    {
                         if (!gameState.GetCurrentRound().audienceVotes.ContainsKey(audienceMember.playerNumber))
                         {
                             shouldWaitForAudience = true;
@@ -656,6 +646,21 @@ public class main : MonoBehaviour
                 blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
             } 
         }
+    }
+
+    private List<string> calculatePlayersWhoHaventSubmitted(Dictionary<int, Dictionary<string, string>> votes)
+    {
+        //Send everyone who has already submitted the list of players who have not yet submitted
+        List<string> playersWhoHaventSubmitted = new List<string>();
+        foreach (Player p in gameState.players.Values)
+        {
+            if (!votes.ContainsKey(p.playerNumber))
+            {
+                playersWhoHaventSubmitted.Add(p.nickname);
+            }
+        }
+
+        return playersWhoHaventSubmitted;
     }
 
     private static void BroadcastSelectedAliens(Dictionary<int, int[]> alienSelections)
@@ -898,12 +903,18 @@ public class main : MonoBehaviour
                 }
                 break;
             case PhoneViewGameState.SendQuestions:
-                SendQuestions(from);
+                if (gameState.GetCurrentRound().hasPlayerSubmittedAnswer(currentPlayerNumber)) {
+                    AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { }));
+                } else
+                {
+                    SendQuestions(from);
+                }
                 break;
             case PhoneViewGameState.SendVoting:
                 if (gameState.GetCurrentRound().votes.ContainsKey(currentPlayerNumber) || gameState.GetCurrentRound().audienceVotes.ContainsKey(currentPlayerNumber))
                 {
-                    AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] {}));
+                    List<string> playersWhoHaventSubmitted = calculatePlayersWhoHaventSubmitted(gameState.GetCurrentRound().votes);
+                    AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", playersWhoHaventSubmitted.ToArray()));
                 }
                 else
                 {
@@ -928,7 +939,10 @@ public class main : MonoBehaviour
                 sendPersonalRoundResultsForReconnect(currentPlayer, currentAudience);
                 break;
             case PhoneViewGameState.SendEndScreen:
-                SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber, new JsonAction("sendEndScreen", new string[] {}));
+                string currentBestFriend = CalculateBestFriend(currentPlayer);
+
+                AirConsole.instance.Message(currentPlayer.deviceId, new JsonAction("sendEndScreen", new string[] { "" + currentPlayer.points,
+                    (currentPlayer.numWrong + currentPlayer.points).ToString(), currentBestFriend }));
                 break;
             default:
                 AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
@@ -2584,6 +2598,18 @@ class Round
             sb.Append("\n");
         }
         return sb.ToString();
+    }
+
+    public bool hasPlayerSubmittedAnswer(int playerNumber)
+    {
+        foreach(Answers a in answers)
+        {
+            if(a.playerNumber == playerNumber)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
