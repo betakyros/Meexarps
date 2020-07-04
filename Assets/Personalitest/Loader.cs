@@ -12,6 +12,7 @@ public class Loader : MonoBehaviour
     private bool isNsfwQuestionsLoaded = false;
     private bool isWouldYouRathersLoaded = false;
     private bool isAnonymousNamesLoaded = false;
+    private bool isFriendshipTipsLoaded = false;
     void Start()
     {
         // if webGL, this will be something like "http://..."
@@ -43,14 +44,16 @@ public class Loader : MonoBehaviour
     void Update()
     {
         // check to see if asset has been successfully read yet
-        if (isQuestionsLoaded && isNsfwQuestionsLoaded && isWouldYouRathersLoaded && isAnonymousNamesLoaded)
+        if (isQuestionsLoaded && isNsfwQuestionsLoaded && isWouldYouRathersLoaded && isAnonymousNamesLoaded & isFriendshipTipsLoaded)
         {
             // once asset is successfully read, 
             // load the next screen (e.g. main menu or gameplay)
             SceneManager.LoadScene("Personalitest");
         } else
         {
-            Debug.Log("isQuestionsLoaded: " + isQuestionsLoaded + "isNsfwQuestionsLoaded: " + isNsfwQuestionsLoaded + " isWouldYouRathersLoaded: " + isWouldYouRathersLoaded + " isAnonymousNamesLoaded: " + isAnonymousNamesLoaded); 
+            Debug.Log("isQuestionsLoaded: " + isQuestionsLoaded + "isNsfwQuestionsLoaded: " + isNsfwQuestionsLoaded + 
+                " isWouldYouRathersLoaded: " + isWouldYouRathersLoaded + " isAnonymousNamesLoaded: " + isAnonymousNamesLoaded +
+                " isFriendshipTipsLoaded" + isFriendshipTipsLoaded); 
         }
 
         // need to consider what happens if 
@@ -175,6 +178,36 @@ public class Loader : MonoBehaviour
                 catch (Exception x)
                 {
                     Debug.Log("failed to load anonymousNames - parsing");
+                }
+            }
+        }
+
+        using (UnityWebRequest request = UnityWebRequest.Get(Path.Combine(assetPath, "friendshipTips.txt")))
+        {
+            yield return request.SendWebRequest();
+
+            if (request.isNetworkError || request.isHttpError)
+            {
+                Debug.Log("failed to load friendshipTips - Network");
+            }
+            else
+            {
+                try
+                {
+                    // entire file is returned via downloadHandler
+                    string fileContents = request.downloadHandler.text;
+                    Debug.Log("Loader friendshipTips: " + fileContents);
+
+                    // or
+                    //byte[] fileContents = request.downloadHandler.data;
+
+                    // do whatever you need to do with the file contents
+                    TextAssetsContainer.setRawFriendshipTipsText(fileContents);
+                    isFriendshipTipsLoaded = true;
+                }
+                catch (Exception x)
+                {
+                    Debug.Log("failed to load friendshipTips - parsing");
                 }
             }
         }

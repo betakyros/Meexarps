@@ -15,6 +15,8 @@ public class main : MonoBehaviour
     private static string[] anonymousNames;
     //(question, left answer, right answer)
     private static List<string[]> wouldYouRathers;
+    private static string[] friendshipTips;
+    private int friendshipTipIndex;
     private GameState gameState;
     public List<GameObject> welcomePanels;
     public GameObject splashScreenPanel;
@@ -69,6 +71,7 @@ public class main : MonoBehaviour
         string rawNsfwQuestions;
         string rawAnonymousNames;
         string rawWouldYouRathers;
+        string rawFriendshipTips;
         //read the resources
         //if playing on AirConsole
         if (TextAssetsContainer.isWebGl)
@@ -77,6 +80,7 @@ public class main : MonoBehaviour
             rawNsfwQuestions = TextAssetsContainer.rawNsfwQuestionsText;
             rawAnonymousNames = TextAssetsContainer.rawAnonymousNamesText;
             rawWouldYouRathers = TextAssetsContainer.rawWouldYouRatherText;
+            rawFriendshipTips = TextAssetsContainer.rawFriendshipTipsText;
         }
         //if playing locally
         else
@@ -86,10 +90,12 @@ public class main : MonoBehaviour
             rawNsfwQuestions = Resources.GetNsfwQuestions();
             rawAnonymousNames = Resources.GetAnonymousNames();
             rawWouldYouRathers = Resources.GetWouldYouRathers();
+            rawFriendshipTips = Resources.GetFriendshipTips();
         }
         questionCategories = new List<QuestionCategory>();
         ParseQuestions(rawQuestions, rawNsfwQuestions, newLinesRegex);
         anonymousNames = newLinesRegex.Split(rawAnonymousNames);
+        friendshipTips = newLinesRegex.Split(rawFriendshipTips);
         string[] wouldYouRathersLines = newLinesRegex.Split(rawWouldYouRathers);
         List<string[]> tempWouldYouRathers = new List<string[]>();
         foreach (string s in wouldYouRathersLines)
@@ -99,6 +105,7 @@ public class main : MonoBehaviour
         //randomize the order of the resources
         questionCategories.Shuffle();
         anonymousNames.Shuffle();
+        friendshipTips.Shuffle();
         tempWouldYouRathers.Shuffle();
         wouldYouRathers = tempWouldYouRathers;
 
@@ -124,11 +131,17 @@ public class main : MonoBehaviour
         fadeSplashScreenScript.Setup(3.0f);
         yield return new WaitForSeconds(15);
         FadeSplashScreen fadeStoryScreenScript = storyPanel.AddComponent<FadeSplashScreen>();
+        if(storyPanel.activeSelf) {
+            InvokeRepeating("UpdateLoadingScreenTips", 0f, 10f);
+        }
         fadeStoryScreenScript.Setup(3.0f);
         sendWelcomeScreenInfo(-1, -1);
     }
-
-    private void InitializeOptions()
+    public void UpdateLoadingScreenTips()
+    {
+        GameObject.FindWithTag("loadingScreenTips").GetComponent<Text>().text = friendshipTips[friendshipTipIndex++ % friendshipTips.Length];
+    }
+        private void InitializeOptions()
     {
         options.Add("nsfwQuestions", false);
         options.Add("anonymousNames", false);
@@ -431,6 +444,8 @@ public class main : MonoBehaviour
         }
         else if ("sendSetRoundCount".Equals(action))
         {
+            //Stop the loading screen tips
+            CancelInvoke();
             gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
             gameState.numRoundsPerGame = data["info"].ToObject<int>();
             ExitWelcomeScreen();
@@ -552,6 +567,7 @@ public class main : MonoBehaviour
             {
                 storyPanel.SetActive(false);
                 sendWelcomeScreenInfo(-1, -1);
+                InvokeRepeating("UpdateLoadingScreenTips", 0f, 10f);
             }
             if (instructionVideo.gameObject.GetComponent<CameraZoom>() != null)
             {
@@ -2753,6 +2769,11 @@ static class Resources
     public static string GetWouldYouRathers()
     {
         return System.IO.File.ReadAllText(prependTextResourceFilepath("wouldYouRathers.txt"));
+    }
+
+    public static string GetFriendshipTips()
+    {
+        return System.IO.File.ReadAllText(prependTextResourceFilepath("friendshipTips.txt"));
     }
 
     private static string prependTextResourceFilepath(string filename)

@@ -6914,7 +6914,7 @@ GameObject:
   - component: {fileID: 723641746}
   m_Layer: 5
   m_Name: Loading screen tips
-  m_TagString: Untagged
+  m_TagString: loadingScreenTips
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6980,14 +6980,14 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: ba5b723c1f98ab64c8a20f0f1a76b417, type: 3}
     m_FontSize: 27
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 10
-    m_MaxSize: 71
+    m_MaxSize: 27
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 1
-    m_VerticalOverflow: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Here will be friendship trivia and loading screen tips
 --- !u!222 &723641748
