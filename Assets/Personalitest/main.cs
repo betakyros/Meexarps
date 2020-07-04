@@ -755,16 +755,21 @@ public class main : MonoBehaviour
             if (currNumAudience == 0)
             {
                 Player myPlayer = gameState.players[from];
-                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", 
-                    new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + alienNumber }));
+                sendWelcomeScreenInfoDetails(from, alienNumber, myPlayer);
 
-            } else 
+            }
+            else 
             {
                 Player myPlayer = gameState.audienceMembers[from];
-                AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails", 
-                    new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + AUDIENCE_ALIEN_NUMBER }));
+                sendWelcomeScreenInfoDetails(from, AUDIENCE_ALIEN_NUMBER, myPlayer);
             }
         }
+    }
+
+    private static void sendWelcomeScreenInfoDetails(int from, int alienNumber, Player myPlayer)
+    {
+        AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails",
+            new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + alienNumber }));
     }
 
     private static void SendIsVip(Player currentPlayer)
@@ -855,6 +860,9 @@ public class main : MonoBehaviour
         Player currentAudience = gameState.GetAudienceByPlayerNumber(currentPlayerNumber);
         bool isVip = currentPlayerNumber == VIP_PLAYER_NUMBER;
 
+        Player myPlayer = gameState.players[from];
+        sendWelcomeScreenInfoDetails(from, myPlayer.alienNumber, myPlayer);
+
         if (isVip)
         {
             SendIsVip(gameState.GetPlayerByPlayerNumber(currentPlayerNumber));
@@ -885,7 +893,8 @@ public class main : MonoBehaviour
                 }
                 else
                 {
-                    AirConsole.instance.Message(from, new JsonAction("sendWouldYouRather", new string[] { "reconnecting" }));
+                    string waitingForPlayerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
+                    AirConsole.instance.Message(from, new JsonAction("sendWouldYouRather", new string[] { waitingForPlayerName, "reconnecting" }));
                 }
                 break;
             case PhoneViewGameState.SendQuestions:

@@ -535,6 +535,8 @@ path, .jtk-endpoint {
                     playerName = payload.data[0];
                     playerNumber = payload.data[1];
                     selectedAlien = parseInt(payload.data[2]);
+                    console.log("PlayerName:" + playerName);
+                    console.log("Selected Alien:" + selectedAlien);
                     var myAlienGifs = document.getElementsByClassName("myAlienGif");
                     Array.prototype.forEach.call(myAlienGifs, currentElement => {
                         currentElement.src = App.prototype.getPlayerGif(selectedAlien);
@@ -605,6 +607,7 @@ path, .jtk-endpoint {
                     App.prototype.setKeyboardValue(payload.data[0], payload.data[1]);
                 } else if(myAction === "sendWouldYouRather") {
                     var questionWriterName = payload.data[0];
+                    var isReconnect = payload.data[1];
                     //if you are currently submiting questions, you don't get to play would you rather
                     if(
                         (
@@ -613,8 +616,8 @@ path, .jtk-endpoint {
                             //also don't force would you rather if you're trying to reconnect
                             document.getElementById("welcomeScreenView").style.display  == "none"
                         ) ||
-                        payload.data == "reconnecting"
-                    ) 
+                        isReconnect
+                    )
                     {
                         if(!hasSeenTutorial[0]){
                             App.prototype.showTutorial("This is the would you rather phase. You are waiting for " + 
