@@ -1405,16 +1405,6 @@ path, .jtk-endpoint {
         width: 95%;
       }
 
-      .creditsView {      
-        padding: 50% 0px;
-        position: fixed;
-        top: 5px;
-        bottom: 5px;
-        background-color: aliceblue;
-        width: 95%;
-        z-index: 101;
-      }
-      
       .franklinInstructionText {
         font-size:12px;
         color: #595959;
@@ -1442,6 +1432,22 @@ path, .jtk-endpoint {
         width:100%;
         padding: 4px;
       }
+
+      .tutorialView {
+        z-index:2;
+        position:absolute;
+        background-color:#CBDAFF; 
+        padding:5px;
+        width:95%;
+        height:95%;
+        flex-direction:column;
+        justify-content:center;
+        white-space:pre-line;
+      }
+
+      .noScrollbar::-webkit-scrollbar {
+          display: none;
+        }
 
       .view::-webkit-scrollbar {
           display: none;
@@ -1521,8 +1527,7 @@ path, .jtk-endpoint {
         <br>
         <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
-    <div id="tutorialView" style="display:none; z-index:2;position:absolute;background-color:#CBDAFF; 
-    padding:5px;width:95%;height:95%;flex-direction:column;justify-content:center;white-space:pre-line;">
+    <div id="tutorialView" class="tutorialView" style="display:none;">
         <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
         <br>
         <div id="tutorialText"> </div>
@@ -1531,27 +1536,27 @@ path, .jtk-endpoint {
         <br>
         <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
-        <div class="view creditsView" id="creditsView" style="display:none;">
-        <div>
-Credits:
-<br>
-Music: 
-<br>
-Ukulele | https://www.bensound.com
-<br>
-Simple Joy by Alexander Nakarada | https://www.serpentsoundstudios.com
-<br>
-Music promoted by https://www.free-stock-music.com Attribution 4.0 International (CC BY 4.0) https://creativecommons.org/licenses/by/4.0/
-<br>
-Sound Effects:
-<br>
-Blop Sound | Mark DiAngelo
-<br>
-Balloon Popping Sound | Mike Koenig
-<br>
-Kitten Meow Sound | Mike Koenig
-<br>
-Others under Creative Commons 0 License from https://freesound.org
+        <div class="view tutorialView" id="creditsView" style="display:none;padding-top:45px;height:calc(100% - 90px);">
+        <div class="noScrollbar" style="height:calc(100% - 90px);overflow-y:scroll;">
+<p style="text-align: center;"><span style="font-size: 20px;"><strong>Credits:</strong></span></p>
+<p style="text-align: center;"><span style="font-size: 28px;">Meexarps: A Friendship Study</span></p>
+<p style="text-align: center;">A game by Franklin Zheng, Regina Yan and Vi Nguyen</p>
+<p style="text-align: center;"><strong>Gameplay:</strong> Franklin Zheng</p>
+<p style="text-align: center;"><strong>Art, UI, UX:</strong> Regina Yan&nbsp;</p>
+<p style="text-align: center;">(She is so talented, check out her work -&gt; <a href="http://reginayan.me/">http://reginayan.me/</a>)&nbsp;</p>
+<p style="text-align: center;"><br></p>
+<p style="text-align: center;"><strong>Writing, Testing: </strong>Vi Nguyen</p>
+<p style="text-align: center;"><strong>Music:</strong> Shan Man</p>
+<p style="text-align: center;"><strong>Additional Writing:</strong> Annie Lee, Vincent Lin</p>
+<p style="text-align: center;"><strong>Music:</strong>&nbsp;</p>
+<p style="text-align: center;"><strong>Ukulele:</strong> https://www.bensound.com</p>
+<p style="text-align: center;"><strong>Simple Joy </strong>by Alexander Nakarada: https://www.serpentsoundstudios.com</p>
+<p style="text-align: center;">Music promoted by https://www.free-stock-music.com Attribution 4.0 International (CC BY 4.0) https://creativecommons.org/licenses/by/4.0/</p>
+<p style="text-align: center;"><strong>Sound Effects:</strong></p>
+<p style="text-align: center;"><strong>Blop Sound:</strong> Mark DiAngelo</p>
+<p style="text-align: center;"><strong>Balloon Popping Sound</strong>: Mike Koenig</p>
+<p style="text-align: center;"><strong>Kitten Meow Sound:</strong> Mike Koenig</p>
+<p style="text-align: center;">Others under Creative Commons 0 License from https://freesound.org</p>
         </div>
         <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
         <div class="pseudo_button" onmousedown="window.app.hideCredits()">Close Credits</div>
