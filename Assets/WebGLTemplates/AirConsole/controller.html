@@ -553,9 +553,6 @@ path, .jtk-endpoint {
                     if(playerNumber >= 10) {
                         isAudience = true;
                     }
-                    //show tutorial by default
-                    console.log("displayingFirstTutorial")
-                    App.prototype.showFirstTutorial();
                 } else if(myAction === "sendRetrieveOptions") {
                     document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
                     document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
@@ -917,6 +914,7 @@ path, .jtk-endpoint {
                         }
 				    };
 				    me.air_console.message(AirConsole.SCREEN, message);
+                    App.prototype.showFirstTutorial();
                     document.getElementById("welcomeScreenView").style.display = "none";
                     document.getElementById("startGameScreenView").style.display = "block";
                 } else{
