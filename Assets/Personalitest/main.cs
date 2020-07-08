@@ -271,9 +271,10 @@ public class main : MonoBehaviour
                 updatePlayerAnimator(image.GetComponentInChildren<Animator>(), p);
 
                 gameState.players.Add(from, p);
+                AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                 SendMessageToVip(new JsonAction("allPlayersAreNotReady", gameState.whoIsNotReady().ToArray()));
                 sendWelcomeScreenInfo(from, selectedAlien);
-                SendCurrentScreenForReconnect(from, p.playerNumber);
+                //SendCurrentScreenForReconnect(from, p.playerNumber);
             }
             // audience
             else {
@@ -308,7 +309,8 @@ public class main : MonoBehaviour
                     ;
 
                     GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<Text>().text = "Audience: " + gameState.audienceMembers.Count;
-                    SendCurrentScreenForReconnect(from, p.playerNumber);
+                    AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
+                    //SendCurrentScreenForReconnect(from, p.playerNumber);
                     sendWelcomeScreenInfo(from, -1);
                 }
             }
@@ -421,15 +423,19 @@ public class main : MonoBehaviour
         }
         else if("sendReady".Equals(action))
         {
-            Player currentPlayer = gameState.players[from];
-            currentPlayer.isReady = true;
-            List<string> playersWhoAreNotReady = gameState.whoIsNotReady();
-            if(playersWhoAreNotReady.Count == 0)
+            if (!isAudienceMember(from))
             {
-                SendMessageToVip(new JsonAction("allPlayersAreReady", new string[] {}));
-            } else
-            {
-                SendMessageToVip(new JsonAction("allPlayersAreNotReady", playersWhoAreNotReady.ToArray()));               
+                Player currentPlayer = gameState.players[from];
+                currentPlayer.isReady = true;
+                List<string> playersWhoAreNotReady = gameState.whoIsNotReady();
+                if (playersWhoAreNotReady.Count == 0)
+                {
+                    SendMessageToVip(new JsonAction("allPlayersAreReady", new string[] { }));
+                }
+                else
+                {
+                    SendMessageToVip(new JsonAction("allPlayersAreNotReady", playersWhoAreNotReady.ToArray()));
+                }
             }
         }
         else if ("sendStartGame".Equals(action))
@@ -875,8 +881,11 @@ public class main : MonoBehaviour
         Player currentAudience = gameState.GetAudienceByPlayerNumber(currentPlayerNumber);
         bool isVip = currentPlayerNumber == VIP_PLAYER_NUMBER;
 
-        Player myPlayer = gameState.players[from];
-        sendWelcomeScreenInfoDetails(from, myPlayer.alienNumber, myPlayer);
+        if(gameState.players.ContainsKey(from))
+        {
+            Player myPlayer = gameState.players[from];
+            sendWelcomeScreenInfoDetails(from, myPlayer.alienNumber, myPlayer);
+        }
 
         if (isVip)
         {

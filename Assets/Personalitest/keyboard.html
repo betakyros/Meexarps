@@ -439,7 +439,6 @@ path, .jtk-endpoint {
         }
 
         App.prototype.hideAnswerHelpText = function hideAnswerHelpText() {
-        console.log("hide answer help text");
             if(showingAnswerHelpText) {
                 //clearTimeout(timer);
                 document.getElementById("answerSummaryForSelectedPlayer").style.display = "none";
@@ -504,7 +503,7 @@ path, .jtk-endpoint {
                         waitingForNames += " ";
                     });
                     document.getElementById("waitingForStartGame").innerHTML = waitingForNames;
-                    document.getElementById("startGameButton").style.display = "none";                   
+                    document.getElementById("startGameButton").style.display = "none";    
                 } else if(myAction === "allPlayersAreReady") {
                     document.getElementById("startGameButton").style.display = "inline-block";
                     document.getElementById("waitingForStartGame").style.display = "none";
@@ -915,8 +914,7 @@ path, .jtk-endpoint {
 				    };
 				    me.air_console.message(AirConsole.SCREEN, message);
                     App.prototype.showFirstTutorial();
-                    document.getElementById("welcomeScreenView").style.display = "none";
-                    document.getElementById("startGameScreenView").style.display = "block";
+                    //displayElement(document.getElementById("startGameScreenView"));
                 } else{
                     //todo display some error message
                 }
