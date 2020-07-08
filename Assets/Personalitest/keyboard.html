@@ -500,7 +500,6 @@ path, .jtk-endpoint {
                     if(playerName == null) {
                         hideAllViews();
                         document.getElementById("welcomeScreenView").style.display = "block";             
-                        console.log(me.air_console.getNickname());
                         App.prototype.setKeyboardValue("nickname", me.air_console.getNickname());
                     }
 
@@ -520,7 +519,6 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendAlienSelectionFailed") {
                     //TODO update some message if the selection fails
                 } else if(myAction === "sendAlienSelectionSuccess") {
-                    console.log("sendAlienSelectionSuccess: " + payload.data[0]);
                     var selectedAliensArray = payload.data[0].split('');
                     for(var i = 0; i < 6; i++) {
                         if(i == selectedAlien) {
@@ -543,6 +541,9 @@ path, .jtk-endpoint {
                     if(playerNumber >= 10) {
                         isAudience = true;
                     }
+                    //show tutorial by default
+                    console.log("displayingFirstTutorial")
+                    App.prototype.showFirstTutorial();
                 } else if(myAction === "sendRetrieveOptions") {
                     document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
                     document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
@@ -1131,6 +1132,27 @@ path, .jtk-endpoint {
                 document.getElementById("optionsView").style.display = "none";
 			}
             
+            
+            App.prototype.showFirstTutorial = function showFirstTutorial() {
+                //document.getElementById("tutorialText").innerHTML = instructionText;
+                document.getElementById("firstTutorialView").style.display = "flex";
+                document.getElementById("page1").style.display = "flex";                
+			}
+
+            var firstTutorialPageNum = 1;
+            App.prototype.showNextFirstTutorial = function showNextFirstTutorial() {
+                //document.getElementById("tutorialText").innerHTML = instructionText;
+                document.getElementById("page" + firstTutorialPageNum).style.display = "none";                
+                document.getElementById("page" + ++firstTutorialPageNum).style.display = "flex";
+                if(firstTutorialPageNum == 6) {
+                    document.getElementById("closeFirstTutorialButton").innerHTML = "Let's Play!";
+                    document.getElementById("showNextFirstTutorial").style.display="none";
+                }
+			}
+            App.prototype.hideFirstTutorial = function hideFirstTutorial() {
+                document.getElementById("firstTutorialView").style.display = "none";
+			}
+            
             App.prototype.showTutorial = function showTutorial(instructionText) {
                 document.getElementById("tutorialText").innerHTML = instructionText;
                 document.getElementById("tutorialView").style.display = "flex";
@@ -1369,6 +1391,7 @@ path, .jtk-endpoint {
       
       .alienButton-selected {
         background-color: White;
+        opacity: 50%;
         border: 2px;
         border-color: #4254F3;
         border-style: solid;
@@ -1443,6 +1466,23 @@ path, .jtk-endpoint {
         flex-direction:column;
         justify-content:center;
         white-space:pre-line;
+        overflow-y: scroll;
+      }
+
+      .tutorialPage{
+        display:none;
+        height:80%;
+        flex-direction:column;
+        padding-top:45px;
+        overflow-y:scroll;
+      }
+
+      .tutorialPageOneRow {
+        height:20%;
+        padding: 10px 0;
+        display: flex; 
+        align-items: center; 
+        justify-content:center;
       }
 
       .noScrollbar::-webkit-scrollbar {
@@ -1527,6 +1567,85 @@ path, .jtk-endpoint {
         <br>
         <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
+    <div id="firstTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
+        <div id="page1" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div id="tutorialText" style="padding:10px 0 20px 0;"> Welcome to MEEXARPS! The game is played in 3 phases </div>
+            <div class="tutorialPageOneRow">
+                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                    <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
+                </div>
+                <div style="text-align: left;width:55%;"> 1. Write Questions </div>
+            </div>
+            <div class="tutorialPageOneRow">
+                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                    <img style="height:100%" src="./meexarpsAnswerQuestionsImage.png" /> 
+                </div>
+                <div style="text-align: left;width:55%;"> 2. Answer Questions </div>
+            </div>
+            <div class="tutorialPageOneRow">
+                <div style="height:100%;width: 33%;display:flex;justify-content:left;">
+                    <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
+                </div>
+                <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
+            </div>
+        </div>
+        <div id="page2" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div class="tutorialPageOneRow">
+                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                    <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
+                </div>
+                <div style="text-align: left;width:55%;"> 1. Write Questions </div>
+            </div>
+            The current presenter will write 3 personality questions. We recommend writing at least one question unique to your group!
+        </div>
+        <div id="page3" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div class="tutorialPageOneRow">
+                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                    <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
+                </div>
+                <div style="text-align: left;width:55%;"> 1. Write Questions </div>
+            </div>
+            While the current presenter is thinking of questions, the other Meexarps will be playing Would you Rather to pass the time.
+        </div>
+        <div id="page4" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div class="tutorialPageOneRow">
+                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                    <img style="height:100%" src="./meexarpsAnswerQuestionsImage.png" /> 
+                </div>
+                <div style="text-align: left;width:55%;"> 2. Answer Questions </div>
+            </div>
+            When the current presenter submits their questions, all Meexarps will answer the questions. Answer truthfully! The goal is to learn about the power of friendship!
+        </div>
+        <div id="page5" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div class="tutorialPageOneRow">
+                <div style="height:100%;width: 33%;display:flex;justify-content:left;">
+                    <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
+                </div>
+                <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
+            </div>
+            Lastly, each Meexarp will match the anonymized personalities to their respective Meexarp. You will get points for each correct match!
+        </div>
+        <div id="page6" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div class="tutorialPageOneRow">
+                <div style="height:100%;width: 33%;display:flex;justify-content:left;">
+                    <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
+                </div>
+                <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
+            </div>
+                         The loop repeats for the selected number of rounds. At the end you will see if the board will approve the funding to continue your research!
+        </div>
+        <div style="display:flex;justify-content:space-evenly;">
+            <div id="closeFirstTutorialButton" class="pseudo_button" style="width:30%;" onmousedown="window.app.hideFirstTutorial()">Skip</div>
+            <div id="showNextFirstTutorial" class="pseudo_button" style="width:30%;" onmousedown="window.app.showNextFirstTutorial()">Next</div>
+        </div>
+        <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+    </div>
     <div id="tutorialView" class="tutorialView" style="display:none;">
         <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
         <br>
@@ -1563,7 +1682,7 @@ path, .jtk-endpoint {
     </div>   
     <div class="view" id="startGameScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
         <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:9vh; " class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
+        <img style="height:9vh; opacity:100%;" class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
         
         <div class="franklinBanner" style="height:9vh;  margin-bottom: 15px; position: inherit;">
             <div style = "font-size: 26px; display: flex; align-items: center; justify-content:center; width:85%; height:100%;" id="startGameScreenViewUsername"> Welcome, [Username]</div>
