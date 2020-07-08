@@ -55,10 +55,7 @@ public class main : MonoBehaviour
     private static int AUDIENCE_ALIEN_NUMBER = 6;
     private Dictionary<int, int> audienceWouldYouRathers;
     private bool writeMyOwnQuestions = false;
-    private Dictionary<string, bool> options = new Dictionary<string, bool>();
-
-    
-    
+    private Dictionary<string, bool> options = new Dictionary<string, bool>();    
 
     // Start is called before the first frame update
     void Start()
@@ -239,7 +236,6 @@ public class main : MonoBehaviour
             else if (gameState.GetNumberOfPlayers() < 6)
             {
                 int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
-
                 //remove the nbsp
                 name = Regex.Replace(name, @"\u00a0", " ");
                 int newPlayerNumber = gameState.GetNumberOfPlayers();
@@ -275,6 +271,7 @@ public class main : MonoBehaviour
                 updatePlayerAnimator(image.GetComponentInChildren<Animator>(), p);
 
                 gameState.players.Add(from, p);
+                SendMessageToVip(new JsonAction("allPlayersAreNotReady", gameState.whoIsNotReady().ToArray()));
                 sendWelcomeScreenInfo(from, selectedAlien);
                 SendCurrentScreenForReconnect(from, p.playerNumber);
             }
@@ -421,6 +418,19 @@ public class main : MonoBehaviour
                 sendWelcomeScreenInfo(-1, -1);
             }
             playSound = false;
+        }
+        else if("sendReady".Equals(action))
+        {
+            Player currentPlayer = gameState.players[from];
+            currentPlayer.isReady = true;
+            List<string> playersWhoAreNotReady = gameState.whoIsNotReady();
+            if(playersWhoAreNotReady.Count == 0)
+            {
+                SendMessageToVip(new JsonAction("allPlayersAreReady", new string[] {}));
+            } else
+            {
+                SendMessageToVip(new JsonAction("allPlayersAreNotReady", playersWhoAreNotReady.ToArray()));               
+            }
         }
         else if ("sendStartGame".Equals(action))
         {
@@ -2411,6 +2421,7 @@ class Player
     public Animator myAnimator { get; set; }
     public Dictionary<string, int> bestFriendPoints { get; set; }
     public int alienNumber { get; set; }
+    public bool isReady { get; set; }
 
     public Player(string n, int d, int pn, int a, Animator an, int selectedAlien)
     {
@@ -2423,6 +2434,7 @@ class Player
         myAnimator = an;
         bestFriendPoints = new Dictionary<string, int>();
         alienNumber = selectedAlien; //todo i dont think i need this
+        isReady = false;
     }
 
     public Player(string n, int d, int pn, int a, int p, int nw, Animator an, Dictionary<string, int> bfp, int selectedAlien)
@@ -2436,6 +2448,7 @@ class Player
         myAnimator = an;
         bestFriendPoints = bfp;
         alienNumber = selectedAlien;
+        isReady = false;
     }
 
     public override string ToString()
@@ -2723,6 +2736,18 @@ class GameState
     public int GetCurrentRoundNumber()
     {
         return rounds.Count - 1;
+    }
+
+    public List<string> whoIsNotReady()
+    {
+        List<string> returnable = new List<string>();
+        foreach (Player p in players.Values) {
+            if(!p.isReady)
+            {
+                returnable.Add(p.nickname);
+            }
+        }
+        return returnable;
     }
 
     public override string ToString()

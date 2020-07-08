@@ -496,6 +496,18 @@ path, .jtk-endpoint {
                   document.getElementById("submitWouldYouRatherButton").classList.add("secondaryButton");
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("startGameButton").style.display = "inline-block";
+                } else if(myAction === "allPlayersAreNotReady") {
+                    document.getElementById("waitingForStartGame").style.display = "inline-block";
+                    var waitingForNames="Waiting for: ";
+                    payload.data.forEach(element => {
+                        waitingForNames += element;
+                        waitingForNames += " ";
+                    });
+                    document.getElementById("waitingForStartGame").innerHTML = waitingForNames;
+                    document.getElementById("startGameButton").style.display = "none";                   
+                } else if(myAction === "allPlayersAreReady") {
+                    document.getElementById("startGameButton").style.display = "inline-block";
+                    document.getElementById("waitingForStartGame").style.display = "none";
                 } else if(myAction === "sendWelcomeScreenInfo") {
                     if(playerName == null) {
                         hideAllViews();
@@ -702,7 +714,6 @@ path, .jtk-endpoint {
                     displayElement(document.getElementById("submitVoteView"));
 
                 } else if(myAction === "forceCollectAnswers") {
-                console.log("force collect answers: " + payload.data[0]);
                     var isSecondCall = payload.data[0];
                     if (isSecondCall == "true") {
                         App.prototype.sendVoting(false);
@@ -712,7 +723,6 @@ path, .jtk-endpoint {
                         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
                     }
                 } else if(myAction === "sendPersonalRoundResults") {
-                    console.log("sendPersonalRoundResults");
                     var lastElement = payload.data[payload.data.length-1];
                         
                     personalRoundResultsIsReconnect = (lastElement == "~~~reconnect~~~");
@@ -1124,6 +1134,14 @@ path, .jtk-endpoint {
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
             
+            App.prototype.sendReady = function sendReady() {
+				var message = {
+					'action': "sendReady",
+					'info': {}
+				};
+				me.air_console.message(AirConsole.SCREEN, message);
+			}
+            
             App.prototype.viewOptions = function viewOptions() {
                 App.prototype.sendRetrieveOptions();
                 document.getElementById("optionsView").style.display = "block";
@@ -1151,6 +1169,7 @@ path, .jtk-endpoint {
 			}
             App.prototype.hideFirstTutorial = function hideFirstTutorial() {
                 document.getElementById("firstTutorialView").style.display = "none";
+                App.prototype.sendReady();
 			}
             
             App.prototype.showTutorial = function showTutorial(instructionText) {
@@ -1751,8 +1770,8 @@ that will be used later in the game.
             <div id="snackbar" class="snackbar">Would you rather submitted</div>
         </div>
         <p>
-        <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
         <div class="initially_hidden_pseudo_button" onmousedown="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
+        <div id="waitingForStartGame"></div>
         <br>
     </div>
     <div class="view" id="waitingView" style="display:none">
