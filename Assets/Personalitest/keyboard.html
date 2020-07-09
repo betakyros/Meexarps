@@ -1148,14 +1148,12 @@ path, .jtk-endpoint {
             
             
             App.prototype.showFirstTutorial = function showFirstTutorial() {
-                //document.getElementById("tutorialText").innerHTML = instructionText;
                 document.getElementById("firstTutorialView").style.display = "flex";
                 document.getElementById("page1").style.display = "flex";                
 			}
 
             var firstTutorialPageNum = 1;
             App.prototype.showNextFirstTutorial = function showNextFirstTutorial() {
-                //document.getElementById("tutorialText").innerHTML = instructionText;
                 document.getElementById("page" + firstTutorialPageNum).style.display = "none";                
                 document.getElementById("page" + ++firstTutorialPageNum).style.display = "flex";
                 if(firstTutorialPageNum == 6) {
@@ -1585,7 +1583,7 @@ path, .jtk-endpoint {
     <div id="firstTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
         <div id="page1" class="tutorialPage noScrollbar">
             <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div id="tutorialText" style="padding:10px 0 20px 0;"> Welcome to MEEXARPS! The game is played in 3 phases </div>
+            <div id="firstTutorialText" style="padding:10px 0 20px 0;"> Welcome to MEEXARPS! The game is played in 3 phases </div>
             <div class="tutorialPageOneRow">
                 <div style="height:100%;width: 33%;display:flex;justify-content:center;">
                     <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
@@ -1661,7 +1659,7 @@ path, .jtk-endpoint {
         </div>
         <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
-    <div id="tutorialView" class="tutorialView" style="display:none;">
+    <div id="tutorialView" class="tutorialView noScrollbar" style="display:none;">
         <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
         <br>
         <div id="tutorialText"> </div>
