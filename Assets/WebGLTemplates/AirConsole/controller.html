@@ -656,12 +656,7 @@ path, .jtk-endpoint {
                     displayElement(document.getElementById("submitAnswerView"));
                 } else if(myAction === "sendVoting") {
                     if(!hasSeenTutorial[1]) {
-                        App.prototype.showTutorial("It is now time to guess who is who! Look at the TV to" +
-                        " read your team mate's answers. \n\nThen drag the guess on the left to the player on " +
-                        "the right. You can change your guess by dragging where the line meets the icons." +
-                        "\n\n Tap on the images to remove a connection." +
-                        "\n\n TODO: I'M DEBATING IF THIS TUTORIAL AND THE VIDEO TOGETHER IS A GOOD " +
-                        "EXPERIENCE. \n\n TODO:when ui is finalized, use a series of images");   
+                        App.prototype.showNextVotingTutorial();
                         hasSeenTutorial[1] = true;
                     }
                         //reset jsplumb
@@ -1165,6 +1160,22 @@ path, .jtk-endpoint {
                 document.getElementById("firstTutorialView").style.display = "none";
                 App.prototype.sendReady();
 			}
+
+            var votingTutorialPageNum = 0;
+            App.prototype.showNextVotingTutorial = function showNextVotingTutorial() {
+                document.getElementById("votingTutorialView").style.display = "flex";
+                if(votingTutorialPageNum != 0) {                
+                document.getElementById("votingPage" + votingTutorialPageNum).style.display = "none";                
+                }
+                document.getElementById("votingPage" + ++votingTutorialPageNum).style.display = "flex";
+                if(votingTutorialPageNum == 4) {
+                    document.getElementById("closeVotingTutorialButton").innerHTML = "Got it!";
+                    document.getElementById("showNextVotingTutorial").style.display="none";
+                }
+			}
+            App.prototype.hideVotingTutorial = function hideVotingTutorial() {
+                document.getElementById("votingTutorialView").style.display = "none";
+			}            
             
             App.prototype.showTutorial = function showTutorial(instructionText) {
                 document.getElementById("tutorialText").innerHTML = instructionText;
@@ -1666,6 +1677,37 @@ path, .jtk-endpoint {
         <br>
         <div class="pseudo_button" onmousedown="window.app.hideTutorial()">Got it</div> <br>
         <br>
+        <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+    </div>
+    <div id="votingTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
+        <div id="votingPage1" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div style="height:100%;">
+                <img style="height:85%" src="./votingTutorial1.gif" /> 
+            </div>
+        </div>
+        <div id="votingPage2" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div style="height:100%;">
+                <img style="height:85%" src="./votingTutorial2.gif" /> 
+            </div>
+        </div>
+        <div id="votingPage3" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div style="height:100%;">
+                <img style="height:85%" src="./votingTutorial3.gif" /> 
+            </div>
+        </div>
+        <div id="votingPage4" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div style="height:100%;">
+                <img style="height:85%" src="./votingTutorial4.gif" /> 
+            </div>
+        </div>
+        <div style="display:flex;justify-content:space-evenly;">
+            <div id="closeVotingTutorialButton" class="pseudo_button" style="width:30%;" onmousedown="window.app.hideVotingTutorial()">Skip</div>
+            <div id="showNextVotingTutorial" class="pseudo_button" style="width:30%;" onmousedown="window.app.showNextVotingTutorial()">Next</div>
+        </div>
         <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
         <div class="view tutorialView" id="creditsView" style="display:none;padding-top:45px;height:calc(100% - 90px);">
