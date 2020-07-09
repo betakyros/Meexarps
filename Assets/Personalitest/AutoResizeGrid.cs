@@ -88,7 +88,10 @@ public class AutoResizeGrid : MonoBehaviour
                 int nthGridElement = i + j * maxNumCols;
 
                 int nthChild = (isWouldYouRatherOrAnswerQuestions ? 0 : panelsOffset) + nthGridElement;
-                if(nthGridElement< numGridCells)
+                if(images.Length <= nthChild)
+                {
+                    //skip this round
+                } else if (nthGridElement< numGridCells)
                 {
                     images[nthChild].gameObject.SetActive(true);
                 } else if(!isWouldYouRatherOrAnswerQuestions)

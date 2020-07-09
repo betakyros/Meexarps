@@ -271,10 +271,15 @@ public class main : MonoBehaviour
                 updatePlayerAnimator(image.GetComponentInChildren<Animator>(), p);
 
                 gameState.players.Add(from, p);
-                AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
-                SendMessageToVip(new JsonAction("allPlayersAreNotReady", gameState.whoIsNotReady().ToArray()));
-                sendWelcomeScreenInfo(from, selectedAlien);
-                //SendCurrentScreenForReconnect(from, p.playerNumber);
+                if(gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
+                {
+                    AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
+                    SendMessageToVip(new JsonAction("allPlayersAreNotReady", gameState.whoIsNotReady().ToArray()));
+                    sendWelcomeScreenInfo(from, selectedAlien);
+                } else
+                {
+                    SendCurrentScreenForReconnect(from, p.playerNumber);
+                }
             }
             // audience
             else {
@@ -306,12 +311,16 @@ public class main : MonoBehaviour
                     //todo hard code the audience animator to 7 or give them no animations
                     Player p = new Player(name, from, audienceNumber, 0, animators[1], -1);
                     gameState.audienceMembers.Add(from, p);
-                    ;
 
-                    GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<Text>().text = "Audience: " + gameState.audienceMembers.Count;
-                    AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
-                    //SendCurrentScreenForReconnect(from, p.playerNumber);
-                    sendWelcomeScreenInfo(from, -1);
+                    if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
+                    {
+                        GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<Text>().text = "Audience: " + gameState.audienceMembers.Count;
+                        AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
+                        sendWelcomeScreenInfo(from, -1);
+                    } else
+                    {
+                        SendCurrentScreenForReconnect(from, p.playerNumber);
+                    }
                 }
             }
         }
