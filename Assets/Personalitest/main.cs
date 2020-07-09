@@ -126,7 +126,14 @@ public class main : MonoBehaviour
         SetVolumeForLevel(welcomeScreenAudioSources, 1);
         FadeSplashScreen fadeSplashScreenScript = splashScreenPanel.AddComponent<FadeSplashScreen>();
         fadeSplashScreenScript.Setup(3.0f);
-        yield return new WaitForSeconds(15);
+        Image[] storyPanels = storyPanel.GetComponentsInChildren<Image>(true);
+        yield return new WaitForSeconds(10);
+        storyPanels[0].gameObject.SetActive(false);
+        storyPanels[1].gameObject.SetActive(true);
+        yield return new WaitForSeconds(10);
+        storyPanels[1].gameObject.SetActive(false);
+        storyPanels[2].gameObject.SetActive(true);
+        yield return new WaitForSeconds(10);
         FadeSplashScreen fadeStoryScreenScript = storyPanel.AddComponent<FadeSplashScreen>();
         if(storyPanel.activeSelf) {
             InvokeRepeating("UpdateLoadingScreenTips", 0f, 10f);
