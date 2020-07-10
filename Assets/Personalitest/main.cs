@@ -186,7 +186,7 @@ public class main : MonoBehaviour
     void OnReady(string code)
     {
         gameCode = code;
-        welcomeInstructionsText.text = "Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!\nPlayers can reconnect by joining and using the same name";
+        welcomeInstructionsText.text = "Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!\n";
     }
 
     void Update()
@@ -464,7 +464,8 @@ public class main : MonoBehaviour
             //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
             SetVolumeForLevel(welcomeScreenAudioSources, 2);
-            SendMessageToVip(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
+            List<string> playersNames = gameState.GetPlayerNamesInNumberOrder();
+            SendMessageToVip(new JsonAction("selectRoundCountView", playersNames.ToArray()));
             gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
             /*
             introAudioSource.Stop();
@@ -914,8 +915,10 @@ public class main : MonoBehaviour
 
                 break;
             case PhoneViewGameState.SendSelectRoundNumberScreen:
+                List<string> playersNames = gameState.GetPlayerNamesInNumberOrder();
+
                 SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber,
-                    new JsonAction("selectRoundCountView", new string[] { gameState.GetNumberOfPlayers() + "" })
+                    new JsonAction("selectRoundCountView", playersNames.ToArray())
                 );
                 break;
             case PhoneViewGameState.SendSkipInstructionsScreen:
@@ -2124,8 +2127,9 @@ public class main : MonoBehaviour
         int offset = 0;
         float correctPercent = ((float)gameState.totalCorrectGuesses) / ((float)(gameState.totalCorrectGuesses + gameState.totalWrongGuesses)) * 100.0f;
         string[] friendshipStatusArray = { "Archnemeses", "Enemies", "Strangers", "Acquaintances", "Just \"Ok\" Friends", "Friends", "Best Friends" };
-        string[] resultsStatuses = { "The board is impressed and will grant you the funds to continue your research. Congratulations!" ,
-        "The board is unimpressed, but will allow you to continue your research in hopes that you’ll better discover friendship and will grand you the funds to continue your research."};
+        string[] resultsStatuses = { "The power of friendship is amazing! We must harness the power of friendship for ourselves!" ,
+        "The Earthlings are not as friendly as we had hoped. We’re taking our grant money somewhere else!" };
+
 
         string friendshipStatus = CaluclateFriendshipStatus(correctPercent, friendshipStatusArray);
         string resultStatus = correctPercent >= 60.0f ? resultsStatuses[0] : resultsStatuses[1];
@@ -2735,6 +2739,16 @@ class GameState
             }
         }
         return default;
+    }
+
+    public List<string> GetPlayerNamesInNumberOrder()
+    {
+        List<string> p = new List<string>();
+        for(int i = 0; i < players.Count; i++)
+        {
+            p.Add(GetPlayerByPlayerNumber(i).nickname);
+        }
+        return p;
     }
 
     public void ResetGameState()

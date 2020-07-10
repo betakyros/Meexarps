@@ -394,6 +394,7 @@ path, .jtk-endpoint {
         var touchduration = 1000;        
         var showingAnswerHelpText = false;
         var globalCurrNumPlayers = 0;
+        var listOfPlayerNames;
         var playerName;
         var playerNumber;
         //var myTimer = 0;
@@ -575,12 +576,13 @@ path, .jtk-endpoint {
                 }
                 else if(myAction === "selectRoundCountView") {
                     hideAllViews();
-                    var numPlayers = payload.data;
                     //document.getElementById("roundCountInputField").setAttribute("max", payload.data);
                     //document.getElementById("roundCountInputField").value = payload.data;
                     //document.getElementById("roundCountDisplayField").value = payload.data;
                     document.getElementById("selectRoundCountView").style.display = "block";
-                    App.prototype.clickRoundButton(parseInt(numPlayers, 10));
+                    console.log(payload.data);
+                    listOfPlayerNames = payload.data;
+                    App.prototype.clickRoundButton(payload.data.length);
                 }
                 else if(myAction === "sendSelectCategory") {
                     document.getElementById("selectCategoryButton1").innerText=payload.data[0];
@@ -627,9 +629,7 @@ path, .jtk-endpoint {
                     )
                     {
                         if(!hasSeenTutorial[0]){
-                            App.prototype.showTutorial("This is the would you rather phase. You are waiting for " + 
-                                questionWriterName.bold().fontcolor("blue") + " to write questions. This phase does not affect the point values, but will " +
-                                "help you pass the time!");
+                            App.prototype.showTutorial(questionWriterName.bold().fontcolor("blue") + " is writing questions. For fun, play “Would You Rather” to pass the time!");
                             hasSeenTutorial[0] = true;
                         }
                         displayElement(document.getElementById("wouldYouRatherView"));
@@ -953,9 +953,15 @@ path, .jtk-endpoint {
                         document.getElementById("roundCountButton" + (i+1)).style.backgroundColor = "Transparent";
                     }
                 }
-                document.getElementById("timeEstimateDiv").innerText = "With " + globalCurrNumPlayers + " players, it will take about " +
-                (3 + parseInt(globalCurrNumPlayers)) + " minutes per round (game length ~= " + ((3 + parseInt(globalCurrNumPlayers)) * roundCountValue) + " minutes). " + 
-                "Note: With fewer rounds, some players will not get to submit questions.";
+                var roundDetailsText = "Rounds: " + roundCountValue + "\n";
+                roundDetailsText += "\nTime: " + ((3 + parseInt(globalCurrNumPlayers)) * roundCountValue) + "min";
+
+                roundDetailsText += "\n\nMeexarps who will write questions:\n";
+                roundDetailsText += listOfPlayerNames[0];
+                for(var i = 1; i < roundCountValue; i++) {
+                    roundDetailsText += "\n" + listOfPlayerNames[i];
+                }
+                document.getElementById("timeEstimateDiv").innerText = roundDetailsText;
             }
 
             App.prototype.sendSetRoundCount = function sendSetRoundCount() {
@@ -1168,7 +1174,7 @@ path, .jtk-endpoint {
                 document.getElementById("votingPage" + votingTutorialPageNum).style.display = "none";                
                 }
                 document.getElementById("votingPage" + ++votingTutorialPageNum).style.display = "flex";
-                if(votingTutorialPageNum == 4) {
+                if(votingTutorialPageNum == 5) {
                     document.getElementById("closeVotingTutorialButton").innerHTML = "Got it!";
                     document.getElementById("showNextVotingTutorial").style.display="none";
                 }
@@ -1683,22 +1689,32 @@ path, .jtk-endpoint {
         <div id="votingPage1" class="tutorialPage noScrollbar">
             <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
             <div style="height:100%;">
-                <img style="height:85%" src="./votingTutorial1.gif" /> 
+                Match the personality to the Meexarp
+                <br>
+                Points are awarded for each correct match
+                <br>
+                Show the Meexarps how friendly they can be!
             </div>
         </div>
         <div id="votingPage2" class="tutorialPage noScrollbar">
             <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
             <div style="height:100%;">
-                <img style="height:85%" src="./votingTutorial2.gif" /> 
+                <img style="height:85%" src="./votingTutorial1.gif" /> 
             </div>
         </div>
         <div id="votingPage3" class="tutorialPage noScrollbar">
             <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
             <div style="height:100%;">
-                <img style="height:85%" src="./votingTutorial3.gif" /> 
+                <img style="height:85%" src="./votingTutorial2.gif" /> 
             </div>
         </div>
         <div id="votingPage4" class="tutorialPage noScrollbar">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div style="height:100%;">
+                <img style="height:85%" src="./votingTutorial3.gif" /> 
+            </div>
+        </div>
+        <div id="votingPage5" class="tutorialPage noScrollbar">
             <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
             <div style="height:100%;">
                 <img style="height:85%" src="./votingTutorial4.gif" /> 
@@ -1743,9 +1759,7 @@ path, .jtk-endpoint {
             <div style = "font-size: 26px; display: flex; align-items: center; justify-content:center; width:85%; height:100%;" id="startGameScreenViewUsername"> Welcome, [Username]</div>
         </div>
         
-        While you’re waiting to start the game,
-feel free to submit some “Would You Rather Questions”
-that will be used later in the game.
+        Feel free to write your own “Would You Rather” questions while you wait!
         <br>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
             <div style="display:flex;justify-content:center;width:100%;">
@@ -1811,11 +1825,11 @@ that will be used later in the game.
         <br>
     </div>
     <div class="view" id="waitingView" style="display:none">
-        Submitted, now hang on tight for the next action
+        Waiting… 
         <div id="waitingFor"></div>
     </div>
-    <div class="view" id="selectRoundCountView" style="display:none; align-self:center;">
-        Select the number of rounds you'd like to play.
+    <div class="view" id="selectRoundCountView" style="display:none; align-self:flex-start;padding-top:35%;">
+        Select the number of rounds. One Meexarp writes questions each round.
         <br>
         <!--
         <input type="range" id="roundCountInputField" min="1" max="6" oninput="roundCountDisplayField.value = roundCountInputField.value">
@@ -1832,7 +1846,7 @@ that will be used later in the game.
         <br>
         <div class="pseudo_button" onmousedown="window.app.sendSetRoundCount()" style="margin:5px">Start Game</div>
         <br>
-        <div id="timeEstimateDiv"></div>
+        <div id="timeEstimateDiv" style="padding-top:15px;"></div>
     </div>
     <div class="view" id="wouldYouRatherView" style="display:none">
         <div class="franklinBanner">
