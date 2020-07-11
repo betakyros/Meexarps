@@ -378,7 +378,7 @@ path, .jtk-endpoint {
         function resizeElement(e) {
             if(e.clientHeight > window.innerHeight) {
                 var scaleFactor = window.innerHeight/e.clientHeight;
-                e.style.transform = "scale(" + scaleFactor + ")";
+                e.style.transform = "scale(1, " + scaleFactor + ")";
             } else {
                 e.style.transform = "scale(1)";
             }
