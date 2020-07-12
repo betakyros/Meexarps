@@ -580,7 +580,6 @@ path, .jtk-endpoint {
                     //document.getElementById("roundCountInputField").value = payload.data;
                     //document.getElementById("roundCountDisplayField").value = payload.data;
                     document.getElementById("selectRoundCountView").style.display = "block";
-                    console.log(payload.data);
                     listOfPlayerNames = payload.data;
                     App.prototype.clickRoundButton(payload.data.length);
                 }
@@ -962,7 +961,18 @@ path, .jtk-endpoint {
                     roundDetailsText += "\n" + listOfPlayerNames[i];
                 }
                 document.getElementById("timeEstimateDiv").innerText = roundDetailsText;
+                App.prototype.sendHoverRoundCount(roundDetailsText);
             }
+            
+
+            App.prototype.sendHoverRoundCount = function sendHoverRoundCount(roundDetailsText) {
+				var message = {
+					'action': "sendHoverRoundCount",
+					'info': roundDetailsText
+				};
+
+				me.air_console.message(AirConsole.SCREEN, message);
+			}
 
             App.prototype.sendSetRoundCount = function sendSetRoundCount() {
 				var message = {

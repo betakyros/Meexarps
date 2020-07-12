@@ -457,9 +457,11 @@ public class main : MonoBehaviour
         else if ("sendStartGame".Equals(action))
         {
             //gameState.numRoundsPerGame = data["info"]["roundCount"].ToObject<int>();
-            //GameObject.Find("WelcomeScreenPanel").SetActive(false);
+            GameObject.Find("WelcomeScreenPanel").SetActive(false);
 
-            //selectRoundNumberPanel.SetActive(true);
+            selectRoundNumberPanel.SetActive(true);
+            selectRoundNumberPanel.GetComponentsInChildren<Text>()[0].text = "The Head Researcher (" + 
+                gameState.GetPlayerByPlayerNumber(0).nickname + ") is selecting a game length.";
             //selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
             //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
@@ -471,12 +473,20 @@ public class main : MonoBehaviour
             introAudioSource.Stop();
             mainLoopAudioSource.Play();
             StartCoroutine(ShowIntroInstrucitons(2));
+
             */
+            //Stop the loading screen tips
+            CancelInvoke();
+        }
+        else if ("sendHoverRoundCount".Equals(action))
+        {
+            playSound = false;
+            string roundDetails = data["info"].ToObject<string>();
+
+            selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text = roundDetails;
         }
         else if ("sendSetRoundCount".Equals(action))
         {
-            //Stop the loading screen tips
-            CancelInvoke();
             gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
             gameState.numRoundsPerGame = data["info"].ToObject<int>();
             ExitWelcomeScreen();

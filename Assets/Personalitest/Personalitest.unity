@@ -704,7 +704,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 111022196}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 796a88db21470e94ab00672f6f6e563f, type: 3}
   m_Name: 
@@ -736,13 +736,13 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 56
+    m_Font: {fileID: 12800000, guid: ba5b723c1f98ab64c8a20f0f1a76b417, type: 3}
+    m_FontSize: 40
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 30
-    m_MaxSize: 56
-    m_Alignment: 4
+    m_MinSize: 4
+    m_MaxSize: 40
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -6223,7 +6223,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 618454751}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 796a88db21470e94ab00672f6f6e563f, type: 3}
   m_Name: 
@@ -6255,19 +6255,19 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 56
+    m_Font: {fileID: 12800000, guid: ba5b723c1f98ab64c8a20f0f1a76b417, type: 3}
+    m_FontSize: 50
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 5
     m_MaxSize: 64
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 1
+    m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Select Game Length
+  m_Text: The head researcher (Player 1) is selecting a game length
 --- !u!222 &618454755
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12088,7 +12088,7 @@ MonoBehaviour:
   splashScreenPanel: {fileID: 412793487}
   storyPanel: {fileID: 1209018781}
   welcomeScreenPanel: {fileID: 723552100}
-  selectRoundNumberPanel: {fileID: 723552100}
+  selectRoundNumberPanel: {fileID: 1955318903}
   wouldYouRatherPanel: {fileID: 1308024638}
   answerQuestionsPanel: {fileID: 1131071409}
   votingPanel: {fileID: 616273630}
@@ -12103,8 +12103,8 @@ MonoBehaviour:
   - {fileID: 144084197}
   - {fileID: 144084195}
   instructionVideo: {fileID: 520409752}
-  introInstructionVideo: {fileID: 1166608326}
-  introVp: {fileID: 1699640261}
+  introInstructionVideo: {fileID: 1723977643}
+  introVp: {fileID: 1372506430}
   vp: {fileID: 1668992560}
   blips:
   - {fileID: 8300000, guid: 4ab1347e596bd184f9ace99721c6b6c1, type: 3}
@@ -14606,7 +14606,7 @@ GameObject:
   - component: {fileID: 1372506429}
   - component: {fileID: 1372506430}
   m_Layer: 5
-  m_Name: Video Player
+  m_Name: Intro Video Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17428,7 +17428,7 @@ GameObject:
   - component: {fileID: 1723977644}
   - component: {fileID: 1723977643}
   m_Layer: 5
-  m_Name: InstructionImage
+  m_Name: Intro InstructionImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19841,7 +19841,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -20637,7 +20637,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2057048144}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 796a88db21470e94ab00672f6f6e563f, type: 3}
   m_Name: 
