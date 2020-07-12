@@ -461,8 +461,8 @@ public class main : MonoBehaviour
             GameObject.Find("WelcomeScreenPanel").SetActive(false);
 
             selectRoundNumberPanel.SetActive(true);
-            selectRoundNumberPanel.GetComponentsInChildren<Text>()[0].text = "The Head Researcher (" + 
-                gameState.GetPlayerByPlayerNumber(0).nickname + ") is selecting a game length.";
+            selectRoundNumberPanel.GetComponentsInChildren<Text>()[0].text = "The Head Researcher (<color=blue>" + 
+                gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.";
             //selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
             //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
