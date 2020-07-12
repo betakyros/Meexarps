@@ -43,6 +43,7 @@ public class main : MonoBehaviour
     //should make a different sound per person
     public AudioClip[] blips;
     public Animator[] animators;
+    public GameObject roundCounter;
 
     private int currentCategoryIndex;
     private int selectedCategory;
@@ -733,7 +734,6 @@ public class main : MonoBehaviour
     {
         //Stop the would you rathers
         CancelInvoke();
-
         wouldYouRatherPanel.SetActive(false);
         answerQuestionsPanel.SetActive(true);
 
@@ -1081,6 +1081,10 @@ public class main : MonoBehaviour
         //if starting from previous game
         resultsPanel.SetActive(false);
         wouldYouRatherPanel.SetActive(true);
+
+        //also sets to true
+        gameState.updateRoundCounter(roundCounter);
+        moveRoundCounter(false);
 
         //display only the active players without the current question writer
         int playerIconOffset = 14;
@@ -1738,6 +1742,7 @@ public class main : MonoBehaviour
         }
         votingPanel.SetActive(false);
         resultsPanel.SetActive(true);
+        moveRoundCounter(true);
         //SendWaitScreenToEveryone();
         //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendPersonalRoundResults", new string[] { " " })));
         gameState.phoneViewGameState = PhoneViewGameState.SendPersonalRoundResultsScreen;
@@ -2116,8 +2121,25 @@ public class main : MonoBehaviour
         
     }
 
+    private void moveRoundCounter(bool moveUp)
+    {
+        RectTransform roundCounterTransform = roundCounter.GetComponent<RectTransform>();
+        Vector2 origAnchorMin = roundCounterTransform.anchorMin;
+        Vector2 origAnchorMax = roundCounterTransform.anchorMax;
+        if (moveUp)
+        {
+            roundCounterTransform.anchorMin = new Vector2(origAnchorMin.x, .75f);
+            roundCounterTransform.anchorMax = new Vector2(origAnchorMax.x, 1f);
+        } else
+        {
+            roundCounterTransform.anchorMin = new Vector2(origAnchorMin.x, .65f);
+            roundCounterTransform.anchorMax = new Vector2(origAnchorMax.x, .9f);
+        }
+    }
+
     public void SendEndScreen2()
     {
+        roundCounter.SetActive(false);
         resultsPanel.SetActive(false);
         endScreenPanel.SetActive(true);
         foreach (Player p in gameState.players.Values)
@@ -2820,7 +2842,12 @@ class GameState
         return sb.ToString();
     }
 
-
+    public void updateRoundCounter(GameObject roundCounter)
+    {
+        roundCounter.GetComponentsInChildren<Text>()[1].text = (GetCurrentRoundNumber() + 1) + 
+            "<size=15> of " + numRoundsPerGame + "</size>";
+        roundCounter.SetActive(true);
+    }
 }
 
 enum PhoneViewGameState
