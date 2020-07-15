@@ -12138,7 +12138,7 @@ MonoBehaviour:
   welcomeScreenAudioSources:
   - {fileID: 144084198}
   - {fileID: 144084197}
-  - {fileID: 144084198}
+  - {fileID: 144084195}
   thinkingAudioSources:
   - {fileID: 1417180678}
   - {fileID: 1417180677}
