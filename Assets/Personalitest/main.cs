@@ -34,7 +34,8 @@ public class main : MonoBehaviour
     public AudioSource mainLoopAudioSource;
     public AudioSource blipAudioSource;
     public AudioSource[] welcomeScreenAudioSources;
-    private float onVolume = .04f;
+    public AudioSource[] thinkingAudioSources;
+    private float onVolume = .06f;
     private float offVolume = 0f;
     public RawImage instructionVideo;
     public RawImage introInstructionVideo;
@@ -772,7 +773,7 @@ public class main : MonoBehaviour
     {
         StopAllLevels(welcomeScreenAudioSources);
         //introAudioSource.Stop();
-        mainLoopAudioSource.Play();
+        StartAllLevels(thinkingAudioSources);
         StartCoroutine(ShowIntroInstrucitons(2));
     }
 
@@ -1073,6 +1074,7 @@ public class main : MonoBehaviour
     //startRound sends one person a SendRetrieveQuestions message and sends the others would you rathers until the questions are complete
     public void StartRound()
     {
+        SetVolumeForLevel(thinkingAudioSources, 1);
         //reset the "Answer Set #" counter
         anonymousPlayerNumberCount = 0;
         anonymousPlayerNumbers.Shuffle(gameState.GetNumberOfPlayers());
@@ -1691,6 +1693,7 @@ public class main : MonoBehaviour
     {
         Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
         List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+        SetVolumeForLevel(thinkingAudioSources, 2);
 
         //everyone should cheer
         foreach (Player p in gameState.players.Values)
@@ -1722,7 +1725,8 @@ public class main : MonoBehaviour
         //todo remove parameter
     public IEnumerator<WaitForSeconds> CalculateVoting(bool shouldWaitForAudience)
     {
-        if(shouldWaitForAudience)
+        //SetVolumeForLevel(thinkingAudioSources, 2);
+        if (shouldWaitForAudience)
         {
             yield return new WaitForSeconds(10);
         }
