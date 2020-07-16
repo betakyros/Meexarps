@@ -2336,7 +2336,7 @@ public class main : MonoBehaviour
     {   
         if(!options["anonymousNames"])
         {
-            return "Answer Set " + anonymousPlayerNumbers[anonymousPlayerNumberCount++]; 
+            return "Personality " + anonymousPlayerNumbers[anonymousPlayerNumberCount++]; 
         }
 
         return anonymousNames[(anonymousNameCounter++)%anonymousNames.Length];
