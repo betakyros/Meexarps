@@ -1498,7 +1498,7 @@ path, .jtk-endpoint {
       }
 
       .franklinBanner {
-        /*height: 9vh;*/
+        height: 9vh;
         padding: 15px 0;
         width:120%; 
         margin-left:-10%;
@@ -1577,7 +1577,7 @@ path, .jtk-endpoint {
         <br>
         Select your Meexarp
         <br>
-        <div class="franklinBanner" style="position: inherit; margin-top: 8px; margin-bottom: 8px; padding: 0;">
+        <div class="franklinBanner" style="position: inherit; margin-top: 8px; margin-bottom: 8px; padding: 0; height: 15vh;">
             <div style = "display:flex; justify-content:space-evenly;  width:80%; height:100%;" >
                 <img id="alienButton0" class="alienButton" onmousedown="window.app.clickAlienButton(0)">
                 <img id="alienButton1" class="alienButton" onmousedown="window.app.clickAlienButton(1)">
@@ -1858,7 +1858,7 @@ path, .jtk-endpoint {
         <div id="waitingForStartGame"></div>
         <br>
     </div>
-    <div class="view" id="waitingView" style="display:none">
+    <div class="view" id="waitingView" style="align-self:flex-start;padding-top:50%;display:none">
         Waiting… 
         <div id="waitingFor"></div>
     </div>
@@ -1882,14 +1882,14 @@ path, .jtk-endpoint {
         <br>
         <div id="timeEstimateDiv" style="padding-top:15px;"></div>
     </div>
-    <div class="view" id="wouldYouRatherView" style="display:none">
+    <div class="view" id="wouldYouRatherView" style="display:none;align-self:flex-start;padding-top:52px;">
         <div class="franklinBanner">
             <div style="width:85%;">Pick a side for the "Would you rather"</div>
         </div>
         <br>
         <br>
         <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:20%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
+        <img style="height:20vh;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
         <br>
         <br>
         <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(0)">Left</div>
@@ -1995,11 +1995,11 @@ path, .jtk-endpoint {
         <p>
         <div class="pseudo_button" onmousedown="window.app.sendDecidedQuestions()">Send out the questions!</div>
     </div>
-    <div class="view" id="skipIntroView" style="display:none;">
+    <div class="view" id="skipIntroView" style="height:unset;padding-top:50%; align-self:flex-start;display:none;">
         <p>
         <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Intro</div>
     </div>
-    <div class="view" id="skipInstructionsView" style="display:none;">
+    <div class="view" id="skipInstructionsView" style="height:unset;padding-top:50%; align-self:flex-start;display:none;">
         Watch the instructions on the screen or press this button to skip the video
         <p>
         <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Instructions</div>
@@ -2141,8 +2141,8 @@ path, .jtk-endpoint {
     <div class="view" id="roundResultsView" style="width:100%; height:calc(100% - 45px);display:none; padding-top: 52px;align-self:flex-start;" >
         
         <div style="display:flex; flex-direction:row;justify-content:space-evenly; padding-bottom: 20px;height:9%; width:140%; margin-left: -15%">
-            <div style= "width:45%;height:100%;position:inherit;" class="franklinBanner">Alien</div>
-            <div style= "width:45%;height:100%;position:inherit;" class="franklinBanner">Your guess</div>
+            <div style= "width:45%;height:3vh;position:inherit;" class="franklinBanner">Alien</div>
+            <div style= "width:45%;height:3vh;position:inherit;" class="franklinBanner">Your guess</div>
         </div>
         <div id="resultsContainer">
         </div>

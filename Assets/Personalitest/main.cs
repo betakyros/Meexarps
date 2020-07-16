@@ -2023,7 +2023,7 @@ public class main : MonoBehaviour
             cz.Setup(zoomInTime, totalWaitTime, true, true, false, false, true);
 
             rightAndWrongPanelTitle.text = "<b><size=" + (increasedFontSize + 3) + ">" + anonymousPlayerName +
-                " is <size=" + (increasedFontSize + 8) + ">???</size>\n\n" + " </size></b>";
+                " is <size=" + (increasedFontSize + 3) + ">???</size>\n\n" + " </size></b>";
 
             rightAndWrongPanelAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(zoomInTime);
@@ -2033,7 +2033,7 @@ public class main : MonoBehaviour
                 yield return new WaitForSeconds(waitForEachAnswer);
                 string answer = answers.text[j];
 
-                myText.text += "<color=grey><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<b>" + answer + "</b>";
+                myText.text += "<color=grey>" + gameState.GetCurrentRound().questions[j] + "</color>\n<b>" + answer + "</b>";
                 if (j < answers.text.Length - 1)
                 {
                     myText.text += "<size=25>\n\n</size>";
@@ -2044,7 +2044,7 @@ public class main : MonoBehaviour
             //titleAndGridContainerAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(waitForContextSeconds);
 
-            string tileTitle = anonymousPlayerName + " is <color=blue><size=" + (increasedFontSize + 8) + ">" + targetPlayerName + "</size></color>\n\n";
+            string tileTitle = anonymousPlayerName + " is <color=blue><size=" + (increasedFontSize + 3) + ">" + targetPlayerName + "</size></color>\n\n";
             //myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
             rightAndWrongPanelTitle.text = "<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + " </size></b>";
             yield return new WaitForSeconds(waitForContextSeconds);
