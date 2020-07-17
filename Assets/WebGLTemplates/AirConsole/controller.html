@@ -653,11 +653,15 @@ path, .jtk-endpoint {
                     }, 1000) ;
                     */
                     displayElement(document.getElementById("submitAnswerView"));
-                } else if(myAction === "sendVoting") {
+                } else if(myAction === "sendVotingTutorialScreen") {
+                    hideAllViews();
+                    document.getElementById("waitingView").style.display = "block";
+
                     if(!hasSeenTutorial[1]) {
                         App.prototype.showNextVotingTutorial();
                         hasSeenTutorial[1] = true;
                     }
+                } else if(myAction === "sendVoting") {
                         //reset jsplumb
                         window.instance.deleteEveryConnection();
                         //hide all inner children
@@ -1080,25 +1084,30 @@ path, .jtk-endpoint {
 				var answerText2 = document.getElementById('textfield2').innerText;
 				var answerText3 = document.getElementById('textfield3').innerText;
                 */
-                var answerText1 = App.prototype.getKeyboardValue("textfield1");
-                var answerText2 = App.prototype.getKeyboardValue("textfield2");
-                var answerText3 = App.prototype.getKeyboardValue("textfield3");
-				var message = {
-					'action': "sendAnswers",
-					'info': {
-                        answerText1,
-                        answerText2,
-                        answerText3
-                    }
-				};
-				me.air_console.message(AirConsole.SCREEN, message);
-                hideAllViews();
-                document.getElementById("waitingView").style.display = "block";
-                timeElapsed = 0;
-                /*
-                document.getElementById("answerQuestionsTimer").innerText = 0;
-                clearInterval(answerQuestionsTimer);
-                */
+                if(!hasSeenTutorial[1]) {
+                    App.prototype.showNextVotingTutorial();
+                    hasSeenTutorial[1] = true;
+                } else {
+                    var answerText1 = App.prototype.getKeyboardValue("textfield1");
+                    var answerText2 = App.prototype.getKeyboardValue("textfield2");
+                    var answerText3 = App.prototype.getKeyboardValue("textfield3");
+				    var message = {
+					    'action': "sendAnswers",
+					    'info': {
+                            answerText1,
+                            answerText2,
+                            answerText3
+                        }
+				    };
+				    me.air_console.message(AirConsole.SCREEN, message);
+                    hideAllViews();
+                    document.getElementById("waitingView").style.display = "block";
+                    timeElapsed = 0;
+                    /*
+                    document.getElementById("answerQuestionsTimer").innerText = 0;
+                    clearInterval(answerQuestionsTimer);
+                    */                
+                }
 			}
             
 			App.prototype.sendSkipInstructions = function sendSkipInstructions() {
@@ -1191,6 +1200,7 @@ path, .jtk-endpoint {
 			}
             App.prototype.hideVotingTutorial = function hideVotingTutorial() {
                 document.getElementById("votingTutorialView").style.display = "none";
+                App.prototype.sendAnswer();
 			}            
             
             App.prototype.showTutorial = function showTutorial(instructionText) {

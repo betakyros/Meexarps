@@ -577,32 +577,34 @@ public class main : MonoBehaviour
         }
         else if ("sendAnswers".Equals(action))
         {
-            List<string> myAnswers = new List<string>();
-            foreach (JProperty property in ((JObject)(data["info"])).Properties())
+            if (!isAudienceMember(from))
             {
-                myAnswers.Add(property.Value.ToString());
+                List<string> myAnswers = new List<string>();
+                foreach (JProperty property in ((JObject)(data["info"])).Properties())
+                {
+                    myAnswers.Add(property.Value.ToString());
+                }
+                gameState.GetCurrentRound().answers.Add(
+                    new Answers(myAnswers.ToArray(), gameState.players[from].playerNumber, GenerateAnonymousPlayerName()));
+
+                int tilesOffset = 1;
+                Player currentPlayer = gameState.players[from];
+                /*
+                answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + currentPlayer.playerNumber].text = currentPlayer.nickname + "\n\n<color=green>Has Submitted</color>";
+                */
+                Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
+                List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+
+
+                float newLocalX = (canvas.GetComponent<RectTransform>().rect.width * .6f) /* canvas.scaleFactor*/;
+                movePlayerIcon(playerIconsList[currentPlayer.playerNumber], newLocalX);
+
+                if (HasEveryoneSubmittedAnswers())
+                {
+                    gameState.GetCurrentRound().answers.Sort((a, b) => a.anonymousPlayerName.CompareTo(b.anonymousPlayerName));
+                    StartCoroutine(EndAnswerQuestionsPhase(2));
+                }
             }
-            gameState.GetCurrentRound().answers.Add(
-                new Answers(myAnswers.ToArray(), gameState.players[from].playerNumber, GenerateAnonymousPlayerName()));
-
-            int tilesOffset = 1;
-            Player currentPlayer = gameState.players[from];
-            /*
-            answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + currentPlayer.playerNumber].text = currentPlayer.nickname + "\n\n<color=green>Has Submitted</color>";
-            */
-            Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
-            List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
-
-
-            float newLocalX = (canvas.GetComponent<RectTransform>().rect.width * .6f) /* canvas.scaleFactor*/;
-            movePlayerIcon(playerIconsList[currentPlayer.playerNumber], newLocalX);
-
-            if (HasEveryoneSubmittedAnswers())
-            {
-                gameState.GetCurrentRound().answers.Sort((a,b) => a.anonymousPlayerName.CompareTo(b.anonymousPlayerName));
-                StartCoroutine(EndAnswerQuestionsPhase(2));
-            }
-
         }
         else if ("sendSkipInstructions".Equals(action))
         {
@@ -1006,7 +1008,13 @@ public class main : MonoBehaviour
         if (currentPlayer == null)
         {
             toSend = currentAudience;
-            votesToUse = gameState.GetCurrentRound().audienceVotes[toSend.playerNumber];
+            if(gameState.GetCurrentRound().audienceVotes.ContainsKey(toSend.playerNumber))
+            {
+                votesToUse = gameState.GetCurrentRound().audienceVotes[toSend.playerNumber];
+            } else
+            {
+                return;
+            }
         }
         else
         {
@@ -1350,13 +1358,19 @@ public class main : MonoBehaviour
                 movePlayerIcon(i, 0);
             }
             SendMessageToPlayersAndSendWaitScreenToAudience(new JsonAction("sendQuestions", questionsToSend));
+            foreach(Player audience in gameState.audienceMembers.Values)
+            {
+                AirConsole.instance.Message(audience.deviceId, JsonUtility.ToJson(new JsonAction("sendVotingTutorialScreen", questionsToSend)));
+            }
             gameState.phoneViewGameState = PhoneViewGameState.SendQuestions;
             gameState.tvViewGameState = TvViewGameState.AnswerQuestionsScreen;
-        } else
+        }
+        //reconnect case
+        else
         {
             if (isAudienceMember(playerDeviceId))
             {
-                AirConsole.instance.Message(playerDeviceId, JsonUtility.ToJson(new JsonAction("sendWaitScreen", questionsToSend)));
+                AirConsole.instance.Message(playerDeviceId, JsonUtility.ToJson(new JsonAction("sendVotingTutorialScreen", questionsToSend)));
             }
             else
             {

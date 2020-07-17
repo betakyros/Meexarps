@@ -746,7 +746,7 @@ MonoBehaviour:
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 1
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 'With N players it will take about  O minutes per round. Note: With fewer
     rounds, some players will not get to submit questions.'
@@ -2745,7 +2745,7 @@ PrefabInstance:
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -2760,7 +2760,7 @@ PrefabInstance:
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -30
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -5810,7 +5810,7 @@ PrefabInstance:
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -5825,7 +5825,7 @@ PrefabInstance:
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -30
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -8969,7 +8969,7 @@ PrefabInstance:
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -8984,7 +8984,7 @@ PrefabInstance:
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -30
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -14660,7 +14660,7 @@ PrefabInstance:
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -14675,7 +14675,7 @@ PrefabInstance:
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -30
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -16038,7 +16038,7 @@ PrefabInstance:
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -16053,7 +16053,7 @@ PrefabInstance:
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -30
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -18747,7 +18747,7 @@ PrefabInstance:
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445076673005, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
@@ -18762,7 +18762,7 @@ PrefabInstance:
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -30
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 4102147445482141736, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}

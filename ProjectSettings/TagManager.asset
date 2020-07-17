@@ -11,6 +11,7 @@ TagManager:
   - AudienceScoreCard
   - PercentCorrectAndStatusContainer
   - loadingScreenTips
+  - checkPhoneTutorial
   layers:
   - Default
   - TransparentFX
