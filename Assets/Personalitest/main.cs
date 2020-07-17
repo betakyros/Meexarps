@@ -222,7 +222,7 @@ public class main : MonoBehaviour
             string name = data["info"]["name"].ToString();
             KeyValuePair<int, Player> currentPlayer = gameState.GetPlayerByName(name);
 
-            if (!currentPlayer.Equals(default(KeyValuePair<int, Player>)))
+            if (!(currentPlayer.Value == null))
             {
                 //prevent players from using the same name
                 if (gameState.phoneViewGameState.Equals(PhoneViewGameState.SendStartGameScreen))
@@ -293,7 +293,7 @@ public class main : MonoBehaviour
             // audience
             else {
                 KeyValuePair<int, Player> audiencePlayer = gameState.GetAudienceByName(name);
-                if (!audiencePlayer.Equals(default(KeyValuePair<int, Player>)))
+                if (!(audiencePlayer.Value == null))
                 {
                     //prevent players from using the same name
                     if (gameState.phoneViewGameState.Equals(PhoneViewGameState.SendStartGameScreen))
@@ -916,6 +916,12 @@ public class main : MonoBehaviour
             Player myPlayer = gameState.players[from];
             sendWelcomeScreenInfoDetails(from, myPlayer.alienNumber, myPlayer);
         }
+        if (gameState.audienceMembers.ContainsKey(from))
+        {
+            Player myPlayer = gameState.audienceMembers[from];
+            sendWelcomeScreenInfoDetails(from, myPlayer.alienNumber, myPlayer);
+        }
+
 
         if (isVip)
         {
@@ -950,7 +956,10 @@ public class main : MonoBehaviour
                 else
                 {
                     string waitingForPlayerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
-                    AirConsole.instance.Message(from, new JsonAction("sendWouldYouRather", new string[] { waitingForPlayerName, "reconnecting" }));
+                    List<string> payload = new List<string>();
+                    payload.Add(waitingForPlayerName);
+                    payload.Add("true");
+                    AirConsole.instance.Message(from, new JsonAction("sendWouldYouRather", payload.ToArray()));
                 }
                 break;
             case PhoneViewGameState.SendQuestions:

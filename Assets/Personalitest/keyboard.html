@@ -615,7 +615,9 @@ path, .jtk-endpoint {
                     App.prototype.setKeyboardValue(payload.data[0], payload.data[1]);
                 } else if(myAction === "sendWouldYouRather") {
                     var questionWriterName = payload.data[0];
+                    console.log("questionWriterName " + questionWriterName);
                     var isReconnect = payload.data[1];
+                    console.log("isReconnect "  +isReconnect )
                     //if you are currently submiting questions, you don't get to play would you rather
                     if(
                         (
