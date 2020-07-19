@@ -1235,22 +1235,23 @@ path, .jtk-endpoint {
                 me.air_console.message(AirConsole.SCREEN, message);
 			}
             App.prototype.saveOptions = function saveOptions() {
-                const optionsMap = {};
-                optionsMap["nsfwQuestions"] = document.getElementById("NsfwQuestionsCheckbox").checked;
-                optionsMap["anonymousNames"] = document.getElementById("anonymousNameCheckbox").checked;
+                if(isVip) {
+                    const optionsMap = {};
+                    optionsMap["nsfwQuestions"] = document.getElementById("NsfwQuestionsCheckbox").checked;
+                    optionsMap["anonymousNames"] = document.getElementById("anonymousNameCheckbox").checked;
+				    var message = {
+					    'action': "sendSaveOptions",
+					    'info': optionsMap
+				    };
+                    me.air_console.message(AirConsole.SCREEN, message);
+                }
                 var oldUseSystemKeyboard = useSystemKeyboard;
                 useSystemKeyboard = document.getElementById("useSystemKeyboard").checked;
-				var message = {
-					'action': "sendSaveOptions",
-					'info': optionsMap
-				};
-                me.air_console.message(AirConsole.SCREEN, message);
                 if(!oldUseSystemKeyboard && useSystemKeyboard) {
                     unbindAll();
                 } else if(oldUseSystemKeyboard && !useSystemKeyboard) {
                     bindAll();
                 }
-                App.prototype.hideOptions();
 			}
 
             App.prototype.returnToWelcomeScreen = function returnToWelcomeScreen() {
@@ -1575,6 +1576,68 @@ path, .jtk-endpoint {
         .view {
           -ms-overflow-style: none;
         }
+
+        /*Toggles for options*/
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 85px;
+            height: 34px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            width:65px
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+          background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+          box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+          -webkit-transform: translateX(26px);
+          -ms-transform: translateX(26px);
+          transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+          border-radius: 34px;
+        }
+
+        .slider.round:before {
+          border-radius: 50%;
+        }
     </style>
   </head>
   <body id="bodyElement" style="font-family: Autour One; font-size: 14px; background-color:#6CA7FF; text-align: center;overflow-y:scroll;
@@ -1625,18 +1688,34 @@ path, .jtk-endpoint {
     <div class="view optionsView" id="optionsView" style="display:none; z-index:1;padding-top:45px;">
         <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideOptions()" style="z-index:2; height:30px; padding-top:10px;" />
         <div style="position: width:100%;font-size:30px;">Game Options</div>
-        <div id="checkboxes" style="text-align:left; margin: 0 0 0 20px;">
+        <div id="checkboxes" style="text-align:left; margin: 20px 0 0 20px;">
             <div style="display:none;" id="vipOptionsDiv">
-                <input type="checkbox" id="NsfwQuestionsCheckbox">
-                <label for="NsfwQuestionsCheckbox"> Nsfw Questions Enabled</label><br>
-                <input type="checkbox" id="anonymousNameCheckbox"> 
-                <label for="anonymousNameCheckbox"> Anonymous Names Enabled</label><br>
+                <div style="display:flex">
+                    <label class="switch" for="NsfwQuestionsCheckbox" >
+                        <input id="NsfwQuestionsCheckbox" type="checkbox" onchange="window.app.saveOptions()">
+                        <span class="slider round"></span>
+                    </label>
+                    <div style="padding-left:10px;">Nsfw Questions Enabled</div>
+                </div>
                 <br>
-                    <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Move to the next phase (used if you encounter a bug or someone has to leave)</div> <br>
+                <div style="display:flex">
+                    <label class="switch" for="anonymousNameCheckbox" >
+                        <input id="anonymousNameCheckbox" type="checkbox" onchange="window.app.saveOptions()">
+                        <span class="slider round"></span>
+                    </label>
+                    <div style="padding-left:10px;">Anonymous Names Enabled</div>
+                </div>
+                <br>
+                <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Move to the next phase (used if you encounter a bug or someone has to leave)</div> <br>
                 <br>
             </div>
-            <input type="checkbox" id="useSystemKeyboard"> 
-            <label for="useSystemKeyboard"> Use system keyboard (Not Recommended) </label><br>
+            <div style="display:flex">
+                <label class="switch" for="useSystemKeyboard" >
+                    <input id="useSystemKeyboard" type="checkbox" onchange="window.app.saveOptions()">
+                    <span class="slider round"></span>
+                </label>
+                <div style="padding-left:10px;">Use system keyboard (Not Recommended)</div>
+            </div><br>
         </div>
         <br>
         <div class="pseudo_button" onmousedown="window.app.saveOptions()">Save Options!</div> <br>

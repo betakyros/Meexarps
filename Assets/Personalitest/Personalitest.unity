@@ -1750,6 +1750,11 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 0.9372549
       objectReference: {fileID: 0}
+    - target: {fileID: 856118648241819679, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &207802251 stripped
@@ -5201,7 +5206,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 74da2df844971e14aae2a4ca455ec534, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6643,6 +6648,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.b
       value: 0.9372549
+      objectReference: {fileID: 0}
+    - target: {fileID: 856118648241819679, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
@@ -10313,6 +10323,11 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 0.9372549
       objectReference: {fileID: 0}
+    - target: {fileID: 856118648241819679, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &1054070702 stripped
@@ -13554,6 +13569,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.b
       value: 0.9372549
+      objectReference: {fileID: 0}
+    - target: {fileID: 856118648241819679, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
@@ -17110,6 +17130,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: bf1945f479064464fb37ae2daa950390,
         type: 3}
+    - target: {fileID: 856118648241819679, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &1513922699 stripped
@@ -20207,6 +20232,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.b
       value: 0.9372549
+      objectReference: {fileID: 0}
+    - target: {fileID: 856118648241819679, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
