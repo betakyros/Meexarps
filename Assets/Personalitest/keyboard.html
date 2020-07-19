@@ -551,6 +551,12 @@ path, .jtk-endpoint {
                     Array.prototype.forEach.call(myAlienGifs, currentElement => {
                         currentElement.src = App.prototype.getPlayerGif(selectedAlien);
                     });
+                    if(selectedAlien == 6) {
+                        var wouldYouRatherAlienGif = document.getElementById("wouldYouRatherAlienGif");
+                        wouldYouRatherAlienGif.style.background = "white";
+                        wouldYouRatherAlienGif.style.borderRadius = "50%";
+                        wouldYouRatherAlienGif.style.padding = "5px";
+                    }
                     document.getElementById("startGameScreenViewUsername").innerText = "Welcome, " + playerName + "!";
                     if(playerNumber >= 10) {
                         isAudience = true;
@@ -1980,7 +1986,7 @@ path, .jtk-endpoint {
         <br>
         <br>
         <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:20vh;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
+        <img style="height:20vh;" id="wouldYouRatherAlienGif" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
         <br>
         <br>
         <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(0)">Left</div>
