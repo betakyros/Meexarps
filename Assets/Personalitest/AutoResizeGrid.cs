@@ -9,6 +9,7 @@ public class AutoResizeGrid : MonoBehaviour
     public int padding;
     public bool isWouldYouRather;
     public bool isAnswerQuestionsGrid;
+    public bool isWelcomeScreen;
     
 
     // Start is called before the first frame update
@@ -27,40 +28,50 @@ public class AutoResizeGrid : MonoBehaviour
         int numCols, numRows;
 
         int numPlayers = gameObject.GetComponent<main>().getNumPlayers() - (isWouldYouRather ? 1 : 0);
-        int numGridCells = numPlayers == 0 ? 6 : numPlayers;
+        int numGridCells = (numPlayers == 0 || isWelcomeScreen) ? 6 : numPlayers;
 
-        switch (numPlayers)
+
+        //for the welcome screen keep all boxes
+        if (isWelcomeScreen)
         {
-            case 1:
-                numCols = 1;
-                numRows = 1;
-                break;
-            case 2:
-                numCols = 2;
-                numRows = 1;
-                break;
-            case 3:
-                numCols = 2;
-                numRows = 2;
-                break;
-            case 4:
-                numCols = 2;
-                numRows = 2;
-                break;
-            case 5:
-                numCols = 3;
-                numRows = 2;
-                break;
-            case 6:
-                numCols = 3;
-                numRows = 2;
-                break;
-            default:
-                numCols = 3;
-                numRows = 2;
-                break;
+            numCols = 3;
+            numRows = 2;
         }
-
+        else
+        {
+            switch (numPlayers)
+            {
+                case 1:
+                    numCols = 1;
+                    numRows = 1;
+                    break;
+                case 2:
+                    numCols = 2;
+                    numRows = 1;
+                    break;
+                case 3:
+                    numCols = 2;
+                    numRows = 2;
+                    break;
+                case 4:
+                    numCols = 2;
+                    numRows = 2;
+                    break;
+                case 5:
+                    numCols = 3;
+                    numRows = 2;
+                    break;
+                case 6:
+                    numCols = 3;
+                    numRows = 2;
+                    break;
+                default:
+                    numCols = 3;
+                    numRows = 2;
+                    break;
+            }
+        }
+        //transpose wouldyourather grid
         if(isWouldYouRather)
         {
             int temp = numCols;
@@ -73,7 +84,8 @@ public class AutoResizeGrid : MonoBehaviour
         Vector2 newSize = new Vector2(width / numCols, height / numRows);
         container.GetComponent<GridLayoutGroup>().cellSize = newSize;
         bool isWouldYouRatherOrAnswerQuestions = isWouldYouRather || isAnswerQuestionsGrid;
-        Image[] images = container.GetComponentsInChildren<Image>(!isWouldYouRatherOrAnswerQuestions);
+        Image[] images = container.GetComponentsInChildren<Image>(!isWouldYouRather);
+        //Image[] images = container.GetComponentsInChildren<Image>(!isWouldYouRatherOrAnswerQuestions);
         if(isWouldYouRatherOrAnswerQuestions)
         {
             images = main.getPlayerIconTags(images, "WouldYouRatherPlayerIcon").ToArray();
@@ -94,7 +106,8 @@ public class AutoResizeGrid : MonoBehaviour
                 } else if (nthGridElement< numGridCells)
                 {
                     images[nthChild].gameObject.SetActive(true);
-                } else if(!isWouldYouRatherOrAnswerQuestions)
+                //} else if(!isWouldYouRatherOrAnswerQuestions)
+                } else if (!isWouldYouRather)
                 {
                     images[nthChild].gameObject.SetActive(false);
                 }
@@ -112,8 +125,11 @@ public class AutoResizeGrid : MonoBehaviour
                     float newXPos = numCols == 2 ? (-.5f + i) * newSize.x : (i - 1f) * newSize.x;
                     float newYPos = numRows == 1 ? 0 : (.5f - j) * newSize.y;
                     Vector3 originalPos = (container.transform.position + canvas.scaleFactor * new Vector3(newXPos, newYPos, 0));
-                    images[nthChild].GetComponent<GentleShake>()
-                            .SetOriginalPosition(originalPos);
+                    GentleShake gentleShake = images[nthChild].GetComponent<GentleShake>();
+                    if (gentleShake != null)
+                    {
+                        gentleShake.SetOriginalPosition(originalPos);
+                    }
                 }
             }
         }

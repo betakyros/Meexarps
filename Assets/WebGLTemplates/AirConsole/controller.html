@@ -120,11 +120,13 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 */
 .sourceWindowLabel {
     white-space: nowrap;
+    color: white;
 }
 
 .targetWindowLabel {
     white-space: nowrap;
     direction: rtl;
+    color: white;
 }
 
 .source-target-demo .window {
@@ -250,8 +252,8 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 
 .roundResultsImage {
-    height: 40px;
-    width: 40px;
+    height: 30px;
+    width: 30px;
     top: 0;
     left: 0;
 }
@@ -1478,7 +1480,7 @@ path, .jtk-endpoint {
         background-color: White;
         border: 2px;
         border-color: #4254F3;
-        border-style: solid;
+        /*border-style: solid;*/
       }
 
       .optionsButton {
@@ -1578,7 +1580,7 @@ path, .jtk-endpoint {
   <body id="bodyElement" style="font-family: Autour One; font-size: 14px; background-color:#6CA7FF; text-align: center;overflow-y:scroll;
   display:flex; justify-content:center;align-items:center;margin:0;" onload="init()">
         <div id="optionsButton" class="optionsButton">
-            <img src="./icon_gear.png" onmousedown="window.app.viewOptions()" style="height:50px" />
+            <img src="./icon_gear.png" onmousedown="window.app.viewOptions()" style="height:30px; padding-top:10px;" />
         </div>
     <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
     <div class="view" id="welcomeScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
@@ -1621,7 +1623,7 @@ path, .jtk-endpoint {
 
     </div> 
     <div class="view optionsView" id="optionsView" style="display:none; z-index:1;padding-top:45px;">
-        <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideOptions()" style="z-index:2; height:50px" />
+        <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideOptions()" style="z-index:2; height:30px; padding-top:10px;" />
         <div style="position: width:100%;font-size:30px;">Game Options</div>
         <div id="checkboxes" style="text-align:left; margin: 0 0 0 20px;">
             <div style="display:none;" id="vipOptionsDiv">
@@ -1733,7 +1735,7 @@ path, .jtk-endpoint {
     </div>
     <div id="votingTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
         <div id="votingPage1" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <div style="top: 13px;width:100%;font-size:30px;">The Voting Phase is coming up next!</div>
             <div style="height:100%;">
                 Match the personality to the Meexarp
                 <br>

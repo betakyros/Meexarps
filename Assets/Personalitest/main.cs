@@ -323,7 +323,7 @@ public class main : MonoBehaviour
 
                     if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
                     {
-                        GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<Text>().text = "Audience: " + gameState.audienceMembers.Count;
+                        GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<Text>().text = "<color=white>Audience: " + gameState.audienceMembers.Count + "</color>";
                         AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                         sendWelcomeScreenInfo(from, -1);
                     } else
@@ -460,10 +460,9 @@ public class main : MonoBehaviour
         {
             //gameState.numRoundsPerGame = data["info"]["roundCount"].ToObject<int>();
             GameObject.Find("WelcomeScreenPanel").SetActive(false);
-
             selectRoundNumberPanel.SetActive(true);
-            selectRoundNumberPanel.GetComponentsInChildren<Text>()[0].text = "The Head Researcher (<color=blue>" + 
-                gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.";
+            selectRoundNumberPanel.GetComponentsInChildren<Text>()[0].text = "<color=white>The Head Researcher (<color=#325EFB>" + 
+                gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.</color>";
             //selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
             //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
@@ -596,7 +595,7 @@ public class main : MonoBehaviour
                 List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
 
 
-                float newLocalX = (canvas.GetComponent<RectTransform>().rect.width * .6f) /* canvas.scaleFactor*/;
+                float newLocalX = (canvas.GetComponent<RectTransform>().rect.width * .5f) /* canvas.scaleFactor*/;
                 movePlayerIcon(playerIconsList[currentPlayer.playerNumber], newLocalX);
 
                 if (HasEveryoneSubmittedAnswers())
@@ -782,10 +781,11 @@ public class main : MonoBehaviour
     private void SetAudienceWouldYouRatherCounters(int leftAudience, int rightAudience)
     {
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
-        wouldYouRatherTexts[18].gameObject.SetActive(true);
-        wouldYouRatherTexts[19].gameObject.SetActive(true);
-        wouldYouRatherTexts[18].text = "" + leftAudience;
-        wouldYouRatherTexts[19].text = "" + rightAudience;
+        List<Text> wouldYouRatherAudienceTags = getTextTags(wouldYouRatherTexts, "audienceText");
+        wouldYouRatherAudienceTags[0].transform.parent.gameObject.SetActive(true);
+        wouldYouRatherAudienceTags[1].transform.parent.gameObject.SetActive(true);
+        wouldYouRatherAudienceTags[0].text = "" + leftAudience;
+        wouldYouRatherAudienceTags[1].text = "" + rightAudience;
     }
 
     private void sendWelcomeScreenInfo(int from, int alienNumber)
@@ -1480,9 +1480,10 @@ public class main : MonoBehaviour
             Answers answers = answersList[i];
             anonymousPlayerNames.Add(answers.anonymousPlayerName);
             int answerPanelOffset = 2;
-            Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + i];
+            Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + 2*i];
             //todo set the text size to the same size as the panel
-            myText.text = "\n" + answers.anonymousPlayerName + "\n\n";
+            myText.text = answers.anonymousPlayerName;
+            myText.resizeTextMaxSize = 25;
         }
         votingPanel.GetComponentsInChildren<Text>()[1].text = gameState.GetCurrentRound().PrintQuestions();
         
@@ -1563,17 +1564,23 @@ public class main : MonoBehaviour
         {
 
             int answerPanelOffset = 2;
-            Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset];
+            //+1 because the offset is the title
+            Text myTitle = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset];
+            Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset+1];
 
             //Camera zoom will make the current panel the last element, so we don't need to add i
             CameraZoom cz = votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.AddComponent<CameraZoom>();
             cz.Setup(1f, 12f, true, true, false);
+
+            //temporarily increase the max size
+            myTitle.resizeTextMaxSize = 60;
+            myText.resizeTextMaxSize = 40;
+
             List<Answers> answersList = gameState.GetCurrentRound().answers;
             Answers answers = answersList[i];
 
             //create the short text to replace the text with questions on minimize
             StringBuilder shortTextSb = new StringBuilder();
-            shortTextSb.Append(myText.text);
 
             //wait one second after pause before displaying anything
             yield return new WaitForSeconds(2);
@@ -1582,17 +1589,21 @@ public class main : MonoBehaviour
             {
                 string answer = answers.text[j];
 
-                myText.text += "<color=grey><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<size=5>\n</size><b>" + answer + "</b>";
+                myText.text += "<color=black><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<size=4>\n</size><b>" + answer + "</b>";
                 shortTextSb.Append(answer);
                 if (j < answers.text.Length - 1 )
                 {
-                    myText.text += "<size=25>\n\n</size>";
-                    shortTextSb.Append("<size=15>\n\n</size>");
+                    myText.text += "<size=8>\n\n</size>";
+                    shortTextSb.Append("<size=6>\n\n</size>");
                 }
                 //wait four seconds between each answer to give it a punch
                 yield return new WaitForSeconds(4);
             }
             myText.text = shortTextSb.ToString();
+
+            //reset the max size
+            myTitle.resizeTextMaxSize = 25;
+            myText.resizeTextMaxSize = 20;
             yield return new WaitForSeconds(2);
             Destroy(cz);
         }
@@ -1781,7 +1792,7 @@ public class main : MonoBehaviour
         {
             Answers answers = answersList[i];
             int resultsPanelOffset = 1;
-            Text myText = resultsPanel.GetComponentsInChildren<Text>()[resultsPanelOffset + i];
+            Text myText = resultsPanel.GetComponentsInChildren<Text>()[resultsPanelOffset + 2*i];
             //todo set the text size to the same size as the panel
             myText.text = answers.anonymousPlayerName;
         }
@@ -1796,7 +1807,6 @@ public class main : MonoBehaviour
         AutoResizeGrid autoResizeGrid = FindObjectsOfType(typeof(AutoResizeGrid))[3] as AutoResizeGrid;
         autoResizeGrid.enabled = false;
 
-        int increasedFontSize = 23;
         List<Answers> answerList = gameState.GetCurrentRound().answers;
         for (int i = 0; i < answerList.Count; i++)
         {
@@ -1830,9 +1840,9 @@ public class main : MonoBehaviour
                         if (currentGuess == targetPlayerName)
                         {
                             namesOfCorrectPeopleForZoomInView.Add("<color=green>" + p.nickname + "</color>");
-                            namesOfCorrectPeople.Add("<b><size=" + increasedFontSize + "><color=green>" + p.nickname + "</color></size></b>");
+                            namesOfCorrectPeople.Add("<b><color=green>" + p.nickname + "</color></b>");
                             p.points++;
-                            playerAnimations.Add(p, MeexarpAction.Cheer);
+                            //playerAnimations.Add(p, MeexarpAction.Cheer);
 
                             //keep track of total score
                             gameState.totalCorrectGuesses++;
@@ -1846,8 +1856,8 @@ public class main : MonoBehaviour
                                 wrongGuessNameToPlayerNames.Add(currentGuess, new List<string>());
                             }
                             wrongGuessNameToPlayerNamesForZoomInView[currentGuess].Add("<color=red>" + p.nickname + "</color>");
-                            wrongGuessNameToPlayerNames[currentGuess].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
-                            playerAnimations.Add(p, MeexarpAction.Sad);
+                            wrongGuessNameToPlayerNames[currentGuess].Add("<b><color=red>" + p.nickname + "</color></b>");
+                            //playerAnimations.Add(p, MeexarpAction.Sad);
                             //keep track of total score
                             gameState.totalWrongGuesses++;
                         }
@@ -1860,7 +1870,7 @@ public class main : MonoBehaviour
                         wrongGuessNameToPlayerNames.Add("none", new List<string>());
                     }
                     wrongGuessNameToPlayerNamesForZoomInView["none"].Add("<color=red>" + p.nickname + "</color>");
-                    wrongGuessNameToPlayerNames["none"].Add("<b><size=" + increasedFontSize + "><color=red>" + p.nickname + "</color></size></b>");
+                    wrongGuessNameToPlayerNames["none"].Add("<b><color=red>" + p.nickname + "</color></b>");
                     playerAnimations.Add(p, MeexarpAction.Sad);
                     //keep track of total score
                     p.numWrong++;
@@ -1907,15 +1917,9 @@ public class main : MonoBehaviour
                 correctVotesStringSb.Append("No one");
                 correctVotesSB.Append("No one");
             }
-            correctVotesSB.Append(" correctly guessed that ");
-            correctVotesSB.Append(anonymousPlayerName);
-            correctVotesSB.Append(" is ");
-            correctVotesSB.Append(targetPlayerName);
+            correctVotesSB.Append(" guessed correctly!");
 
-            correctVotesStringSb.Append(" correctly guessed that ");
-            correctVotesStringSb.Append(anonymousPlayerName);
-            correctVotesStringSb.Append(" is ");
-            correctVotesStringSb.Append(targetPlayerName);
+            correctVotesStringSb.Append(" guessed correctly!");
 
             StringBuilder wrongVotesSb = new StringBuilder();
             StringBuilder wrongVotesForZoomInViewSb = new StringBuilder();
@@ -1932,9 +1936,7 @@ public class main : MonoBehaviour
                     currentSb.Append(" and ");
                 }
                 currentSb.Append(wrongVotes.Value[wrongVotes.Value.Count - 1]);
-                currentSb.Append(" incorrectly guessed that ");
-                currentSb.Append(anonymousPlayerName);
-                currentSb.Append(" is ");
+                currentSb.Append(" incorrectly guessed ");
                 currentSb.Append(wrongVotes.Key);
                 currentSb.Append("\n");
                 currentSb.Append("\n");
@@ -1982,9 +1984,7 @@ public class main : MonoBehaviour
                     currentSb.Append(" and ");
                 }
                 currentSb.Append(wrongVotes.Value[wrongVotes.Value.Count - 1]);
-                currentSb.Append(" incorrectly guessed that ");
-                currentSb.Append(anonymousPlayerName);
-                currentSb.Append(" is ");
+                currentSb.Append(" incorrectly guessed ");
                 currentSb.Append(wrongVotes.Key);
                 wrongVotesLines.Add(currentSb.ToString());
             }
@@ -2017,11 +2017,12 @@ public class main : MonoBehaviour
             //an offset for the the questions tile
             int playerTileOffset = 1;
 
-            Text myText = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset];
+            Text myTitle = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset];
+            Text myQandAs = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset + 1];
 
 
             //display all results panel
-            int resultsPanelOffset = playerTileOffset + 6;
+            int resultsPanelOffset = playerTileOffset + 12;
             Animator titleAndGridContainerAnimator = resultsPanel.GetComponentsInChildren<Animator>()[0];
             Animator rightAndWrongPanelAnimator = resultsPanel.GetComponentsInChildren<Animator>()[1];
             Text rightAndWrongPanelTitle = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset];
@@ -2034,7 +2035,7 @@ public class main : MonoBehaviour
 
             //first, display the questions and answers again
             int playerPanelTileOffset = 2;
-            myText.text = "\n" + anonymousPlayerName + "'s answers\n<size=25>\n</size>";
+            myTitle.text = anonymousPlayerName + "'s answers";
             CameraZoom cz = resultsPanel.GetComponentsInChildren<Image>()[playerPanelTileOffset].gameObject.AddComponent<CameraZoom>();
 
             int zoomInTime = 1;
@@ -2045,8 +2046,8 @@ public class main : MonoBehaviour
             float totalWaitTime = 3 * waitForContextSeconds + 2 * waitForReadSeconds + (3 + wrongVotesCount) * waitForEachAnswer;
             cz.Setup(zoomInTime, totalWaitTime, true, true, false, false, true);
 
-            rightAndWrongPanelTitle.text = "<b><size=" + (increasedFontSize + 3) + ">" + anonymousPlayerName +
-                " is <size=" + (increasedFontSize + 3) + ">???</size>\n\n" + " </size></b>";
+            rightAndWrongPanelTitle.text = "<b>" + anonymousPlayerName +
+                " is ???\n\n" + " </b>";
 
             rightAndWrongPanelAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(zoomInTime);
@@ -2056,10 +2057,10 @@ public class main : MonoBehaviour
                 yield return new WaitForSeconds(waitForEachAnswer);
                 string answer = answers.text[j];
 
-                myText.text += "<color=grey>" + gameState.GetCurrentRound().questions[j] + "</color>\n<b>" + answer + "</b>";
+                myQandAs.text += "<color=black>" + gameState.GetCurrentRound().questions[j] + "</color><size=4>\n\n</size><color=#4A6EEF>" + answer + "</color>";
                 if (j < answers.text.Length - 1)
                 {
-                    myText.text += "<size=25>\n\n</size>";
+                    myQandAs.text += "<size=8>\n\n</size>";
                 }
             }
             yield return new WaitForSeconds(waitForReadSeconds);
@@ -2067,23 +2068,23 @@ public class main : MonoBehaviour
             //titleAndGridContainerAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(waitForContextSeconds);
 
-            string tileTitle = anonymousPlayerName + " is <color=blue><size=" + (increasedFontSize + 3) + ">" + targetPlayerName + "</size></color>\n\n";
+            string tileTitle = anonymousPlayerName + " is <color=blue>" + targetPlayerName + "</color>";
             //myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
-            rightAndWrongPanelTitle.text = "<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + " </size></b>";
+            rightAndWrongPanelTitle.text = "<b>" + tileTitle + "</b>";
             yield return new WaitForSeconds(waitForContextSeconds);
 
             foreach (string s in wrongVotesLines)
             {
                 //myText.text += "<size=15>\n\n</size>" + s;
-                rightAndWrongPanelRightAndWrong.text += "<size=15>\n\n</size>" + s;
+                rightAndWrongPanelRightAndWrong.text += "<size=7>\n\n</size>" + s;
                 yield return new WaitForSeconds(waitForEachAnswer);
             }
             //myText.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
-            rightAndWrongPanelRightAndWrong.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
+            rightAndWrongPanelRightAndWrong.text += "<size=7>\n\n</size>" + correctVotesStringSb.ToString();
             if(numberOfCorrectAudienceGuesses > 0)
             {
                // myText.text += "<size=15>\n\n</size><color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
-                rightAndWrongPanelAudienceRightAndWrong.text += "<size=15>\n\n</size><color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
+                rightAndWrongPanelAudienceRightAndWrong.text += "<color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
                 gameState.totalAudienceCorrectGuesses += numberOfCorrectAudienceGuesses;
             }
             if(numberOfWrongAudienceGuesses > 0)
@@ -2105,9 +2106,13 @@ public class main : MonoBehaviour
             //yield return new WaitForSeconds(zoomInTime);
             string audienceGuessesString = numberOfCorrectAudienceGuesses + numberOfWrongAudienceGuesses == 0 ? "" : "\n\n<color=green>" + numberOfCorrectAudienceGuesses + " </color>/<color=red>" + numberOfWrongAudienceGuesses + "</color> Audience";
 
-            myText.text = "\n<b><size=" + (increasedFontSize + 3) + ">" + tileTitle + "</size></b>" + correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString()
+            myTitle.text = "<b>" + tileTitle + "</b>";
+            myQandAs.text = correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString()
                 + audienceGuessesString;
-            
+
+            myTitle.resizeTextMaxSize = 25;
+            myQandAs.resizeTextMaxSize = 20;
+
             //reveal it on phones
             AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendRevealNextPersonalRoundResult", new string[] { targetPlayerName })));
 

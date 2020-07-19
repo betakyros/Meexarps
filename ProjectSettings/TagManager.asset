@@ -12,6 +12,7 @@ TagManager:
   - PercentCorrectAndStatusContainer
   - loadingScreenTips
   - checkPhoneTutorial
+  - audienceText
   layers:
   - Default
   - TransparentFX
