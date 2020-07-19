@@ -1062,6 +1062,7 @@ public class main : MonoBehaviour
         introVp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "knowyourfriendsintrotutorial.mp4");
 
         introVp.Prepare();
+        introVp.SetDirectAudioVolume(0, onVolume*3);
         yield return new WaitForSeconds(1);
         while (!introVp.isPrepared)
         {
@@ -1498,6 +1499,8 @@ public class main : MonoBehaviour
             vp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "knowyourfriendstutorialvideo.mp4");
 
             vp.Prepare();
+            //if we update the video, update this ratio
+            vp.SetDirectAudioVolume(0, onVolume*3);
             yield return new WaitForSeconds(1);
             while (!vp.isPrepared)
             {
