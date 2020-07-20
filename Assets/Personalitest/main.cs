@@ -1481,10 +1481,12 @@ public class main : MonoBehaviour
             Answers answers = answersList[i];
             anonymousPlayerNames.Add(answers.anonymousPlayerName);
             int answerPanelOffset = 2;
-            Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + 2*i];
+            Text myTitle = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + 2*i];
+            Text myQandA = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + 2*i + 1];
             //todo set the text size to the same size as the panel
-            myText.text = answers.anonymousPlayerName;
-            myText.resizeTextMaxSize = 25;
+            myTitle.text = answers.anonymousPlayerName;
+            myQandA.text = "";
+            myTitle.resizeTextMaxSize = 25;
         }
         votingPanel.GetComponentsInChildren<Text>()[1].text = gameState.GetCurrentRound().PrintQuestions();
         
@@ -1795,9 +1797,11 @@ public class main : MonoBehaviour
         {
             Answers answers = answersList[i];
             int resultsPanelOffset = 1;
-            Text myText = resultsPanel.GetComponentsInChildren<Text>()[resultsPanelOffset + 2*i];
-            //todo set the text size to the same size as the panel
-            myText.text = answers.anonymousPlayerName;
+            Text myTitle = resultsPanel.GetComponentsInChildren<Text>()[resultsPanelOffset + 2*i];
+            Text myQandA = resultsPanel.GetComponentsInChildren<Text>()[resultsPanelOffset + 2*i + 1];
+
+            myTitle.text = answers.anonymousPlayerName;
+            myQandA.text = "";
         }
 
         //send each individual their personalized results
@@ -2023,6 +2027,9 @@ public class main : MonoBehaviour
             Text myTitle = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset];
             Text myQandAs = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset + 1];
 
+            //temporarily increase max size
+            myTitle.resizeTextMaxSize = 60;
+            myQandAs.resizeTextMaxSize = 40;
 
             //display all results panel
             int resultsPanelOffset = playerTileOffset + 12;
