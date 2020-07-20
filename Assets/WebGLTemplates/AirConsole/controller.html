@@ -119,11 +119,13 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 */
 .sourceWindowLabel {
+    height:2vh;
     white-space: nowrap;
     color: white;
 }
 
 .targetWindowLabel {
+    height:2vh;
     white-space: nowrap;
     direction: rtl;
     color: white;
@@ -240,20 +242,20 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 }
 */
 .alienImage {
-    height: 40px;
+    height: 6vh;
 }
 
 .yourGuessImage {
-    height: 40px;
-    width:40px;
+    height: min(6vh, 30vw);
+    width: min(6vh, 30vw);
     top: 0;
     right: 0;
     align-self: flex-end;
 }
 
 .roundResultsImage {
-    height: 30px;
-    width: 30px;
+    height: min(6vh, 30vw);
+    width: min(6vh, 30vw);
     top: 0;
     left: 0;
 }
@@ -1720,7 +1722,7 @@ path, .jtk-endpoint {
                     <input id="useSystemKeyboard" type="checkbox" onchange="window.app.saveOptions()">
                     <span class="slider round"></span>
                 </label>
-                <div style="padding-left:10px;">Use system keyboard (Not Recommended)</div>
+                <div style="padding-left:10px;">Use system keyboard (Not supported on all phones)</div>
             </div><br>
         </div>
         <br>
