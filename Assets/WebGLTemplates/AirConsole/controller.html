@@ -545,6 +545,10 @@ path, .jtk-endpoint {
                             document.getElementById("alienButton" + i).className="alienButton-selected";
                         } else if (selectedAliensArray.includes('' + i)){
                             document.getElementById("alienButton" + i).className="alienButton-disabled";
+                            if(selectedAlien == i) {
+                                selectedAlien = -1;
+                                App.prototype.showSnackbar("Someone else claimed your meexarp!");
+                            }
                         } else {
                             document.getElementById("alienButton" + i).className="alienButton";
                         }
@@ -944,6 +948,11 @@ path, .jtk-endpoint {
 			}
 
             App.prototype.clickAlienButton = function clickAlienButton(alienButtonNumber) {
+                var element = document.getElementById("alienButton"+alienButtonNumber);
+                if(element.classList.contains("alienButton-disabled")) {
+                    return;
+                }
+                
                 //deselect
                 if(alienButtonNumber == selectedAlien) {
                     selectedAlien = -1;
@@ -1344,6 +1353,13 @@ path, .jtk-endpoint {
             App.prototype.deleteSingleConnection = function deleteSingleConnection(el) {
                 window.instance.deleteConnectionsForElement(el);
 			}
+
+            App.prototype.showSnackbar = function showSnackbar(text) {
+                var x = document.getElementById("snackbarGlobal");
+                x.innerHTML = text;
+                x.classList.add("show");
+                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+            }
             
             //populate the alienButtons
             for(var i = 0; i < 6; i++) {
@@ -1479,6 +1495,7 @@ path, .jtk-endpoint {
         
       .alienButton-disabled {
         filter: grayscale(1);
+        opacity:30%;
       }
       
       .alienButton-selected {
@@ -2293,5 +2310,8 @@ path, .jtk-endpoint {
         </div>
     </div>
     <div id="my_keyboard"></div>
+    <div style="position:absolute; justify-content:center; width: 100%">
+        <div id="snackbarGlobal" class="snackbar"></div>
+    </div>
   </body>
 </html>
