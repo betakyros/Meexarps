@@ -1104,6 +1104,8 @@ path, .jtk-endpoint {
                     }
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
+                displayElement(document.getElementById("waitingView"));
+
                 /*
                 timeElapsed = 0;
                 document.getElementById("retrieveQuestionsTimer").innerText = 0;
@@ -1990,7 +1992,7 @@ path, .jtk-endpoint {
         <div id="waitingForStartGame"></div>
         <br>
     </div>
-    <div class="view" id="waitingView" style="align-self:flex-start;padding-top:50%;display:none">
+    <div class="view" id="waitingView" style="align-self:flex-start;padding-top:50%;display:none;height:min-content;">
         Waiting… 
         <div id="waitingFor"></div>
     </div>

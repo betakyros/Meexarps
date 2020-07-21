@@ -349,7 +349,6 @@ public class main : MonoBehaviour
                     randomQuestions.Add(GetRandomQuestion());
                     gameState.GetCurrentRound().questions = randomQuestions;
                     PrepareSendQuestions();
-                    SendQuestions();
                     break;
                 case TvViewGameState.AnswerQuestionsScreen:
                     foreach(Player p in gameState.players.Values)
@@ -564,15 +563,13 @@ public class main : MonoBehaviour
         }
         else if ("sendDecidedQuestions".Equals(action))
         {
-            PrepareSendQuestions();
-
             List<string> myQuestions = new List<string>();
             foreach (JProperty property in ((JObject)(data["info"])).Properties())
             {
                 myQuestions.Add(property.Value.ToString());
             }
             gameState.GetCurrentRound().questions = myQuestions;
-            SendQuestions();
+            StartCoroutine(PrepareSendQuestions());
         }
         else if ("sendAnswers".Equals(action))
         {
@@ -732,8 +729,17 @@ public class main : MonoBehaviour
         }
     }
 
-    private void PrepareSendQuestions()
+    //change this to an alien themed transition
+    private IEnumerator<WaitForSeconds> PrepareSendQuestions()
     {
+        //display element. make it alien themed
+        Animator[] wouldYouRatherAnimators = wouldYouRatherPanel.GetComponentsInChildren<Animator>();
+        Animator questionsSubmittedPanel = wouldYouRatherAnimators[wouldYouRatherAnimators.Length-1];
+        questionsSubmittedPanel.SetBool("Open", true);
+        yield return new WaitForSeconds(4.5f);
+        questionsSubmittedPanel.SetBool("Open", false);
+        yield return new WaitForSeconds(2.5f);
+
         //Stop the would you rathers
         CancelInvoke();
         wouldYouRatherPanel.SetActive(false);
@@ -768,6 +774,8 @@ public class main : MonoBehaviour
             //          playerTexts[currentPlayerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
             playerIconsList[i].gameObject.GetComponentInChildren<Text>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
         }
+
+        SendQuestions();
     }
 
     private void ExitWelcomeScreen()
