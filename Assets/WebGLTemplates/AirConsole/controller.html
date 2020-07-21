@@ -389,6 +389,7 @@ path, .jtk-endpoint {
         }
 
         function displayElement(e) {
+        console.log("displayElement");
             hideAllViews();
             e.style.display = "block";
             resizeElement(e);
@@ -502,6 +503,7 @@ path, .jtk-endpoint {
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("startGameButton").style.display = "inline-block";
                 } else if(myAction === "allPlayersAreNotReady") {
+                    console.log("all  players are not ready");
                     document.getElementById("waitingForStartGame").style.display = "inline-block";
                     var waitingForNames="Waiting for: ";
                     payload.data.forEach(element => {
@@ -510,9 +512,15 @@ path, .jtk-endpoint {
                     });
                     document.getElementById("waitingForStartGame").innerHTML = waitingForNames;
                     document.getElementById("startGameButton").style.display = "none";    
+                    console.log("allplayersarenotready: " + document.getElementById("startGameScreenView").clientHeight);
+
                 } else if(myAction === "allPlayersAreReady") {
+                    console.log("all players are ready");
+
                     document.getElementById("startGameButton").style.display = "inline-block";
                     document.getElementById("waitingForStartGame").style.display = "none";
+                    console.log("allplayersareready: " + document.getElementById("startGameScreenView").clientHeight);
+
                 } else if(myAction === "sendWelcomeScreenInfo") {
                     if(playerName == null) {
                         hideAllViews();
@@ -576,7 +584,9 @@ path, .jtk-endpoint {
                     document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
                     document.getElementById("useSystemKeyboard").checked = useSystemKeyboard;//anonymousNames
                 } else if(myAction === "sendStartGameScreen") {
+                console.log("sendStartGameScreen");
                     displayElement(document.getElementById("startGameScreenView"));
+                    console.log("startgameclientheight: " + document.getElementById("startGameScreenView").clientHeight);
                 } else if(myAction === "nameAlreadyTaken") {
                     hideAllViews();
                     document.getElementById("welcomeScreenView").style.display = "block";
@@ -1907,7 +1917,7 @@ path, .jtk-endpoint {
         <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
         <div class="pseudo_button" onmousedown="window.app.hideCredits()">Close Credits</div>
     </div>   
-    <div class="view" id="startGameScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
+    <div class="view" id="startGameScreenView" style="display:none;align-self:flex-start;padding-top:52px;height:100%">
         <!-- dynamically change this based on playernumber which we have in javascript -->
         <img style="height:9vh; opacity:100%;" class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
         
@@ -1915,7 +1925,7 @@ path, .jtk-endpoint {
             <div style = "font-size: 26px; display: flex; align-items: center; justify-content:center; width:85%; height:100%;" id="startGameScreenViewUsername"> Welcome, [Username]</div>
         </div>
         
-        Feel free to write your own “Would You Rather” questions while you wait!
+        Write your own “Would You Rather” questions while you wait!
         <br>
         <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
             <div style="display:flex;justify-content:center;width:100%;">
