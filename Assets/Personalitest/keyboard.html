@@ -389,7 +389,6 @@ path, .jtk-endpoint {
         }
 
         function displayElement(e) {
-        console.log("displayElement");
             hideAllViews();
             e.style.display = "block";
             resizeElement(e);
@@ -565,6 +564,7 @@ path, .jtk-endpoint {
                     playerName = payload.data[0];
                     playerNumber = payload.data[1];
                     selectedAlien = parseInt(payload.data[2]);
+                    console.log("sendWelcomeScreenInfoDetails: " + playerName);
                     var myAlienGifs = document.getElementsByClassName("myAlienGif");
                     Array.prototype.forEach.call(myAlienGifs, currentElement => {
                         currentElement.src = App.prototype.getPlayerGif(selectedAlien);
@@ -584,9 +584,11 @@ path, .jtk-endpoint {
                     document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
                     document.getElementById("useSystemKeyboard").checked = useSystemKeyboard;//anonymousNames
                 } else if(myAction === "sendStartGameScreen") {
-                console.log("sendStartGameScreen");
+                var d = new Date();
+                console.log("sendStartGameScreen: " + playerName + " AT TIME: " + d.toLocaleString() + ":" + d.getMilliseconds());
                     displayElement(document.getElementById("startGameScreenView"));
-                    console.log("startgameclientheight: " + document.getElementById("startGameScreenView").clientHeight);
+                    console.log("finished displaying startgamescreen " + document.getElementById("startGameScreenView").style.display);
+
                 } else if(myAction === "nameAlreadyTaken") {
                     hideAllViews();
                     document.getElementById("welcomeScreenView").style.display = "block";

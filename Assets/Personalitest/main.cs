@@ -217,6 +217,8 @@ public class main : MonoBehaviour
     {
         string action = data["action"].ToString();
         bool playSound = true;
+        Debug.Log("from: " + from + " action: " + action);
+
         if ("sendWelcomeInfo".Equals(action))
         {
             string name = data["info"]["name"].ToString();
@@ -282,9 +284,11 @@ public class main : MonoBehaviour
                 gameState.players.Add(from, p);
                 if(gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
                 {
+                    Debug.Log("sendingStartGameScreen to " + p.nickname + " at " + System.DateTime.Now.ToString("h:mm:ss:fff tt"));
+                    sendWelcomeScreenInfo(from, selectedAlien);
                     AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                     SendMessageToVip(new JsonAction("allPlayersAreNotReady", gameState.whoIsNotReady().ToArray()));
-                    sendWelcomeScreenInfo(from, selectedAlien);
+                    
                 } else
                 {
                     SendCurrentScreenForReconnect(from, p.playerNumber);
@@ -606,6 +610,7 @@ public class main : MonoBehaviour
         {
             if(storyPanel.activeSelf)
             {
+                StopCoroutine(waitThreeSecondsThenDisplayWelcomeScreen());
                 storyPanel.SetActive(false);
                 sendWelcomeScreenInfo(-1, -1);
                 InvokeRepeating("UpdateLoadingScreenTips", 0f, 10f);
