@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine.Video;
+using TMPro;
 
 public class main : MonoBehaviour
 {
@@ -145,7 +146,7 @@ public class main : MonoBehaviour
     }
     public void UpdateLoadingScreenTips()
     {
-        GameObject.FindWithTag("loadingScreenTips").GetComponent<Text>().text = friendshipTips[friendshipTipIndex++ % friendshipTips.Length];
+        GameObject.FindWithTag("loadingScreenTips").GetComponent<TextMeshProUGUI>().SetText( friendshipTips[friendshipTipIndex++ % friendshipTips.Length]);
     }
         private void InitializeOptions()
     {

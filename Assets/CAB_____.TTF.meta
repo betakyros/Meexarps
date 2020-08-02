@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ba5b723c1f98ab64c8a20f0f1a76b417
+guid: 99a69fb848d342a43b92e169a272b9c0
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,13 +8,9 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Autour One
+  fontName: Catharsis Bedouin
   fontNames:
-  - 'Autour One
-
-    Arial
-
-    Catharsis Bedouin'
+  - Catharsis Bedouin
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
