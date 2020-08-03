@@ -11,7 +11,7 @@ using TMPro;
 public class main : MonoBehaviour
 {
     public Text gameStateText;
-    public Text welcomeInstructionsText;
+    public TextMeshProUGUI welcomeInstructionsText;
     private static List<QuestionCategory> questionCategories;
     private static string[] anonymousNames;
     //(question, left answer, right answer)
@@ -189,7 +189,7 @@ public class main : MonoBehaviour
     void OnReady(string code)
     {
         gameCode = code;
-        welcomeInstructionsText.text = "Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!\n";
+        welcomeInstructionsText.SetText("Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!");
     }
 
     void Update()
@@ -277,7 +277,7 @@ public class main : MonoBehaviour
                 Image[] playerIcons = welcomeScreenPanel.GetComponentsInChildren<Image>(true);
                 List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
 
-                playerIconsList[gameState.GetNumberOfPlayers()].GetComponentInChildren<Text>().text = p.nickname;
+                playerIconsList[gameState.GetNumberOfPlayers()].GetComponentInChildren<TextMeshProUGUI>().SetText(p.nickname);
                 Image image = playerIconsList[gameState.GetNumberOfPlayers()].GetComponentsInChildren<Image>(true)[1];
                 image.gameObject.SetActive(true);
                 updatePlayerAnimator(image.GetComponentInChildren<Animator>(), p);
@@ -328,7 +328,7 @@ public class main : MonoBehaviour
 
                     if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
                     {
-                        GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<Text>().text = "<color=white>Audience: " + gameState.audienceMembers.Count + "</color>";
+                        GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<TextMeshProUGUI>().SetText("<color=white>Audience: " + gameState.audienceMembers.Count + "</color>");
                         AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                         sendWelcomeScreenInfo(from, -1);
                     } else
@@ -465,8 +465,8 @@ public class main : MonoBehaviour
             //gameState.numRoundsPerGame = data["info"]["roundCount"].ToObject<int>();
             GameObject.Find("WelcomeScreenPanel").SetActive(false);
             selectRoundNumberPanel.SetActive(true);
-            selectRoundNumberPanel.GetComponentsInChildren<Text>()[0].text = "<color=white>The Head Researcher (<color=#325EFB>" + 
-                gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.</color>";
+            selectRoundNumberPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].SetText("<color=white>The Head Researcher (<color=#325EFB>" + 
+                gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.</color>");
             //selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
             //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
@@ -488,7 +488,7 @@ public class main : MonoBehaviour
             playSound = false;
             string roundDetails = data["info"].ToObject<string>();
 
-            selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text = roundDetails;
+            selectRoundNumberPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].SetText(roundDetails);
         }
         else if ("sendSetRoundCount".Equals(action))
         {
@@ -776,9 +776,7 @@ public class main : MonoBehaviour
         }
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
-            //            playerTexts[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
-            //          playerTexts[currentPlayerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
-            playerIconsList[i].gameObject.GetComponentInChildren<Text>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
+            playerIconsList[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().SetText(gameState.GetPlayerByPlayerNumber(i).nickname);
         }
 
         SendQuestions();
@@ -794,12 +792,12 @@ public class main : MonoBehaviour
 
     private void SetAudienceWouldYouRatherCounters(int leftAudience, int rightAudience)
     {
-        Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
-        List<Text> wouldYouRatherAudienceTags = getTextTags(wouldYouRatherTexts, "audienceText");
+        TextMeshProUGUI[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
+        List<TextMeshProUGUI> wouldYouRatherAudienceTags = getTextTags(wouldYouRatherTexts, "audienceText");
         wouldYouRatherAudienceTags[0].transform.parent.gameObject.SetActive(true);
         wouldYouRatherAudienceTags[1].transform.parent.gameObject.SetActive(true);
-        wouldYouRatherAudienceTags[0].text = "" + leftAudience;
-        wouldYouRatherAudienceTags[1].text = "" + rightAudience;
+        wouldYouRatherAudienceTags[0].SetText("" + leftAudience);
+        wouldYouRatherAudienceTags[1].SetText("" + rightAudience);
     }
 
     private void sendWelcomeScreenInfo(int from, int alienNumber)
@@ -1165,16 +1163,14 @@ public class main : MonoBehaviour
         //Set the current player's name
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         string playerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
-        getPlayerIconTags(playerIcons, "Banner")[0].GetComponentInChildren<Text>().text = "It's " + playerName + "'s turn to write questions!";
+        getPlayerIconTags(playerIcons, "Banner")[0].GetComponentInChildren<TextMeshProUGUI>().SetText("It's " + playerName + "'s turn to write questions!");
 
         int playerTextOffset = 4;
         int currentPlayerTextOffset = 13;
         Text[] playerTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
-            //            playerTexts[playerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
-            //          playerTexts[currentPlayerTextOffset + i].text = gameState.GetPlayerByPlayerNumber(i).nickname;
-            playerIconsList[i].gameObject.GetComponentInChildren<Text>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
+            playerIconsList[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().SetText(gameState.GetPlayerByPlayerNumber(i).nickname);
         }
 
         //controllers in the retrieve questions state will ignore would you rathers
@@ -1210,10 +1206,10 @@ public class main : MonoBehaviour
         return playerIconsList;
     }
 
-    private static List<Text> getTextTags(Text[] texts, string tagName)
+    private static List<TextMeshProUGUI> getTextTags(TextMeshProUGUI[] texts, string tagName)
     {
-        List<Text> playerIconsList = new List<Text>();
-        foreach (Text i in texts)
+        List<TextMeshProUGUI> playerIconsList = new List<TextMeshProUGUI>();
+        foreach (TextMeshProUGUI i in texts)
         {
             if (i.tag == tagName)
             {
@@ -1310,7 +1306,7 @@ public class main : MonoBehaviour
             Destroy(oldWouldYouRatherTimer);
         }
         WouldYouRatherTimer wyrt = wouldYouRatherPanel.AddComponent<WouldYouRatherTimer>();
-        wyrt.SetTimerText(wouldYouRatherPanel.GetComponentsInChildren<Text>()[1]);
+        wyrt.SetTimerText(wouldYouRatherPanel.GetComponentsInChildren<TextMeshProUGUI>()[1]);
         //reset the icons
         int playerIconOffset = 5;
         Image[] playerIconPanels = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
@@ -1328,21 +1324,13 @@ public class main : MonoBehaviour
         {
             SetAudienceWouldYouRatherCounters(0, 0);
         }
-        Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
-        if(gameState.audienceMembers.Count != 0)
-        {
-            wouldYouRatherTexts[10].text = "0";
-            wouldYouRatherTexts[11].text = "0";
-        } else
-        {
-
-        }
+        TextMeshProUGUI[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
         string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Count];
-        wouldYouRatherTexts[0].text = currentWouldYouRather[0];
+        wouldYouRatherTexts[0].SetText(currentWouldYouRather[0]);
         //left answer
-        wouldYouRatherTexts[2].text = currentWouldYouRather[1];
+        wouldYouRatherTexts[2].SetText(currentWouldYouRather[1]);
         //right answer
-        wouldYouRatherTexts[3].text = currentWouldYouRather[2];
+        wouldYouRatherTexts[3].SetText(currentWouldYouRather[2]);
         //Maybe send the possible answers here
         string waitingForPlayerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendWouldYouRather", new[] { waitingForPlayerName })));
@@ -1495,14 +1483,14 @@ public class main : MonoBehaviour
             Answers answers = answersList[i];
             anonymousPlayerNames.Add(answers.anonymousPlayerName);
             int answerPanelOffset = 2;
-            Text myTitle = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + 2*i];
-            Text myQandA = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset + 2*i + 1];
+            TextMeshProUGUI myTitle = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset + 2*i];
+            TextMeshProUGUI myQandA = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset + 2*i + 1];
             //todo set the text size to the same size as the panel
-            myTitle.text = answers.anonymousPlayerName;
-            myQandA.text = "";
-            myTitle.resizeTextMaxSize = 25;
+            myTitle.SetText(answers.anonymousPlayerName);
+            myQandA.SetText("");
+            myTitle.fontSizeMax = 25;
         }
-        votingPanel.GetComponentsInChildren<Text>()[1].text = gameState.GetCurrentRound().PrintQuestions();
+        votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].SetText(gameState.GetCurrentRound().PrintQuestions());
         
         //flash the instructions
         if (gameState.GetCurrentRoundNumber() == 0)
@@ -1584,16 +1572,16 @@ public class main : MonoBehaviour
 
             int answerPanelOffset = 2;
             //+1 because the offset is the title
-            Text myTitle = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset];
-            Text myText = votingPanel.GetComponentsInChildren<Text>()[answerPanelOffset+1];
+            TextMeshProUGUI myTitle = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset];
+            TextMeshProUGUI myText = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset+1];
 
             //Camera zoom will make the current panel the last element, so we don't need to add i
             CameraZoom cz = votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.AddComponent<CameraZoom>();
             cz.Setup(1f, 12f, true, true, false);
 
             //temporarily increase the max size
-            myTitle.resizeTextMaxSize = 60;
-            myText.resizeTextMaxSize = 40;
+            myTitle.fontSizeMax = 60;
+            myText.fontSizeMax = 40;
 
             List<Answers> answersList = gameState.GetCurrentRound().answers;
             Answers answers = answersList[i];
@@ -1608,21 +1596,21 @@ public class main : MonoBehaviour
             {
                 string answer = answers.text[j];
 
-                myText.text += "<color=black><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<size=4>\n</size><b>" + answer + "</b>";
+                myText.SetText(myText.text + "<color=black><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<size=4>\n</size><b>" + answer + "</b>");
                 shortTextSb.Append(answer);
                 if (j < answers.text.Length - 1 )
                 {
-                    myText.text += "<size=8>\n\n</size>";
+                    myText.SetText(myText.text + "<size=8>\n\n</size>");
                     shortTextSb.Append("<size=6>\n\n</size>");
                 }
                 //wait four seconds between each answer to give it a punch
                 yield return new WaitForSeconds(4);
             }
-            myText.text = shortTextSb.ToString();
+            myText.SetText(shortTextSb.ToString());
 
             //reset the max size
-            myTitle.resizeTextMaxSize = 25;
-            myText.resizeTextMaxSize = 20;
+            myTitle.fontSizeMax = 25;
+            myText.fontSizeMax= 20;
             yield return new WaitForSeconds(2);
             Destroy(cz);
         }
@@ -1811,11 +1799,11 @@ public class main : MonoBehaviour
         {
             Answers answers = answersList[i];
             int resultsPanelOffset = 1;
-            Text myTitle = resultsPanel.GetComponentsInChildren<Text>()[resultsPanelOffset + 2*i];
-            Text myQandA = resultsPanel.GetComponentsInChildren<Text>()[resultsPanelOffset + 2*i + 1];
+            TextMeshProUGUI myTitle = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[resultsPanelOffset + 2*i];
+            TextMeshProUGUI myQandA = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[resultsPanelOffset + 2*i + 1];
 
-            myTitle.text = answers.anonymousPlayerName;
-            myQandA.text = "";
+            myTitle.SetText(answers.anonymousPlayerName);
+            myQandA.SetText("");
         }
 
         //send each individual their personalized results
@@ -2038,28 +2026,28 @@ public class main : MonoBehaviour
             //an offset for the the questions tile
             int playerTileOffset = 1;
 
-            Text myTitle = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset];
-            Text myQandAs = resultsPanel.GetComponentsInChildren<Text>()[playerTileOffset + 1];
+            TextMeshProUGUI myTitle = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[playerTileOffset];
+            TextMeshProUGUI myQandAs = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[playerTileOffset + 1];
 
             //temporarily increase max size
-            myTitle.resizeTextMaxSize = 60;
-            myQandAs.resizeTextMaxSize = 40;
+            myTitle.fontSizeMax = 60;
+            myQandAs.fontSizeMax = 40;
 
             //display all results panel
             int resultsPanelOffset = playerTileOffset + 12;
             Animator titleAndGridContainerAnimator = resultsPanel.GetComponentsInChildren<Animator>()[0];
             Animator rightAndWrongPanelAnimator = resultsPanel.GetComponentsInChildren<Animator>()[1];
-            Text rightAndWrongPanelTitle = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset];
-            Text rightAndWrongPanelRightAndWrong = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset+1];
-            Text rightAndWrongPanelAudienceRightAndWrong = resultsPanel.GetComponentsInChildren<Text>(true)[resultsPanelOffset+2];
+            TextMeshProUGUI rightAndWrongPanelTitle = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>(true)[resultsPanelOffset];
+            TextMeshProUGUI rightAndWrongPanelRightAndWrong = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>(true)[resultsPanelOffset+1];
+            TextMeshProUGUI rightAndWrongPanelAudienceRightAndWrong = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>(true)[resultsPanelOffset+2];
 
-            rightAndWrongPanelTitle.text = "";
-            rightAndWrongPanelRightAndWrong.text = "";
-            rightAndWrongPanelAudienceRightAndWrong.text = "";
+            rightAndWrongPanelTitle.SetText("");
+            rightAndWrongPanelRightAndWrong.SetText("");
+            rightAndWrongPanelAudienceRightAndWrong.SetText("");
 
             //first, display the questions and answers again
             int playerPanelTileOffset = 2;
-            myTitle.text = anonymousPlayerName + "'s answers";
+            myTitle.SetText(anonymousPlayerName + "'s answers");
             CameraZoom cz = resultsPanel.GetComponentsInChildren<Image>()[playerPanelTileOffset].gameObject.AddComponent<CameraZoom>();
 
             int zoomInTime = 1;
@@ -2070,8 +2058,8 @@ public class main : MonoBehaviour
             float totalWaitTime = 3 * waitForContextSeconds + 2 * waitForReadSeconds + (3 + wrongVotesCount) * waitForEachAnswer;
             cz.Setup(zoomInTime, totalWaitTime, true, true, false, false, true);
 
-            rightAndWrongPanelTitle.text = "<b>" + anonymousPlayerName +
-                " is ???\n\n" + " </b>";
+            rightAndWrongPanelTitle.SetText("<b>" + anonymousPlayerName +
+                " is ???\n\n" + " </b>");
 
             rightAndWrongPanelAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(zoomInTime);
@@ -2081,40 +2069,37 @@ public class main : MonoBehaviour
                 yield return new WaitForSeconds(waitForEachAnswer);
                 string answer = answers.text[j];
 
-                myQandAs.text += "<color=black>" + gameState.GetCurrentRound().questions[j] + "</color><size=4>\n\n</size><color=#4A6EEF>" + answer + "</color>";
+                myQandAs.SetText(myQandAs.text + "<color=black>" + gameState.GetCurrentRound().questions[j] + "</color><size=4>\n\n</size><color=#4A6EEF>" + answer + "</color>");
                 if (j < answers.text.Length - 1)
                 {
-                    myQandAs.text += "<size=8>\n\n</size>";
+                    myQandAs.SetText(myQandAs.text +"<size=8>\n\n</size>");
                 }
             }
             yield return new WaitForSeconds(waitForReadSeconds);
 
-            //titleAndGridContainerAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(waitForContextSeconds);
 
             string tileTitle = anonymousPlayerName + " is <color=blue>" + targetPlayerName + "</color>";
-            //myText.text = "Who did people guess " + anonymousPlayerName + " is\n";
-            rightAndWrongPanelTitle.text = "<b>" + tileTitle + "</b>";
+            rightAndWrongPanelTitle.SetText("<b>" + tileTitle + "</b>");
             yield return new WaitForSeconds(waitForContextSeconds);
 
             foreach (string s in wrongVotesLines)
             {
-                //myText.text += "<size=15>\n\n</size>" + s;
-                rightAndWrongPanelRightAndWrong.text += "<size=7>\n\n</size>" + s;
+                rightAndWrongPanelRightAndWrong.SetText(rightAndWrongPanelRightAndWrong.text + "<size=7>\n\n</size>" + s);
                 yield return new WaitForSeconds(waitForEachAnswer);
             }
-            //myText.text += "<size=15>\n\n</size>" + correctVotesStringSb.ToString();
-            rightAndWrongPanelRightAndWrong.text += "<size=7>\n\n</size>" + correctVotesStringSb.ToString();
+            rightAndWrongPanelRightAndWrong.SetText( rightAndWrongPanelRightAndWrong.text 
+                + "<size=7>\n\n</size>" + correctVotesStringSb.ToString());
             if(numberOfCorrectAudienceGuesses > 0)
             {
-               // myText.text += "<size=15>\n\n</size><color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
-                rightAndWrongPanelAudienceRightAndWrong.text += "<color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
+                rightAndWrongPanelAudienceRightAndWrong.SetText(rightAndWrongPanelAudienceRightAndWrong.text + 
+                    "<color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members");
                 gameState.totalAudienceCorrectGuesses += numberOfCorrectAudienceGuesses;
             }
             if(numberOfWrongAudienceGuesses > 0)
             {
-                //myText.text += "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
-                rightAndWrongPanelAudienceRightAndWrong.text += "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
+                rightAndWrongPanelAudienceRightAndWrong.SetText(rightAndWrongPanelAudienceRightAndWrong.text +
+                    "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members");
                 gameState.totalAudienceWrongGuesses += numberOfWrongAudienceGuesses;
 
             }
@@ -2130,12 +2115,11 @@ public class main : MonoBehaviour
             //yield return new WaitForSeconds(zoomInTime);
             string audienceGuessesString = numberOfCorrectAudienceGuesses + numberOfWrongAudienceGuesses == 0 ? "" : "\n\n<color=green>" + numberOfCorrectAudienceGuesses + " </color>/<color=red>" + numberOfWrongAudienceGuesses + "</color> Audience";
 
-            myTitle.text = "<b>" + tileTitle + "</b>";
-            myQandAs.text = correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString()
-                + audienceGuessesString;
+            myTitle.SetText("<b>" + tileTitle + "</b>");
+            myQandAs.SetText(correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString() + audienceGuessesString);
 
-            myTitle.resizeTextMaxSize = 25;
-            myQandAs.resizeTextMaxSize = 20;
+            myTitle.fontSizeMax = 25;
+            myQandAs.fontSizeMax= 20;
 
             //reveal it on phones
             AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendRevealNextPersonalRoundResult", new string[] { targetPlayerName })));
@@ -2223,11 +2207,11 @@ public class main : MonoBehaviour
         string resultStatus = correctPercent >= 60.0f ? resultsStatuses[0] : resultsStatuses[1];
         
         //set percentCorrectText
-        endScreenPanel.GetComponentsInChildren<Text>()[offset].text = "Collectively, your team identified\n<b><size=90> " + correctPercent.ToString("n2") + "%</size> </b>\nof your teammates correctly!";
+        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset].SetText("Collectively, your team identified\n<b><size=90> " + correctPercent.ToString("n2") + "%</size> </b>\nof your teammates correctly!");
         //set friendship status
-        endScreenPanel.GetComponentsInChildren<Text>()[offset + 1].text = "You have achieved the status of\n<b><size=60> " + friendshipStatus + " </size></b> ";
+        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 1].SetText("You have achieved the status of\n<b><size=60> " + friendshipStatus + " </size></b> ");
         //set result text
-        endScreenPanel.GetComponentsInChildren<Text>()[offset + 2].text = resultStatus;
+        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 2].SetText(resultStatus);
 
         if (gameState.audienceMembers.Count == 0)
         {
@@ -2254,7 +2238,7 @@ public class main : MonoBehaviour
                 audienceScoresSb.Append("\n<size=20>" + sortedAudienceScores[i].nickname + "    " + sortedAudienceScores[i].points + "</size>");
             }
 
-            GameObject.FindWithTag("AudienceScoreCard").GetComponentInChildren<Text>().text = audienceScoresSb.ToString();
+            GameObject.FindWithTag("AudienceScoreCard").GetComponentInChildren<TextMeshProUGUI>().SetText(audienceScoresSb.ToString());
         }
 
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
@@ -2313,7 +2297,7 @@ public class main : MonoBehaviour
             pointsSB.Append(" points");
             pointsSB.Append("\n");
             int tilesOffset = 2;
-            endScreenPanel.GetComponentsInChildren<Text>()[tilesOffset + playerCounter].text = pointsSB.ToString();
+            endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[tilesOffset + playerCounter].SetText(pointsSB.ToString());
             playerCounter++;
             string currentBestFriend = CalculateBestFriend(p);
 
@@ -2331,7 +2315,7 @@ public class main : MonoBehaviour
             audiencePointsSB.Append(" ");
             audiencePointsSB.Append(" points");
             audiencePointsSB.Append("\n");
-            endScreenPanel.GetComponentsInChildren<Text>()[0].text = audiencePointsSB.ToString();
+            endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].SetText(audiencePointsSB.ToString());
             string currentBestFriend = CalculateBestFriend(p);
 
             AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
@@ -2900,8 +2884,8 @@ class GameState
 
     public void updateRoundCounter(GameObject roundCounter)
     {
-        roundCounter.GetComponentsInChildren<Text>()[1].text = (GetCurrentRoundNumber() + 1) + 
-            "<size=15> of " + numRoundsPerGame + "</size>";
+        roundCounter.GetComponentsInChildren<TextMeshProUGUI>()[1].SetText((GetCurrentRoundNumber() + 1) + 
+            "<size=15> of " + numRoundsPerGame + "</size>");
         roundCounter.SetActive(true);
     }
 }

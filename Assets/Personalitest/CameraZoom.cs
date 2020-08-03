@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using TMPro;
 
 public class CameraZoom : MonoBehaviour
 {
@@ -50,7 +51,7 @@ public class CameraZoom : MonoBehaviour
         if(!isMovie)
         {
             originalAlpha = gameObject.GetComponent<Image>().color.a;
-            originalFontSize = gameObject.GetComponentInChildren<Text>().fontSize;
+            originalFontSize = gameObject.GetComponentInChildren<TextMeshProUGUI>().fontSize;
         }
         canvas = gameObject.GetComponentInParent<Canvas>();
         gentleShake = setGentleShake;
@@ -110,7 +111,7 @@ public class CameraZoom : MonoBehaviour
                 curentAlpha = Mathf.SmoothStep(originalAlpha, 1f, t);
                 currentFontSize = Mathf.SmoothStep(originalFontSize, maxFontSize, t);
                 myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, curentAlpha);
-                gameObject.GetComponentInChildren<Text>().fontSize = Mathf.RoundToInt(currentFontSize);
+                gameObject.GetComponentInChildren<TextMeshProUGUI>().fontSize = Mathf.RoundToInt(currentFontSize);
             }
             myPanelTransform.sizeDelta = new Vector2(currentWidth, currentHeight);
             myPanelTransform.position = new Vector3(currentX, currentY, 0);
@@ -136,7 +137,7 @@ public class CameraZoom : MonoBehaviour
                 curentAlpha = Mathf.SmoothStep(1f, originalAlpha, t);
                 currentFontSize = Mathf.SmoothStep(maxFontSize, originalFontSize, t);
                 myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, curentAlpha);
-                gameObject.GetComponentInChildren<Text>().fontSize = Mathf.RoundToInt(currentFontSize);
+                gameObject.GetComponentInChildren<TextMeshProUGUI>().fontSize = Mathf.RoundToInt(currentFontSize);
             }
 
             myPanelTransform.sizeDelta = new Vector2(currentWidth, currentHeight);
@@ -164,7 +165,7 @@ public class CameraZoom : MonoBehaviour
             Image myImage = gameObject.GetComponent<Image>();
 
             myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, originalAlpha);
-            gameObject.GetComponentInChildren<Text>().fontSize = Mathf.RoundToInt(originalFontSize);
+            gameObject.GetComponentInChildren<TextMeshProUGUI>().fontSize = Mathf.RoundToInt(originalFontSize);
         }
 
         myPanelTransform.sizeDelta = new Vector2(originalWidth, originalHeight);

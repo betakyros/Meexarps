@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class WouldYouRatherTimer : MonoBehaviour
 {
-    public Text timerText;
+    public TextMeshProUGUI timerText;
     private float startTime;
 
     // Start is called before the first frame update
@@ -19,11 +20,11 @@ public class WouldYouRatherTimer : MonoBehaviour
     {
         if(null != timerText)
         {
-            timerText.text = Mathf.RoundToInt(15f - ((Time.time - startTime) % 60)) + "";
+            timerText.SetText(Mathf.RoundToInt(15f - ((Time.time - startTime) % 60)) + "");
         }
     }
 
-    public void SetTimerText(Text t)
+    public void SetTimerText(TextMeshProUGUI t)
     {
         timerText = t;
     }
