@@ -340,6 +340,19 @@ public class main : MonoBehaviour
         }
         else if ("forceAdvance".Equals(action))
         {
+            if(gameState.tvViewGameState != TvViewGameState.WelcomeScreen)
+            {
+                CancelInvoke();
+                roundCounter.SetActive(false);
+                welcomeScreenPanel.SetActive(false);
+                selectRoundNumberPanel.SetActive(false);
+                wouldYouRatherPanel.SetActive(false);
+                answerQuestionsPanel.SetActive(false);
+                votingPanel.SetActive(false);
+                resultsPanel.SetActive(false);
+                SendEndScreen2();
+            }
+            /*
             switch (gameState.tvViewGameState)
             {
                 case TvViewGameState.WelcomeScreen:
@@ -395,6 +408,7 @@ public class main : MonoBehaviour
                 default:
                     break;
             }
+            */
         }
         else if ("sendSelectAlien".Equals(action))
         {
@@ -2212,35 +2226,37 @@ public class main : MonoBehaviour
         endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 1].SetText("You have achieved the status of\n<b><size=60> " + friendshipStatus + " </size></b> ");
         //set result text
         endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 2].SetText(resultStatus);
-
-        if (gameState.audienceMembers.Count == 0)
+        GameObject audienceScoreCard = GameObject.FindWithTag("AudienceScoreCard");
+        if (audienceScoreCard != null)
         {
-            GameObject.FindWithTag("AudienceScoreCard").SetActive(false);
-        }
-        else
-        {
-            GameObject.FindWithTag("PercentCorrectAndStatusContainer").gameObject.GetComponent<RectTransform>().anchorMax
-                = new Vector2(.7f, .95f);
-            //set audience scores
-            //first sort the audience scores
-            List<Player> sortedAudienceScores = new List<Player>(gameState.audienceMembers.Values);
-            sortedAudienceScores.Sort((pair1, pair2) => pair2.points.CompareTo(pair1.points));
-            //display the top 5 audience members
-            StringBuilder audienceScoresSb = new StringBuilder(100);
-            int numAudienceScoresToDisplay = System.Math.Min(5, sortedAudienceScores.Count);
-            audienceScoresSb.Append("Audience Scores");
-            if (sortedAudienceScores.Count > 5)
+            if (gameState.audienceMembers.Count == 0)
             {
-                audienceScoresSb.Append("\n<size=12>(top 5)</size>");
+                audienceScoreCard.SetActive(false);
             }
-            for (int i = 0; i < numAudienceScoresToDisplay; i++)
+            else
             {
-                audienceScoresSb.Append("\n<size=20>" + sortedAudienceScores[i].nickname + "    " + sortedAudienceScores[i].points + "</size>");
+                GameObject.FindWithTag("PercentCorrectAndStatusContainer").gameObject.GetComponent<RectTransform>().anchorMax
+                    = new Vector2(.7f, .95f);
+                //set audience scores
+                //first sort the audience scores
+                List<Player> sortedAudienceScores = new List<Player>(gameState.audienceMembers.Values);
+                sortedAudienceScores.Sort((pair1, pair2) => pair2.points.CompareTo(pair1.points));
+                //display the top 5 audience members
+                StringBuilder audienceScoresSb = new StringBuilder(100);
+                int numAudienceScoresToDisplay = System.Math.Min(5, sortedAudienceScores.Count);
+                audienceScoresSb.Append("Audience Scores");
+                if (sortedAudienceScores.Count > 5)
+                {
+                    audienceScoresSb.Append("\n<size=12>(top 5)</size>");
+                }
+                for (int i = 0; i < numAudienceScoresToDisplay; i++)
+                {
+                    audienceScoresSb.Append("\n<size=20>" + sortedAudienceScores[i].nickname + "    " + sortedAudienceScores[i].points + "</size>");
+                }
+
+                audienceScoreCard.GetComponentInChildren<TextMeshProUGUI>().SetText(audienceScoresSb.ToString());
             }
-
-            GameObject.FindWithTag("AudienceScoreCard").GetComponentInChildren<TextMeshProUGUI>().SetText(audienceScoresSb.ToString());
         }
-
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
         gameState.tvViewGameState = TvViewGameState.EndGameScreen;
     }
