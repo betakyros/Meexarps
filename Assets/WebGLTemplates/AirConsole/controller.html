@@ -694,6 +694,8 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendVoting") {
                         //reset jsplumb
                         window.instance.deleteEveryConnection();
+                        document.getElementById("submitVoteButton").classList.remove("blink");
+
                         //hide all inner children
                         var sourcesAndTargets = document.getElementsByClassName("window");
                         for(var i = 0; i < sourcesAndTargets.length; i++) {
@@ -735,6 +737,17 @@ path, .jtk-endpoint {
                             sourceElement.setAttribute("ontouchmove", 'window.app.hideAnswerHelpText()');
                             */
                         }
+                        
+                    window.instance.bind('connection',function(info,ev){
+                        console.log("onConnect" + numAnswers);
+                        if(window.instance.getAllConnections().length === numAnswers) {
+                            document.getElementById("submitVoteButton").classList.add("blink");
+                        }
+                    }); 
+                    window.instance.bind('connectionDetached',function(info,ev){
+                        console.log("onDisconnect");
+                        document.getElementById("submitVoteButton").classList.remove("blink");
+                    });
                     displayElement(document.getElementById("submitVoteView"));
 
                 } else if(myAction === "forceCollectAnswers") {
@@ -1683,6 +1696,25 @@ path, .jtk-endpoint {
         .slider.round:before {
           border-radius: 50%;
         }
+
+        .blink {
+          animation: blinker 2s ease-in-out infinite;
+        }
+
+        @keyframes blinker {
+        0%, 100% {
+            opacity: 1;
+            transform: translateY(0); 
+            background-color: white;
+            padding: 9px 25px;
+          }
+          50% {
+            opacity: 0.7;
+            transform: translateY(-10px); 
+            background-color: #ffeab0;
+            padding: 14px 30px;
+          }
+}
     </style>
   </head>
   <body id="bodyElement" style="font-family: Autour One; font-size: 14px; background-color:#6CA7FF; text-align: center;overflow-y:scroll;
@@ -2274,7 +2306,7 @@ path, .jtk-endpoint {
         <div style="display:flex; justify-content:center; width: 100%">
             <div id="snackbar2" class="snackbar">Time's up! Autosubmitting in 10 seconds...</div>
         </div>
-        <div class="pseudo_button" onmousedown="window.app.sendVoting(true)">Submit Votes!</div>
+        <div id="submitVoteButton" class="pseudo_button" onmousedown="window.app.sendVoting(true)">Submit Votes!</div>
     </div>
     <div class="view" id="roundResultsView" style="width:100%; height:calc(100% - 45px);display:none; padding-top: 52px;align-self:flex-start;" >
         
