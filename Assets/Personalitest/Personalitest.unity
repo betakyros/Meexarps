@@ -3414,7 +3414,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 3ad7dfc7237ee6941943693657b71424, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 82c2395eef8b20a49aa24868d210e3a4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9370,7 +9370,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: a6244cb9c1e440b46bc49915af5937d1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 82c2395eef8b20a49aa24868d210e3a4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19089,7 +19089,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 549d2398baa65504d836457dddffcc01, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 82c2395eef8b20a49aa24868d210e3a4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -20111,12 +20111,6 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6385961060741042655, guid: bd0daa42530b64847a5c05c8ebc757f3,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: bf1945f479064464fb37ae2daa950390,
-        type: 3}
     - target: {fileID: 4749810525517727219, guid: bd0daa42530b64847a5c05c8ebc757f3,
         type: 3}
       propertyPath: m_inputSource
@@ -20192,6 +20186,12 @@ PrefabInstance:
       propertyPath: m_fontColor.b
       value: 0.9372549
       objectReference: {fileID: 0}
+    - target: {fileID: 6385961060741042655, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: bf1945f479064464fb37ae2daa950390,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &1513922699 stripped
@@ -21927,26 +21927,6 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.2901961
       objectReference: {fileID: 0}
-    - target: {fileID: 5755657898002173065, guid: 224a339b510f71f48a45220c9946b9ef,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5755657898002173065, guid: 224a339b510f71f48a45220c9946b9ef,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5755657898002173065, guid: 224a339b510f71f48a45220c9946b9ef,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 5755657898002173065, guid: 224a339b510f71f48a45220c9946b9ef,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.4
-      objectReference: {fileID: 0}
     - target: {fileID: 7344332468449748359, guid: 224a339b510f71f48a45220c9946b9ef,
         type: 3}
       propertyPath: m_text
@@ -22031,6 +22011,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_isInputParsingRequired
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5755657898002173065, guid: 224a339b510f71f48a45220c9946b9ef,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5755657898002173065, guid: 224a339b510f71f48a45220c9946b9ef,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5755657898002173065, guid: 224a339b510f71f48a45220c9946b9ef,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 5755657898002173065, guid: 224a339b510f71f48a45220c9946b9ef,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 224a339b510f71f48a45220c9946b9ef, type: 3}
@@ -27539,6 +27539,16 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7344332468449748359, guid: 224a339b510f71f48a45220c9946b9ef,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7344332468449748359, guid: 224a339b510f71f48a45220c9946b9ef,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2602718466597862903, guid: 224a339b510f71f48a45220c9946b9ef,
         type: 3}
       propertyPath: m_inputSource
@@ -27550,16 +27560,6 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2602718466597862903, guid: 224a339b510f71f48a45220c9946b9ef,
-        type: 3}
-      propertyPath: m_isInputParsingRequired
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7344332468449748359, guid: 224a339b510f71f48a45220c9946b9ef,
-        type: 3}
-      propertyPath: m_havePropertiesChanged
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7344332468449748359, guid: 224a339b510f71f48a45220c9946b9ef,
         type: 3}
       propertyPath: m_isInputParsingRequired
       value: 1
