@@ -142,6 +142,9 @@ AirConsoleKeyboard.prototype.switchLayout = function(layout) {
 };
 
 var oldAlignItems;
+var oldHeight;
+var newHeight;
+var isKeyboardUp = false;
 
 AirConsoleKeyboard.prototype.show = function(input_id, opts) {
   if (input_id == this.active_input_id) {
@@ -161,10 +164,20 @@ AirConsoleKeyboard.prototype.show = function(input_id, opts) {
   if (opts.onShow) {
     opts.onShow(input_id);
   }
-  var keyboardHeight = document.getElementById("my_keyboard").clientHeight
-  document.getElementById("bodyElement").style.height = "calc(100% - " + keyboardHeight + "px)";
-  oldAlignItems = document.getElementById("bodyElement").style.alignItems;
-  document.getElementById("bodyElement").style.alignItems = "flex-end";
+  if( !isKeyboardUp) {
+      isKeyboardUp = true;
+      var globalWrapper = document.getElementById("globalWrapper");
+console.log("airconsolekeyboard globalwrapper: " + globalWrapper);
+      oldHeight = globalWrapper.style.height;
+      var keyboardHeight = (document.getElementById("my_keyboard").clientHeight) * globalWrapper.getAttribute("data-scaleFactor");
+console.log("airconoslekeyboard clientheight: " + document.getElementById("my_keyboard").clientHeight);
+console.log("airconoslekeyboard scalefactor: " + globalWrapper.getAttribute("data-scaleFactor"));
+
+      globalWrapper.style.height = "calc(" + oldHeight + " - " + keyboardHeight + "px)";
+      newHeight = globalWrapper.style.height;
+      oldAlignItems = globalWrapper.style.alignItems;
+      globalWrapper.style.alignItems = "flex-end";
+  }
   document.getElementById(input_id).scrollIntoView(false);
 };
 
@@ -173,6 +186,14 @@ AirConsoleKeyboard.prototype.softHide = function() {
   this.removeCarret_();
   this.active_input_id = undefined;
   this.active_input_div = undefined;
+  if(isKeyboardUp) {
+      console.log("iskeyboardup softhide");
+      var globalWrapper = document.getElementById("globalWrapper");
+
+      globalWrapper.style.height = oldHeight;
+      globalWrapper.style.alignItems = oldAlignItems;
+      isKeyboardUp = false;
+  }
 };
 
 AirConsoleKeyboard.prototype.hide = function() {
@@ -190,8 +211,13 @@ AirConsoleKeyboard.prototype.hide = function() {
   }
   this.active_input_id = undefined;
   this.active_input_div = undefined;
-  document.getElementById("bodyElement").style.height = "";
-  document.getElementById("bodyElement").style.alignItems = oldAlignItems;
+  if(isKeyboardUp) {
+      isKeyboardUp = false;
+      
+      var globalWrapper = document.getElementById("globalWrapper");
+      globalWrapper.style.height = oldHeight;
+      globalWrapper.style.alignItems = oldAlignItems;
+  }
 }
 
 AirConsoleKeyboard.prototype.setCarret = function(position) {

@@ -379,19 +379,51 @@ path, .jtk-endpoint {
             //keyboard.hide();
         }
         
-        function resizeElement(e) {
-            if(e.clientHeight > window.innerHeight) {
-                var scaleFactor = window.innerHeight/e.clientHeight;
-                e.style.transform = "scale(1, " + scaleFactor + ")";
+        function resizeElement() {
+            keyboard.hide();
+            var globalWrapper = document.getElementById("globalWrapper");
+            if(globalWrapper == null) {
+                return;
+            }
+            var vertScaleFactor = 1;
+            var horiScaleFactor = 1;
+            globalWrapper.style.height = "unset";
+            globalWrapper.setAttribute("data-scaleFactor", 1);
+            if(globalWrapper.scrollHeight > window.innerHeight) {
+                console.log('calculating vertical scale factor!!!');
+                console.log("The scrollHeight is: ", globalWrapper.scrollHeight);
+                console.log("The window inner height is: ", window.innerHeight);
+                //remove 5 pixels as buffer
+                vertScaleFactor = (window.innerHeight)/globalWrapper.scrollHeight;
+            }
+            /*
+            if(globalWrapper.scrollWidth > window.innerWidth) {
+                horiScaleFactor = window.innerWidth/globalWrapper.scrollWidth;
+            }
+            */
+            globalWrapper.style.transform = "scale(" + horiScaleFactor + ", " + vertScaleFactor + ")";
+            console.log( "---------------- ");
+            console.log( "vertScaleFactor: " + vertScaleFactor);
+            console.log( 'globalwrapper: ', globalWrapper);
+            console.log( "scrollHeight: " + globalWrapper.scrollHeight);
+            console.log( "window inner height: "+ window.innerHeight);
+            console.log( ".getBoundingClientRect().height: "+ globalWrapper.getBoundingClientRect().height);
+            console.log( "---------------- ");
+            
+            if(vertScaleFactor != 1) {
+                console.log('resetting global height');
+                var invertedScaleFactor =  (1/vertScaleFactor);
+                globalWrapper.style.height = invertedScaleFactor * 100 + "%";     
+                globalWrapper.setAttribute("data-scaleFactor", invertedScaleFactor);
             } else {
-                e.style.transform = "scale(1)";
+                globalWrapper.style.height = "unset";
             }
         }
 
         function displayElement(e) {
             hideAllViews();
             e.style.display = "block";
-            resizeElement(e);
+            setTimeout(resizeElement, 10);
         }
 
         //var timer;
@@ -451,9 +483,6 @@ path, .jtk-endpoint {
                 showingAnswerHelpText = false;
             }
         }
-        
-        //resizeWelcomeScreen
-        resizeElement(document.getElementById("welcomeScreenView"));
 
 		function App() {
 			var me = this;
@@ -523,7 +552,7 @@ path, .jtk-endpoint {
                 } else if(myAction === "sendWelcomeScreenInfo") {
                     if(playerName == null) {
                         hideAllViews();
-                        document.getElementById("welcomeScreenView").style.display = "block";
+                        displayElement(document.getElementById("welcomeScreenView"));
                         if(!isNameAlreadySet){
                             App.prototype.setKeyboardValue("nickname", me.air_console.getNickname());
                             isNameAlreadySet = true;
@@ -609,7 +638,7 @@ path, .jtk-endpoint {
                     //document.getElementById("roundCountInputField").setAttribute("max", payload.data);
                     //document.getElementById("roundCountInputField").value = payload.data;
                     //document.getElementById("roundCountDisplayField").value = payload.data;
-                    document.getElementById("selectRoundCountView").style.display = "block";
+                    displayElement(document.getElementById("selectRoundCountView"));
                     listOfPlayerNames = payload.data;
                     App.prototype.clickRoundButton(payload.data.length);
                 }
@@ -658,7 +687,7 @@ path, .jtk-endpoint {
                     )
                     {
                         if(!hasSeenTutorial[0]){
-                            App.prototype.showTutorial(questionWriterName.bold().fontcolor("blue") + " is writing questions. For fun, play “Would You Rather” to pass the time!");
+                            App.prototype.showTutorial(questionWriterName.bold().fontcolor("blue") + " is writing questions. For fun, play \"Would You Rather\" to pass the time!");
                             hasSeenTutorial[0] = true;
                         }
                         displayElement(document.getElementById("wouldYouRatherView"));
@@ -685,7 +714,7 @@ path, .jtk-endpoint {
                     displayElement(document.getElementById("submitAnswerView"));
                 } else if(myAction === "sendVotingTutorialScreen") {
                     hideAllViews();
-                    document.getElementById("waitingView").style.display = "block";
+                    displayElement(document.getElementById("waitingView"));
 
                     if(!hasSeenTutorial[1]) {
                         App.prototype.showNextVotingTutorial();
@@ -1587,8 +1616,10 @@ path, .jtk-endpoint {
       .view {
         transform-origin: top;
         transform: scale(1);
+        /*
         height: calc(100% - 45px);
         overflow-y: scroll;
+        */
         width:100%;
         padding: 4px;
       }
@@ -1717,649 +1748,652 @@ path, .jtk-endpoint {
 }
     </style>
   </head>
-  <body id="bodyElement" style="font-family: Autour One; font-size: 14px; background-color:#6CA7FF; text-align: center;overflow-y:scroll;
+  <body id="bodyElement" style="font-family: Autour One; font-size: 14px; background-color:#6CA7FF; text-align: center;
   display:flex; justify-content:center;align-items:center;margin:0;" onload="init()">
+    <div id="globalWrapper" class="noScrollbar" style="width: 100%; transform-origin: top;align-self: flex-start; overflow-y: scroll;">
         <div id="optionsButton" class="optionsButton">
-            <img src="./icon_gear.png" onmousedown="window.app.viewOptions()" style="height:30px; padding-top:10px;" />
+            <img src="./icon_gear.png" onmousedown="window.app.viewOptions()" style="height:30px; padding-top:10px;  padding-right: 10px;" />
         </div>
-    <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
-    <div class="view" id="welcomeScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
-        <p style="font-size:20px;">Welcome to</p>
-        <div style="font-size:40px;">MEEXARPS</div>
-        <br>
-        <br>
-        <br>
-        Select your Meexarp
-        <br>
-        <div class="franklinBanner" style="position: inherit; margin-top: 8px; margin-bottom: 8px; padding: 10px 0; height: 15vw;">
-            <div style = "display:flex; justify-content:space-evenly;  width:80%; height:100%;" >
-                <img id="alienButton0" class="alienButton" onmousedown="window.app.clickAlienButton(0)">
-                <img id="alienButton1" class="alienButton" onmousedown="window.app.clickAlienButton(1)">
-                <img id="alienButton2" class="alienButton" onmousedown="window.app.clickAlienButton(2)">
-                <img id="alienButton3" class="alienButton" onmousedown="window.app.clickAlienButton(3)">
-                <img id="alienButton4" class="alienButton" onmousedown="window.app.clickAlienButton(4)">
-                <img id="alienButton5" class="alienButton" onmousedown="window.app.clickAlienButton(5)">
-            </div>
-        </div>
-        Choose a username for your Meexarp
-        <br>
-        <div id="nickname" class="textfield" style="margin: 8px 0;">
-            <div style="color:#aaa"><i></i></div>
-        </div>
-        <div style="margin: 8px 0;" style="justify-content:center;">
-            <span style="display:none;" placeholder="username" class="franklinInput" contenteditable="true" id="nickname-system" 
-            onmousedown="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', '')"></span>
-        </div>
-        <div class="franklinInstructionText" style="font-size:9px;">To rejoin an existing game, please enter the same username</div>
-        <div class="view" id="nameAlreadyTakenView" style="display:none;color:red;font-style:italic;">
-            That name is already taken, please choose another name
-        </div>
-        <p>
-        <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
-        <div class="pseudo_button" onmousedown="window.app.sendWelcomeInfo()">Submit</div>
-        <br>
-        <br>
-        <text class="franklinInstructionText" id="welcomeScreenPlayerCount">0/6 Meexarps have joined the game</text>
-
-    </div> 
-    <div class="view optionsView" id="optionsView" style="display:none; z-index:1;padding-top:45px;">
-        <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideOptions()" style="z-index:2; height:30px; padding-top:10px;" />
-        <div style="position: width:100%;font-size:30px;">Game Options</div>
-        <div id="checkboxes" style="text-align:left; margin: 20px 0 0 20px;">
-            <div style="display:none;" id="vipOptionsDiv">
-                <div style="display:flex">
-                    <label class="switch" for="NsfwQuestionsCheckbox" >
-                        <input id="NsfwQuestionsCheckbox" type="checkbox" onchange="window.app.saveOptions()">
-                        <span class="slider round"></span>
-                    </label>
-                    <div style="padding-left:10px;">Nsfw Questions Enabled</div>
-                </div>
-                <br>
-                <div style="display:flex">
-                    <label class="switch" for="anonymousNameCheckbox" >
-                        <input id="anonymousNameCheckbox" type="checkbox" onchange="window.app.saveOptions()">
-                        <span class="slider round"></span>
-                    </label>
-                    <div style="padding-left:10px;">Anonymous Names Enabled</div>
-                </div>
-                <br>
-                <div style="display:flex;justify-content:center;margin-right: 20px;">
-                    <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Skip to End</div> <br>
-                </div>
-                <br>
-            </div>
-            <div style="display:flex">
-                <label class="switch" for="useSystemKeyboard" >
-                    <input id="useSystemKeyboard" type="checkbox" onchange="window.app.saveOptions()">
-                    <span class="slider round"></span>
-                </label>
-                <div style="padding-left:10px;">Use system keyboard (Not supported on all phones)</div>
-            </div><br>
-        </div>
-        <br>
-        <div class="pseudo_button" onmousedown="window.app.viewCredits()">View Credits!</div> <br>
-        <br>
-        <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
-    </div>
-    <div id="firstTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
-        <div id="page1" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div id="firstTutorialText" style="padding:10px 0 20px 0;"> Welcome to MEEXARPS! The game is played in 3 phases </div>
-            <div class="tutorialPageOneRow">
-                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                    <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
-                </div>
-                <div style="text-align: left;width:55%;"> 1. Write Questions </div>
-            </div>
-            <div class="tutorialPageOneRow">
-                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                    <img style="height:100%" src="./meexarpsAnswerQuestionsImage.png" /> 
-                </div>
-                <div style="text-align: left;width:55%;"> 2. Answer Questions </div>
-            </div>
-            <div class="tutorialPageOneRow">
-                <div style="height:100%;width: 33%;display:flex;justify-content:left;">
-                    <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
-                </div>
-                <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
-            </div>
-        </div>
-        <div id="page2" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div class="tutorialPageOneRow">
-                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                    <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
-                </div>
-                <div style="text-align: left;width:55%;"> 1. Write Questions </div>
-            </div>
-            The current presenter will write 3 personality questions. We recommend writing at least one question unique to your group!
-        </div>
-        <div id="page3" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div class="tutorialPageOneRow">
-                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                    <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
-                </div>
-                <div style="text-align: left;width:55%;"> 1. Write Questions </div>
-            </div>
-            While the current presenter is thinking of questions, the other Meexarps will be playing Would you Rather to pass the time.
-        </div>
-        <div id="page4" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div class="tutorialPageOneRow">
-                <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                    <img style="height:100%" src="./meexarpsAnswerQuestionsImage.png" /> 
-                </div>
-                <div style="text-align: left;width:55%;"> 2. Answer Questions </div>
-            </div>
-            When the current presenter submits their questions, all Meexarps will answer the questions. Answer truthfully! The goal is to learn about the power of friendship!
-        </div>
-        <div id="page5" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div class="tutorialPageOneRow">
-                <div style="height:100%;width: 33%;display:flex;justify-content:left;">
-                    <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
-                </div>
-                <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
-            </div>
-            Lastly, each Meexarp will match the anonymized personalities to their respective Meexarp. You will get points for each correct match!
-        </div>
-        <div id="page6" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div class="tutorialPageOneRow">
-                <div style="height:100%;width: 33%;display:flex;justify-content:left;">
-                    <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
-                </div>
-                <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
-            </div>
-                         The loop repeats for the selected number of rounds. At the end you will see if the board will approve the funding to continue your research!
-        </div>
-        <div style="display:flex;justify-content:space-evenly;">
-            <div id="closeFirstTutorialButton" class="pseudo_button" style="width:30%;" onmousedown="window.app.hideFirstTutorial()">Skip</div>
-            <div id="showNextFirstTutorial" class="pseudo_button" style="width:30%;" onmousedown="window.app.showNextFirstTutorial()">Next</div>
-        </div>
-        <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
-    </div>
-    <div id="tutorialView" class="tutorialView noScrollbar" style="display:none;">
-        <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-        <br>
-        <div id="tutorialText"> </div>
-        <br>
-        <div class="pseudo_button" onmousedown="window.app.hideTutorial()">Got it</div> <br>
-        <br>
-        <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
-    </div>
-    <div id="votingTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
-        <div id="votingPage1" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">The Voting Phase is coming up next!</div>
-            <div style="height:100%;">
-                Match the personality to the Meexarp
-                <br>
-                Points are awarded for each correct match
-                <br>
-                Show the Meexarps how friendly they can be!
-            </div>
-        </div>
-        <div id="votingPage2" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div style="height:100%;">
-                <img style="height:85%" src="./votingTutorial1.gif" /> 
-            </div>
-        </div>
-        <div id="votingPage3" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div style="height:100%;">
-                <img style="height:85%" src="./votingTutorial2.gif" /> 
-            </div>
-        </div>
-        <div id="votingPage4" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div style="height:100%;">
-                <img style="height:85%" src="./votingTutorial3.gif" /> 
-            </div>
-        </div>
-        <div id="votingPage5" class="tutorialPage noScrollbar">
-            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-            <div style="height:100%;">
-                <img style="height:85%" src="./votingTutorial4.gif" /> 
-            </div>
-        </div>
-        <div style="display:flex;justify-content:space-evenly;">
-            <div id="closeVotingTutorialButton" class="pseudo_button" style="width:30%;" onmousedown="window.app.hideVotingTutorial()">Skip</div>
-            <div id="showNextVotingTutorial" class="pseudo_button" style="width:30%;" onmousedown="window.app.showNextVotingTutorial()">Next</div>
-        </div>
-        <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
-    </div>
-        <div class="view tutorialView" id="creditsView" style="display:none;padding-top:45px;height:calc(100% - 90px);">
-        <div class="noScrollbar" style="height:calc(100% - 90px);overflow-y:scroll;">
-<p style="text-align: center;"><span style="font-size: 20px;"><strong>Credits:</strong></span></p>
-<p style="text-align: center;"><span style="font-size: 28px;">Meexarps: A Friendship Study</span></p>
-<p style="text-align: center;">A game by Franklin Zheng, Regina Yan and Vi Nguyen</p>
-<p style="text-align: center;"><strong>Gameplay:</strong> Franklin Zheng</p>
-<p style="text-align: center;"><strong>Art, UI, UX:</strong> Regina Yan&nbsp;</p>
-<p style="text-align: center;">(She is so talented, check out her work -&gt; <a href="http://reginayan.me/">http://reginayan.me/</a>)&nbsp;</p>
-<p style="text-align: center;"><br></p>
-<p style="text-align: center;"><strong>Writing, Testing: </strong>Vi Nguyen</p>
-<p style="text-align: center;"><strong>Music:</strong> Shan Man</p>
-<p style="text-align: center;"><strong>Additional Writing:</strong> Annie Lee, Vincent Lin</p>
-<p style="text-align: center;"><strong>Music:</strong>&nbsp;</p>
-<p style="text-align: center;"><strong>Ukulele:</strong> https://www.bensound.com</p>
-<p style="text-align: center;"><strong>Simple Joy </strong>by Alexander Nakarada: https://www.serpentsoundstudios.com</p>
-<p style="text-align: center;">Music promoted by https://www.free-stock-music.com Attribution 4.0 International (CC BY 4.0) https://creativecommons.org/licenses/by/4.0/</p>
-<p style="text-align: center;"><strong>Sound Effects:</strong></p>
-<p style="text-align: center;"><strong>Blop Sound:</strong> Mark DiAngelo</p>
-<p style="text-align: center;"><strong>Balloon Popping Sound</strong>: Mike Koenig</p>
-<p style="text-align: center;"><strong>Kitten Meow Sound:</strong> Mike Koenig</p>
-<p style="text-align: center;">Others under Creative Commons 0 License from https://freesound.org</p>
-        </div>
-        <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
-        <div class="pseudo_button" onmousedown="window.app.hideCredits()">Close Credits</div>
-    </div>   
-    <div class="view" id="startGameScreenView" style="display:none;align-self:flex-start;padding-top:52px;height:100%">
-        <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:9vh; opacity:100%;" class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
-        
-        <div class="franklinBanner" style="height:9vh;  margin-bottom: 15px; position: inherit;">
-            <div style = "font-size: 26px; display: flex; align-items: center; justify-content:center; width:85%; height:100%;" id="startGameScreenViewUsername"> Welcome, [Username]</div>
-        </div>
-        
-        Write your own “Would You Rather” questions while you wait!
-        <br>
-        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
-            <div style="display:flex;justify-content:center;width:100%;">
-                <div id="wouldYouRatherSubmit" class="textfield">
-                    <div style="color:#aaa"><i>Do you prefer...</i></div>
-                </div>
-                <span style="display:none" placeholder="Do you prefer..." class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit-system" 
-                    onmousedown="window.app.setPlaceholder('wouldYouRatherSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit-system', 'Do you prefer...')"></span>
-            </div>
-        </div>
-        <div style="display:flex; flex-direction: row-reverse;">
-            <div style="display:flex;align-items: center; flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')">
-                Clear
-                <img style="height:20px;" src="./icon_cross.png"/>
-            </div>
-        </div>
-        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
-            <div style="display:flex;justify-content:center;width:100%;">
-                <div id="wouldYouRatherLeftSubmit" class="textfield">
-                    <div style="color:#aaa"><i>Apple pie</i></div>
-                </div>
-                <span style="display:none" placeholder="Apple pie" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit-system" 
-                    onmousedown="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', 'Apple pie')"></span>
-            </div>
-        </div>
-        <div style="display:flex; flex-direction: row-reverse;">
-            <div style="display:flex;align-items: center; flex-direction: row-reverse; width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherLeftSubmit', '')">
-                Clear
-                <img style="height:20px;" src="./icon_cross.png"/>
-            </div>
-        </div>
-        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
-            <div style="display:flex;justify-content:center;width:100%;">
-                <div id="wouldYouRatherRightSubmit" class="textfield">
-                    <div style="color:#aaa"><i>Peach cobbler</i></div>
-                </div>
-                <span style="display:none" placeholder="Peach cobbler" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmit-system" 
-                onmousedown="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', 'Peach cobbler')"></span>
-            </div>
-        </div>   
-        <div style="display:flex; flex-direction: row-reverse;">
-            <div style="display:flex; align-items: center;flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherRightSubmit', '')">
-                Clear
-                <img style="height:20px;" src="./icon_cross.png"/>
-            </div>
-        </div>
-        <br>
-        <div id="submitWouldYouRatherButton" class="pseudo_button" onmousedown="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
-        <br>
-        <div id="vipStartButtonDescription" style="display:none">
+        <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
+        <div class="view" id="welcomeScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
+            <p style="font-size:20px;">Welcome to</p>
+            <div style="font-size:40px;">MEEXARPS</div>
             <br>
             <br>
-            <text>You are the VIP and can start the game<br>
-                when everyone is ready
-            </text>
-        </div>
-        <div style="display:flex; justify-content:center; width: 100%">
-            <div id="snackbar" class="snackbar">Would you rather submitted</div>
-        </div>
-        <p>
-        <div class="initially_hidden_pseudo_button" onmousedown="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
-        <div id="waitingForStartGame"></div>
-        <br>
-    </div>
-    <div class="view" id="waitingView" style="align-self:flex-start;padding-top:50%;display:none;height:min-content;">
-        Waiting… 
-        <div id="waitingFor"></div>
-    </div>
-    <div class="view" id="selectRoundCountView" style="display:none; align-self:flex-start;padding-top:35%;">
-        Select the number of rounds. One Meexarp writes questions each round.
-        <br>
-        <!--
-        <input type="range" id="roundCountInputField" min="1" max="6" oninput="roundCountDisplayField.value = roundCountInputField.value">
-        -->
-        <div style="display:flex; flex-direction:row; justify-content:space-evenly;">
-            <button id="roundCountButton1" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(1)">1</button>
-            <button id="roundCountButton2" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(2)">2</button>
-            <button id="roundCountButton3" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(3)">3</button>
-            <button id="roundCountButton4" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(4)">4</button>
-            <button id="roundCountButton5" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(5)">5</button>
-            <button id="roundCountButton6" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(6)">6</button>
-        </div>
-        <br>
-        <br>
-        <div class="pseudo_button" onmousedown="window.app.sendSetRoundCount()" style="margin:5px">Start Game</div>
-        <br>
-        <div id="timeEstimateDiv" style="padding-top:15px;"></div>
-    </div>
-    <div class="view" id="wouldYouRatherView" style="display:none;align-self:flex-start;padding-top:52px;">
-        <div class="franklinBanner">
-            <div style="width:85%;">Pick a side for the "Would you rather"</div>
-        </div>
-        <br>
-        <br>
-        <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:20vh;" id="wouldYouRatherAlienGif" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
-        <br>
-        <br>
-        <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(0)">Left</div>
-        <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(1)">Right</div>
-    </div>
-    <div class="view" id="sendSelectCategoryView" style="padding-top:52px;align-self:flex-start;display:none">
-        <div class="franklinBanner"> It's your turn to write questions!</div>
-        <br>
-        Select a category
-        <br>
-        <br>
-        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;flex-direction:column;">
-            <div id="selectCategoryButton1" class="pseudo_button" onmousedown="window.app.sendCategory(1)" style="margin:5px"></div>
-            <div id="selectCategoryButton2" class="pseudo_button" onmousedown="window.app.sendCategory(2)" style="margin:5px"></div>
-            <div id="selectCategoryButton3" class="pseudo_button" onmousedown="window.app.sendCategory(3)" style="margin:5px"></div>
-            <div id="selectCategoryButton4" class="pseudo_button" onmousedown="window.app.sendCategory(4)" style="margin:5px"></div>
-            <div id="selectCategoryButton5" class="pseudo_button" onmousedown="window.app.sendCategory(5)" style="margin:5px"></div>
-            <div id="selectCategoryButton6" class="pseudo_button" onmousedown="window.app.sendCategory(6)" style="margin:5px"></div>
-        </div>
-    </div>
-    <div class="view" id="retrieveQuestionsView" style="display:none; align-self: flex-start; padding-top:52px;">
-        <div class="franklinBanner"> It's your turn to write questions!</div>
-        <!--
-        Write somethings you'd like to know about your friends! 
-        <br>
-        Use a default question, modify it or write your own!
-        <br>
-        <br>
-        <img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
-        -->
-        <br>
-        <br>
-        <div style="display:flex; justify-content:flex-end;align-items:center;">
-            <!--<img style="height:40px;" src="./icon_stopwatch.png" />-->
-
-            <!--<div style="width:10%;" id="retrieveQuestionsTimer">0</div>-->
-        </div>
-        <!--<div id="categoryDisplay"></div>-->
-        <div style="width:100%; text-align:left;"> QUESTION 1</div>
-        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:100%;">
-            <div style="display:flex;justify-content:center;width:100%;">
-                <div id="retrieveQuestionsField1" class="textfield" style="width:95%;">
-                    <div style="color:#aaa"><i>Give me a good question</i></div>
-                </div>
-                <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1-system" 
-                    onmousedown="window.app.setPlaceholder('retrieveQuestionsField1-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField1-system', 'Give me a good question')">
-                </span>
-            </div>
-        </div>
-        <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black;">
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField1', '')">
-                Clear
-                <img style="height:20px;" src="./icon_cross.png"/>
-            </div>
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField1')">
-                New
-                <img style="height:20px;" src="./icon_refresh.png"/>
-            </div>
-        </div>
-        <div style="width:100%; text-align:left;"> QUESTION 2</div>
-        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:100%;">
-            <div style="display:flex;justify-content:center;width:100%;">
-                <div id="retrieveQuestionsField2" class="textfield" style="width: 95%;">
-                    <div style="color:#aaa"><i>Give me a good question</i></div>
-                </div>
-                <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2-system" 
-                    onmousedown="window.app.setPlaceholder('retrieveQuestionsField2-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField2-system', 'Give me a good question')">
-                </span>
-            </div>
-            <!--<div class="pseudo_button" onmousedown="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>-->
-        </div>
-        <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField2', '')">
-                Clear
-                <img style="height:20px;" src="./icon_cross.png"/>
-            </div>
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField2')">
-                New
-                <img style="height:20px;" src="./icon_refresh.png"/>
-            </div>
-        </div>
-        <div style="width:100%; text-align:left;"> QUESTION 3</div>
-        <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:100%;">
-            <div style="display:flex;justify-content:center;width:100%;">
-                <div id="retrieveQuestionsField3" class="textfield" style="width: 95%;">
-                    <div style="color:#aaa"><i>Give me a good question</i></div>
-                </div>
-                <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3-system" 
-                    onmousedown="window.app.setPlaceholder('retrieveQuestionsField3-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3-system', 'Give me a good question')">
-                </span>
-            </div>
-        </div> 
-        <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
-            <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField3', '')">
-                Clear
-                <img style="height:20px;" src="./icon_cross.png"/>
-            </div>
-            <div style="display:flex;align-items:center; flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField3')">
-                New
-                <img style="height:20px;" src="./icon_refresh.png"/>
-            </div>
-        </div>
-        <p>
-        <div class="pseudo_button" onmousedown="window.app.sendDecidedQuestions()">Send out the questions!</div>
-    </div>
-    <div class="view" id="skipIntroView" style="height:unset;padding-top:50%; align-self:flex-start;display:none;">
-        <p>
-        <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Intro</div>
-    </div>
-    <div class="view" id="skipInstructionsView" style="height:unset;padding-top:50%; align-self:flex-start;display:none;">
-        Watch the instructions on the screen or press this button to skip the video
-        <p>
-        <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Instructions</div>
-    </div>
-    <div class="view" id="submitAnswerView" style="align-self:flex-start; padding-top: 52px; display:none">
-        <div class="franklinBanner">
-            <div style="width:85%;">Answer these questions!</div>
-        </div>
-        <!--Answer the following questions honestly! -->
-        <!--<img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />-->
-        <div style="display:flex; justify-content:flex-end;align-items:center;margin:8px 0;">
-            <!--<img style="height:40px;" src="./icon_stopwatch.png" />-->
-
-            <!--<div style="width:10%;" id="answerQuestionsTimer">0</div>-->
-        </div>
-        <div id="question1" style="word-break: break-word;"></div>
-        <div style="display:flex;justify-content:center;width:100%;">
-            <div id="textfield1" class="textfield" style="width:95%;">
-                <div style="color:#aaa"><i>Answer me!</i></div>
-            </div>
-            <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1-system" 
-            onmousedown="window.app.setPlaceholder('textfield1-system', '')" onblur="window.app.setPlaceholder('textfield1-system', 'Answer me!')"></span>
-        </div>
-        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
-            <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield1', '')">
-                <img style="height:20px;" src="./icon_cross.png"/>
-                Clear
-            </div>
-        </div>
-        <p>
-        <div id="question2" style="word-break: break-word;"></div>
-        <div style="display:flex;justify-content:center;width:100%;">
-            <div id="textfield2" class="textfield" style="width:95%;">
-                <div style="color:#aaa"><i>Answer me!</i></div>
-            </div>
-            <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2-system" 
-            onmousedown="window.app.setPlaceholder('textfield2-system', '')" onblur="window.app.setPlaceholder('textfield2-system', 'Answer me!')"></span>
-        </div>
-        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
-            <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield2', '')">
-                <img style="height:20px;" src="./icon_cross.png"/>
-                Clear
-            </div>
-        </div>
-        <p>
-        <div id="question3" style="word-break: break-word;"></div>
-        <div style="display:flex;justify-content:center;width:100%;">
-            <div id="textfield3" class="textfield" style="width:95%;">
-                <div style="color:#aaa"><i>Answer me!</i></div>
-            </div>
-            <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3-system" 
-            onmousedown="window.app.setPlaceholder('textfield3-system', '')" onblur="window.app.setPlaceholder('textfield3-system', 'Answer me!')"></span>
-        </div>
-        <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
-            <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield3', '')">
-                <img style="height:20px;" src="./icon_cross.png"/>
-                Clear
-            </div>
-        </div>
-        <p>
-        <div class="pseudo_button" onmousedown="window.app.sendAnswer()">Submit</div>
-    </div>
-    <!--<div id="answerSummaryForSelectedPlayer" style="width:100%; display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;background-color:#0adada;display:none;padding:4px;">
-        test 
-    </div>-->
-    <div class="view" id="submitVoteView" style="padding-top:52px; width:100%; height:calc(100% - 45px);display:none;align-self:flex-start;" >
-        <div class="franklinBanner" style="position:inherit">
-            <div style="width:85%;">Match the aliens to your friends</div>
-        </div>
-         <div class="jtk-demo-canvas canvas-wide source-target-demo jtk-surface jtk-surface-nopan" 
-            style="display:flex;width:100%;height:80%;flex-direction:column;" id="canvas">
-            <div class="votingRow">
-                <div class="window anonymousNameBox targetWindow0" id="targetWindow0">
-                    <img class="targetWindow0 alienImage "id="sourceImage0" onmousedown="window.app.deleteSingleConnection('targetWindow0')">
-                    <div class="sourceWindowLabel">target 1</div>
-                </div>
-                <div class="window playerNameBox sourceWindow0" id="sourceWindow0">
-                    <img id="targetImage0" class="alienImage sourceWindow0" onmousedown="window.app.deleteSingleConnection('sourceWindow0')">
-                    <div class="targetWindowLabel">source 1</div>
+            <br>
+            Select your Meexarp
+            <br>
+            <div class="franklinBanner" style="position: inherit; margin-top: 8px; margin-bottom: 8px; padding: 10px 0; height: 15vw;">
+                <div style = "display:flex; justify-content:space-evenly;  width:80%; height:100%;" >
+                    <img id="alienButton0" class="alienButton" onmousedown="window.app.clickAlienButton(0)">
+                    <img id="alienButton1" class="alienButton" onmousedown="window.app.clickAlienButton(1)">
+                    <img id="alienButton2" class="alienButton" onmousedown="window.app.clickAlienButton(2)">
+                    <img id="alienButton3" class="alienButton" onmousedown="window.app.clickAlienButton(3)">
+                    <img id="alienButton4" class="alienButton" onmousedown="window.app.clickAlienButton(4)">
+                    <img id="alienButton5" class="alienButton" onmousedown="window.app.clickAlienButton(5)">
                 </div>
             </div>
-            <div class="votingRow">
-                <div class="window anonymousNameBox targetWindow1" id="targetWindow1">
-                    <img class="targetWindow1 alienImage"id="sourceImage1" onmousedown="window.app.deleteSingleConnection('targetWindow1')">
-                    <div class="sourceWindowLabel">target 2</div>
-                </div>
-                <div class="window playerNameBox sourceWindow1" id="sourceWindow1">
-                    <img id="targetImage1" class="alienImage sourceWindow1" onmousedown="window.app.deleteSingleConnection('sourceWindow1')">
-                    <div class="targetWindowLabel">source 2</div>
-                </div>
+            Choose a username for your Meexarp
+            <br>
+            <div id="nickname" class="textfield" style="margin: 8px 0;">
+                <div style="color:#aaa"><i></i></div>
             </div>
-            <div class="votingRow">
-                <div class="window anonymousNameBox targetWindow2" id="targetWindow2">
-                    <img class="targetWindow2 alienImage"id="sourceImage2" onmousedown="window.app.deleteSingleConnection('targetWindow2')">
-                    <div class="sourceWindowLabel">target 3</div>
-                </div>
-                <div class="window playerNameBox sourceWindow2" id="sourceWindow2">
-                    <img id="targetImage2" class="alienImage sourceWindow2" onmousedown="window.app.deleteSingleConnection('sourceWindow2')">
-                    <div class="targetWindowLabel">source 3</div>
-                </div>
+            <div style="margin: 8px 0;" style="justify-content:center;">
+                <span style="display:none;" placeholder="username" class="franklinInput" contenteditable="true" id="nickname-system" 
+                onmousedown="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', '')"></span>
             </div>
-            <div class="votingRow">
-                <div class="window anonymousNameBox targetWindow3" id="targetWindow3">
-                    <img class="targetWindow3 alienImage" id="sourceImage3" onmousedown="window.app.deleteSingleConnection('targetWindow3')">
-                    <div class="sourceWindowLabel">target 4</div>
-                </div>
-                <div class="window playerNameBox sourceWindow3" id="sourceWindow3">
-                    <img id="targetImage3" class="alienImage sourceWindow3" onmousedown="window.app.deleteSingleConnection('sourceWindow3')">
-                    <div class="targetWindowLabel">source 4</div>
-                </div>
+            <div class="franklinInstructionText" style="font-size:9px;">To rejoin an existing game, please enter the same username</div>
+            <div class="view" id="nameAlreadyTakenView" style="display:none;color:red;font-style:italic;">
+                That name is already taken, please choose another name
             </div>
-            <div class="votingRow">
-                <div class="window anonymousNameBox targetWindow4" id="targetWindow4">
-                    <img class="targetWindow4 alienImage" id="sourceImage4" onmousedown="window.app.deleteSingleConnection('targetWindow4')">
-                    <div class="sourceWindowLabel">target 5</div>
-                </div>
-                <div class="window playerNameBox sourceWindow4" id="sourceWindow4">
-                    <img id="targetImage4" class="alienImage sourceWindow4" onmousedown="window.app.deleteSingleConnection('sourceWindow4')">
-                    <div class="targetWindowLabel">source 5</div>
-                </div>
-            </div>
-            <div class="votingRow">
-                <div class="window anonymousNameBox targetWindow5" id="targetWindow5">
-                    <img class="targetWindow5 alienImage" id="sourceImage5" onmousedown="window.app.deleteSingleConnection('targetWindow5')">
-                    <div class="sourceWindowLabel">target 6</div>
-                </div>
-                <div class="window playerNameBox sourceWindow5" id="sourceWindow5">
-                    <img id="targetImage5" class="alienImage sourceWindow5" onmousedown="window.app.deleteSingleConnection('sourceWindow5')">
-                    <div class="targetWindowLabel">source 6</div>
-                </div>
-            </div>
-        </div>
-        <!-- When the audience runs out of time, show a snackbar -->
-        <div style="display:flex; justify-content:center; width: 100%">
-            <div id="snackbar2" class="snackbar">Time's up! Autosubmitting in 10 seconds...</div>
-        </div>
-        <div id="submitVoteButton" class="pseudo_button" onmousedown="window.app.sendVoting(true)">Submit Votes!</div>
-    </div>
-    <div class="view" id="roundResultsView" style="width:100%; height:calc(100% - 45px);display:none; padding-top: 52px;align-self:flex-start;" >
-        
-        <div style="display:flex; flex-direction:row;justify-content:space-evenly; padding-bottom: 20px;height:9%; width:140%; margin-left: -15%">
-            <div style= "width:45%;height:3vh;position:inherit;" class="franklinBanner">Alien</div>
-            <div style= "width:45%;height:3vh;position:inherit;" class="franklinBanner">Your guess</div>
-        </div>
-        <div id="resultsContainer">
-        </div>
-        <!--
-        <div style="display:flex; flex-direction:row;outline:1px solid;">
-            <div style="width:33%;height:100%;flex-direction: column;align-items:center;outline:1px solid;" id="roundResultsAlienSide">
-            </div>
-            <div style="width:33%;height:inherit;flex-direction: column;align-items:center;display:flex;justify-content:space-around;outline:1px solid;" id="roundResultsRightOrWrong">
-            </div>
-            <div style="width:33%;height:100%;flex-direction: column;align-items:center;outline:1px solid;" id="roundResultsYourGuess">
-            </div>
-        </div>
-        -->
-        <br>
-        <div  style="display:flex; justify-content:center;">
-            <div class="pseudo_button" style="display:none;width:50%;" id="nextRoundButton" onmousedown="window.app.sendNextRound()">Continue to Next Round</div>
-            <div class="pseudo_button" style="display:none;width:50%;" id="endScreenButton" onmousedown="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
-        </div>
-    </div>
-    <div class="view" id="endGameView" style="padding-top:52px;align-self:flex-start;display:none;">
-
-        <!-- dynamically change this based on playernumber which we have in javascript -->
-        <img style="height:20vh;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
-        
-        <div id="endGameScreenViewUsername" style="font-size:40px">[Username]</div>
-        <br>
-        <br>
-        You correctly identified your friends
-        <div id="endGameScreenViewPoints" style="font-size:40px"></div>
-        <div id="endGameScreenViewTimes">times</div>
-        
-        <br>
-        <br>
-        <br>
-        <div id="endGameScreenViewBestFriendDescription">Your best friend is</div>
-        <br>
-        <div id="endGameScreenViewBestFriend" style="font-size:40px">[Username]</div>
-        <div id="endGameScreenViewButton" style="display:none;">
-            Hit this button to restart the game!
-            <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
             <p>
-            <div class="pseudo_button" onmousedown="window.app.sendPlayAgain()">Continue to Next game</div>
+            <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
+            <div class="pseudo_button" onmousedown="window.app.sendWelcomeInfo()">Submit</div>
+            <br>
+            <br>
+            <text class="franklinInstructionText" id="welcomeScreenPlayerCount">0/6 Meexarps have joined the game</text>
+
+        </div> 
+        <div class="view optionsView" id="optionsView" style="display:none; z-index:1;padding-top:45px;">
+            <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideOptions()" style="z-index:2; height:30px; padding-top:10px;" />
+            <div style="position: width:100%;font-size:30px;">Game Options</div>
+            <div id="checkboxes" style="text-align:left; margin: 20px 0 0 20px;">
+                <div style="display:none;" id="vipOptionsDiv">
+                    <div style="display:flex">
+                        <label class="switch" for="NsfwQuestionsCheckbox" >
+                            <input id="NsfwQuestionsCheckbox" type="checkbox" onchange="window.app.saveOptions()">
+                            <span class="slider round"></span>
+                        </label>
+                        <div style="padding-left:10px;">Nsfw Questions Enabled</div>
+                    </div>
+                    <br>
+                    <div style="display:flex">
+                        <label class="switch" for="anonymousNameCheckbox" >
+                            <input id="anonymousNameCheckbox" type="checkbox" onchange="window.app.saveOptions()">
+                            <span class="slider round"></span>
+                        </label>
+                        <div style="padding-left:10px;">Anonymous Names Enabled</div>
+                    </div>
+                    <br>
+                    <div style="display:flex;justify-content:center;margin-right: 20px;">
+                        <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Skip to End</div> <br>
+                    </div>
+                    <br>
+                </div>
+                <div style="display:flex">
+                    <label class="switch" for="useSystemKeyboard" >
+                        <input id="useSystemKeyboard" type="checkbox" onchange="window.app.saveOptions()">
+                        <span class="slider round"></span>
+                    </label>
+                    <div style="padding-left:10px;">Use system keyboard (Not supported on all phones)</div>
+                </div><br>
+            </div>
+            <br>
+            <div class="pseudo_button" onmousedown="window.app.viewCredits()">View Credits!</div> <br>
+            <br>
+            <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+        </div>
+        <div id="firstTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
+            <div id="page1" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div id="firstTutorialText" style="padding:10px 0 20px 0;"> Welcome to MEEXARPS! The game is played in 3 phases </div>
+                <div class="tutorialPageOneRow">
+                    <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                        <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
+                    </div>
+                    <div style="text-align: left;width:55%;"> 1. Write Questions </div>
+                </div>
+                <div class="tutorialPageOneRow">
+                    <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                        <img style="height:100%" src="./meexarpsAnswerQuestionsImage.png" /> 
+                    </div>
+                    <div style="text-align: left;width:55%;"> 2. Answer Questions </div>
+                </div>
+                <div class="tutorialPageOneRow">
+                    <div style="height:100%;width: 33%;display:flex;justify-content:left;">
+                        <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
+                    </div>
+                    <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
+                </div>
+            </div>
+            <div id="page2" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div class="tutorialPageOneRow">
+                    <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                        <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
+                    </div>
+                    <div style="text-align: left;width:55%;"> 1. Write Questions </div>
+                </div>
+                The current presenter will write 3 personality questions. We recommend writing at least one question unique to your group!
+            </div>
+            <div id="page3" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div class="tutorialPageOneRow">
+                    <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                        <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
+                    </div>
+                    <div style="text-align: left;width:55%;"> 1. Write Questions </div>
+                </div>
+                While the current presenter is thinking of questions, the other Meexarps will be playing Would you Rather to pass the time.
+            </div>
+            <div id="page4" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div class="tutorialPageOneRow">
+                    <div style="height:100%;width: 33%;display:flex;justify-content:center;">
+                        <img style="height:100%" src="./meexarpsAnswerQuestionsImage.png" /> 
+                    </div>
+                    <div style="text-align: left;width:55%;"> 2. Answer Questions </div>
+                </div>
+                When the current presenter submits their questions, all Meexarps will answer the questions. Answer truthfully! The goal is to learn about the power of friendship!
+            </div>
+            <div id="page5" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div class="tutorialPageOneRow">
+                    <div style="height:100%;width: 33%;display:flex;justify-content:left;">
+                        <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
+                    </div>
+                    <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
+                </div>
+                Lastly, each Meexarp will match the anonymized personalities to their respective Meexarp. You will get points for each correct match!
+            </div>
+            <div id="page6" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div class="tutorialPageOneRow">
+                    <div style="height:100%;width: 33%;display:flex;justify-content:left;">
+                        <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
+                    </div>
+                    <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
+                </div>
+                                The loop repeats for the selected number of rounds. At the end you will see if the board will approve the funding to continue your research!
+            </div>
+            <div style="display:flex;justify-content:space-evenly;">
+                <div id="closeFirstTutorialButton" class="pseudo_button" style="width:30%;" onmousedown="window.app.hideFirstTutorial()">Skip</div>
+                <div id="showNextFirstTutorial" class="pseudo_button" style="width:30%;" onmousedown="window.app.showNextFirstTutorial()">Next</div>
+            </div>
+            <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+        </div>
+        <div id="tutorialView" class="tutorialView noScrollbar" style="display:none;">
+            <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+            <br>
+            <div id="tutorialText"> </div>
+            <br>
+            <div class="pseudo_button" onmousedown="window.app.hideTutorial()">Got it</div> <br>
+            <br>
+            <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+        </div>
+        <div id="votingTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
+            <div id="votingPage1" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">The Voting Phase is coming up next!</div>
+                <div style="height:100%;">
+                    Match the personality to the Meexarp
+                    <br>
+                    Points are awarded for each correct match
+                    <br>
+                    Show the Meexarps how friendly they can be!
+                </div>
+            </div>
+            <div id="votingPage2" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div style="height:100%;">
+                    <img style="height:85%" src="./votingTutorial1.gif" /> 
+                </div>
+            </div>
+            <div id="votingPage3" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div style="height:100%;">
+                    <img style="height:85%" src="./votingTutorial2.gif" /> 
+                </div>
+            </div>
+            <div id="votingPage4" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div style="height:100%;">
+                    <img style="height:85%" src="./votingTutorial3.gif" /> 
+                </div>
+            </div>
+            <div id="votingPage5" class="tutorialPage noScrollbar">
+                <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
+                <div style="height:100%;">
+                    <img style="height:85%" src="./votingTutorial4.gif" /> 
+                </div>
+            </div>
+            <div style="display:flex;justify-content:space-evenly;">
+                <div id="closeVotingTutorialButton" class="pseudo_button" style="width:30%;" onmousedown="window.app.hideVotingTutorial()">Skip</div>
+                <div id="showNextVotingTutorial" class="pseudo_button" style="width:30%;" onmousedown="window.app.showNextVotingTutorial()">Next</div>
+            </div>
+            <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+        </div>
+            <div class="view tutorialView" id="creditsView" style="display:none;padding-top:45px;height:calc(100% - 90px);">
+            <div class="noScrollbar" style="height:calc(100% - 90px);overflow-y:scroll;">
+    <p style="text-align: center;"><span style="font-size: 20px;"><strong>Credits:</strong></span></p>
+    <p style="text-align: center;"><span style="font-size: 28px;">Meexarps: A Friendship Study</span></p>
+    <p style="text-align: center;">A game by Franklin Zheng, Regina Yan and Vi Nguyen</p>
+    <p style="text-align: center;"><strong>Gameplay:</strong> Franklin Zheng</p>
+    <p style="text-align: center;"><strong>Art, UI, UX:</strong> Regina Yan&nbsp;</p>
+    <p style="text-align: center;">(She is so talented, check out her work -&gt; <a href="http://reginayan.me/">http://reginayan.me/</a>)&nbsp;</p>
+    <p style="text-align: center;"><br></p>
+    <p style="text-align: center;"><strong>Writing, Testing: </strong>Vi Nguyen</p>
+    <p style="text-align: center;"><strong>Music:</strong> Shan Man</p>
+    <p style="text-align: center;"><strong>Additional Writing:</strong> Annie Lee, Vincent Lin</p>
+    <p style="text-align: center;"><strong>Music:</strong>&nbsp;</p>
+    <p style="text-align: center;"><strong>Ukulele:</strong> https://www.bensound.com</p>
+    <p style="text-align: center;"><strong>Simple Joy </strong>by Alexander Nakarada: https://www.serpentsoundstudios.com</p>
+    <p style="text-align: center;">Music promoted by https://www.free-stock-music.com Attribution 4.0 International (CC BY 4.0) https://creativecommons.org/licenses/by/4.0/</p>
+    <p style="text-align: center;"><strong>Sound Effects:</strong></p>
+    <p style="text-align: center;"><strong>Blop Sound:</strong> Mark DiAngelo</p>
+    <p style="text-align: center;"><strong>Balloon Popping Sound</strong>: Mike Koenig</p>
+    <p style="text-align: center;"><strong>Kitten Meow Sound:</strong> Mike Koenig</p>
+    <p style="text-align: center;">Others under Creative Commons 0 License from https://freesound.org</p>
+            </div>
+            <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
+            <div class="pseudo_button" onmousedown="window.app.hideCredits()">Close Credits</div>
+        </div>   
+        <div class="view" id="startGameScreenView" style="display:none;align-self:flex-start;padding-top:52px;height:100%">
+            <!-- dynamically change this based on playernumber which we have in javascript -->
+            <img style="height:9vh; opacity:100%;" class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
+        
+            <div class="franklinBanner" style="height:9vh;  margin-bottom: 15px; position: inherit;">
+                <div style = "font-size: 26px; display: flex; align-items: center; justify-content:center; width:85%; height:100%;" id="startGameScreenViewUsername"> Welcome, [Username]</div>
+            </div>
+        
+            Write your own “Would You Rather” questions while you wait!
+            <br>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
+                <div style="display:flex;justify-content:center;width:100%;">
+                    <div id="wouldYouRatherSubmit" class="textfield">
+                        <div style="color:#aaa"><i>Do you prefer...</i></div>
+                    </div>
+                    <span style="display:none" placeholder="Do you prefer..." class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit-system" 
+                        onmousedown="window.app.setPlaceholder('wouldYouRatherSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit-system', 'Do you prefer...')"></span>
+                </div>
+            </div>
+            <div style="display:flex; flex-direction: row-reverse;">
+                <div style="display:flex;align-items: center; flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')">
+                    Clear
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                </div>
+            </div>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
+                <div style="display:flex;justify-content:center;width:100%;">
+                    <div id="wouldYouRatherLeftSubmit" class="textfield">
+                        <div style="color:#aaa"><i>Apple pie</i></div>
+                    </div>
+                    <span style="display:none" placeholder="Apple pie" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit-system" 
+                        onmousedown="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', 'Apple pie')"></span>
+                </div>
+            </div>
+            <div style="display:flex; flex-direction: row-reverse;">
+                <div style="display:flex;align-items: center; flex-direction: row-reverse; width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherLeftSubmit', '')">
+                    Clear
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                </div>
+            </div>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
+                <div style="display:flex;justify-content:center;width:100%;">
+                    <div id="wouldYouRatherRightSubmit" class="textfield">
+                        <div style="color:#aaa"><i>Peach cobbler</i></div>
+                    </div>
+                    <span style="display:none" placeholder="Peach cobbler" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmit-system" 
+                    onmousedown="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', 'Peach cobbler')"></span>
+                </div>
+            </div>   
+            <div style="display:flex; flex-direction: row-reverse;">
+                <div style="display:flex; align-items: center;flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherRightSubmit', '')">
+                    Clear
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                </div>
+            </div>
+            <br>
+            <div id="submitWouldYouRatherButton" class="pseudo_button" onmousedown="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
+            <br>
+            <div id="vipStartButtonDescription" style="display:none">
+                <br>
+                <br>
+                <text>You are the VIP and can start the game<br>
+                    when everyone is ready
+                </text>
+            </div>
+            <div style="display:flex; justify-content:center; width: 100%">
+                <div id="snackbar" class="snackbar">Would you rather submitted</div>
+            </div>
+            <p>
+            <div class="initially_hidden_pseudo_button" onmousedown="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
+            <div id="waitingForStartGame"></div>
+            <br>
+        </div>
+        <div class="view" id="waitingView" style="align-self:flex-start;padding-top:50%;display:none;height:min-content;">
+            Waiting… 
+            <div id="waitingFor"></div>
+        </div>
+        <div class="view" id="selectRoundCountView" style="display:none; align-self:flex-start;padding-top:35%;">
+            Select the number of rounds. One Meexarp writes questions each round.
+            <br>
+            <!--
+            <input type="range" id="roundCountInputField" min="1" max="6" oninput="roundCountDisplayField.value = roundCountInputField.value">
+            -->
+            <div style="display:flex; flex-direction:row; justify-content:space-evenly;">
+                <button id="roundCountButton1" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(1)">1</button>
+                <button id="roundCountButton2" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(2)">2</button>
+                <button id="roundCountButton3" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(3)">3</button>
+                <button id="roundCountButton4" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(4)">4</button>
+                <button id="roundCountButton5" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(5)">5</button>
+                <button id="roundCountButton6" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(6)">6</button>
+            </div>
+            <br>
+            <br>
+            <div class="pseudo_button" onmousedown="window.app.sendSetRoundCount()" style="margin:5px">Start Game</div>
+            <br>
+            <div id="timeEstimateDiv" style="padding-top:15px;"></div>
+        </div>
+        <div class="view" id="wouldYouRatherView" style="display:none;align-self:flex-start;padding-top:52px;">
+            <div class="franklinBanner">
+                <div style="width:85%;">Pick a side for the "Would you rather"</div>
+            </div>
+            <br>
+            <br>
+            <!-- dynamically change this based on playernumber which we have in javascript -->
+            <img style="height:20vh;" id="wouldYouRatherAlienGif" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
+            <br>
+            <br>
+            <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(0)">Left</div>
+            <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(1)">Right</div>
+        </div>
+        <div class="view" id="sendSelectCategoryView" style="padding-top:52px;align-self:flex-start;display:none">
+            <div class="franklinBanner"> It's your turn to write questions!</div>
+            <br>
+            Select a category
+            <br>
+            <br>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;flex-direction:column;">
+                <div id="selectCategoryButton1" class="pseudo_button" onmousedown="window.app.sendCategory(1)" style="margin:5px"></div>
+                <div id="selectCategoryButton2" class="pseudo_button" onmousedown="window.app.sendCategory(2)" style="margin:5px"></div>
+                <div id="selectCategoryButton3" class="pseudo_button" onmousedown="window.app.sendCategory(3)" style="margin:5px"></div>
+                <div id="selectCategoryButton4" class="pseudo_button" onmousedown="window.app.sendCategory(4)" style="margin:5px"></div>
+                <div id="selectCategoryButton5" class="pseudo_button" onmousedown="window.app.sendCategory(5)" style="margin:5px"></div>
+                <div id="selectCategoryButton6" class="pseudo_button" onmousedown="window.app.sendCategory(6)" style="margin:5px"></div>
+            </div>
+        </div>
+        <div class="view" id="retrieveQuestionsView" style="display:none; align-self: flex-start; padding-top:52px;">
+            <div class="franklinBanner"> It's your turn to write questions!</div>
+            <!--
+            Write somethings you'd like to know about your friends! 
+            <br>
+            Use a default question, modify it or write your own!
+            <br>
+            <br>
+            <img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
+            -->
+            <br>
+            <br>
+            <div style="display:flex; justify-content:flex-end;align-items:center;">
+                <!--<img style="height:40px;" src="./icon_stopwatch.png" />-->
+
+                <!--<div style="width:10%;" id="retrieveQuestionsTimer">0</div>-->
+            </div>
+            <!--<div id="categoryDisplay"></div>-->
+            <div style="width:100%; text-align:left;"> QUESTION 1</div>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:100%;">
+                <div style="display:flex;justify-content:center;width:100%;">
+                    <div id="retrieveQuestionsField1" class="textfield" style="width:95%;">
+                        <div style="color:#aaa"><i>Give me a good question</i></div>
+                    </div>
+                    <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1-system" 
+                        onmousedown="window.app.setPlaceholder('retrieveQuestionsField1-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField1-system', 'Give me a good question')">
+                    </span>
+                </div>
+            </div>
+            <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black;">
+                <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField1', '')">
+                    Clear
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                </div>
+                <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField1')">
+                    New
+                    <img style="height:20px;" src="./icon_refresh.png"/>
+                </div>
+            </div>
+            <div style="width:100%; text-align:left;"> QUESTION 2</div>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:100%;">
+                <div style="display:flex;justify-content:center;width:100%;">
+                    <div id="retrieveQuestionsField2" class="textfield" style="width: 95%;">
+                        <div style="color:#aaa"><i>Give me a good question</i></div>
+                    </div>
+                    <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2-system" 
+                        onmousedown="window.app.setPlaceholder('retrieveQuestionsField2-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField2-system', 'Give me a good question')">
+                    </span>
+                </div>
+                <!--<div class="pseudo_button" onmousedown="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>-->
+            </div>
+            <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
+                <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField2', '')">
+                    Clear
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                </div>
+                <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField2')">
+                    New
+                    <img style="height:20px;" src="./icon_refresh.png"/>
+                </div>
+            </div>
+            <div style="width:100%; text-align:left;"> QUESTION 3</div>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:100%;">
+                <div style="display:flex;justify-content:center;width:100%;">
+                    <div id="retrieveQuestionsField3" class="textfield" style="width: 95%;">
+                        <div style="color:#aaa"><i>Give me a good question</i></div>
+                    </div>
+                    <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3-system" 
+                        onmousedown="window.app.setPlaceholder('retrieveQuestionsField3-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3-system', 'Give me a good question')">
+                    </span>
+                </div>
+            </div> 
+            <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
+                <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField3', '')">
+                    Clear
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                </div>
+                <div style="display:flex;align-items:center; flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField3')">
+                    New
+                    <img style="height:20px;" src="./icon_refresh.png"/>
+                </div>
+            </div>
+            <p>
+            <div class="pseudo_button" onmousedown="window.app.sendDecidedQuestions()">Send out the questions!</div>
+        </div>
+        <div class="view" id="skipIntroView" style="height:unset;padding-top:50%; align-self:flex-start;display:none;">
+            <p>
+            <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Intro</div>
+        </div>
+        <div class="view" id="skipInstructionsView" style="height:unset;padding-top:50%; align-self:flex-start;display:none;">
+            Watch the instructions on the screen or press this button to skip the video
+            <p>
+            <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Instructions</div>
+        </div>
+        <div class="view" id="submitAnswerView" style="align-self:flex-start; padding-top: 52px; display:none">
+            <div class="franklinBanner">
+                <div style="width:85%;">Answer these questions!</div>
+            </div>
+            <!--Answer the following questions honestly! -->
+            <!--<img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />-->
+            <div style="display:flex; justify-content:flex-end;align-items:center;margin:8px 0;">
+                <!--<img style="height:40px;" src="./icon_stopwatch.png" />-->
+
+                <!--<div style="width:10%;" id="answerQuestionsTimer">0</div>-->
+            </div>
+            <div id="question1" style="word-break: break-word;"></div>
+            <div style="display:flex;justify-content:center;width:100%;">
+                <div id="textfield1" class="textfield" style="width:95%;">
+                    <div style="color:#aaa"><i>Answer me!</i></div>
+                </div>
+                <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1-system" 
+                onmousedown="window.app.setPlaceholder('textfield1-system', '')" onblur="window.app.setPlaceholder('textfield1-system', 'Answer me!')"></span>
+            </div>
+            <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
+                <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield1', '')">
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                    Clear
+                </div>
+            </div>
+            <p>
+            <div id="question2" style="word-break: break-word;"></div>
+            <div style="display:flex;justify-content:center;width:100%;">
+                <div id="textfield2" class="textfield" style="width:95%;">
+                    <div style="color:#aaa"><i>Answer me!</i></div>
+                </div>
+                <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2-system" 
+                onmousedown="window.app.setPlaceholder('textfield2-system', '')" onblur="window.app.setPlaceholder('textfield2-system', 'Answer me!')"></span>
+            </div>
+            <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
+                <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield2', '')">
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                    Clear
+                </div>
+            </div>
+            <p>
+            <div id="question3" style="word-break: break-word;"></div>
+            <div style="display:flex;justify-content:center;width:100%;">
+                <div id="textfield3" class="textfield" style="width:95%;">
+                    <div style="color:#aaa"><i>Answer me!</i></div>
+                </div>
+                <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3-system" 
+                onmousedown="window.app.setPlaceholder('textfield3-system', '')" onblur="window.app.setPlaceholder('textfield3-system', 'Answer me!')"></span>
+            </div>
+            <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
+                <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield3', '')">
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                    Clear
+                </div>
+            </div>
+            <p>
+            <div class="pseudo_button" onmousedown="window.app.sendAnswer()">Submit</div>
+        </div>
+        <!--<div id="answerSummaryForSelectedPlayer" style="width:100%; display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;background-color:#0adada;display:none;padding:4px;">
+            test 
+        </div>-->
+        <div class="view" id="submitVoteView" style="padding-top:52px; width:100%; height:calc(100% - 45px);display:none;align-self:flex-start;" >
+            <div class="franklinBanner" style="position:inherit">
+                <div style="width:85%;">Match the aliens to your friends</div>
+            </div>
+                <div class="jtk-demo-canvas canvas-wide source-target-demo jtk-surface jtk-surface-nopan" 
+                style="display:flex;width:100%;height:80%;flex-direction:column;" id="canvas">
+                <div class="votingRow">
+                    <div class="window anonymousNameBox targetWindow0" id="targetWindow0">
+                        <img class="targetWindow0 alienImage "id="sourceImage0" onmousedown="window.app.deleteSingleConnection('targetWindow0')">
+                        <div class="sourceWindowLabel">target 1</div>
+                    </div>
+                    <div class="window playerNameBox sourceWindow0" id="sourceWindow0">
+                        <img id="targetImage0" class="alienImage sourceWindow0" onmousedown="window.app.deleteSingleConnection('sourceWindow0')">
+                        <div class="targetWindowLabel">source 1</div>
+                    </div>
+                </div>
+                <div class="votingRow">
+                    <div class="window anonymousNameBox targetWindow1" id="targetWindow1">
+                        <img class="targetWindow1 alienImage"id="sourceImage1" onmousedown="window.app.deleteSingleConnection('targetWindow1')">
+                        <div class="sourceWindowLabel">target 2</div>
+                    </div>
+                    <div class="window playerNameBox sourceWindow1" id="sourceWindow1">
+                        <img id="targetImage1" class="alienImage sourceWindow1" onmousedown="window.app.deleteSingleConnection('sourceWindow1')">
+                        <div class="targetWindowLabel">source 2</div>
+                    </div>
+                </div>
+                <div class="votingRow">
+                    <div class="window anonymousNameBox targetWindow2" id="targetWindow2">
+                        <img class="targetWindow2 alienImage"id="sourceImage2" onmousedown="window.app.deleteSingleConnection('targetWindow2')">
+                        <div class="sourceWindowLabel">target 3</div>
+                    </div>
+                    <div class="window playerNameBox sourceWindow2" id="sourceWindow2">
+                        <img id="targetImage2" class="alienImage sourceWindow2" onmousedown="window.app.deleteSingleConnection('sourceWindow2')">
+                        <div class="targetWindowLabel">source 3</div>
+                    </div>
+                </div>
+                <div class="votingRow">
+                    <div class="window anonymousNameBox targetWindow3" id="targetWindow3">
+                        <img class="targetWindow3 alienImage" id="sourceImage3" onmousedown="window.app.deleteSingleConnection('targetWindow3')">
+                        <div class="sourceWindowLabel">target 4</div>
+                    </div>
+                    <div class="window playerNameBox sourceWindow3" id="sourceWindow3">
+                        <img id="targetImage3" class="alienImage sourceWindow3" onmousedown="window.app.deleteSingleConnection('sourceWindow3')">
+                        <div class="targetWindowLabel">source 4</div>
+                    </div>
+                </div>
+                <div class="votingRow">
+                    <div class="window anonymousNameBox targetWindow4" id="targetWindow4">
+                        <img class="targetWindow4 alienImage" id="sourceImage4" onmousedown="window.app.deleteSingleConnection('targetWindow4')">
+                        <div class="sourceWindowLabel">target 5</div>
+                    </div>
+                    <div class="window playerNameBox sourceWindow4" id="sourceWindow4">
+                        <img id="targetImage4" class="alienImage sourceWindow4" onmousedown="window.app.deleteSingleConnection('sourceWindow4')">
+                        <div class="targetWindowLabel">source 5</div>
+                    </div>
+                </div>
+                <div class="votingRow">
+                    <div class="window anonymousNameBox targetWindow5" id="targetWindow5">
+                        <img class="targetWindow5 alienImage" id="sourceImage5" onmousedown="window.app.deleteSingleConnection('targetWindow5')">
+                        <div class="sourceWindowLabel">target 6</div>
+                    </div>
+                    <div class="window playerNameBox sourceWindow5" id="sourceWindow5">
+                        <img id="targetImage5" class="alienImage sourceWindow5" onmousedown="window.app.deleteSingleConnection('sourceWindow5')">
+                        <div class="targetWindowLabel">source 6</div>
+                    </div>
+                </div>
+            </div>
+            <!-- When the audience runs out of time, show a snackbar -->
+            <div style="display:flex; justify-content:center; width: 100%">
+                <div id="snackbar2" class="snackbar">Time's up! Autosubmitting in 10 seconds...</div>
+            </div>
+            <div id="submitVoteButton" class="pseudo_button" onmousedown="window.app.sendVoting(true)">Submit Votes!</div>
+        </div>
+        <div class="view" id="roundResultsView" style="width:100%; height:calc(100% - 45px);display:none; padding-top: 52px;align-self:flex-start;" >
+        
+            <div style="display:flex; flex-direction:row;justify-content:space-evenly; padding-bottom: 20px;height:9%; width:140%; margin-left: -15%">
+                <div style= "width:45%;height:3vh;position:inherit;" class="franklinBanner">Alien</div>
+                <div style= "width:45%;height:3vh;position:inherit;" class="franklinBanner">Your guess</div>
+            </div>
+            <div id="resultsContainer">
+            </div>
+            <!--
+            <div style="display:flex; flex-direction:row;outline:1px solid;">
+                <div style="width:33%;height:100%;flex-direction: column;align-items:center;outline:1px solid;" id="roundResultsAlienSide">
+                </div>
+                <div style="width:33%;height:inherit;flex-direction: column;align-items:center;display:flex;justify-content:space-around;outline:1px solid;" id="roundResultsRightOrWrong">
+                </div>
+                <div style="width:33%;height:100%;flex-direction: column;align-items:center;outline:1px solid;" id="roundResultsYourGuess">
+                </div>
+            </div>
+            -->
+            <br>
+            <div  style="display:flex; justify-content:center;">
+                <div class="pseudo_button" style="display:none;width:50%;" id="nextRoundButton" onmousedown="window.app.sendNextRound()">Continue to Next Round</div>
+                <div class="pseudo_button" style="display:none;width:50%;" id="endScreenButton" onmousedown="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
+            </div>
+        </div>
+        <div class="view" id="endGameView" style="padding-top:52px;align-self:flex-start;display:none;">
+
+            <!-- dynamically change this based on playernumber which we have in javascript -->
+            <img style="height:20vh;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
+        
+            <div id="endGameScreenViewUsername" style="font-size:40px">[Username]</div>
+            <br>
+            <br>
+            You correctly identified your friends
+            <div id="endGameScreenViewPoints" style="font-size:40px"></div>
+            <div id="endGameScreenViewTimes">times</div>
+        
+            <br>
+            <br>
+            <br>
+            <div id="endGameScreenViewBestFriendDescription">Your best friend is</div>
+            <br>
+            <div id="endGameScreenViewBestFriend" style="font-size:40px">[Username]</div>
+            <div id="endGameScreenViewButton" style="display:none;">
+                Hit this button to restart the game!
+                <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->
+                <p>
+                <div class="pseudo_button" onmousedown="window.app.sendPlayAgain()">Continue to Next game</div>
+            </div>
         </div>
     </div>
     <div id="my_keyboard"></div>
     <div style="position:absolute; justify-content:center; width: 100%">
         <div id="snackbarGlobal" class="snackbar"></div>
     </div>
+
   </body>
 </html>
