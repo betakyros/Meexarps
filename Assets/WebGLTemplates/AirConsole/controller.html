@@ -387,8 +387,8 @@ path, .jtk-endpoint {
             }
             var vertScaleFactor = 1;
             var horiScaleFactor = 1;
-            globalWrapper.style.height = "unset";
             globalWrapper.setAttribute("data-scaleFactor", 1);
+            globalWrapper.style.height = "unset";
             if(globalWrapper.scrollHeight > window.innerHeight) {
                 vertScaleFactor = (window.innerHeight)/globalWrapper.scrollHeight;
             }
@@ -500,7 +500,7 @@ path, .jtk-endpoint {
                 
                 if(myAction === "sendWaitScreen") {
                     hideAllViews();
-                    document.getElementById("waitingView").style.display = "block";
+                    displayElement(document.getElementById("waitingView"));
                     if(!payload.data[0] || payload.data[0] == " ") {
                         document.getElementById("waitingFor").innerHTML= "";
                     } else {
@@ -1892,7 +1892,14 @@ path, .jtk-endpoint {
             <div id="waitingForStartGame"></div>
             <br>
         </div>
-        <div class="view" id="waitingView" style="align-self:flex-start;padding-top:50%;display:none;height:min-content;">
+        <div class="view" id="waitingView" style="align-self:flex-start;padding-top:40%;display:none;">
+            <div>
+                <img style="height:15vh;" src="./icon_lookAtTv.png" />
+            </div>
+            <br>
+            Look at the TV
+            <br>
+            <br>
             Waiting… 
             <div id="waitingFor"></div>
         </div>
@@ -2029,13 +2036,25 @@ path, .jtk-endpoint {
             <p>
             <div class="pseudo_button" onmousedown="window.app.sendDecidedQuestions()">Send out the questions!</div>
         </div>
-        <div class="view" id="skipIntroView" style="height:unset;padding-top:50%; align-self:flex-start;display:none;">
-            <p>
+        <div class="view" id="skipIntroView" style="height:unset;padding-top:30%; align-self:flex-start;display:none;">
+            <div>
+                <img style="height:15vh;" src="./icon_lookAtTv.png" />
+            </div>
+            <br>
+            <div>
+                Look at the TV
+            </div>
+            <br>
             <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Intro</div>
         </div>
         <div class="view" id="skipInstructionsView" style="height:unset;padding-top:50%; align-self:flex-start;display:none;">
-            Watch the instructions on the screen or press this button to skip the video
-            <p>
+            <div>
+                <img style="height:15vh;" src="./icon_lookAtTv.png" />
+            </div>
+            <br>
+                Look at the TV or skip the video
+            <br>
+            <br>
             <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Instructions</div>
         </div>
         <div class="view" id="submitAnswerView" style="align-self:flex-start; padding-top: 52px; display:none">
