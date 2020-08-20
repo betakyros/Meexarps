@@ -167,11 +167,8 @@ AirConsoleKeyboard.prototype.show = function(input_id, opts) {
   if( !isKeyboardUp) {
       isKeyboardUp = true;
       var globalWrapper = document.getElementById("globalWrapper");
-console.log("airconsolekeyboard globalwrapper: " + globalWrapper);
       oldHeight = globalWrapper.style.height;
       var keyboardHeight = (document.getElementById("my_keyboard").clientHeight) * globalWrapper.getAttribute("data-scaleFactor");
-console.log("airconoslekeyboard clientheight: " + document.getElementById("my_keyboard").clientHeight);
-console.log("airconoslekeyboard scalefactor: " + globalWrapper.getAttribute("data-scaleFactor"));
 
       globalWrapper.style.height = "calc(" + oldHeight + " - " + keyboardHeight + "px)";
       newHeight = globalWrapper.style.height;
