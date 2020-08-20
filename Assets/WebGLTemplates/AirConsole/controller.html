@@ -390,10 +390,6 @@ path, .jtk-endpoint {
             globalWrapper.style.height = "unset";
             globalWrapper.setAttribute("data-scaleFactor", 1);
             if(globalWrapper.scrollHeight > window.innerHeight) {
-                console.log('calculating vertical scale factor!!!');
-                console.log("The scrollHeight is: ", globalWrapper.scrollHeight);
-                console.log("The window inner height is: ", window.innerHeight);
-                //remove 5 pixels as buffer
                 vertScaleFactor = (window.innerHeight)/globalWrapper.scrollHeight;
             }
             /*
@@ -402,16 +398,8 @@ path, .jtk-endpoint {
             }
             */
             globalWrapper.style.transform = "scale(" + horiScaleFactor + ", " + vertScaleFactor + ")";
-            console.log( "---------------- ");
-            console.log( "vertScaleFactor: " + vertScaleFactor);
-            console.log( 'globalwrapper: ', globalWrapper);
-            console.log( "scrollHeight: " + globalWrapper.scrollHeight);
-            console.log( "window inner height: "+ window.innerHeight);
-            console.log( ".getBoundingClientRect().height: "+ globalWrapper.getBoundingClientRect().height);
-            console.log( "---------------- ");
             
             if(vertScaleFactor != 1) {
-                console.log('resetting global height');
                 var invertedScaleFactor =  (1/vertScaleFactor);
                 globalWrapper.style.height = invertedScaleFactor * 100 + "%";     
                 globalWrapper.setAttribute("data-scaleFactor", invertedScaleFactor);
@@ -531,7 +519,6 @@ path, .jtk-endpoint {
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("startGameButton").style.display = "inline-block";
                 } else if(myAction === "allPlayersAreNotReady") {
-                    console.log("all  players are not ready");
                     document.getElementById("waitingForStartGame").style.display = "inline-block";
                     var waitingForNames="Waiting for: ";
                     payload.data.forEach(element => {
@@ -540,14 +527,10 @@ path, .jtk-endpoint {
                     });
                     document.getElementById("waitingForStartGame").innerHTML = waitingForNames;
                     document.getElementById("startGameButton").style.display = "none";    
-                    console.log("allplayersarenotready: " + document.getElementById("startGameScreenView").clientHeight);
-
                 } else if(myAction === "allPlayersAreReady") {
-                    console.log("all players are ready");
 
                     document.getElementById("startGameButton").style.display = "inline-block";
                     document.getElementById("waitingForStartGame").style.display = "none";
-                    console.log("allplayersareready: " + document.getElementById("startGameScreenView").clientHeight);
 
                 } else if(myAction === "sendWelcomeScreenInfo") {
                     if(playerName == null) {
@@ -616,7 +599,6 @@ path, .jtk-endpoint {
                 var d = new Date();
                 console.log("sendStartGameScreen: " + playerName + " AT TIME: " + d.toLocaleString() + ":" + d.getMilliseconds());
                     displayElement(document.getElementById("startGameScreenView"));
-                    console.log("finished displaying startgamescreen " + document.getElementById("startGameScreenView").style.display);
 
                 } else if(myAction === "nameAlreadyTaken") {
                     hideAllViews();
@@ -768,13 +750,11 @@ path, .jtk-endpoint {
                         }
                         
                     window.instance.bind('connection',function(info,ev){
-                        console.log("onConnect" + numAnswers);
                         if(window.instance.getAllConnections().length === numAnswers) {
                             document.getElementById("submitVoteButton").classList.add("blink");
                         }
                     }); 
                     window.instance.bind('connectionDetached',function(info,ev){
-                        console.log("onDisconnect");
                         document.getElementById("submitVoteButton").classList.remove("blink");
                     });
                     displayElement(document.getElementById("submitVoteView"));
@@ -1102,7 +1082,6 @@ path, .jtk-endpoint {
 			}
             
             App.prototype.sendWouldYouRatherAnswer = function sendWouldYouRatherAnswer(answer) {
-				console.log("sending", "wouldYouRatherAnswer", answer);
 				var message = {
 					'action': "sendWouldYouRatherAnswer",
 					'info': answer
