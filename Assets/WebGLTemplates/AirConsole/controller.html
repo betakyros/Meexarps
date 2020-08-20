@@ -1613,6 +1613,14 @@ path, .jtk-endpoint {
         font-size: 17px;
       }
 
+      .franklinBannerInner {
+          display: flex; 
+          align-items: center; 
+          justify-content:center; 
+          width:85%;
+          height:100%;
+      }
+
       .view {
         transform-origin: top;
         transform: scale(1);
@@ -1992,7 +2000,7 @@ path, .jtk-endpoint {
             <img style="height:9vh; opacity:100%;" class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
         
             <div class="franklinBanner" style="height:9vh;  margin-bottom: 15px; position: inherit;">
-                <div style = "font-size: 26px; display: flex; align-items: center; justify-content:center; width:85%; height:100%;" id="startGameScreenViewUsername"> Welcome, [Username]</div>
+                <div style = "font-size: 26px;" class="franklinBannerInner" id="startGameScreenViewUsername"> Welcome, [Username]</div>
             </div>
         
             Write your own “Would You Rather” questions while you wait!
@@ -2086,7 +2094,7 @@ path, .jtk-endpoint {
         </div>
         <div class="view" id="wouldYouRatherView" style="display:none;align-self:flex-start;padding-top:52px;">
             <div class="franklinBanner">
-                <div style="width:85%;">Pick a side for the "Would you rather"</div>
+                <div class="franklinBannerInner">Pick a side for the "Would you rather"</div>
             </div>
             <br>
             <br>
@@ -2098,7 +2106,7 @@ path, .jtk-endpoint {
             <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(1)">Right</div>
         </div>
         <div class="view" id="sendSelectCategoryView" style="padding-top:52px;align-self:flex-start;display:none">
-            <div class="franklinBanner"> It's your turn to write questions!</div>
+            <div class="franklinBanner"> <div class="franklinBannerInner">It's your turn to write questions!</div></div>
             <br>
             Select a category
             <br>
@@ -2113,7 +2121,7 @@ path, .jtk-endpoint {
             </div>
         </div>
         <div class="view" id="retrieveQuestionsView" style="display:none; align-self: flex-start; padding-top:52px;">
-            <div class="franklinBanner"> It's your turn to write questions!</div>
+            <div class="franklinBanner"> <div class="franklinBannerInner">It's your turn to write questions!</div></div>
             <!--
             Write somethings you'd like to know about your friends! 
             <br>
@@ -2208,7 +2216,7 @@ path, .jtk-endpoint {
         </div>
         <div class="view" id="submitAnswerView" style="align-self:flex-start; padding-top: 52px; display:none">
             <div class="franklinBanner">
-                <div style="width:85%;">Answer these questions!</div>
+                <div class="franklinBannerInner">Answer these questions!</div>
             </div>
             <!--Answer the following questions honestly! -->
             <!--<img style="height:10%;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />-->
@@ -2269,7 +2277,7 @@ path, .jtk-endpoint {
         </div>-->
         <div class="view" id="submitVoteView" style="padding-top:52px; width:100%; height:calc(100% - 45px);display:none;align-self:flex-start;" >
             <div class="franklinBanner" style="position:inherit">
-                <div style="width:85%;">Match the aliens to your friends</div>
+                <div class="franklinBannerInner">Match the aliens to your friends</div>
             </div>
                 <div class="jtk-demo-canvas canvas-wide source-target-demo jtk-surface jtk-surface-nopan" 
                 style="display:flex;width:100%;height:80%;flex-direction:column;" id="canvas">
