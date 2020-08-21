@@ -22,6 +22,7 @@ public class main : MonoBehaviour
     public List<GameObject> welcomePanels;
     public GameObject splashScreenPanel;
     public GameObject storyPanel;
+    public GameObject backgrounds;
     public GameObject welcomeScreenPanel;
     public GameObject selectRoundNumberPanel;
     public GameObject wouldYouRatherPanel;
@@ -130,12 +131,13 @@ public class main : MonoBehaviour
         FadeSplashScreen fadeSplashScreenScript = splashScreenPanel.AddComponent<FadeSplashScreen>();
         fadeSplashScreenScript.Setup(3.0f);
         Image[] storyPanels = storyPanel.GetComponentsInChildren<Image>(true);
-        yield return new WaitForSeconds(10);
-        storyPanels[0].gameObject.SetActive(false);
-        storyPanels[1].gameObject.SetActive(true);
-        yield return new WaitForSeconds(10);
-        storyPanels[1].gameObject.SetActive(false);
-        storyPanels[2].gameObject.SetActive(true);
+        int numStoryScreens = 3;
+        for(int i = 0; i < numStoryScreens; i++)
+        {
+            yield return new WaitForSeconds(10);
+            storyPanels[i].gameObject.SetActive(false);
+            storyPanels[i+1].gameObject.SetActive(true);
+        }
         yield return new WaitForSeconds(10);
         FadeSplashScreen fadeStoryScreenScript = storyPanel.AddComponent<FadeSplashScreen>();
         if(storyPanel.activeSelf) {
