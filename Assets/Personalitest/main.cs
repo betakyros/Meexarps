@@ -434,7 +434,9 @@ public class main : MonoBehaviour
         }
         else if ("sendRetrieveOptions".Equals(action))
         {
-            if(from == GetVipDeviceId())
+            playSound = false;
+
+            if (from == GetVipDeviceId())
             {
                 AirConsole.instance.Message(GetVipDeviceId(), JsonUtility.ToJson(
                     new JsonAction("sendRetrieveOptions", new[] { options["nsfwQuestions"].ToString(), options["anonymousNames"].ToString() })));
@@ -442,6 +444,8 @@ public class main : MonoBehaviour
         }
         else if ("sendSaveOptions".Equals(action))
         {
+            playSound = false;
+
             if (from == GetVipDeviceId())
             {
                 options["nsfwQuestions"] = data["info"]["nsfwQuestions"].ToObject<bool>();
