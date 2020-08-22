@@ -1715,6 +1715,11 @@ path, .jtk-endpoint {
           border-radius: 50%;
         }
 
+        .optionsTextLabel {
+            width: 60vw;
+            padding-left: 10px;
+        }
+
         .blink {
           animation: blinker 2s ease-in-out infinite;
         }
@@ -1781,45 +1786,6 @@ path, .jtk-endpoint {
             <text class="franklinInstructionText" id="welcomeScreenPlayerCount">0/6 Meexarps have joined the game</text>
 
         </div> 
-        <div class="view optionsView" id="optionsView" style="display:none; z-index:1;padding-top:45px;">
-            <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideOptions()" style="z-index:2; height:30px; padding-top:10px;" />
-            <div style="position: width:100%;font-size:30px;">Game Options</div>
-            <div id="checkboxes" style="text-align:left; margin: 20px 0 0 20px;">
-                <div style="display:none;" id="vipOptionsDiv">
-                    <div style="display:flex">
-                        <label class="switch" for="NsfwQuestionsCheckbox" >
-                            <input id="NsfwQuestionsCheckbox" type="checkbox" onchange="window.app.saveOptions()">
-                            <span class="slider round"></span>
-                        </label>
-                        <div style="padding-left:10px;">Nsfw Questions Enabled</div>
-                    </div>
-                    <br>
-                    <div style="display:flex">
-                        <label class="switch" for="anonymousNameCheckbox" >
-                            <input id="anonymousNameCheckbox" type="checkbox" onchange="window.app.saveOptions()">
-                            <span class="slider round"></span>
-                        </label>
-                        <div style="padding-left:10px;">Anonymous Names Enabled</div>
-                    </div>
-                    <br>
-                    <div style="display:flex;justify-content:center;margin-right: 20px;">
-                        <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Skip to End</div> <br>
-                    </div>
-                    <br>
-                </div>
-                <div style="display:flex">
-                    <label class="switch" for="useSystemKeyboard" >
-                        <input id="useSystemKeyboard" type="checkbox" onchange="window.app.saveOptions()">
-                        <span class="slider round"></span>
-                    </label>
-                    <div style="padding-left:10px;">Use system keyboard (Not supported on all phones)</div>
-                </div><br>
-            </div>
-            <br>
-            <div class="pseudo_button" onmousedown="window.app.viewCredits()">View Credits!</div> <br>
-            <br>
-            <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
-        </div>
         <div class="view" id="startGameScreenView" style="display:none;align-self:flex-start;padding-top:52px;height:100%">
             <img style="height:9vh; opacity:100%;" class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
         
@@ -2394,6 +2360,45 @@ path, .jtk-endpoint {
             </div>
             <div class="pseudo_button" onmousedown="window.app.hideCredits()">Close Credits</div>
         </div>   
+        <div class="view optionsView" id="optionsView" style="display:none; z-index:1;padding-top:45px;">
+            <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideOptions()" style="z-index:2; height:30px; padding-top:10px;" />
+            <div style="position: width:100%;font-size:30px;">Game Options</div>
+            <div id="checkboxes" style="text-align:left; margin: 20px 0 0 20px;">
+                <div style="display:none;" id="vipOptionsDiv">
+                    <div style="display:flex">
+                        <label class="switch" for="NsfwQuestionsCheckbox" >
+                            <input id="NsfwQuestionsCheckbox" type="checkbox" onchange="window.app.saveOptions()">
+                            <span class="slider round"></span>
+                        </label>
+                        <div class="optionsTextLabel">Nsfw Questions Enabled</div>
+                    </div>
+                    <br>
+                    <div style="display:flex">
+                        <label class="switch" for="anonymousNameCheckbox" >
+                            <input id="anonymousNameCheckbox" type="checkbox" onchange="window.app.saveOptions()">
+                            <span class="slider round"></span>
+                        </label>
+                        <div class="optionsTextLabel">Anonymous Names Enabled</div>
+                    </div>
+                    <br>
+                    <div style="display:flex;justify-content:center;margin-right: 20px;">
+                        <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Skip to End</div> <br>
+                    </div>
+                    <br>
+                </div>
+                <div style="display:flex">
+                    <label class="switch" for="useSystemKeyboard" >
+                        <input id="useSystemKeyboard" type="checkbox" onchange="window.app.saveOptions()">
+                        <span class="slider round"></span>
+                    </label>
+                    <div class="optionsTextLabel">Use system keyboard (Not supported on all phones)</div>
+                </div><br>
+            </div>
+            <br>
+            <div class="pseudo_button" onmousedown="window.app.viewCredits()">View Credits!</div> <br>
+            <br>
+        <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+    </div>
     <div id="my_keyboard"></div>
     <div style="position:absolute; justify-content:center; width: 100%">
         <div id="snackbarGlobal" class="snackbar"></div>
