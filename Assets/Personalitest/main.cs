@@ -1591,9 +1591,10 @@ public class main : MonoBehaviour
             TextMeshProUGUI myTitle = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset];
             TextMeshProUGUI myText = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset+1];
 
+            int answerDisplayDuration = 6;
             //Camera zoom will make the current panel the last element, so we don't need to add i
             CameraZoom cz = votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.AddComponent<CameraZoom>();
-            cz.Setup(1f, 12f, true, true, false);
+            cz.Setup(1f, answerDisplayDuration * 3f , true, true, false);
 
             //temporarily increase the max size
             myTitle.fontSizeMax = 60;
@@ -1619,8 +1620,8 @@ public class main : MonoBehaviour
                     myText.SetText(myText.text + "<size=8>\n\n</size>");
                     shortTextSb.Append("<size=6>\n\n</size>");
                 }
-                //wait four seconds between each answer to give it a punch
-                yield return new WaitForSeconds(4);
+                //wait answerDisplayDuration seconds between each answer to give it a punch
+                yield return new WaitForSeconds(answerDisplayDuration);
             }
             myText.SetText(shortTextSb.ToString());
 
@@ -2132,7 +2133,7 @@ public class main : MonoBehaviour
             string audienceGuessesString = numberOfCorrectAudienceGuesses + numberOfWrongAudienceGuesses == 0 ? "" : "\n\n<color=green>" + numberOfCorrectAudienceGuesses + " </color>/<color=red>" + numberOfWrongAudienceGuesses + "</color> Audience";
 
             myTitle.SetText("<b>" + tileTitle + "</b>");
-            myQandAs.SetText(correctVotesSB.ToString() + "\n\n" + wrongVotesSb.ToString() + audienceGuessesString);
+            myQandAs.SetText(wrongVotesSb.ToString() + "\n\n" + correctVotesSB.ToString() + audienceGuessesString);
 
             myTitle.fontSizeMax = 25;
             myQandAs.fontSizeMax= 20;
