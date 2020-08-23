@@ -591,15 +591,15 @@ path, .jtk-endpoint {
                     }
                     document.getElementById("startGameScreenViewUsername").innerText = "Welcome, " + playerName + "!";
                     if(isVip) {
-                        document.getElementById("pageTwoText").innerHTML = '<span style="color:blue;font-weight: bold;">You</span> will write 3 personality questions.';
+                        document.getElementById("pageTwoText").innerHTML = "You".bold().fontcolor("blue") +' will write 3 personality questions.';
                     } else {
-                        document.getElementById("pageTwoText").innerHTML = '<span style="color:blue;font-weight: bold;">' + vipName + '</span> will write 3 personality questions.';
+                        document.getElementById("pageTwoText").innerHTML = vipName.bold().fontcolor("blue") + ' will write 3 personality questions.';
                     }
                     if(playerNumber >= 10) {
                         isAudience = true;
-                        document.getElementById("pageFourText").innerHTML = 'You are the audience. Wait for everyone to answer <span style="color:blue;font-weight: bold;">' + vipName + '</span>\'s questions. The answers will be anonymized for phase 3.';
+                        document.getElementById("pageFourText").innerHTML = 'You are the audience. Wait for everyone to answer ' + vipName.bold().fontcolor("blue") + '\'s questions. The answers will be anonymized for phase 3.';
                     } else {
-                        document.getElementById("pageFourText").innerHTML = 'Everyone will answer <span style="color:blue;font-weight: bold;">' + vipName + '</span>\'s questions. The answers will be anonymized for phase 3.';
+                        document.getElementById("pageFourText").innerHTML = 'Everyone will answer ' + vipName.bold().fontcolor("blue") + '\'s questions. The answers will be anonymized for phase 3.';
                     }
                 } else if(myAction === "sendRetrieveOptions") {
                     document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
