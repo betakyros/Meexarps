@@ -1261,7 +1261,8 @@ path, .jtk-endpoint {
                 document.getElementById("votingPage" + votingTutorialPageNum).style.display = "none";                
                 }
                 document.getElementById("votingPage" + ++votingTutorialPageNum).style.display = "flex";
-                if(votingTutorialPageNum == 5) {
+//                if(votingTutorialPageNum == 5) {
+                if(votingTutorialPageNum == 1) {
                     document.getElementById("closeVotingTutorialButton").innerHTML = "Got it!";
                     document.getElementById("showNextVotingTutorial").style.display="none";
                 }
@@ -2316,8 +2317,14 @@ path, .jtk-endpoint {
             <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
         </div>
         <div id="votingTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
-            <div id="votingPage1" class="tutorialPage noScrollbar">
+            <div style="align-items:center;" id="votingPage1" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">The Voting Phase is coming up next!</div>
+                <br>
+                <br>
+                <img style="height:15vh; width: 15vh;" src="./icon_lookAtTv.png"/>
+                <br>
+                Look at the TV to get ready for the tutorial.
+                <!--
                 <div style="height:100%;">
                     Match the personality to the Meexarp
                     <br>
@@ -2325,6 +2332,7 @@ path, .jtk-endpoint {
                     <br>
                     Show the Meexarps how friendly they can be!
                 </div>
+                -->
             </div>
             <div id="votingPage2" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
