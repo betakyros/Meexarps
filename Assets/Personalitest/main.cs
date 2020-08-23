@@ -849,10 +849,11 @@ public class main : MonoBehaviour
         }
     }
 
-    private static void sendWelcomeScreenInfoDetails(int from, int alienNumber, Player myPlayer)
+    private void sendWelcomeScreenInfoDetails(int from, int alienNumber, Player myPlayer)
     {
+        string vipName = gameState.GetPlayerByPlayerNumber(0).nickname;
         AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails",
-            new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + alienNumber }));
+            new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + alienNumber, vipName }));
     }
 
     private static void SendIsVip(Player currentPlayer)

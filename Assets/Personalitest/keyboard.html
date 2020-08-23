@@ -476,6 +476,7 @@ path, .jtk-endpoint {
 			var me = this;
 			me.air_console = new AirConsole({"orientation": "portrait", "synchronize_time":"true"});
             var isVip = false;
+            var vipName= "";
             //if playerNumber >= 10, then you are audience
             var isAudience = false;
             var useSystemKeyboard = false;
@@ -576,6 +577,7 @@ path, .jtk-endpoint {
                     playerName = payload.data[0];
                     playerNumber = payload.data[1];
                     selectedAlien = parseInt(payload.data[2]);
+                    vipName = payload.data[3];
                     console.log("sendWelcomeScreenInfoDetails: " + playerName);
                     var myAlienGifs = document.getElementsByClassName("myAlienGif");
                     Array.prototype.forEach.call(myAlienGifs, currentElement => {
@@ -588,8 +590,16 @@ path, .jtk-endpoint {
                         wouldYouRatherAlienGif.style.padding = "5px";
                     }
                     document.getElementById("startGameScreenViewUsername").innerText = "Welcome, " + playerName + "!";
+                    if(isVip) {
+                        document.getElementById("pageTwoText").innerHTML = '<span style="color:blue;font-weight: bold;">You</span> will write 3 personality questions.';
+                    } else {
+                        document.getElementById("pageTwoText").innerHTML = '<span style="color:blue;font-weight: bold;">' + vipName + '</span> will write 3 personality questions.';
+                    }
                     if(playerNumber >= 10) {
                         isAudience = true;
+                        document.getElementById("pageFourText").innerHTML = 'You are the audience. Wait for everyone to answer <span style="color:blue;font-weight: bold;">' + vipName + '</span>\'s questions. The answers will be anonymized for phase 3.';
+                    } else {
+                        document.getElementById("pageFourText").innerHTML = 'Everyone will answer <span style="color:blue;font-weight: bold;">' + vipName + '</span>\'s questions. The answers will be anonymized for phase 3.';
                     }
                 } else if(myAction === "sendRetrieveOptions") {
                     document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
@@ -2209,7 +2219,7 @@ path, .jtk-endpoint {
             </div>
         </div>
     </div>
-            <div id="firstTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
+        <div id="firstTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
             <div id="page1" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div id="firstTutorialText" style="padding:10px 0 20px 0;"> Welcome to MEEXARPS! The game is played in 3 phases </div>
@@ -2238,9 +2248,11 @@ path, .jtk-endpoint {
                     <div style="height:100%;width: 33%;display:flex;justify-content:center;">
                         <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
                     </div>
-                    <div style="text-align: left;width:55%;"> 1. Write Questions </div>
+                    <div style="text-align: left;width:55%;"> 1a. Write Questions </div>
                 </div>
-                The current presenter will write 3 personality questions. We recommend writing at least one question unique to your group!
+                <div id="pageTwoText">[***Player1] or [You] will write 3 personality questions.</div>
+                <br>
+                <img src="./tutorial_writeQuestions.png" /> 
             </div>
             <div id="page3" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
@@ -2248,9 +2260,11 @@ path, .jtk-endpoint {
                     <div style="height:100%;width: 33%;display:flex;justify-content:center;">
                         <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
                     </div>
-                    <div style="text-align: left;width:55%;"> 1. Write Questions </div>
+                    <div style="text-align: left;width:55%;"> 1b. Write Questions </div>
                 </div>
-                While the current presenter is thinking of questions, the other Meexarps will be playing Would you Rather to pass the time.
+                Other Players will play Would you Rather to pass the time.
+                <br>
+                <img style="width: 100%;" src="./tutorial_wouldYouRather.png" /> 
             </div>
             <div id="page4" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
@@ -2260,7 +2274,9 @@ path, .jtk-endpoint {
                     </div>
                     <div style="text-align: left;width:55%;"> 2. Answer Questions </div>
                 </div>
-                When the current presenter submits their questions, all Meexarps will answer the questions. Answer truthfully! The goal is to learn about the power of friendship!
+                <div id="pageFourText">Everyone will answer [*** Player1]'s questions. The answers will be anonymized for phase 3.</div>
+                <br>
+                <img src="./tutorial_answerQuestions.png" /> 
             </div>
             <div id="page5" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
@@ -2268,9 +2284,11 @@ path, .jtk-endpoint {
                     <div style="height:100%;width: 33%;display:flex;justify-content:left;">
                         <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
                     </div>
-                    <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
+                    <div style="text-align: left;width:55%;"> 3a. Match Personalities </div>
                 </div>
-                Lastly, each Meexarp will match the anonymized personalities to their respective Meexarp. You will get points for each correct match!
+                Lastly, everyone will match the anonymized personalities to their respective Player.
+                <br>
+                <img src="./tutorial_voting.png" /> 
             </div>
             <div id="page6" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
@@ -2278,9 +2296,9 @@ path, .jtk-endpoint {
                     <div style="height:100%;width: 33%;display:flex;justify-content:left;">
                         <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
                     </div>
-                    <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
+                    <div style="text-align: left;width:55%;"> 3b. Match Personalities </div>
                 </div>
-                                The loop repeats for the selected number of rounds. At the end you will see if the board will approve the funding to continue your research!
+                                The loop repeats for the selected number of rounds.
             </div>
             <div style="display:flex;justify-content:space-evenly;">
                 <div id="closeFirstTutorialButton" class="pseudo_button" style="width:30%;" onmousedown="window.app.hideFirstTutorial()">Skip</div>
