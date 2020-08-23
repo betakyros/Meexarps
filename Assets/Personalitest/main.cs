@@ -1125,6 +1125,7 @@ public class main : MonoBehaviour
     public void StartRound()
     {
         SetVolumeForLevel(thinkingAudioSources, 1);
+        ChangeBackground(1);
         //reset the "Answer Set #" counter
         anonymousPlayerNumberCount = 0;
         anonymousPlayerNumbers.Shuffle(gameState.GetNumberOfPlayers());
@@ -1778,6 +1779,7 @@ public class main : MonoBehaviour
 
         answerQuestionsPanel.SetActive(false);
         votingPanel.SetActive(true);
+        ChangeBackground(2);
         //TODO shuffle answers
         SendVoting();
         gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
@@ -2463,6 +2465,20 @@ public class main : MonoBehaviour
         }
     }
 
+    private void ChangeBackground(int numBackground)
+    {
+        Image[] backgroundImages = backgrounds.GetComponentsInChildren<Image>(true);
+
+        for (int i = 0; i < backgroundImages.Length; i++){
+            if(i == numBackground)
+            {
+                backgroundImages[i].gameObject.SetActive(true);
+            } else
+            {
+                backgroundImages[i].gameObject.SetActive(false);
+            }
+        }
+    }
     
 }
 
