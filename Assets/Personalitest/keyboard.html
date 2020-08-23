@@ -353,6 +353,40 @@ path, .jtk-endpoint {
         "textfield3"
         ];
 
+        //add onfocus to every system input to try and rotate when using the systemkeyboard
+        var originalScreenHeight = screen.height;
+        var originalScreenWidth = screen.width;
+        var screenIsRotated = false;
+        allTextFieldIds.forEach(element => {
+            document.getElementById(element+"-system").onfocus = function() {
+                console.log("onfocus");
+                console.log("---------"); 
+                console.log("screen.height: " + screen.height);
+                console.log("window.innerWidth: " + screen.width );
+                console.log("originalScreenHeight: " + originalScreenHeight );
+                console.log("---------"); 
+                if(screen.height != originalScreenHeight &&
+                screen.height == originalScreenWidth &&
+                screen.width != screen.height) {
+                    document.getElementById("bodyElement").style.transform = "rotate(90deg)";
+                    screenIsRotated = true;
+                }
+            };
+
+            document.getElementById(element+"-system").onblur = function() {
+                console.log("onblur");
+                console.log("---------"); 
+                console.log("screen.height: " + screen.height);
+                console.log("screen.width: " + screen.width);
+                console.log("originalScreenHeight: " + originalScreenHeight );
+                console.log("---------"); 
+                if(screenIsRotated) {
+                    document.getElementById("bodyElement").style.transform = "none";
+                    screenIsRotated = false;
+                }
+            };
+        });
+
         function bindAll() {
             allTextFieldIds.forEach(element => {
                 keyboard.bind(element);
