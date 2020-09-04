@@ -293,7 +293,7 @@ path, .jtk-endpoint {
   border-radius: 2px;
   padding: 16px;
   position: fixed;
-  z-index: 1;
+  z-index: 4;
   bottom: 30px;
   font-size: 17px;
 }
@@ -345,6 +345,9 @@ path, .jtk-endpoint {
         "wouldYouRatherSubmit", 
         "wouldYouRatherLeftSubmit", 
         "wouldYouRatherRightSubmit", 
+        "wouldYouRatherSubmitTutorialView", 
+        "wouldYouRatherLeftSubmitTutorialView", 
+        "wouldYouRatherRightSubmitTutorialView", 
         "retrieveQuestionsField1", 
         "retrieveQuestionsField2", 
         "retrieveQuestionsField3",
@@ -1088,15 +1091,27 @@ path, .jtk-endpoint {
 				me.air_console.message(AirConsole.SCREEN, message);
 			}
 
-            App.prototype.sendSubmitWouldYouRather = function sendSubmitWouldYouRather() {
+            App.prototype.sendSubmitWouldYouRather = function sendSubmitWouldYouRather(isTutorialView) {
                 /*
 				var wouldYouRatherQuestionSubmit = document.getElementById('wouldYouRatherSubmit').innerText;
 				var wouldYouRatherLeftSubmit = document.getElementById('wouldYouRatherLeftSubmit').innerText;
 				var wouldYouRatherRightSubmit = document.getElementById('wouldYouRatherRightSubmit').innerText;
 				*/
-                var wouldYouRatherQuestionSubmit =  App.prototype.getKeyboardValue("wouldYouRatherSubmit");
-                var wouldYouRatherLeftSubmit = App.prototype.getKeyboardValue("wouldYouRatherLeftSubmit");
-                var wouldYouRatherRightSubmit = App.prototype.getKeyboardValue("wouldYouRatherRightSubmit");
+                var wouldYouRatherQuestionSubmit;
+                var wouldYouRatherLeftSubmit; 
+                var wouldYouRatherRightSubmit;
+                debugger;
+                if(isTutorialView) {
+                    wouldYouRatherQuestionSubmit =  App.prototype.getKeyboardValue("wouldYouRatherSubmitTutorialView");
+                    wouldYouRatherLeftSubmit = App.prototype.getKeyboardValue("wouldYouRatherLeftSubmitTutorialView");
+                    wouldYouRatherRightSubmit = App.prototype.getKeyboardValue("wouldYouRatherRightSubmitTutorialView");
+
+                } else {                
+                    wouldYouRatherQuestionSubmit =  App.prototype.getKeyboardValue("wouldYouRatherSubmit");
+                    wouldYouRatherLeftSubmit = App.prototype.getKeyboardValue("wouldYouRatherLeftSubmit");
+                    wouldYouRatherRightSubmit = App.prototype.getKeyboardValue("wouldYouRatherRightSubmit");
+                }
+
                 if("" == wouldYouRatherQuestionSubmit ||
                     "" == wouldYouRatherLeftSubmit ||
                     "" == wouldYouRatherRightSubmit) {
@@ -1115,9 +1130,16 @@ path, .jtk-endpoint {
                 x.classList.add("show");
                 setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
 				me.air_console.message(AirConsole.SCREEN, message);
-                App.prototype.setKeyboardValue("wouldYouRatherSubmit", "");
-                App.prototype.setKeyboardValue("wouldYouRatherLeftSubmit", "");
-                App.prototype.setKeyboardValue("wouldYouRatherRightSubmit", "");
+                if(isTutorialView) {
+                    App.prototype.setKeyboardValue("wouldYouRatherSubmitTutorialView", "");
+                    App.prototype.setKeyboardValue("wouldYouRatherLeftSubmitTutorialView", "");
+                    App.prototype.setKeyboardValue("wouldYouRatherRightSubmitTutorialView", "");
+
+                } else {                
+                    App.prototype.setKeyboardValue("wouldYouRatherSubmit", "");
+                    App.prototype.setKeyboardValue("wouldYouRatherLeftSubmit", "");
+                    App.prototype.setKeyboardValue("wouldYouRatherRightSubmit", "");
+                }
                 /*
 				document.getElementById('wouldYouRatherSubmit').innerText = "";
 				document.getElementById('wouldYouRatherLeftSubmit').innerText = "";
@@ -1258,6 +1280,13 @@ path, .jtk-endpoint {
 					'info': {}
 				};
 				me.air_console.message(AirConsole.SCREEN, message);
+			}
+
+            App.prototype.viewSubmitWouldYouRather = function viewSubmitWouldYouRather() {
+                document.getElementById("submitWouldYouRatherTutorialView").style.display = "block";
+			}
+            App.prototype.hideSubmitWouldYouRather = function hideSubmitWouldYouRather() {
+                document.getElementById("submitWouldYouRatherTutorialView").style.display = "none";
 			}
             
             App.prototype.viewOptions = function viewOptions() {
@@ -1600,8 +1629,10 @@ path, .jtk-endpoint {
       .optionsButton {
         position: absolute;
         top: 8px;
-        right: 16px;
         z-index: 100;
+        width: 100vw;
+        display: flex;
+        justify-content: space-between;
       }
       
       .topLeft {
@@ -1669,6 +1700,7 @@ path, .jtk-endpoint {
         justify-content:center;
         white-space:pre-line;
         overflow-y: scroll;
+        top:2vh;
       }
 
       .tutorialPage{
@@ -1791,6 +1823,7 @@ path, .jtk-endpoint {
   display:flex; justify-content:center;align-items:center;margin:0;" onload="init()">
     <div id="globalWrapper" class="noScrollbar" style="width: 100%; transform-origin: top;align-self: flex-start; overflow-y: scroll;">
         <div id="optionsButton" class="optionsButton">
+            <img src="./icon_write.png" onmousedown="window.app.viewSubmitWouldYouRather()" style="height:30px; padding-top:10px;  padding-left: 10px;" />
             <img src="./icon_gear.png" onmousedown="window.app.viewOptions()" style="height:30px; padding-top:10px;  padding-right: 10px;" />
         </div>
         <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
@@ -1840,15 +1873,18 @@ path, .jtk-endpoint {
                 <div style = "font-size: 26px;" class="franklinBannerInner" id="startGameScreenViewUsername"> Welcome, [Username]</div>
             </div>
         
-            Write your own “Would You Rather” questions while you wait!
+            Write your own “Would You Rather”s!
+            <br>
+            <br>
+            You can write later via the top left icon.
+            <br>
             <br>
             <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
                 <div style="display:flex;justify-content:center;width:100%;">
                     <div id="wouldYouRatherSubmit" class="textfield">
                         <div style="color:#aaa"><i>Do you prefer...</i></div>
                     </div>
-                    <span style="display:none" placeholder="Do you prefer..." class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit-system" 
-                        onmousedown="window.app.setPlaceholder('wouldYouRatherSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherSubmit-system', 'Do you prefer...')"></span>
+                    <span style="display:none" placeholder="Do you prefer..." class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit-system"></span>
                 </div>
             </div>
             <div style="display:flex; flex-direction: row-reverse;">
@@ -1862,8 +1898,7 @@ path, .jtk-endpoint {
                     <div id="wouldYouRatherLeftSubmit" class="textfield">
                         <div style="color:#aaa"><i>Apple pie</i></div>
                     </div>
-                    <span style="display:none" placeholder="Apple pie" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit-system" 
-                        onmousedown="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherLeftSubmit-system', 'Apple pie')"></span>
+                    <span style="display:none" placeholder="Apple pie" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit-system"></span>
                 </div>
             </div>
             <div style="display:flex; flex-direction: row-reverse;">
@@ -1877,8 +1912,7 @@ path, .jtk-endpoint {
                     <div id="wouldYouRatherRightSubmit" class="textfield">
                         <div style="color:#aaa"><i>Peach cobbler</i></div>
                     </div>
-                    <span style="display:none" placeholder="Peach cobbler" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmit-system" 
-                    onmousedown="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', '')" onblur="window.app.setPlaceholder('wouldYouRatherRightSubmit-system', 'Peach cobbler')"></span>
+                    <span style="display:none" placeholder="Peach cobbler" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmit-system"></span>
                 </div>
             </div>   
             <div style="display:flex; flex-direction: row-reverse;">
@@ -1988,8 +2022,7 @@ path, .jtk-endpoint {
                     <div id="retrieveQuestionsField1" class="textfield" style="width:95%;">
                         <div style="color:#aaa"><i>Give me a good question</i></div>
                     </div>
-                    <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1-system" 
-                        onmousedown="window.app.setPlaceholder('retrieveQuestionsField1-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField1-system', 'Give me a good question')">
+                    <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField1-system">
                     </span>
                 </div>
             </div>
@@ -2009,8 +2042,7 @@ path, .jtk-endpoint {
                     <div id="retrieveQuestionsField2" class="textfield" style="width: 95%;">
                         <div style="color:#aaa"><i>Give me a good question</i></div>
                     </div>
-                    <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2-system" 
-                        onmousedown="window.app.setPlaceholder('retrieveQuestionsField2-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField2-system', 'Give me a good question')">
+                    <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField2-system">
                     </span>
                 </div>
                 <!--<div class="pseudo_button" onmousedown="document.getElementById('retrieveQuestionsField2').innerText=''" style="margin:5px">Clear</div>-->
@@ -2031,8 +2063,7 @@ path, .jtk-endpoint {
                     <div id="retrieveQuestionsField3" class="textfield" style="width: 95%;">
                         <div style="color:#aaa"><i>Give me a good question</i></div>
                     </div>
-                    <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3-system" 
-                        onmousedown="window.app.setPlaceholder('retrieveQuestionsField3-system', '')" onblur="window.app.setPlaceholder('retrieveQuestionsField3-system', 'Give me a good question')">
+                    <span style="display:none; width: 95%;" placeholder="Give me a good question" class="franklinInput" contenteditable="true" id="retrieveQuestionsField3-system">
                     </span>
                 </div>
             </div> 
@@ -2086,8 +2117,7 @@ path, .jtk-endpoint {
                 <div id="textfield1" class="textfield" style="width:95%;">
                     <div style="color:#aaa"><i>Answer me!</i></div>
                 </div>
-                <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1-system" 
-                onmousedown="window.app.setPlaceholder('textfield1-system', '')" onblur="window.app.setPlaceholder('textfield1-system', 'Answer me!')"></span>
+                <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield1-system"></span>
             </div>
             <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
                 <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield1', '')">
@@ -2101,8 +2131,7 @@ path, .jtk-endpoint {
                 <div id="textfield2" class="textfield" style="width:95%;">
                     <div style="color:#aaa"><i>Answer me!</i></div>
                 </div>
-                <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2-system" 
-                onmousedown="window.app.setPlaceholder('textfield2-system', '')" onblur="window.app.setPlaceholder('textfield2-system', 'Answer me!')"></span>
+                <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield2-system"></span>
             </div>
             <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
                 <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield2', '')">
@@ -2116,8 +2145,7 @@ path, .jtk-endpoint {
                 <div id="textfield3" class="textfield" style="width:95%;">
                     <div style="color:#aaa"><i>Answer me!</i></div>
                 </div>
-                <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3-system" 
-                onmousedown="window.app.setPlaceholder('textfield3-system', '')" onblur="window.app.setPlaceholder('textfield3-system', 'Answer me!')"></span>
+                <span style="width:95%;display:none" placeholder="Answer me!" class="franklinInput" contenteditable="true" id="textfield3-system"></span>
             </div>
             <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
                 <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield3', '')">
@@ -2339,6 +2367,58 @@ path, .jtk-endpoint {
                 <div id="closeFirstTutorialButton" class="pseudo_button" style="width:30%;" onmousedown="window.app.hideFirstTutorial()">Skip</div>
                 <div id="showNextFirstTutorial" class="pseudo_button" style="width:30%;" onmousedown="window.app.showNextFirstTutorial()">Next</div>
             </div>
+            <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+        </div>
+        
+        <div id="submitWouldYouRatherTutorialView" class="tutorialView noScrollbar" style="display:none;white-space:unset;">
+            <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideSubmitWouldYouRather()" style="z-index:2; height:30px; padding-top:10px;" />
+            <div style="top: 13px;width:100%;font-size:30px;padding-top:52px;">Submit Would You Rather</div>
+            <br>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
+                <div style="display:flex;justify-content:center;width:100%;">
+                    <div id="wouldYouRatherSubmitTutorialView" class="textfield">
+                        <div style="color:#aaa"><i>Do you prefer...</i></div>
+                    </div>
+                    <span style="display:none" placeholder="Do you prefer..." class="franklinInput" contenteditable="true" id="wouldYouRatherSubmitTutorialView-system"></span>
+                </div>
+            </div>
+            <div style="display:flex; flex-direction: row-reverse;">
+                <div style="display:flex;align-items: center; flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmitTutorialView', '')">
+                    Clear
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                </div>
+            </div>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
+                <div style="display:flex;justify-content:center;width:100%;">
+                    <div id="wouldYouRatherLeftSubmitTutorialView" class="textfield">
+                        <div style="color:#aaa"><i>Apple pie</i></div>
+                    </div>
+                    <span style="display:none" placeholder="Apple pie" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmitTutorialView-system"></span>
+                </div>
+            </div>
+            <div style="display:flex; flex-direction: row-reverse;">
+                <div style="display:flex;align-items: center; flex-direction: row-reverse; width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherLeftSubmitTutorialView', '')">
+                    Clear
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                </div>
+            </div>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
+                <div style="display:flex;justify-content:center;width:100%;">
+                    <div id="wouldYouRatherRightSubmitTutorialView" class="textfield">
+                        <div style="color:#aaa"><i>Peach cobbler</i></div>
+                    </div>
+                    <span style="display:none" placeholder="Peach cobbler" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmitTutorialView-system"></span>
+                </div>
+            </div>   
+            <div style="display:flex; flex-direction: row-reverse;">
+                <div style="display:flex; align-items: center;flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherRightSubmitTutorialView', '')">
+                    Clear
+                    <img style="height:20px;" src="./icon_cross.png"/>
+                </div>
+            </div>
+            <br>
+            <div id="submitWouldYouRatherButtonTutorialView" class="pseudo_button" onmousedown="window.app.sendSubmitWouldYouRather(true)">Submit Would You Rather</div>
+            <br>
             <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
         </div>
         <div id="tutorialView" class="tutorialView noScrollbar" style="display:none;">

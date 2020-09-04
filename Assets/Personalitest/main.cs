@@ -524,7 +524,7 @@ public class main : MonoBehaviour
                 Debug.Log("property: " + property);
                 wouldYouRather.Add(property.Value.ToString());
             }
-            wouldYouRathers.Insert(0, wouldYouRather.ToArray());
+            wouldYouRathers.Insert(currentWouldYouRatherIndex, wouldYouRather.ToArray());
         }
         else if ("sendWouldYouRatherAnswer".Equals(action))
         {
