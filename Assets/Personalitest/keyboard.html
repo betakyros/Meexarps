@@ -1100,7 +1100,6 @@ path, .jtk-endpoint {
                 var wouldYouRatherQuestionSubmit;
                 var wouldYouRatherLeftSubmit; 
                 var wouldYouRatherRightSubmit;
-                debugger;
                 if(isTutorialView) {
                     wouldYouRatherQuestionSubmit =  App.prototype.getKeyboardValue("wouldYouRatherSubmitTutorialView");
                     wouldYouRatherLeftSubmit = App.prototype.getKeyboardValue("wouldYouRatherLeftSubmitTutorialView");
@@ -1931,9 +1930,6 @@ path, .jtk-endpoint {
                     when everyone is ready
                 </text>
             </div>
-            <div style="display:flex; justify-content:center; width: 100%">
-                <div id="snackbar" class="snackbar">Would you rather submitted</div>
-            </div>
             <p>
             <div class="initially_hidden_pseudo_button" onmousedown="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
             <div id="waitingForStartGame"></div>
@@ -2544,8 +2540,11 @@ path, .jtk-endpoint {
         <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
     </div>
     <div id="my_keyboard"></div>
-    <div style="position:absolute; justify-content:center; width: 100%">
+    <div style="display:flex; position:absolute; justify-content:center; width: 100%">
         <div id="snackbarGlobal" class="snackbar"></div>
+    </div>
+    <div style="display:flex; position:absolute; justify-content:center; width: 100%">
+        <div id="snackbar" class="snackbar">Would you rather submitted</div>
     </div>
 
   </body>
