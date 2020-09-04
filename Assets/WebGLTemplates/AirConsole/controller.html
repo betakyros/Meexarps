@@ -636,9 +636,9 @@ path, .jtk-endpoint {
                         document.getElementById("pageFourText").innerHTML = 'Everyone will answer ' + vipName.bold().fontcolor("blue") + '\'s questions. The answers will be anonymized for phase 3.';
                     }
                 } else if(myAction === "sendRetrieveOptions") {
-                    document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
+                    //document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
                     document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
-                    document.getElementById("useSystemKeyboard").checked = useSystemKeyboard;//anonymousNames
+                    document.getElementById("useSystemKeyboard").checked = useSystemKeyboard;//useSystemKeyboard
                 } else if(myAction === "sendStartGameScreen") {
                 var d = new Date();
                 console.log("sendStartGameScreen: " + playerName + " AT TIME: " + d.toLocaleString() + ":" + d.getMilliseconds());
@@ -1336,7 +1336,7 @@ path, .jtk-endpoint {
             App.prototype.saveOptions = function saveOptions() {
                 if(isVip) {
                     const optionsMap = {};
-                    optionsMap["nsfwQuestions"] = document.getElementById("NsfwQuestionsCheckbox").checked;
+                    //optionsMap["nsfwQuestions"] = document.getElementById("NsfwQuestionsCheckbox").checked;
                     optionsMap["anonymousNames"] = document.getElementById("anonymousNameCheckbox").checked;
 				    var message = {
 					    'action': "sendSaveOptions",
@@ -2427,6 +2427,7 @@ path, .jtk-endpoint {
             <div style="position: width:100%;font-size:30px;">Game Options</div>
             <div id="checkboxes" style="text-align:left; margin: 20px 0 0 20px;">
                 <div style="display:none;" id="vipOptionsDiv">
+                    <!--
                     <div style="display:flex">
                         <label class="switch" for="NsfwQuestionsCheckbox" >
                             <input id="NsfwQuestionsCheckbox" type="checkbox" onchange="window.app.saveOptions()">
@@ -2434,6 +2435,7 @@ path, .jtk-endpoint {
                         </label>
                         <div class="optionsTextLabel">Nsfw Questions Enabled</div>
                     </div>
+                    -->
                     <br>
                     <div style="display:flex">
                         <label class="switch" for="anonymousNameCheckbox" >

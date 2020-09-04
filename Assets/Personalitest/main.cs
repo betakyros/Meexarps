@@ -448,7 +448,7 @@ public class main : MonoBehaviour
 
             if (from == GetVipDeviceId())
             {
-                options["nsfwQuestions"] = data["info"]["nsfwQuestions"].ToObject<bool>();
+                //options["nsfwQuestions"] = data["info"]["nsfwQuestions"].ToObject<bool>();
                 options["anonymousNames"] = data["info"]["anonymousNames"].ToObject<bool>();
             }
         }
