@@ -167,10 +167,15 @@ AirConsoleKeyboard.prototype.show = function(input_id, opts) {
   if( !isKeyboardUp) {
       isKeyboardUp = true;
       var globalWrapper = document.getElementById("globalWrapper");
+      
       oldHeight = globalWrapper.style.height;
-      var keyboardHeight = (document.getElementById("my_keyboard").clientHeight) * globalWrapper.getAttribute("data-scaleFactor");
 
-      globalWrapper.style.height = "calc(" + oldHeight + " - " + keyboardHeight + "px)";
+      var keyboardHeight = (document.getElementById("my_keyboard").clientHeight) * globalWrapper.getAttribute("data-scaleFactor");
+      if(oldHeight == "unset") {
+        globalWrapper.style.height = "calc(" + window.innerHeight + "px - " + keyboardHeight + "px)";
+      } else {
+        globalWrapper.style.height = "calc(" + oldHeight + " - " + keyboardHeight + "px)";
+      }
       newHeight = globalWrapper.style.height;
       oldAlignItems = globalWrapper.style.alignItems;
       globalWrapper.style.alignItems = "flex-end";
