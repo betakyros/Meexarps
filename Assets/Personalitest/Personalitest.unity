@@ -5273,7 +5273,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 212.82245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &424177196
 MonoBehaviour:
@@ -22955,6 +22955,7 @@ GameObject:
   - component: {fileID: 1737776621}
   - component: {fileID: 1737776620}
   - component: {fileID: 1737776622}
+  - component: {fileID: 1737776623}
   m_Layer: 0
   m_Name: backgroundMountains
   m_TagString: Untagged
@@ -22979,7 +22980,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 212.82245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1737776620
 MonoBehaviour:
@@ -23032,6 +23033,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 4
   m_AspectRatio: 1.33
+--- !u!95 &1737776623
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737776618}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2dc0e7d9995137c4fa5e9cf9aa8dae1c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1745409544
 GameObject:
   m_ObjectHideFlags: 0

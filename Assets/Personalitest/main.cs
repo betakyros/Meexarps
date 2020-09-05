@@ -2206,6 +2206,7 @@ public class main : MonoBehaviour
         roundCounter.SetActive(false);
         resultsPanel.SetActive(false);
         endScreenPanel.SetActive(true);
+        ChangeBackground(3);
         foreach (Player p in gameState.players.Values)
         {
             string currentBestFriend = CalculateBestFriend(p);
