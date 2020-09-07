@@ -710,7 +710,9 @@ path, .jtk-endpoint {
                             document.getElementById("sendSelectCategoryView").style.display == "none" &&
                             document.getElementById("retrieveQuestionsView").style.display == "none" &&
                             //also don't force would you rather if you're trying to reconnect
-                            document.getElementById("welcomeScreenView").style.display  == "none"
+                            document.getElementById("welcomeScreenView").style.display  == "none" &&
+                            //dont display tutorial if you are the current question writer
+                            questionWriterName != playerName
                         ) ||
                         isReconnect
                     )
