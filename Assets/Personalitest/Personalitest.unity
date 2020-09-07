@@ -902,7 +902,7 @@ MonoBehaviour:
   m_text: 'With N players it will take about  O minutes per round. Note: With fewer
     rounds, some players will not get to submit questions.'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4e36f6dc52e964a4790aab8611573c74, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3cbc11599462e8544924c27dcfe3908e, type: 2}
   m_sharedMaterial: {fileID: 21883083607855310, guid: 4e36f6dc52e964a4790aab8611573c74,
     type: 2}
   m_fontSharedMaterials: []
@@ -978,13 +978,13 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 0
+  m_havePropertiesChanged: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
   m_isInputParsingRequired: 0
   m_inputSource: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_subTextObjects:
   - {fileID: 0}
   - {fileID: 0}
@@ -7255,7 +7255,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: The head researcher (Player 1) is selecting a game length
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4e36f6dc52e964a4790aab8611573c74, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3cbc11599462e8544924c27dcfe3908e, type: 2}
   m_sharedMaterial: {fileID: 21883083607855310, guid: 4e36f6dc52e964a4790aab8611573c74,
     type: 2}
   m_fontSharedMaterials: []
@@ -7337,7 +7337,7 @@ MonoBehaviour:
   m_spriteAnimator: {fileID: 0}
   m_isInputParsingRequired: 1
   m_inputSource: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_subTextObjects:
   - {fileID: 0}
   - {fileID: 0}
@@ -10644,8 +10644,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Here will be friendship trivia and loading screen tips
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4e36f6dc52e964a4790aab8611573c74, type: 2}
-  m_sharedMaterial: {fileID: 21883083607855310, guid: 4e36f6dc52e964a4790aab8611573c74,
+  m_fontAsset: {fileID: 11400000, guid: 3cbc11599462e8544924c27dcfe3908e, type: 2}
+  m_sharedMaterial: {fileID: 21125193565962478, guid: 3cbc11599462e8544924c27dcfe3908e,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -16259,8 +16259,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: '<color=white>Audience: 0</color>'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4e36f6dc52e964a4790aab8611573c74, type: 2}
-  m_sharedMaterial: {fileID: 21883083607855310, guid: 4e36f6dc52e964a4790aab8611573c74,
+  m_fontAsset: {fileID: 11400000, guid: 3cbc11599462e8544924c27dcfe3908e, type: 2}
+  m_sharedMaterial: {fileID: 21125193565962478, guid: 3cbc11599462e8544924c27dcfe3908e,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -16882,8 +16882,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Now Initializing Room Code...
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4e36f6dc52e964a4790aab8611573c74, type: 2}
-  m_sharedMaterial: {fileID: 21883083607855310, guid: 4e36f6dc52e964a4790aab8611573c74,
+  m_fontAsset: {fileID: 11400000, guid: 3cbc11599462e8544924c27dcfe3908e, type: 2}
+  m_sharedMaterial: {fileID: 21125193565962478, guid: 3cbc11599462e8544924c27dcfe3908e,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -20819,7 +20819,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: <color=#325EFB>A Friendship Study</color>
+  m_text: A Friendship Study
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4e36f6dc52e964a4790aab8611573c74, type: 2}
   m_sharedMaterial: {fileID: 21883083607855310, guid: 4e36f6dc52e964a4790aab8611573c74,
@@ -20829,8 +20829,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294663730
-  m_fontColor: {r: 0.19607843, g: 0.36862746, b: 0.9843137, a: 1}
+    rgba: 4293270371
+  m_fontColor: {r: 0.3887926, g: 0.10679956, b: 0.9056604, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -27230,8 +27230,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Meexarps
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4e36f6dc52e964a4790aab8611573c74, type: 2}
-  m_sharedMaterial: {fileID: 21883083607855310, guid: 4e36f6dc52e964a4790aab8611573c74,
+  m_fontAsset: {fileID: 11400000, guid: 3cbc11599462e8544924c27dcfe3908e, type: 2}
+  m_sharedMaterial: {fileID: 21125193565962478, guid: 3cbc11599462e8544924c27dcfe3908e,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

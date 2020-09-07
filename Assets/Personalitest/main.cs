@@ -121,6 +121,7 @@ public class main : MonoBehaviour
         currentWouldYouRatherIndex = 0;
         audienceWouldYouRathers = new Dictionary<int, int>();
         StartCoroutine(waitThreeSecondsThenDisplayWelcomeScreen());
+        ChangeBackground(3);
     }
 
     private IEnumerator<WaitForSeconds> waitThreeSecondsThenDisplayWelcomeScreen()
