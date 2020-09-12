@@ -536,7 +536,9 @@ path, .jtk-endpoint {
 
                 /* THIS IS WHERE ACTIONS ARE RECEIVED */
                 
-                if(myAction === "sendWaitScreen") {
+                if(myAction === "debug") {
+                   console.log("Debug: " + payload.data[0]);
+                } else if(myAction === "sendWaitScreen") {
                     hideAllViews();
                     displayElement(document.getElementById("waitingView"));
                     if(!payload.data[0] || payload.data[0] == " ") {

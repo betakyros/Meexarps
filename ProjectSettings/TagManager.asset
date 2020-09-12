@@ -13,6 +13,8 @@ TagManager:
   - loadingScreenTips
   - checkPhoneTutorial
   - audienceText
+  - votingTextTitle
+  - votingTextQnA
   layers:
   - Default
   - TransparentFX

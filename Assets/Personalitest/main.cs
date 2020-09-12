@@ -1590,22 +1590,23 @@ public class main : MonoBehaviour
         autoResizeGrid.enabled = false;
         int panelOffset = 3;
         int numPlayersAtStart = gameState.GetNumberOfPlayers();
+        GameObject[] votingGridTitles = GameObject.FindGameObjectsWithTag("votingTextTitle");
+        GameObject[] votingGridQnA = GameObject.FindGameObjectsWithTag("votingTextQnA");
+
         for (int i = 0; i < numPlayersAtStart; i++)
         {
-
-            int answerPanelOffset = 2;
-            //+1 because the offset is the title
-            TextMeshProUGUI myTitle = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset];
-            TextMeshProUGUI myText = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset+1];
+            TextMeshProUGUI myTitle = votingGridTitles[i].GetComponentInChildren<TextMeshProUGUI>();
+            TextMeshProUGUI myQnAText = votingGridQnA[i].GetComponentInChildren<TextMeshProUGUI>();
+            myQnAText.text ="";
 
             int answerDisplayDuration = 6;
             //Camera zoom will make the current panel the last element, so we don't need to add i
             CameraZoom cz = votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.AddComponent<CameraZoom>();
-            cz.Setup(1f, answerDisplayDuration * 3f , true, true, false);
+            cz.Setup(1f, answerDisplayDuration * 3f, true, true, false);
 
             //temporarily increase the max size
             myTitle.fontSizeMax = 60;
-            myText.fontSizeMax = 40;
+            myQnAText.fontSizeMax = 40;
 
             List<Answers> answersList = gameState.GetCurrentRound().answers;
             Answers answers = answersList[i];
@@ -1616,25 +1617,29 @@ public class main : MonoBehaviour
             //wait one second after pause before displaying anything
             yield return new WaitForSeconds(2);
 
-            for (int j = 0; j < answers.text.Length; j++) 
+            for (int j = 0; j < answers.text.Length; j++)
             {
                 string answer = answers.text[j];
 
-                myText.SetText(myText.text + "<color=black><i>" + gameState.GetCurrentRound().questions[j] + "</i></color>\n<size=4>\n</size><b>" + answer + "</b>");
+                string newText = myQnAText.text + "<color=black>" + gameState.GetCurrentRound().questions[j] + "</color>\n<size=4>\n</size><b>" + answer + "</b>";
+
+                myQnAText.text = newText;
+
+                myQnAText.SetText(newText);
                 shortTextSb.Append(answer);
-                if (j < answers.text.Length - 1 )
+                if (j < answers.text.Length - 1)
                 {
-                    myText.SetText(myText.text + "<size=8>\n\n</size>");
+                    myQnAText.text = myQnAText.text + "<size=8>\n\n</size>";
                     shortTextSb.Append("<size=6>\n\n</size>");
                 }
                 //wait answerDisplayDuration seconds between each answer to give it a punch
                 yield return new WaitForSeconds(answerDisplayDuration);
             }
-            myText.SetText(shortTextSb.ToString());
+            myQnAText.SetText(shortTextSb.ToString());
 
             //reset the max size
             myTitle.fontSizeMax = 25;
-            myText.fontSizeMax= 20;
+            myQnAText.fontSizeMax = 20;
             yield return new WaitForSeconds(2);
             Destroy(cz);
         }
@@ -1648,6 +1653,12 @@ public class main : MonoBehaviour
         }
         votingPanel.GetComponentsInChildren<Image>()[gridLayoutOffset].GetComponentInChildren<GridLayoutGroup>().enabled = true;
         autoResizeGrid.enabled = true;
+    }
+
+    private static void debugOnPhone(string key, string value)
+    {
+        Debug.Log(key + ": " + value);
+        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("debug", new string[] { key+ ": " + value})));
     }
 
     private void sendEveryonePersonalizedRoundResults(List<Answers> answerList)
@@ -1828,7 +1839,7 @@ public class main : MonoBehaviour
             TextMeshProUGUI myQandA = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[resultsPanelOffset + 2*i + 1];
 
             myTitle.SetText(answers.anonymousPlayerName);
-            myQandA.SetText("");
+            myQandA.text = "";
         }
 
         //send each individual their personalized results
@@ -2066,8 +2077,8 @@ public class main : MonoBehaviour
             TextMeshProUGUI rightAndWrongPanelRightAndWrong = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>(true)[resultsPanelOffset+1];
             TextMeshProUGUI rightAndWrongPanelAudienceRightAndWrong = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>(true)[resultsPanelOffset+2];
 
-            rightAndWrongPanelTitle.SetText("");
-            rightAndWrongPanelRightAndWrong.SetText("");
+            rightAndWrongPanelTitle.text ="";
+            rightAndWrongPanelRightAndWrong.text = "";
             rightAndWrongPanelAudienceRightAndWrong.SetText("");
 
             //first, display the questions and answers again
@@ -2083,8 +2094,8 @@ public class main : MonoBehaviour
             float totalWaitTime = 3 * waitForContextSeconds + 2 * waitForReadSeconds + (3 + wrongVotesCount) * waitForEachAnswer;
             cz.Setup(zoomInTime, totalWaitTime, true, true, false, false, true);
 
-            rightAndWrongPanelTitle.SetText("<b>" + anonymousPlayerName +
-                " is ???\n\n" + " </b>");
+            rightAndWrongPanelTitle.text = "<b>" + anonymousPlayerName +
+                " is ???\n\n" + " </b>";
 
             rightAndWrongPanelAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(zoomInTime);
@@ -2094,10 +2105,10 @@ public class main : MonoBehaviour
                 yield return new WaitForSeconds(waitForEachAnswer);
                 string answer = answers.text[j];
 
-                myQandAs.SetText(myQandAs.text + "<color=black>" + gameState.GetCurrentRound().questions[j] + "</color><size=4>\n\n</size><color=#4A6EEF>" + answer + "</color>");
+                myQandAs.text = myQandAs.text + "<color=black>" + gameState.GetCurrentRound().questions[j] + "</color><size=4>\n\n</size><color=#4A6EEF>" + answer + "</color>";
                 if (j < answers.text.Length - 1)
                 {
-                    myQandAs.SetText(myQandAs.text +"<size=8>\n\n</size>");
+                    myQandAs.text = myQandAs.text +"<size=8>\n\n</size>";
                 }
             }
             yield return new WaitForSeconds(waitForReadSeconds);
@@ -2105,26 +2116,26 @@ public class main : MonoBehaviour
             yield return new WaitForSeconds(waitForContextSeconds);
 
             string tileTitle = anonymousPlayerName + " is <color=blue>" + targetPlayerName + "</color>";
-            rightAndWrongPanelTitle.SetText("<b>" + tileTitle + "</b>");
+            rightAndWrongPanelTitle.text = "<b>" + tileTitle + "</b>";
             yield return new WaitForSeconds(waitForContextSeconds);
 
             foreach (string s in wrongVotesLines)
             {
-                rightAndWrongPanelRightAndWrong.SetText(rightAndWrongPanelRightAndWrong.text + "<size=7>\n\n</size>" + s);
+                rightAndWrongPanelRightAndWrong.text = rightAndWrongPanelRightAndWrong.text + "<size=7>\n\n</size>" + s;
                 yield return new WaitForSeconds(waitForEachAnswer);
             }
-            rightAndWrongPanelRightAndWrong.SetText( rightAndWrongPanelRightAndWrong.text 
-                + "<size=7>\n\n</size>" + correctVotesStringSb.ToString());
+            rightAndWrongPanelRightAndWrong.text = rightAndWrongPanelRightAndWrong.text 
+                + "<size=7>\n\n</size>" + correctVotesStringSb.ToString();
             if(numberOfCorrectAudienceGuesses > 0)
             {
-                rightAndWrongPanelAudienceRightAndWrong.SetText(rightAndWrongPanelAudienceRightAndWrong.text + 
-                    "<color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members");
+                rightAndWrongPanelAudienceRightAndWrong.text = rightAndWrongPanelAudienceRightAndWrong.text + 
+                    "<color=green>" + numberOfCorrectAudienceGuesses + "</color> Correct Audience Members";
                 gameState.totalAudienceCorrectGuesses += numberOfCorrectAudienceGuesses;
             }
             if(numberOfWrongAudienceGuesses > 0)
             {
-                rightAndWrongPanelAudienceRightAndWrong.SetText(rightAndWrongPanelAudienceRightAndWrong.text +
-                    "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members");
+                rightAndWrongPanelAudienceRightAndWrong.text = rightAndWrongPanelAudienceRightAndWrong.text +
+                    "<size=15>\n\n</size><color=red>" + numberOfWrongAudienceGuesses + "</color> Wrong Audience Members";
                 gameState.totalAudienceWrongGuesses += numberOfWrongAudienceGuesses;
 
             }
@@ -2140,8 +2151,8 @@ public class main : MonoBehaviour
             //yield return new WaitForSeconds(zoomInTime);
             string audienceGuessesString = numberOfCorrectAudienceGuesses + numberOfWrongAudienceGuesses == 0 ? "" : "\n\n<color=green>" + numberOfCorrectAudienceGuesses + " </color>/<color=red>" + numberOfWrongAudienceGuesses + "</color> Audience";
 
-            myTitle.SetText("<b>" + tileTitle + "</b>");
-            myQandAs.SetText(wrongVotesSb.ToString() + "\n\n" + correctVotesSB.ToString() + audienceGuessesString);
+            myTitle.text = "<b>" + tileTitle + "</b>";
+            myQandAs.text = wrongVotesSb.ToString() + "\n\n" + correctVotesSB.ToString() + audienceGuessesString;
 
             myTitle.fontSizeMax = 25;
             myQandAs.fontSizeMax= 20;
