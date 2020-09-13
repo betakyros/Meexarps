@@ -28,16 +28,17 @@ public class GentleShake : MonoBehaviour
 
     void Start()
     {
-        myTransform = GetComponent(typeof(Transform)) as Transform;
-        originalPos = transform.position;
-        maxX = originalPos.x + bobAmountHorizontal;
-        minX = originalPos.x - bobAmountHorizontal;
-        maxY = originalPos.y + bobAmountVertical;
-        minY = originalPos.y - bobAmountVertical;
+        RectTransform rectTransform = (RectTransform)transform;
+
+        originalPos = rectTransform.anchoredPosition;
+        maxX = bobAmountHorizontal;
+        minX = - bobAmountHorizontal;
+        maxY = bobAmountVertical;
+        minY = - bobAmountVertical;
         currentX = maxX;
         currentY = maxY;
 
-        originalRotationZ = myTransform.rotation.eulerAngles.z;
+        originalRotationZ = transform.rotation.eulerAngles.z;
         minRotationZ = originalRotationZ - rotationAmount;
         minRotationZ = 360f + minRotationZ;        
         maxRotationZ = originalRotationZ + rotationAmount;
@@ -47,23 +48,24 @@ public class GentleShake : MonoBehaviour
 
     void Update()
     {
-        if (transform.position.x <= minX*1.01f)
+        RectTransform rectTransform = (RectTransform)transform;
+        if (rectTransform.anchoredPosition.x <= minX * .99f)
         {
             maxX = Random.Range(originalPos.x, originalPos.x + bobAmountHorizontal);
             currentX = maxX;
         }
-        else if (transform.position.x >= maxX*.99f)
+        else if (rectTransform.anchoredPosition.x >= maxX*.99f)
         {
             minX = Random.Range(originalPos.x - bobAmountHorizontal, originalPos.x);
             currentX = minX;
         }
 
-        if (transform.position.y <= minY * 1.01f)
+        if (rectTransform.anchoredPosition.y <= minY * .99f)
         {
             maxY = Random.Range(originalPos.y, originalPos.y + bobAmountVertical);
             currentY = maxY;
         }
-        else if (transform.position.y >= maxY * .99f)
+        else if (rectTransform.anchoredPosition.y >= maxY * .99f)
         {
             minY = Random.Range(originalPos.y - bobAmountVertical, originalPos.y);
             currentY = minY;
@@ -83,7 +85,7 @@ public class GentleShake : MonoBehaviour
         // Rotate the cube by converting the angles into a quaternion.
         Quaternion target = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, currentRotationZ);
 
-        transform.position = Vector3.MoveTowards(transform.position, new Vector2(currentX, currentY), bobSpeed);
+        rectTransform.anchoredPosition = Vector3.MoveTowards(rectTransform.anchoredPosition, new Vector2(currentX, currentY), bobSpeed);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, target, rotationSpeed);
     }
 
