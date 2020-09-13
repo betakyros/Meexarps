@@ -27345,8 +27345,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalPos: {x: 1000.69867, y: 765, z: 0}
-  bobAmountVertical: 16
-  bobAmountHorizontal: 8
+  bobAmountVertical: 8
+  bobAmountHorizontal: 4
   bobSpeed: 0.05
   rotationAmount: 2
   rotationSpeed: 0.01
