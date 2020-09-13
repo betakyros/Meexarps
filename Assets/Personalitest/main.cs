@@ -352,7 +352,7 @@ public class main : MonoBehaviour
                 wouldYouRatherPanel.SetActive(false);
                 answerQuestionsPanel.SetActive(false);
                 votingPanel.SetActive(false);
-                resultsPanel.SetActive(false);
+                deactivateResultsPanel();
                 SendEndScreen2();
             }
             /*
@@ -1134,7 +1134,8 @@ public class main : MonoBehaviour
         gameState.rounds.Add(new Round());
 
         //if starting from previous game
-        resultsPanel.SetActive(false);
+        deactivateResultsPanel();
+        //set isOpen to false
         wouldYouRatherPanel.SetActive(true);
 
         //also sets to true
@@ -1203,6 +1204,22 @@ public class main : MonoBehaviour
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
         InvokeRepeating("SendWouldYouRather", 0f, 15f);
+    }
+
+    private void deactivateResultsPanel()
+    {
+        Animator nextActionBannerAnimator = resultsPanel.GetComponentsInChildren<Animator>()[2];
+        nextActionBannerAnimator.SetBool("isOpen", false);
+        GameObject banner = GameObject.FindWithTag("Banner");
+        if(banner != null)
+        {
+            RectTransform rectTransform = banner.GetComponent<RectTransform>();
+            rectTransform.anchorMin = new Vector2(0, -.1f);
+            rectTransform.anchorMax = new Vector2(1, 0);
+            rectTransform.offsetMax = Vector2.zero;
+            rectTransform.offsetMin = Vector2.zero;
+        }
+        resultsPanel.SetActive(false);
     }
 
     private void updatePlayerAnimator(Animator a, int playerNumber)
@@ -2181,7 +2198,13 @@ public class main : MonoBehaviour
         }
         resultsPanel.GetComponentsInChildren<Image>()[0].GetComponentInChildren<GridLayoutGroup>().enabled = true;
         autoResizeGrid.enabled = true;
-        
+
+        GameObject.FindWithTag("Banner").GetComponentInChildren<TextMeshProUGUI>().text = "Waiting for <color=#325EFB>" +
+                gameState.GetPlayerByPlayerNumber(0).nickname + "</color> to continue   <sprite=0>";
+
+        Animator nextActionBannerAnimator = resultsPanel.GetComponentsInChildren<Animator>()[2];
+        nextActionBannerAnimator.SetBool("isOpen", true);
+
         if (gameState.GetCurrentRoundNumber() == gameState.numRoundsPerGame - 1)
         {
             SendMessageToVip(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
@@ -2216,7 +2239,7 @@ public class main : MonoBehaviour
     public void SendEndScreen2()
     {
         roundCounter.SetActive(false);
-        resultsPanel.SetActive(false);
+        deactivateResultsPanel();
         endScreenPanel.SetActive(true);
         ChangeBackground(3);
         foreach (Player p in gameState.players.Values)
