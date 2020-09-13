@@ -469,7 +469,7 @@ path, .jtk-endpoint {
         var selectedAlien = -1;
         var availableAliens = [true,true,true,true,true,true];
         var playerNameToAlienNumberDictionary;
-        var hasSeenTutorial = [false, false];
+        var hasSeenTutorial = [false, false, false];
 
         App.prototype.touchStart = function touchStart(text) {
             showingAnswerHelpText = true;
@@ -680,6 +680,10 @@ path, .jtk-endpoint {
                     document.getElementById("selectCategoryButton4").innerText=payload.data[3];
                     document.getElementById("selectCategoryButton5").innerText=payload.data[4];
                     document.getElementById("selectCategoryButton6").innerText=payload.data[5];
+                    if(!hasSeenTutorial[2]){
+                        App.prototype.showTutorial("It's your turn to write questions!\n\nDon't rush! Your friends are playing Would you Rather.");
+                        hasSeenTutorial[2] = true;
+                    }
                     displayElement(document.getElementById("sendSelectCategoryView"));
                 } else if(myAction === "sendRetrieveQuestions") {
                     App.prototype.setKeyboardValue("retrieveQuestionsField1", payload.data[0]);
