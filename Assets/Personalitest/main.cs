@@ -131,15 +131,16 @@ public class main : MonoBehaviour
         SetVolumeForLevel(welcomeScreenAudioSources, 1);
         FadeSplashScreen fadeSplashScreenScript = splashScreenPanel.AddComponent<FadeSplashScreen>();
         fadeSplashScreenScript.Setup(3.0f);
+        yield return new WaitForSeconds(3);
         Image[] storyPanels = storyPanel.GetComponentsInChildren<Image>(true);
-        int numStoryScreens = 3;
-        for(int i = 0; i < numStoryScreens; i++)
+        int numStoryScreens = 6;
+        for(int i = 0; i < numStoryScreens - 1; i++)
         {
-            yield return new WaitForSeconds(10);
+            yield return new WaitForSeconds(3);
             storyPanels[i].gameObject.SetActive(false);
             storyPanels[i+1].gameObject.SetActive(true);
         }
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(3);
         FadeSplashScreen fadeStoryScreenScript = storyPanel.AddComponent<FadeSplashScreen>();
         if(storyPanel.activeSelf) {
             InvokeRepeating("UpdateLoadingScreenTips", 0f, 10f);
@@ -2241,7 +2242,6 @@ public class main : MonoBehaviour
         roundCounter.SetActive(false);
         deactivateResultsPanel();
         endScreenPanel.SetActive(true);
-        ChangeBackground(3);
         foreach (Player p in gameState.players.Values)
         {
             string currentBestFriend = CalculateBestFriend(p);
@@ -2264,8 +2264,15 @@ public class main : MonoBehaviour
 
 
         string friendshipStatus = CaluclateFriendshipStatus(correctPercent, friendshipStatusArray);
-        string resultStatus = correctPercent >= 60.0f ? resultsStatuses[0] : resultsStatuses[1];
-        
+        bool didWeWin = correctPercent >= 60.0f;
+        string resultStatus = didWeWin ? resultsStatuses[0] : resultsStatuses[1];
+        if (didWeWin)
+        {
+            ChangeBackground(4);
+        } else
+        {
+            ChangeBackground(5);
+        }
         //set percentCorrectText
         endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset].SetText("Collectively, your team identified\n<b><size=90> " + correctPercent.ToString("n2") + "%</size> </b>\nof your teammates correctly!");
         //set friendship status

@@ -36,6 +36,7 @@ public class FadeSplashScreen : MonoBehaviour
     void Update()
     {
         Image[] myImages = gameObject.GetComponentsInChildren<Image>();
+        Text myText = gameObject.GetComponentInChildren<Text>();
         // Calculate the fraction of the total duration that has passed.
         float timePassed = Time.time - startTime;
 
@@ -48,6 +49,10 @@ public class FadeSplashScreen : MonoBehaviour
             foreach(Image myImage in myImages)
             {
                 myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, curentAlpha);
+            }
+            if(myText != null)
+            {
+                myText.color = new Color(myText.color.r, myText.color.g, myText.color.b, curentAlpha);
             }
         }
         else
