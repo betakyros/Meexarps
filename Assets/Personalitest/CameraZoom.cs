@@ -13,6 +13,7 @@ public class CameraZoom : MonoBehaviour
     public float originalFontSize;
     public Vector2 originalMinAnchor;
     public Vector2 originalMaxAnchor;
+    public Vector3 originalScale;
 
     // Time taken for the transition.
     float duration = 1.0f;
@@ -46,6 +47,7 @@ public class CameraZoom : MonoBehaviour
         originalHeight = myRectTransform.rect.height;
         originalMinAnchor = myRectTransform.anchorMin;
         originalMaxAnchor = myRectTransform.anchorMax;
+        originalScale = myRectTransform.localScale;
         startTime = Time.time;
         originalPosition = gameObject.transform.position;
         if(!isMovie)
@@ -94,6 +96,7 @@ public class CameraZoom : MonoBehaviour
         float currentY;
         float curentAlpha;
         float currentFontSize;
+        Vector3 currentScale;
 
         //growing
         if (timePassed < duration)
@@ -110,8 +113,14 @@ public class CameraZoom : MonoBehaviour
             {
                 curentAlpha = Mathf.SmoothStep(originalAlpha, 1f, t);
                 currentFontSize = Mathf.SmoothStep(originalFontSize, maxFontSize, t);
+
                 myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, curentAlpha);
                 gameObject.GetComponentInChildren<TextMeshProUGUI>().fontSize = Mathf.RoundToInt(currentFontSize);
+
+                currentScale = new Vector3(Mathf.SmoothStep(originalScale.x, 1, t),
+                    Mathf.SmoothStep(originalScale.y, 1, t),
+                    Mathf.SmoothStep(originalScale.z, 1, t));
+                myPanelTransform.localScale = currentScale;
             }
             myPanelTransform.sizeDelta = new Vector2(currentWidth, currentHeight);
             myPanelTransform.position = new Vector3(currentX, currentY, 0);
@@ -136,8 +145,14 @@ public class CameraZoom : MonoBehaviour
             {
                 curentAlpha = Mathf.SmoothStep(1f, originalAlpha, t);
                 currentFontSize = Mathf.SmoothStep(maxFontSize, originalFontSize, t);
+                
                 myImage.color = new Color(myImage.color.r, myImage.color.g, myImage.color.b, curentAlpha);
                 gameObject.GetComponentInChildren<TextMeshProUGUI>().fontSize = Mathf.RoundToInt(currentFontSize);
+
+                currentScale = new Vector3(Mathf.SmoothStep(1, originalScale.x, t),
+                    Mathf.SmoothStep(1, originalScale.y, t),
+                    Mathf.SmoothStep(1, originalScale.z, t));
+                myPanelTransform.localScale = currentScale;
             }
 
             myPanelTransform.sizeDelta = new Vector2(currentWidth, currentHeight);
