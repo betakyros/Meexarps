@@ -324,6 +324,7 @@ path, .jtk-endpoint {
   to {bottom: 0; opacity: 0;}
 }
     </style>
+    <script src="https://cdn.rangetouch.com/2.0.1/rangetouch.js"></script>
     <script type="text/javascript">
     var keyboard;
 
@@ -340,6 +341,27 @@ path, .jtk-endpoint {
         window.app = new App();
         keyboard = new AirConsoleKeyboard("my_keyboard");
 
+        /* Set up volume controls */
+        const range = new RangeTouch('input[type="range"]');
+        //range.classList.add("volume");
+        var sliderContainer = document.getElementById("volumecontainer");
+        var slider = document.getElementById("volumeSlider");
+        //sliderContainer.appendChild(range);
+        var output = document.getElementById("volumeDisplay");
+        output.innerHTML = slider.value;
+
+        slider.oninput = function() {
+          output.innerHTML = this.value;
+        }
+
+        slider.onmouseup = function() {
+          App.prototype.saveOptions();
+        }
+        slider.addEventListener("touchend", function() {
+          App.prototype.saveOptions();
+        });
+
+        /* Set up text field handlers */
         var allTextFieldIds = [
         "nickname", 
         "wouldYouRatherSubmit", 
@@ -1374,6 +1396,7 @@ path, .jtk-endpoint {
                     const optionsMap = {};
                     //optionsMap["nsfwQuestions"] = document.getElementById("NsfwQuestionsCheckbox").checked;
                     optionsMap["anonymousNames"] = document.getElementById("anonymousNameCheckbox").checked;
+                    optionsMap["optionsVolume"] = document.getElementById("volumeSlider").value;
 				    var message = {
 					    'action': "sendSaveOptions",
 					    'info': optionsMap
@@ -1804,6 +1827,40 @@ path, .jtk-endpoint {
         .optionsTextLabel {
             width: 60vw;
             padding-left: 10px;
+        }
+
+        .volumecontainer {
+          width: calc(100% - 20px); /* Width of the outside container */
+          height: 6vh;
+        }
+
+        /* The slider itself */
+        .volume {
+          -webkit-appearance: none;  /* Override default CSS styles */
+          appearance: none;
+          width: 100%; /* Full-width */
+          height: 25px; /* Specified height */
+          background: #d3d3d3; /* Grey background */
+          outline: none; /* Remove outline */
+          opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+          -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+          transition: opacity .2s;
+        }
+
+        /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+        .volume::-webkit-slider-thumb {
+          -webkit-appearance: none; /* Override default look */
+          appearance: none;
+          width: 25px; /* Set a specific slider handle width */
+          height: 25px; /* Slider handle height */
+          background: #325EFB; /* Green background */
+          cursor: pointer; /* Cursor on hover */
+        }
+
+        .volume::-moz-range-thumb {
+          width: 25px; /* Set a specific slider handle width */
+          height: 25px; /* Slider handle height */
+          background: #325EFB; /* Blue background */
         }
 
         .blink {
@@ -2537,6 +2594,12 @@ path, .jtk-endpoint {
                         </label>
                         <div class="optionsTextLabel">Anonymous Names Enabled</div>
                     </div>
+                    <br>
+                    <div style="text-align: center; padding-right: 20px;">Volume</div>
+                    <div class="volumecontainer">
+                        <input type="range" min="0" max="100" value="50" class="volume" id="volumeSlider">
+                    </div>
+                    <div id="volumeDisplay" style="text-align: center; padding-right: 20px;">Volume</div>
                     <br>
                     <div style="display:flex;justify-content:center;margin-right: 20px;">
                         <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Skip to End</div> <br>

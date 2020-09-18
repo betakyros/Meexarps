@@ -37,6 +37,10 @@ public class main : MonoBehaviour
     public AudioSource blipAudioSource;
     public AudioSource[] welcomeScreenAudioSources;
     public AudioSource[] thinkingAudioSources;
+    private AudioSource[] currentAudioSources;
+    private int currentNumLevelToPlay;
+    private float originalBlipVolume;
+    private float baseVolume = .06f;
     private float onVolume = .06f;
     private float offVolume = 0f;
     public RawImage instructionVideo;
@@ -59,7 +63,8 @@ public class main : MonoBehaviour
     private static int AUDIENCE_ALIEN_NUMBER = 6;
     private Dictionary<int, int> audienceWouldYouRathers;
     private bool writeMyOwnQuestions = false;
-    private Dictionary<string, bool> options = new Dictionary<string, bool>();    
+    private Dictionary<string, bool> options = new Dictionary<string, bool>();
+    private float optionsVolume;
 
     // Start is called before the first frame update
     void Start()
@@ -152,10 +157,13 @@ public class main : MonoBehaviour
     {
         GameObject.FindWithTag("loadingScreenTips").GetComponent<TextMeshProUGUI>().SetText( friendshipTips[friendshipTipIndex++ % friendshipTips.Length]);
     }
-        private void InitializeOptions()
+
+    private void InitializeOptions()
     {
         options.Add("nsfwQuestions", false);
         options.Add("anonymousNames", false);
+        optionsVolume = 50;
+        originalBlipVolume = blipAudioSource.volume;
     }
 
     void ParseQuestions(string rawQuestions, string rawNsfwQuestions, Regex newLinesRegex)
@@ -441,7 +449,7 @@ public class main : MonoBehaviour
             if (from == GetVipDeviceId())
             {
                 AirConsole.instance.Message(GetVipDeviceId(), JsonUtility.ToJson(
-                    new JsonAction("sendRetrieveOptions", new[] { options["nsfwQuestions"].ToString(), options["anonymousNames"].ToString() })));
+                    new JsonAction("sendRetrieveOptions", new[] { options["nsfwQuestions"].ToString(), optionsVolume.ToString(), options["anonymousNames"].ToString() })));
             }
         }
         else if ("sendSaveOptions".Equals(action))
@@ -452,6 +460,10 @@ public class main : MonoBehaviour
             {
                 //options["nsfwQuestions"] = data["info"]["nsfwQuestions"].ToObject<bool>();
                 options["anonymousNames"] = data["info"]["anonymousNames"].ToObject<bool>();
+                optionsVolume = data["info"]["optionsVolume"].ToObject<float>();
+                onVolume = optionsVolume / 50.0f * baseVolume;
+                SetVolumeForLevel(currentAudioSources, currentNumLevelToPlay);
+                blipAudioSource.volume = originalBlipVolume * optionsVolume / 50.0f;
             }
         }
         else if ("requestWelcomeScreenInfo".Equals(action))
@@ -2488,6 +2500,8 @@ public class main : MonoBehaviour
 
     private void SetVolumeForLevel(AudioSource[] audioSources, int numLevelToPlay)
     {
+        currentAudioSources = audioSources;
+        currentNumLevelToPlay = numLevelToPlay;
         for(int i = 0; i < audioSources.Length; i++)
         {
             if(i == numLevelToPlay)
