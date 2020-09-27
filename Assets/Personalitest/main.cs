@@ -2268,8 +2268,8 @@ public class main : MonoBehaviour
         int offset = 0;
         float correctPercent = ((float)gameState.totalCorrectGuesses) / ((float)(gameState.totalCorrectGuesses + gameState.totalWrongGuesses)) * 100.0f;
         string[] friendshipStatusArray = { "Archnemeses", "Enemies", "Strangers", "Acquaintances", "Just \"Ok\" Friends", "Friends", "Best Friends" };
-        string[] resultsStatuses = { "The power of friendship is amazing! We must harness the power of friendship for ourselves!" ,
-        "The Earthlings are not as friendly as we had hoped. We’re taking our grant money somewhere else!" };
+        string[] resultsStatuses = { "The experiment was successful! The power of friendship is truly amazing!" ,
+        "The experiment went ok, the power of friendship was not proven, but have gained valuable data!" };
 
 
         string friendshipStatus = CaluclateFriendshipStatus(correctPercent, friendshipStatusArray);
