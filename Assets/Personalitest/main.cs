@@ -1654,8 +1654,6 @@ public class main : MonoBehaviour
                 string newText = myQnAText.text + "<color=black>" + gameState.GetCurrentRound().questions[j] + "</color>\n<size=4>\n</size><b>" + answer + "</b>";
 
                 myQnAText.text = newText;
-
-                myQnAText.SetText(newText);
                 shortTextSb.Append(answer);
                 if (j < answers.text.Length - 1)
                 {
@@ -1665,7 +1663,7 @@ public class main : MonoBehaviour
                 //wait answerDisplayDuration seconds between each answer to give it a punch
                 yield return new WaitForSeconds(answerDisplayDuration);
             }
-            myQnAText.SetText(shortTextSb.ToString());
+            myQnAText.text = shortTextSb.ToString();
 
             //reset the max size
             myTitle.fontSizeMax = 25;
@@ -1679,7 +1677,6 @@ public class main : MonoBehaviour
         for (int i = 0; i < 6 - gameState.GetNumberOfPlayers(); i++)
         {
             playerIconsList[i].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
-            //votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
         }
         votingPanel.GetComponentsInChildren<Image>()[gridLayoutOffset].GetComponentInChildren<GridLayoutGroup>().enabled = true;
         autoResizeGrid.enabled = true;
@@ -2109,7 +2106,7 @@ public class main : MonoBehaviour
 
             rightAndWrongPanelTitle.text ="";
             rightAndWrongPanelRightAndWrong.text = "";
-            rightAndWrongPanelAudienceRightAndWrong.SetText("");
+            rightAndWrongPanelAudienceRightAndWrong.text = "";
 
             //first, display the questions and answers again
             int playerPanelTileOffset = 2;
