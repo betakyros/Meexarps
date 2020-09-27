@@ -171,7 +171,7 @@ AirConsoleKeyboard.prototype.show = function(input_id, opts) {
       oldHeight = globalWrapper.style.height;
 
       var keyboardHeight = (document.getElementById("my_keyboard").clientHeight) * globalWrapper.getAttribute("data-scaleFactor");
-      if(oldHeight == "unset") {
+      if(oldHeight == window.innerHeight) {
         globalWrapper.style.height = "calc(" + window.innerHeight + "px - " + keyboardHeight + "px)";
       } else {
         globalWrapper.style.height = "calc(" + oldHeight + " - " + keyboardHeight + "px)";

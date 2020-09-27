@@ -447,7 +447,7 @@ path, .jtk-endpoint {
             var vertScaleFactor = 1;
             var horiScaleFactor = 1;
             globalWrapper.setAttribute("data-scaleFactor", 1);
-            globalWrapper.style.height = "unset";
+            globalWrapper.style.height = window.innerHeight;
             if(globalWrapper.scrollHeight > window.innerHeight) {
                 vertScaleFactor = (window.innerHeight)/globalWrapper.scrollHeight;
             }
@@ -463,7 +463,7 @@ path, .jtk-endpoint {
                 globalWrapper.style.height = invertedScaleFactor * 100 + "%";     
                 globalWrapper.setAttribute("data-scaleFactor", invertedScaleFactor);
             } else {
-                globalWrapper.style.height = "unset";
+                globalWrapper.style.height = window.innerHeight;
             }
         }
 
