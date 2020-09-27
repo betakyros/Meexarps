@@ -1348,6 +1348,9 @@ path, .jtk-endpoint {
 
             var votingTutorialPageNum = 0;
             App.prototype.showNextVotingTutorial = function showNextVotingTutorial() {
+                if(isAudience) {
+                    document.getElementById("votingTutorialText").innerHTML = "You are an audience member. Wait for the players to finish answering questions. The Voting Phase is coming up next!";
+                }
                 document.getElementById("votingTutorialView").style.display = "flex";
                 if(votingTutorialPageNum != 0) {                
                 document.getElementById("votingPage" + votingTutorialPageNum).style.display = "none";                
@@ -2354,7 +2357,10 @@ path, .jtk-endpoint {
         <div id="firstTutorialView" class="tutorialView noScrollbar" style="display:none;align-self:baseline;">
             <div id="page1" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
-                <div id="firstTutorialText" style="padding:10px 0 20px 0;"> Welcome to MEEXARPS! The game is played in 3 phases </div>
+                <div id="firstTutorialText" style="padding:10px 0 20px 0;"> Welcome to MEEXARPS! If you prefer a video tutorial, press skip. 
+                <br\>
+                <br\>
+                The game is played in 3 phases </div>
                 <div class="tutorialPageOneRow">
                     <div style="height:100%;width: 33%;display:flex;justify-content:center;">
                         <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
@@ -2506,16 +2512,9 @@ path, .jtk-endpoint {
                 <br>
                 <img style="height:15vh; width: 15vh;" src="./icon_lookAtTv.png"/>
                 <br>
-                Look at the main screen to get ready for the tutorial.
-                <!--
-                <div style="height:100%;">
-                    Match the personality to the Meexarp
-                    <br>
-                    Points are awarded for each correct match
-                    <br>
-                    Show the Meexarps how friendly they can be!
+                <div id="votingTutorialText">
+                    Look at the main screen to get ready for the tutorial.
                 </div>
-                -->
             </div>
             <div id="votingPage2" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
