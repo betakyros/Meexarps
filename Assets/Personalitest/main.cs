@@ -785,16 +785,8 @@ public class main : MonoBehaviour
         wouldYouRatherPanel.SetActive(false);
         answerQuestionsPanel.SetActive(true);
 
-        //display the status of each player's submission
-        /*
-        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
-        {
-            Player currentPlayer = gameState.GetPlayerByPlayerNumber(i);
-            int tilesOffset = 1;
-            answerQuestionsPanel.GetComponentsInChildren<Text>()[tilesOffset + i].text = currentPlayer.nickname + "\n\n<color=red>Has Not Submitted</color>";
-
-        }
-        */
+        //display rotating friendship tips
+        InvokeRepeating("UpdateLoadingScreenTips", 0f, 10f);
 
         // inititalize the grid
         Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
@@ -1813,9 +1805,11 @@ public class main : MonoBehaviour
         foreach (Player p in gameState.players.Values)
         {
             playerIconsList[p.playerNumber].GetComponentInChildren<Animator>().SetBool("isCheer", false);
-            //p.playAnimation(MeexarpAction.Cheer);
         }
         yield return new WaitForSeconds(waitAnimationLength);
+
+        //Stop the loading screen tips
+        CancelInvoke();
 
         answerQuestionsPanel.SetActive(false);
         votingPanel.SetActive(true);
