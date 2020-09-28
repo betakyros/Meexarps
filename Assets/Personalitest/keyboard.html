@@ -342,15 +342,13 @@ path, .jtk-endpoint {
         keyboard = new AirConsoleKeyboard("my_keyboard");
 
         //reimplement scrolling using touch events
-        var startY = 0;
-        var origYOffset = 0;
         var x = document.getElementsByClassName("noScrollbar");
         Array.prototype.forEach.call(x, element => {
             element.ontouchstart = function(e){
                 var x = e.touches[0].clientX;
                 var y = e.touches[0].clientY;
-                startY = y;
-                origYOffset = this.scrollTop;
+                this.startY = y;
+                this.origYOffset = e.currentTarget.scrollTop;
 
                 return true;
             }
@@ -358,15 +356,19 @@ path, .jtk-endpoint {
             element.ontouchmove = function(e){
                 var x = e.touches[0].clientX;
                 var y = e.touches[0].clientY;
-                var scrollBy = y - startY;
-                this.scrollTo(this.scrollLeft, origYOffset - scrollBy);
+                var scrollTo = y - this.startY;
+                console.log("-----------");
+                console.log("scrollTo: " + scrollTo);
+                console.log("origYOffset: " + this.origYOffset);
+                console.log("this.scrollTop: " + e.currentTarget.scrollTop);
+                this.scrollTo(e.currentTarget.scrollLeft, this.origYOffset - scrollTo);
 
                 return true;
             }
 
             element.ontouchend = function(e){
-                startY = 0;
-                origYOffset = 0;
+                this.startY = 0;
+                this.origYOffset = 0;
                 return true;
             }
         });
