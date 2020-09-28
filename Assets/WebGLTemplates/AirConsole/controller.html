@@ -357,10 +357,6 @@ path, .jtk-endpoint {
                 var x = e.touches[0].clientX;
                 var y = e.touches[0].clientY;
                 var scrollTo = y - this.startY;
-                console.log("-----------");
-                console.log("scrollTo: " + scrollTo);
-                console.log("origYOffset: " + this.origYOffset);
-                console.log("this.scrollTop: " + e.currentTarget.scrollTop);
                 this.scrollTo(e.currentTarget.scrollLeft, this.origYOffset - scrollTo);
 
                 return true;

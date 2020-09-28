@@ -2263,7 +2263,7 @@ public class main : MonoBehaviour
         float correctPercent = ((float)gameState.totalCorrectGuesses) / ((float)(gameState.totalCorrectGuesses + gameState.totalWrongGuesses)) * 100.0f;
         string[] friendshipStatusArray = { "Archnemeses", "Enemies", "Strangers", "Acquaintances", "Just \"Ok\" Friends", "Friends", "Best Friends" };
         string[] resultsStatuses = { "The experiment was successful! The power of friendship is truly amazing!" ,
-        "The experiment went ok, the power of friendship was not proven, but have gained valuable data!" };
+        "The experiment went ok. We have not proven the power of friendship, but have gathered valuable data!" };
 
 
         string friendshipStatus = CaluclateFriendshipStatus(correctPercent, friendshipStatusArray);
