@@ -629,9 +629,10 @@ public class main : MonoBehaviour
                 */
                 Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
                 List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+                Image gridBackground = getPlayerIconTags(playerIcons, "AnswerQuestionsGridBackground")[0];
 
 
-                float newLocalX = (canvas.GetComponent<RectTransform>().rect.width * .5f) /* canvas.scaleFactor*/;
+                float newLocalX = (gridBackground.GetComponent<RectTransform>().rect.width * .74f) /* canvas.scaleFactor*/;
                 movePlayerIcon(playerIconsList[currentPlayer.playerNumber], newLocalX);
 
                 if (HasEveryoneSubmittedAnswers())

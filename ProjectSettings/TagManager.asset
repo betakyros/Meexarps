@@ -15,6 +15,7 @@ TagManager:
   - audienceText
   - votingTextTitle
   - votingTextQnA
+  - AnswerQuestionsGridBackground
   layers:
   - Default
   - TransparentFX
