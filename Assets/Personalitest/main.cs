@@ -1622,7 +1622,7 @@ public class main : MonoBehaviour
             TextMeshProUGUI myQnAText = votingGridQnA[i].GetComponentInChildren<TextMeshProUGUI>();
             myQnAText.text ="";
 
-            int answerDisplayDuration = 6;
+            int answerDisplayDuration = 4;
             //Camera zoom will make the current panel the last element, so we don't need to add i
             CameraZoom cz = votingPanel.GetComponentsInChildren<Image>()[panelOffset].gameObject.AddComponent<CameraZoom>();
             cz.Setup(1f, answerDisplayDuration * 3f, true, true, false);
