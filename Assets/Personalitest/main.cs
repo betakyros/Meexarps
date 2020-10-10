@@ -155,7 +155,7 @@ public class main : MonoBehaviour
     }
     public void UpdateLoadingScreenTips()
     {
-        GameObject.FindWithTag("loadingScreenTips").GetComponent<TextMeshProUGUI>().SetText( friendshipTips[friendshipTipIndex++ % friendshipTips.Length]);
+        GameObject.FindWithTag("loadingScreenTips").GetComponent<TextMeshProUGUI>().text = friendshipTips[friendshipTipIndex++ % friendshipTips.Length];
     }
 
     private void InitializeOptions()
@@ -201,7 +201,7 @@ public class main : MonoBehaviour
     void OnReady(string code)
     {
         gameCode = code;
-        welcomeInstructionsText.SetText("Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!");
+        welcomeInstructionsText.text = "Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!";
     }
 
     void Update()
@@ -289,7 +289,7 @@ public class main : MonoBehaviour
                 Image[] playerIcons = welcomeScreenPanel.GetComponentsInChildren<Image>(true);
                 List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
 
-                playerIconsList[gameState.GetNumberOfPlayers()].GetComponentInChildren<TextMeshProUGUI>().SetText(p.nickname);
+                playerIconsList[gameState.GetNumberOfPlayers()].GetComponentInChildren<TextMeshProUGUI>().text = p.nickname;
                 Image image = playerIconsList[gameState.GetNumberOfPlayers()].GetComponentsInChildren<Image>(true)[1];
                 image.gameObject.SetActive(true);
                 updatePlayerAnimator(image.GetComponentInChildren<Animator>(), p);
@@ -340,7 +340,7 @@ public class main : MonoBehaviour
 
                     if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
                     {
-                        GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<TextMeshProUGUI>().SetText("<color=white>Audience: " + gameState.audienceMembers.Count + "</color>");
+                        GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<TextMeshProUGUI>().text = "<color=white>Audience: " + gameState.audienceMembers.Count + "</color>";
                         AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                         sendWelcomeScreenInfo(from, -1);
                     } else
@@ -499,8 +499,8 @@ public class main : MonoBehaviour
             //gameState.numRoundsPerGame = data["info"]["roundCount"].ToObject<int>();
             GameObject.Find("WelcomeScreenPanel").SetActive(false);
             selectRoundNumberPanel.SetActive(true);
-            selectRoundNumberPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].SetText("<color=white>The Head Researcher (<color=#325EFB>" + 
-                gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.</color>");
+            selectRoundNumberPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].text = "<color=white>The Head Researcher (<color=#325EFB>" + 
+                gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.</color>";
             //selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
             //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
             //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
@@ -522,7 +522,7 @@ public class main : MonoBehaviour
             playSound = false;
             string roundDetails = data["info"].ToObject<string>();
 
-            selectRoundNumberPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].SetText(roundDetails);
+            selectRoundNumberPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].text = roundDetails;
         }
         else if ("sendSetRoundCount".Equals(action))
         {
@@ -803,7 +803,7 @@ public class main : MonoBehaviour
         }
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
-            playerIconsList[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().SetText(gameState.GetPlayerByPlayerNumber(i).nickname);
+            playerIconsList[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
         }
 
         SendQuestions();
@@ -823,8 +823,8 @@ public class main : MonoBehaviour
         List<TextMeshProUGUI> wouldYouRatherAudienceTags = getTextTags(wouldYouRatherTexts, "audienceText");
         wouldYouRatherAudienceTags[0].transform.parent.gameObject.SetActive(true);
         wouldYouRatherAudienceTags[1].transform.parent.gameObject.SetActive(true);
-        wouldYouRatherAudienceTags[0].SetText("" + leftAudience);
-        wouldYouRatherAudienceTags[1].SetText("" + rightAudience);
+        wouldYouRatherAudienceTags[0].text = "" + leftAudience;
+        wouldYouRatherAudienceTags[1].text = "" + rightAudience;
     }
 
     private void sendWelcomeScreenInfo(int from, int alienNumber)
@@ -1193,14 +1193,14 @@ public class main : MonoBehaviour
         //Set the current player's name
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         string playerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
-        getPlayerIconTags(playerIcons, "Banner")[0].GetComponentInChildren<TextMeshProUGUI>().SetText("It's " + playerName + "'s turn to write questions!");
+        getPlayerIconTags(playerIcons, "Banner")[0].GetComponentInChildren<TextMeshProUGUI>().text = "It's " + playerName + "'s turn to write questions!";
 
         int playerTextOffset = 4;
         int currentPlayerTextOffset = 13;
         Text[] playerTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
-            playerIconsList[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().SetText(gameState.GetPlayerByPlayerNumber(i).nickname);
+            playerIconsList[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
         }
 
         //controllers in the retrieve questions state will ignore would you rathers
@@ -1372,11 +1372,11 @@ public class main : MonoBehaviour
         }
         TextMeshProUGUI[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
         string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Count];
-        wouldYouRatherTexts[0].SetText(currentWouldYouRather[0]);
+        wouldYouRatherTexts[0].text = currentWouldYouRather[0];
         //left answer
-        wouldYouRatherTexts[2].SetText(currentWouldYouRather[1]);
+        wouldYouRatherTexts[2].text = currentWouldYouRather[1];
         //right answer
-        wouldYouRatherTexts[3].SetText(currentWouldYouRather[2]);
+        wouldYouRatherTexts[3].text = currentWouldYouRather[2];
         //Maybe send the possible answers here
         string waitingForPlayerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendWouldYouRather", new[] { waitingForPlayerName })));
@@ -1536,7 +1536,7 @@ public class main : MonoBehaviour
             myQandA.text = "";
             myTitle.fontSizeMax = 25;
         }
-        votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].SetText(gameState.GetCurrentRound().PrintQuestions());
+        votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].text = gameState.GetCurrentRound().PrintQuestions();
         
         //flash the instructions
         if (gameState.GetCurrentRoundNumber() == 0)
@@ -1860,7 +1860,7 @@ public class main : MonoBehaviour
             TextMeshProUGUI myTitle = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[resultsPanelOffset + 2*i];
             TextMeshProUGUI myQandA = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[resultsPanelOffset + 2*i + 1];
 
-            myTitle.SetText(answers.anonymousPlayerName);
+            myTitle.text = answers.anonymousPlayerName;
             myQandA.text = "";
         }
 
@@ -2105,7 +2105,7 @@ public class main : MonoBehaviour
 
             //first, display the questions and answers again
             int playerPanelTileOffset = 2;
-            myTitle.SetText(anonymousPlayerName + "'s answers");
+            myTitle.text = anonymousPlayerName + "'s answers";
             CameraZoom cz = resultsPanel.GetComponentsInChildren<Image>()[playerPanelTileOffset].gameObject.AddComponent<CameraZoom>();
 
             int zoomInTime = 1;
@@ -2278,11 +2278,11 @@ public class main : MonoBehaviour
             ChangeBackground(5);
         }
         //set percentCorrectText
-        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset].SetText("Collectively, your team identified\n<b><size=90> " + correctPercent.ToString("n2") + "%</size> </b>\nof your teammates correctly!");
+        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset].text = "Collectively, your team identified\n<b><size=90> " + correctPercent.ToString("n2") + "%</size> </b>\nof your teammates correctly!";
         //set friendship status
-        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 1].SetText("You have achieved the status of\n<b><size=60> " + friendshipStatus + " </size></b> ");
+        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 1].text = "You have achieved the status of\n<b><size=60> " + friendshipStatus + " </size></b> ";
         //set result text
-        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 2].SetText(resultStatus);
+        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 2].text = resultStatus;
         GameObject audienceScoreCard = GameObject.FindWithTag("AudienceScoreCard");
         if (audienceScoreCard != null)
         {
@@ -2311,7 +2311,7 @@ public class main : MonoBehaviour
                     audienceScoresSb.Append("\n<size=20>" + sortedAudienceScores[i].nickname + "    " + sortedAudienceScores[i].points + "</size>");
                 }
 
-                audienceScoreCard.GetComponentInChildren<TextMeshProUGUI>().SetText(audienceScoresSb.ToString());
+                audienceScoreCard.GetComponentInChildren<TextMeshProUGUI>().text = audienceScoresSb.ToString();
             }
         }
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
@@ -2370,7 +2370,7 @@ public class main : MonoBehaviour
             pointsSB.Append(" points");
             pointsSB.Append("\n");
             int tilesOffset = 2;
-            endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[tilesOffset + playerCounter].SetText(pointsSB.ToString());
+            endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[tilesOffset + playerCounter].text = pointsSB.ToString();
             playerCounter++;
             string currentBestFriend = CalculateBestFriend(p);
 
@@ -2388,7 +2388,7 @@ public class main : MonoBehaviour
             audiencePointsSB.Append(" ");
             audiencePointsSB.Append(" points");
             audiencePointsSB.Append("\n");
-            endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].SetText(audiencePointsSB.ToString());
+            endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].text = audiencePointsSB.ToString();
             string currentBestFriend = CalculateBestFriend(p);
 
             AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
@@ -2973,8 +2973,8 @@ class GameState
 
     public void updateRoundCounter(GameObject roundCounter)
     {
-        roundCounter.GetComponentsInChildren<TextMeshProUGUI>()[1].SetText((GetCurrentRoundNumber() + 1) + 
-            "<size=15> of " + numRoundsPerGame + "</size>");
+        roundCounter.GetComponentsInChildren<TextMeshProUGUI>()[1].text = (GetCurrentRoundNumber() + 1) + 
+            "<size=15> of " + numRoundsPerGame + "</size>";
         roundCounter.SetActive(true);
     }
 }
