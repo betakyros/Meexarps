@@ -1534,7 +1534,7 @@ public class main : MonoBehaviour
             //todo set the text size to the same size as the panel
             myTitle.text = answers.anonymousPlayerName;
             myQandA.text = "";
-            myTitle.fontSizeMax = 25;
+            //myTitle.fontSizeMax = 25;
         }
         votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].text = gameState.GetCurrentRound().PrintQuestions();
         
@@ -1628,8 +1628,8 @@ public class main : MonoBehaviour
             cz.Setup(1f, answerDisplayDuration * 3f, true, true, false);
 
             //temporarily increase the max size
-            myTitle.fontSizeMax = 60;
-            myQnAText.fontSizeMax = 40;
+            //myTitle.fontSizeMax = 60;
+            //myQnAText.fontSizeMax = 40;
 
             List<Answers> answersList = gameState.GetCurrentRound().answers;
             Answers answers = answersList[i];
@@ -1659,8 +1659,8 @@ public class main : MonoBehaviour
             myQnAText.text = shortTextSb.ToString();
 
             //reset the max size
-            myTitle.fontSizeMax = 25;
-            myQnAText.fontSizeMax = 20;
+           // myTitle.fontSizeMax = 25;
+            //myQnAText.fontSizeMax = 20;
             yield return new WaitForSeconds(2);
             Destroy(cz);
         }
@@ -2088,8 +2088,8 @@ public class main : MonoBehaviour
             TextMeshProUGUI myQandAs = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[playerTileOffset + 1];
 
             //temporarily increase max size
-            myTitle.fontSizeMax = 60;
-            myQandAs.fontSizeMax = 40;
+           // myTitle.fontSizeMax = 60;
+            //myQandAs.fontSizeMax = 40;
 
             //display all results panel
             int resultsPanelOffset = playerTileOffset + 12;
@@ -2176,8 +2176,8 @@ public class main : MonoBehaviour
             myTitle.text = "<b>" + tileTitle + "</b>";
             myQandAs.text = wrongVotesSb.ToString() + "\n\n" + correctVotesSB.ToString() + audienceGuessesString;
 
-            myTitle.fontSizeMax = 25;
-            myQandAs.fontSizeMax= 20;
+            //myTitle.fontSizeMax = 25;
+            //myQandAs.fontSizeMax= 20;
 
             //reveal it on phones
             AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendRevealNextPersonalRoundResult", new string[] { targetPlayerName })));
