@@ -926,6 +926,7 @@ path, .jtk-endpoint {
                             guessName.innerHTML=guessNameText;
                         }
                         alienImage.classList.add("yourGuessImage");
+                        guessName.classList.add("sourceWindowLabel");
 
                         var questionMarkImage = document.createElement('img');
                         if(personalRoundResultsIsReconnect) {
@@ -938,7 +939,7 @@ path, .jtk-endpoint {
                         questionMarkImage.className="roundResultsImage";
                         var anonName = document.createElement('div');
                         anonName.innerHTML=personalRoundResults[i][0];
-
+                        anonName.classList.add("sourceWindowLabel");
                         /*
                         alienSide.appendChild(questionMarkImage);
                         alienSide.appendChild(anonName);
@@ -1010,8 +1011,10 @@ path, .jtk-endpoint {
                         currentUnrevealedNode = currentUnrevealedNode.nextSibling;
                     }
                 } else if(myAction === "sendNextRoundScreen") {
+                    document.getElementById("roundResultsLookAtTv").style.display = "none";
                     document.getElementById("nextRoundButton").style.display = "block";
                 } else if(myAction === "sendAdvanceToResultsScreen") {
+                    document.getElementById("roundResultsLookAtTv").style.display = "none";
                     document.getElementById("endScreenButton").style.display = "block";
                 } else if(myAction === "sendEndScreen") {
                     document.getElementById("endGameScreenViewUsername").innerText = playerName;
@@ -2361,6 +2364,12 @@ path, .jtk-endpoint {
             -->
             <br>
             <div  style="display:flex; justify-content:center;">
+                <div style="color:white" id="roundResultsLookAtTv">
+                    <img style="height:8vh;" src="./icon_lookAtTv.png" />
+                    <br>
+                    <br>
+                    Look at the tv to see your results
+                </div>
                 <div class="pseudo_button" style="display:none;width:50%;" id="nextRoundButton" onmousedown="window.app.sendNextRound()">Continue to Next Round</div>
                 <div class="pseudo_button" style="display:none;width:50%;" id="endScreenButton" onmousedown="window.app.sendShowEndScreen()">Continue to Summary Screen</div>
             </div>
