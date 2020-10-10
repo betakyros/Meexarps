@@ -2137,7 +2137,7 @@ public class main : MonoBehaviour
 
             yield return new WaitForSeconds(waitForContextSeconds);
 
-            string tileTitle = anonymousPlayerName + " is <color=blue>" + targetPlayerName + "</color>";
+            string tileTitle = anonymousPlayerName + " is \n<color=blue>" + targetPlayerName + "</color>";
             rightAndWrongPanelTitle.text = "<b>" + tileTitle + "</b>";
             yield return new WaitForSeconds(waitForContextSeconds);
 
@@ -2174,7 +2174,7 @@ public class main : MonoBehaviour
             string audienceGuessesString = numberOfCorrectAudienceGuesses + numberOfWrongAudienceGuesses == 0 ? "" : "\n\n<color=green>" + numberOfCorrectAudienceGuesses + " </color>/<color=red>" + numberOfWrongAudienceGuesses + "</color> Audience";
 
             myTitle.text = "<b>" + tileTitle + "</b>";
-            myQandAs.text = wrongVotesSb.ToString() + "\n\n" + correctVotesSB.ToString() + audienceGuessesString;
+            myQandAs.text = wrongVotesSb.ToString() + correctVotesSB.ToString() + audienceGuessesString;
 
             //myTitle.fontSizeMax = 25;
             //myQandAs.fontSizeMax= 20;
