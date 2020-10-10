@@ -721,7 +721,14 @@ path, .jtk-endpoint {
                     //document.getElementById("roundCountDisplayField").value = payload.data;
                     displayElement(document.getElementById("selectRoundCountView"));
                     listOfPlayerNames = payload.data;
-                    App.prototype.clickRoundButton(payload.data.length);
+                    var numPlayers = payload.data.length;
+                    if(numPlayers > 4) {
+                        App.prototype.clickRoundButton(2);
+                    } else if (numPlayers > 3) {
+                        App.prototype.clickRoundButton(3);
+                    } else {
+                        App.prototype.clickRoundButton(payload.data.length);                    
+                    }
                 }
                 else if(myAction === "sendSelectCategory") {
                     document.getElementById("selectCategoryButton1").innerText=payload.data[0];
