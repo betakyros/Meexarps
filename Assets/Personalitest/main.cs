@@ -2137,7 +2137,7 @@ public class main : MonoBehaviour
 
             yield return new WaitForSeconds(waitForContextSeconds);
 
-            string tileTitle = anonymousPlayerName + " is \n<color=blue>" + targetPlayerName + "</color>";
+            string tileTitle = anonymousPlayerName + " is... \n<color=blue>" + targetPlayerName + "</color>";
             rightAndWrongPanelTitle.text = "<b>" + tileTitle + "</b>";
             yield return new WaitForSeconds(waitForContextSeconds);
 
