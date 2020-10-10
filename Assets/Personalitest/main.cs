@@ -1532,8 +1532,8 @@ public class main : MonoBehaviour
             TextMeshProUGUI myTitle = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset + 2*i];
             TextMeshProUGUI myQandA = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset + 2*i + 1];
             //todo set the text size to the same size as the panel
-            myTitle.SetText(answers.anonymousPlayerName);
-            myQandA.SetText("");
+            myTitle.text = answers.anonymousPlayerName;
+            myQandA.text = "";
             myTitle.fontSizeMax = 25;
         }
         votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].SetText(gameState.GetCurrentRound().PrintQuestions());
@@ -1647,11 +1647,11 @@ public class main : MonoBehaviour
                 string newText = myQnAText.text + "<color=black>" + gameState.GetCurrentRound().questions[j] + "</color>\n<size=4>\n</size><b>" + answer + "</b>";
 
                 myQnAText.text = newText;
-                shortTextSb.Append(answer);
+                shortTextSb.Append(j+1 + ". <color=black>" + answer + "</color>");
                 if (j < answers.text.Length - 1)
                 {
                     myQnAText.text = myQnAText.text + "<size=8>\n\n</size>";
-                    shortTextSb.Append("<size=6>\n\n</size>");
+                    shortTextSb.Append("<size=8>\n\n</size>");
                 }
                 //wait answerDisplayDuration seconds between each answer to give it a punch
                 yield return new WaitForSeconds(answerDisplayDuration);
