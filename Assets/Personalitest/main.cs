@@ -2032,6 +2032,8 @@ public class main : MonoBehaviour
                 currentSb.Append("no idea who ");
                 currentSb.Append(anonymousPlayerName);
                 currentSb.Append(" is!");
+                currentSb.Append("\n");
+                currentSb.Append("\n");
                 wrongVotesSb.Append(currentSb.ToString());
                 wrongVotesCount++;
             }
@@ -2282,7 +2284,7 @@ public class main : MonoBehaviour
         //set friendship status
         endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 1].text = "You have achieved the status of\n<b><size=60> " + friendshipStatus + " </size></b> ";
         //set result text
-        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 2].text = resultStatus;
+        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 3].text = resultStatus;
         GameObject audienceScoreCard = GameObject.FindWithTag("AudienceScoreCard");
         if (audienceScoreCard != null)
         {
