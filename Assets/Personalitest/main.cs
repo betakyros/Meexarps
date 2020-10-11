@@ -35,6 +35,8 @@ public class main : MonoBehaviour
 //    public AudioSource introAudioSource;
     public AudioSource mainLoopAudioSource;
     public AudioSource blipAudioSource;
+    public AudioSource stampAudioSource;
+    public AudioSource resultsBeepAudioSource;
     public AudioSource[] welcomeScreenAudioSources;
     public AudioSource[] thinkingAudioSources;
     private AudioSource[] currentAudioSources;
@@ -715,7 +717,7 @@ public class main : MonoBehaviour
         }
         else if ("sendShowEndScreen".Equals(action))
         {
-            SendEndScreen2();
+            StartCoroutine("SendEndScreen2");
         }
         else if ("sendPlayAgain".Equals(action))
         {
@@ -2243,7 +2245,7 @@ public class main : MonoBehaviour
         }
     }
 
-    public void SendEndScreen2()
+    public System.Collections.IEnumerator SendEndScreen2()
     {
         roundCounter.SetActive(false);
         deactivateResultsPanel();
@@ -2279,12 +2281,8 @@ public class main : MonoBehaviour
         {
             ChangeBackground(5);
         }
-        //set percentCorrectText
-        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset].text = "Collectively, your team identified\n<b><size=90> " + correctPercent.ToString("n2") + "%</size> </b>\nof your teammates correctly!";
-        //set friendship status
-        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 1].text = "You have achieved the status of\n<b><size=60> " + friendshipStatus + " </size></b> ";
-        //set result text
-        endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[offset + 3].text = resultStatus;
+
+        bool shouldShowAudienceScorecard = false;
         GameObject audienceScoreCard = GameObject.FindWithTag("AudienceScoreCard");
         if (audienceScoreCard != null)
         {
@@ -2294,27 +2292,81 @@ public class main : MonoBehaviour
             }
             else
             {
+                shouldShowAudienceScorecard = true;
                 GameObject.FindWithTag("PercentCorrectAndStatusContainer").gameObject.GetComponent<RectTransform>().anchorMax
                     = new Vector2(.7f, .95f);
-                //set audience scores
-                //first sort the audience scores
-                List<Player> sortedAudienceScores = new List<Player>(gameState.audienceMembers.Values);
-                sortedAudienceScores.Sort((pair1, pair2) => pair2.points.CompareTo(pair1.points));
-                //display the top 5 audience members
-                StringBuilder audienceScoresSb = new StringBuilder(100);
-                int numAudienceScoresToDisplay = System.Math.Min(5, sortedAudienceScores.Count);
-                audienceScoresSb.Append("Audience Scores");
-                if (sortedAudienceScores.Count > 5)
-                {
-                    audienceScoresSb.Append("\n<size=12>(top 5)</size>");
-                }
-                for (int i = 0; i < numAudienceScoresToDisplay; i++)
-                {
-                    audienceScoresSb.Append("\n<size=20>" + sortedAudienceScores[i].nickname + "    " + sortedAudienceScores[i].points + "</size>");
-                }
-
-                audienceScoreCard.GetComponentInChildren<TextMeshProUGUI>().text = audienceScoresSb.ToString();
             }
+        }
+
+        TextMeshProUGUI[] textMeshPros = endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
+
+        //set percentCorrectText
+        //empty strings so we can apply animation
+        textMeshPros[offset].text = "";
+        textMeshPros[offset + 1].text = "";
+        textMeshPros[offset + 2].text = "";
+        textMeshPros[offset + 3].text = "";
+        textMeshPros[offset + 4].text = "";
+        textMeshPros[offset + 6].text = "";
+        textMeshPros[offset + 7].text = "";
+
+        float waitForContext = 2.0f;
+
+        yield return new WaitForSeconds(waitForContext);
+        resultsBeepAudioSource.Play();
+        yield return StartCoroutine(textMeshPros[offset].gameObject
+            .AddComponent<charByCharText>().WriteText("Collectively, your team identified"));
+        resultsBeepAudioSource.Pause();
+
+        yield return new WaitForSeconds(waitForContext);
+        stampAudioSource.Play();
+        textMeshPros[offset+1].text = "<b><size=90> " + correctPercent.ToString("n2") + "%</size> </b>";
+        yield return new WaitForSeconds(waitForContext);
+
+        resultsBeepAudioSource.Play();
+        yield return StartCoroutine(textMeshPros[offset+2].gameObject
+            .AddComponent<charByCharText>().WriteText("of your teammates correctly!"));
+        resultsBeepAudioSource.Pause();
+
+        //set friendship status
+        yield return new WaitForSeconds(waitForContext);
+        resultsBeepAudioSource.Play();
+        yield return textMeshPros[offset + 3].gameObject
+            .AddComponent<charByCharText>().WriteText("You have achieved the status of");
+        resultsBeepAudioSource.Pause();
+
+        yield return new WaitForSeconds(waitForContext);
+        stampAudioSource.Play();
+        textMeshPros[offset + 4].text = "<b><size=60> " + friendshipStatus + " </size></b> ";
+        yield return new WaitForSeconds(waitForContext);
+        
+        //set result text
+        textMeshPros[offset + 6].text = resultStatus;
+        yield return new WaitForSeconds(waitForContext);
+
+        textMeshPros[offset + 7].text = "Look at your phone for personal results   <sprite=0>";
+        yield return new WaitForSeconds(waitForContext);
+
+        if(shouldShowAudienceScorecard)
+        {
+            //set audience scores
+            //first sort the audience scores
+            List<Player> sortedAudienceScores = new List<Player>(gameState.audienceMembers.Values);
+            sortedAudienceScores.Sort((pair1, pair2) => pair2.points.CompareTo(pair1.points));
+            //display the top 5 audience members
+            StringBuilder audienceScoresSb = new StringBuilder(100);
+            int numAudienceScoresToDisplay = System.Math.Min(5, sortedAudienceScores.Count);
+            audienceScoresSb.Append("Audience Scores");
+            if (sortedAudienceScores.Count > 5)
+            {
+                audienceScoresSb.Append("\n<size=12>(top 5)</size>");
+            }
+            for (int i = 0; i < numAudienceScoresToDisplay; i++)
+            {
+                audienceScoresSb.Append("\n<size=20>" + sortedAudienceScores[i].nickname + "    " + sortedAudienceScores[i].points + "</size>");
+            }
+
+            audienceScoreCard.GetComponentInChildren<TextMeshProUGUI>().text = audienceScoresSb.ToString();
         }
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
         gameState.tvViewGameState = TvViewGameState.EndGameScreen;
