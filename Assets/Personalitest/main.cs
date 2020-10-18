@@ -816,6 +816,7 @@ public class main : MonoBehaviour
         StopAllLevels(welcomeScreenAudioSources);
         //introAudioSource.Stop();
         StartAllLevels(thinkingAudioSources);
+        selectRoundNumberPanel.GetComponentsInChildren<Image>(true)[1].gameObject.SetActive(true);
         StartCoroutine(ShowIntroInstrucitons(2));
     }
 
@@ -1101,10 +1102,10 @@ public class main : MonoBehaviour
         gameState.phoneViewGameState = PhoneViewGameState.SendSkipInstructionsScreen;
 
         Image[] images = votingPanel.GetComponentsInChildren<Image>();
-        introVp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "knowyourfriendsintrotutorial.mp4");
+        introVp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "meexarpsTutorial.mp4");
 
         introVp.Prepare();
-        introVp.SetDirectAudioVolume(0, onVolume*3);
+        introVp.SetDirectAudioVolume(0, 1);
         yield return new WaitForSeconds(1);
         while (!introVp.isPrepared)
         {
@@ -1114,7 +1115,7 @@ public class main : MonoBehaviour
         introInstructionVideo.texture = introVp.texture;
         introInstructionVideo.gameObject.SetActive(true);
         CameraZoom instructionsCz = introInstructionVideo.gameObject.AddComponent<CameraZoom>();
-        instructionsCz.Setup(.5f, 64f, false, false, false, true, false);
+        instructionsCz.Setup(.5f, 89f, false, false, false, true, false);
         introVp.Play();
         //vp.Pause();
         yield return new WaitForSeconds(1);
