@@ -51,6 +51,7 @@ public class main : MonoBehaviour
     public VideoPlayer vp;
     //should make a different sound per person
     public AudioClip[] blips;
+    public AudioClip debouncedNoise;
     public Animator[] animators;
     public GameObject roundCounter;
 
@@ -233,6 +234,20 @@ public class main : MonoBehaviour
         string action = data["action"].ToString();
         bool playSound = true;
         Debug.Log("from: " + from + " action: " + action);
+        if(gameState.players.ContainsKey(from))
+        {
+            string debouncedState = gameState.players[from].LogDebounce(debouncedNoise, blipAudioSource);
+            if (debouncedState.Equals("DISABLED"))
+            {
+                return;
+            }
+            else if (debouncedState.Equals("DEBOUNCED"))
+            {
+                AirConsole.instance.Message(from, new JsonAction("debounced", new string[] { " " }));
+                StartCoroutine(Wait5secondsThenUnblock(gameState.players[from]));
+                return;
+            }
+        }
 
         if ("sendWelcomeInfo".Equals(action))
         {
@@ -732,6 +747,13 @@ public class main : MonoBehaviour
                 blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
             } 
         }
+    }
+
+    private IEnumerator<WaitForSeconds> Wait5secondsThenUnblock(Player p)
+    {
+        yield return new WaitForSeconds(5);
+        Debug.Log("inputs enabled");
+        p.isDebounced = false;
     }
 
     private List<string> calculatePlayersWhoHaventSubmitted(Dictionary<int, Dictionary<string, string>> votes)
@@ -2667,8 +2689,12 @@ class Player
     public Dictionary<string, int> bestFriendPoints { get; set; }
     public int alienNumber { get; set; }
     public bool isReady { get; set; }
+    public System.DateTime[] debounceLog { get; set; }
+    private int debounceMaxInputsPerSec = 4;
+    private int currentDebounceIndex = 0;
+    public bool isDebounced { get; set; }
 
-    public Player(string n, int d, int pn, int a, Animator an, int selectedAlien)
+public Player(string n, int d, int pn, int a, Animator an, int selectedAlien)
     {
         nickname = n;
         deviceId = d;
@@ -2680,6 +2706,8 @@ class Player
         bestFriendPoints = new Dictionary<string, int>();
         alienNumber = selectedAlien; //todo i dont think i need this
         isReady = false;
+        isDebounced = false;
+        debounceLog = new System.DateTime[debounceMaxInputsPerSec];
     }
 
     public Player(string n, int d, int pn, int a, int p, int nw, Animator an, Dictionary<string, int> bfp, int selectedAlien)
@@ -2694,6 +2722,8 @@ class Player
         bestFriendPoints = bfp;
         alienNumber = selectedAlien;
         isReady = false;
+        isDebounced = false;
+        debounceLog = new System.DateTime[debounceMaxInputsPerSec];
     }
 
     public override string ToString()
@@ -2729,6 +2759,33 @@ class Player
         } else
         {
             bestFriendPoints.Add(playerName, 1);
+        }
+    }
+
+    public string LogDebounce(AudioClip debouncedBlip, AudioSource blipAudioSource)
+    {
+        if(isDebounced)
+        {
+            return "DISABLED";
+        }
+        if(debounceLog[currentDebounceIndex] == null)
+        {
+            debounceLog[currentDebounceIndex++] = System.DateTime.Now;
+            return "ENABLED";
+        }
+
+        System.DateTime oldestInput = debounceLog[currentDebounceIndex % debounceMaxInputsPerSec];
+        System.DateTime now = System.DateTime.Now;
+        if (now.Subtract(oldestInput).TotalSeconds > 1)
+        {
+            debounceLog[currentDebounceIndex % debounceMaxInputsPerSec] = now;
+            currentDebounceIndex = ++currentDebounceIndex % debounceMaxInputsPerSec;
+            return "ENABLED";
+        } else
+        {
+            blipAudioSource.PlayOneShot(debouncedBlip, Random.Range(.5f, 1f));
+            isDebounced = true;
+            return "DEBOUNCED";
         }
     }
 }

@@ -699,6 +699,8 @@ path, .jtk-endpoint {
                 console.log("sendStartGameScreen: " + playerName + " AT TIME: " + d.toLocaleString() + ":" + d.getMilliseconds());
                     displayElement(document.getElementById("startGameScreenView"));
 
+                } else if(myAction === "debounced") {
+                    App.prototype.showSnackbar("You're doing that too much! Wait 5 seconds.");
                 } else if(myAction === "nameAlreadyTaken") {
                     hideAllViews();
                     document.getElementById("welcomeScreenView").style.display = "block";
