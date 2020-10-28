@@ -236,7 +236,7 @@ public class main : MonoBehaviour
 
         if ("sendWelcomeInfo".Equals(action))
         {
-            string name = data["info"]["name"].ToString();
+            string name = data["info"]["name"].ToString().Trim();
             KeyValuePair<int, Player> currentPlayer = gameState.GetPlayerByName(name);
 
             if (!(currentPlayer.Value == null))
