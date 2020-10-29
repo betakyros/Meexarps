@@ -305,8 +305,10 @@ public class main : MonoBehaviour
 
                 Image[] playerIcons = welcomeScreenPanel.GetComponentsInChildren<Image>(true);
                 List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+                TextMeshProUGUI[] myTexts = playerIconsList[gameState.GetNumberOfPlayers()].GetComponentsInChildren<TextMeshProUGUI>();
+                myTexts[0].text = p.nickname;
 
-                playerIconsList[gameState.GetNumberOfPlayers()].GetComponentInChildren<TextMeshProUGUI>().text = p.nickname;
+                //move the headresearcher label behind the alien icon
                 Image image = playerIconsList[gameState.GetNumberOfPlayers()].GetComponentsInChildren<Image>(true)[1];
                 image.gameObject.SetActive(true);
                 updatePlayerAnimator(image.GetComponentInChildren<Animator>(), p);

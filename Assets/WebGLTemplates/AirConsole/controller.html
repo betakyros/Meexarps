@@ -392,9 +392,6 @@ path, .jtk-endpoint {
         /* Set up text field handlers */
         var allTextFieldIds = [
         "nickname", 
-        "wouldYouRatherSubmit", 
-        "wouldYouRatherLeftSubmit", 
-        "wouldYouRatherRightSubmit", 
         "wouldYouRatherSubmitTutorialView", 
         "wouldYouRatherLeftSubmitTutorialView", 
         "wouldYouRatherRightSubmitTutorialView", 
@@ -605,7 +602,6 @@ path, .jtk-endpoint {
                   isVip = true;
                   //document.getElementById("optionsButton").style.display = "block";
                   document.getElementById("vipOptionsDiv").style.display = "block";
-                  document.getElementById("submitWouldYouRatherButton").classList.add("secondaryButton");
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("startGameButton").style.display = "inline-block";
                 } else if(myAction === "allPlayersAreNotReady") {
@@ -679,6 +675,7 @@ path, .jtk-endpoint {
                         wouldYouRatherAlienGif.style.padding = "5px";
                     }
                     document.getElementById("startGameScreenViewUsername").innerText = "Welcome, " + playerName + "!";
+                    //set up the tutorial
                     if(isVip) {
                         document.getElementById("pageTwoText").innerHTML = "You".bold().fontcolor("blue") +' will write 3 personality questions.';
                     } else {
@@ -690,6 +687,17 @@ path, .jtk-endpoint {
                     } else {
                         document.getElementById("pageFourText").innerHTML = 'Everyone will answer ' + vipName.bold().fontcolor("blue") + '\'s questions. The answers will be anonymized for phase 3.';
                     }
+
+                    //set up the welcome page
+                    if(isVip) {
+                        document.getElementById("startGameScreenWelcomeMessage").style.display = "none";
+                        document.getElementById("startGameScreenWelcomeMessageWouldYouRatherVip").style.display = "block";
+
+                    } else {
+                        document.getElementById("startGameScreenWelcomeMessageVipName").innerText = vipName;
+                        document.getElementById("startGameScreenWelcomeMessageWouldYouRatherNonVip").style.display = "block";
+                    }
+
                 } else if(myAction === "sendRetrieveOptions") {
                     //document.getElementById("NsfwQuestionsCheckbox").checked = payload.data[0] == "True";//nsfwQuestions
                     document.getElementById("anonymousNameCheckbox").checked = payload.data[1] == "True";//anonymousNames
@@ -1988,60 +1996,7 @@ path, .jtk-endpoint {
             <div class="franklinBanner" style="height:9vh;  margin-bottom: 15px; position: inherit;">
                 <div style = "font-size: 26px;" class="franklinBannerInner" id="startGameScreenViewUsername"> Welcome, [Username]</div>
             </div>
-        
-            Optionally write “Would You Rather”s!
-            <br>
-            <br>
-            You can write later via the <img src="./icon_write.png" style="height:20px;" /> icon in the top left.
-            <br>
-            <br>
-            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
-                <div style="display:flex;justify-content:center;width:100%;">
-                    <div id="wouldYouRatherSubmit" class="textfield">
-                        <div style="color:#aaa"><i>Would you rather…</i></div>
-                    </div>
-                    <span style="display:none" placeholder="Would you rather…" class="franklinInput" contenteditable="true" id="wouldYouRatherSubmit-system"></span>
-                </div>
-            </div>
-            <div style="display:flex; flex-direction: row-reverse;">
-                <div style="display:flex;align-items: center; flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')">
-                    Clear
-                    <img style="height:20px;" src="./icon_cross.png"/>
-                </div>
-            </div>
-            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
-                <div style="display:flex;justify-content:center;width:100%;">
-                    <div id="wouldYouRatherLeftSubmit" class="textfield">
-                        <div style="color:#aaa"><i>Option 1</i></div>
-                    </div>
-                    <span style="display:none" placeholder="Option 1" class="franklinInput" contenteditable="true" id="wouldYouRatherLeftSubmit-system"></span>
-                </div>
-            </div>
-            <div style="display:flex; flex-direction: row-reverse;">
-                <div style="display:flex;align-items: center; flex-direction: row-reverse; width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherLeftSubmit', '')">
-                    Clear
-                    <img style="height:20px;" src="./icon_cross.png"/>
-                </div>
-            </div>
-            <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
-                <div style="display:flex;justify-content:center;width:100%;">
-                    <div id="wouldYouRatherRightSubmit" class="textfield">
-                        <div style="color:#aaa"><i>Option 2</i></div>
-                    </div>
-                    <span style="display:none" placeholder="Option 2" class="franklinInput" contenteditable="true" id="wouldYouRatherRightSubmit-system"></span>
-                </div>
-            </div>   
-            <div style="display:flex; flex-direction: row-reverse;">
-                <div style="display:flex; align-items: center;flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherRightSubmit', '')">
-                    Clear
-                    <img style="height:20px;" src="./icon_cross.png"/>
-                </div>
-            </div>
-            <br>
-            <div id="submitWouldYouRatherButton" class="pseudo_button" onmousedown="window.app.sendSubmitWouldYouRather()">Submit Would You Rather</div>
-            <br>
             <div id="vipStartButtonDescription" style="display:none">
-                <br>
                 <br>
                 <text>You are the VIP and can start the game<br>
                     when everyone is ready
@@ -2049,7 +2004,27 @@ path, .jtk-endpoint {
             </div>
             <p>
             <div class="initially_hidden_pseudo_button" onmousedown="window.app.sendStartGame()"  id="startGameButton">Start Game</div>
+            
             <div id="waitingForStartGame"></div>
+            <br>
+            <div id="startGameScreenWelcomeMessage">
+                Waiting for 
+                <br>
+                <br>
+                <div id="startGameScreenWelcomeMessageVipName" style="font-size: 30px;color: 325EFB;">
+                    [Player Name]
+                </div>
+                <br>
+                to start the game!
+            </div>
+            <br>
+            <br>
+            <div id="startGameScreenWelcomeMessageWouldYouRatherNonVip" style="display:none;">
+                While you wait, write Would you Rathers via the <img src="./icon_write.png" style="height:20px;"/> icon in the top left. Don't worry, you can write later too!
+            </div>
+            <div id="startGameScreenWelcomeMessageWouldYouRatherVip" style="display:none">
+                While waiting for players to join, write Would you Rathers via the <img src="./icon_write.png" style="height:20px;" /> icon in the top left. Don't worry, you can write later too!
+            </div>
             <br>
         </div>
         <div class="view" id="waitingView" style="align-self:flex-start;padding-top:40%;display:none;">
