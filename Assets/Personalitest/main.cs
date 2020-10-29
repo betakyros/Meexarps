@@ -1571,7 +1571,7 @@ public class main : MonoBehaviour
             gameState.phoneViewGameState = PhoneViewGameState.SendSkipInstructionsScreen;
 
             Image[] images = votingPanel.GetComponentsInChildren<Image>();
-            vp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "knowyourfriendstutorialvideo.mp4");
+            vp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "meexarpsGuessingTutorial.mp4");
 
             vp.Prepare();
             //if we update the video, update this ratio
@@ -1585,7 +1585,7 @@ public class main : MonoBehaviour
             instructionVideo.texture = vp.texture;
             instructionVideo.gameObject.SetActive(true);
             CameraZoom instructionsCz = instructionVideo.gameObject.AddComponent<CameraZoom>();
-            instructionsCz.Setup(1f, 16f, false, false, false, true, false);
+            instructionsCz.Setup(.5f, 20f, false, false, false, true, false);
             vp.Play();
             //vp.Pause();
             yield return new WaitForSeconds(1);
