@@ -20,7 +20,7 @@ public class WouldYouRatherTimer : MonoBehaviour
     {
         if(null != timerText)
         {
-            timerText.SetText(Mathf.RoundToInt(15f - ((Time.time - startTime) % 60)) + "");
+            timerText.SetText(Mathf.RoundToInt(20f - ((Time.time - startTime) % 60)) + "");
         }
     }
 

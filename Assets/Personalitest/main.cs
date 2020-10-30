@@ -1236,7 +1236,7 @@ public class main : MonoBehaviour
 
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
-        InvokeRepeating("SendWouldYouRather", 0f, 15f);
+        InvokeRepeating("SendWouldYouRather", 0f, 20f);
     }
 
     private void deactivateResultsPanel()
