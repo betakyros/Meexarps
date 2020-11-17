@@ -22,13 +22,14 @@ title: Meexarps
 email: meexarps@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   Meexarps is a jackbox style party game where the goal is to learn about your friends! Play using your phone on Airconsole.com.
-baseurl: "Meexarps" # the subpath of your site, e.g. /blog
+baseurl: "/Meexarps" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github: [metadata]
 github_username:  betakyros
 #repository: betakyros/Meexarps.github.io
 # Build settings
-theme: minimal-mistakes-jekyll
+#theme: minimal-mistakes-jekyll
+remote_theme: "mmistakes/minimal-mistakes@4.21.0"
 plugins:
   - jekyll-feed
 
