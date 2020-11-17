@@ -1,6 +1,6 @@
 ---
 layout: meexarpPage
-title:  "Meexarps aboutus"
+title:  "Meexarps About Us"
 permalink: /aboutus
 ---
 
