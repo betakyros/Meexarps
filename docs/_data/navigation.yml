@@ -1,0 +1,12 @@
+main:
+  - title: "Home"
+    url: /
+
+  - title: "Subscribe"
+    url: /subscribe
+
+  - title: "Freebies"
+    url: /freebies
+
+  - title: "About Us"
+    url: /aboutus/
