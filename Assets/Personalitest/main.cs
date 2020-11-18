@@ -124,6 +124,8 @@ public class main : MonoBehaviour
         AirConsole.instance.onMessage += OnMessage;
         AirConsole.instance.onConnect += OnConnect;
         AirConsole.instance.onDisconnect += OnDisconnect;
+        AirConsole.instance.onAdComplete += OnAdComplete;
+        AirConsole.instance.onAdShow+= OnAdShow;
         gameState = new GameState();
         currentQuestionIndex = 0;
         currentWouldYouRatherIndex = 0;
@@ -156,6 +158,7 @@ public class main : MonoBehaviour
         fadeStoryScreenScript.Setup(3.0f);
         sendWelcomeScreenInfo(-1, -1);
     }
+
     public void UpdateLoadingScreenTips()
     {
         GameObject.FindWithTag("loadingScreenTips").GetComponent<TextMeshProUGUI>().text = friendshipTips[friendshipTipIndex++ % friendshipTips.Length];
@@ -516,25 +519,10 @@ public class main : MonoBehaviour
         else if ("sendStartGame".Equals(action))
         {
             //gameState.numRoundsPerGame = data["info"]["roundCount"].ToObject<int>();
-            GameObject.Find("WelcomeScreenPanel").SetActive(false);
-            selectRoundNumberPanel.SetActive(true);
-            selectRoundNumberPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].text = "<color=white>The Head Researcher (<color=#325EFB>" + 
-                gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.</color>";
-            //selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
-            //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
-            //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
-            SetVolumeForLevel(welcomeScreenAudioSources, 2);
-            List<string> playersNames = gameState.GetPlayerNamesInNumberOrder();
-            SendMessageToVip(new JsonAction("selectRoundCountView", playersNames.ToArray()));
-            gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
-            /*
-            introAudioSource.Stop();
-            mainLoopAudioSource.Play();
-            StartCoroutine(ShowIntroInstrucitons(2));
 
-            */
             //Stop the loading screen tips
             CancelInvoke();
+            AirConsole.instance.ShowAd();
         }
         else if ("sendHoverRoundCount".Equals(action))
         {
@@ -749,6 +737,41 @@ public class main : MonoBehaviour
                 blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
             } 
         }
+    }
+
+    void OnAdShow()
+    {
+        StopAllLevels(welcomeScreenAudioSources);
+    }
+
+    void OnAdComplete(bool adWasShown)
+    {
+        if(adWasShown)
+        {
+            StartAllLevels(welcomeScreenAudioSources);
+        }
+        ContinueSendStartGame();
+    }
+
+    private void ContinueSendStartGame()
+    {
+        GameObject.Find("WelcomeScreenPanel").SetActive(false);
+        selectRoundNumberPanel.SetActive(true);
+        selectRoundNumberPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].text = "<color=white>The Head Researcher (<color=#325EFB>" +
+            gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.</color>";
+        //selectRoundNumberPanel.GetComponentsInChildren<Text>()[1].text =
+        //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
+        //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
+        SetVolumeForLevel(welcomeScreenAudioSources, 2);
+        List<string> playersNames = gameState.GetPlayerNamesInNumberOrder();
+        SendMessageToVip(new JsonAction("selectRoundCountView", playersNames.ToArray()));
+        gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
+        /*
+        introAudioSource.Stop();
+        mainLoopAudioSource.Play();
+        StartCoroutine(ShowIntroInstrucitons(2));
+
+        */
     }
 
     private IEnumerator<WaitForSeconds> Wait5secondsThenUnblock(Player p)
