@@ -10,33 +10,32 @@ namespace NDream.AirConsole.Editor {
 
 		[PostProcessBuildAttribute(1)]
 		public static void OnPostprocessBuild (BuildTarget target, string pathToBuiltProject) {
-
 			if (target == BuildTarget.WebGL) {
-
-				// check if screen.html already exists
+				// Check if screen.html already exists
 				if (File.Exists (pathToBuiltProject + "/screen.html")) {
 					File.Delete (pathToBuiltProject + "/screen.html");
 				}
 
-				// rename index.html to screen.html
+				// Renaming index.html to screen.html
 				File.Move (pathToBuiltProject + "/index.html", pathToBuiltProject + "/screen.html");
 
-				// check if game.json already exists
+				// Check if game.json already exists
 				if (File.Exists (pathToBuiltProject + "/Build/game.json")) {
-					File.Delete (pathToBuiltProject + "/Build/game.json");
+				File.Delete (pathToBuiltProject + "/Build/game.json");
 				}
-				
-				// rename json configuration to game.json
-				File.Move (pathToBuiltProject + "/Build/" + Path.GetFileName (pathToBuiltProject) + ".json", pathToBuiltProject + "/Build/game.json");
 
-				// save last port path
+				string configuration_file_path = pathToBuiltProject + "/Build/" + Path.GetFileName (pathToBuiltProject) + ".json";
+
+				// Rename JSON configuration to game.json (Only for Unity versions < 2020.x)
+				// See https://forum.unity.com/threads/changes-to-the-webgl-loader-and-templates-introduced-in-unity-2020-1.817698/
+				// for details, the build config is no longer stored in a JSON file but embedded into the HTML
+				if (File.Exists (configuration_file_path)) {
+					File.Move (configuration_file_path, pathToBuiltProject + "/Build/game.json");
+				}
+
+				// Save last port path
 				EditorPrefs.SetString ("airconsolePortPath", pathToBuiltProject);
-
-			} else if (target == BuildTarget.Android) {
-				if (EditorUserBuildSettings.androidBuildSystem == AndroidBuildSystem.Internal) {
-					throw new BuildFailedException ("You need to use the Gradle Build system (see Build Settings) for AirConsole Games to work on Android.");
-				}
-			}
+			} 
 		}
 	}
 }

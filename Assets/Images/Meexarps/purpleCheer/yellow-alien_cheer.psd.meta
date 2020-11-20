@@ -1,16 +1,30 @@
 fileFormatVersion: 2
 guid: ecd206527ac8b8547973934757570d5d
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: yellow-alien_cheer_0
-    21300002: yellow-alien_cheer_1
-    21300004: yellow-alien_cheer_2
-    21300006: yellow-alien_cheer_3
-    21300008: yellow-alien_cheer_4
-    21300010: yellow-alien_cheer_5
-    21300012: yellow-alien_cheer_6
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: yellow-alien_cheer_0
+  - first:
+      213: 21300002
+    second: yellow-alien_cheer_1
+  - first:
+      213: 21300004
+    second: yellow-alien_cheer_2
+  - first:
+      213: 21300006
+    second: yellow-alien_cheer_3
+  - first:
+      213: 21300008
+    second: yellow-alien_cheer_4
+  - first:
+      213: 21300010
+    second: yellow-alien_cheer_5
+  - first:
+      213: 21300012
+    second: yellow-alien_cheer_6
   externalObjects: {}
-  serializedVersion: 9
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -30,6 +44,7 @@ TextureImporter:
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -64,8 +79,10 @@ TextureImporter:
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
   platformSettings:
-  - serializedVersion: 2
+  - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -76,7 +93,8 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-  - serializedVersion: 2
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -87,7 +105,8 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-  - serializedVersion: 2
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 3
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -98,6 +117,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -117,6 +137,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: fc3abdca5fca4534a9c3284f91f3e544
+      internalID: 21300000
       vertices: []
       indices: 
       edges: []
@@ -137,6 +158,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 4f5a84d5a188e8041af451d70fd7dae2
+      internalID: 21300002
       vertices: []
       indices: 
       edges: []
@@ -157,6 +179,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 44548ed90b5e1e14c9e3e94438c56bbc
+      internalID: 21300004
       vertices: []
       indices: 
       edges: []
@@ -177,6 +200,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 87844c6fe2e375541acec937078384fd
+      internalID: 21300006
       vertices: []
       indices: 
       edges: []
@@ -197,6 +221,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: e4ff642984fa4b14ba134147cd7f3153
+      internalID: 21300008
       vertices: []
       indices: 
       edges: []
@@ -217,6 +242,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 64386233ff36bbf45bdad2953be23c14
+      internalID: 21300010
       vertices: []
       indices: 
       edges: []
@@ -237,6 +263,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 256b65a779be664489b1375c46adc373
+      internalID: 21300012
       vertices: []
       indices: 
       edges: []
@@ -245,10 +272,12 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 6ccb807a66ece5e4d902b0661bb60b57
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
+    secondaryTextures: []
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 1

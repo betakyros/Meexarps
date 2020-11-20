@@ -111,7 +111,9 @@ App.prototype.setupEditorSocket = function() {
 
 App.prototype.initAirConsole = function() {
     var me = this;
-    me.airconsole = new AirConsole({ "synchronize_time": true });
+    var translation = window.AIRCONSOLE_TRANSLATION;
+
+    me.airconsole = new AirConsole({ "synchronize_time": true, "translation": translation });
 
     me.airconsole.onMessage = function (from, data) {
         me.postToUnity({
@@ -128,7 +130,8 @@ App.prototype.initAirConsole = function() {
             "device_id": me.airconsole.device_id,
             "devices": me.airconsole.devices,
             "server_time_offset": me.airconsole.server_time_offset,
-            "location": document.location.href
+            "location": document.location.href,
+            "translations": me.airconsole.translations
         });
     };
 
@@ -339,8 +342,10 @@ App.prototype.processUnityData = function (data) {
 };
 
 App.prototype.resizeCanvas = function() {
+    var container = this.game.container;
     var aspectRatio = this.web_config.width / this.web_config.height;
     var w, h;
+
     if (window.innerWidth/aspectRatio > window.innerHeight) {
         w = window.innerHeight * aspectRatio;
         h = window.innerHeight;
@@ -348,11 +353,8 @@ App.prototype.resizeCanvas = function() {
         w = window.innerWidth;
         h = window.innerWidth / aspectRatio;
     }
-    
-    if (this.game.Module && this.game.Module.setCanvasSize) {
-      this.game.Module.setCanvasSize(w, h);
-    }
-    var container = this.game.container;
+
+    // Setting canvas size
     container.style.width = w + "px";
     container.style.height = h + "px";
 };

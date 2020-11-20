@@ -53,16 +53,15 @@ namespace NDream.AirConsole.Editor {
 		}
 
 		public void ClientListener () {
-
 			while (true) {
-
 				try {
 					request = listener.GetContext ();
 					ThreadPool.QueueUserWorkItem (ProcessRequest, request);
+				} catch (ThreadAbortException e) {
+					// ThreadAbortException is thrown when the webserver gets stopped/restarted
 				} catch (Exception e) {
-
 					if (Settings.debug.error) {
-						Debug.Log (e.Message); 
+						Debug.LogError (e.ToString ());
 					}
 				}
 			}
@@ -84,7 +83,7 @@ namespace NDream.AirConsole.Editor {
 				}
 
 				string filename = Path.GetFileName (rawUrl);
-				string path = startUpPath + rawUrl;
+				string path = startUpPath + System.Uri.UnescapeDataString(rawUrl);;
 
 				byte[] msg;
 
