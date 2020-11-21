@@ -138,12 +138,14 @@ public class main : MonoBehaviour
     {
         yield return new WaitForSeconds(3);
 
+        InvokeRepeating("UpdateLoadingScreenTips", 0f, 10f);
+
         SetVolumeForLevel(welcomeScreenAudioSources, 1);
         FadeSplashScreen fadeSplashScreenScript = splashScreenPanel.AddComponent<FadeSplashScreen>();
         fadeSplashScreenScript.Setup(3.0f);
         yield return new WaitForSeconds(3);
         Image[] storyPanels = storyPanel.GetComponentsInChildren<Image>(true);
-        int numStoryScreens = 6;
+        int numStoryScreens = 0;
         for(int i = 0; i < numStoryScreens - 1; i++)
         {
             yield return new WaitForSeconds(3);
@@ -152,9 +154,11 @@ public class main : MonoBehaviour
         }
         yield return new WaitForSeconds(3);
         FadeSplashScreen fadeStoryScreenScript = storyPanel.AddComponent<FadeSplashScreen>();
+        /*
         if(storyPanel.activeSelf) {
             InvokeRepeating("UpdateLoadingScreenTips", 0f, 10f);
         }
+        */
         fadeStoryScreenScript.Setup(3.0f);
         sendWelcomeScreenInfo(-1, -1);
     }
