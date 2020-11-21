@@ -26528,11 +26528,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalPos: {x: 1000.69867, y: 765, z: 0}
-  bobAmountVertical: 160
-  bobAmountHorizontal: 80
-  bobSpeed: 0.0007
-  rotationAmount: 2
-  rotationSpeed: 0.01
+  bobAmountVertical: 8
+  bobAmountHorizontal: 8
+  bobSpeed: 0.01
+  rotationAmount: 4
+  rotationSpeed: 0.002
 --- !u!1 &2060692807
 GameObject:
   m_ObjectHideFlags: 0

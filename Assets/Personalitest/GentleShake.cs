@@ -84,8 +84,8 @@ public class GentleShake : MonoBehaviour
         }
         // Rotate the cube by converting the angles into a quaternion.
         Quaternion target = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, currentRotationZ);
-
-        rectTransform.anchoredPosition = Vector3.MoveTowards(rectTransform.anchoredPosition, new Vector2(currentX, currentY), bobSpeed);
+        Vector2 test = Vector2.MoveTowards(rectTransform.anchoredPosition, new Vector2(currentX, currentY), bobSpeed);
+        rectTransform.anchoredPosition = test;
         transform.rotation = Quaternion.RotateTowards(transform.rotation, target, rotationSpeed);
     }
 
