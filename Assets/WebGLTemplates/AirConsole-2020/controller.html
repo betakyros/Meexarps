@@ -924,14 +924,14 @@ path, .jtk-endpoint {
                         currentResultContainer.style.display = "flex";
                         currentResultContainer.style.justifyContent = "space-between";
 
-                        var alienImage = document.createElement('img'); 
+                        var alienImage = document.createElement('div'); 
                         var guessName = document.createElement('div');
                         if(personalRoundResults[i][1] == "~~~None~~~"){
-                            alienImage.src="./icon_questionMark.png";
+                            alienImage.style.backgroundImage="./icon_questionMark.png";
                             guessName.innerHTML="I don't know!"
                         } else {
                             var guessNameText = personalRoundResults[i][1];
-                            alienImage.src= App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[guessNameText]);
+                            alienImage.style.backgroundImage= App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[guessNameText]);
                             alienImage.classList.add("votingAlienImage");
                             guessName.innerHTML=guessNameText;
                         }
@@ -1553,7 +1553,7 @@ path, .jtk-endpoint {
             
             //populate the alienButtons
             for(var i = 0; i < 6; i++) {
-                document.getElementById("alienButton"+i).src = App.prototype.getPlayerGif(i);
+                document.getElementById("alienButton"+i).style.backgroundImage = App.prototype.getPlayerGif(i);
             }
 		}
     }
@@ -1961,12 +1961,12 @@ path, .jtk-endpoint {
             <br>
             <div class="franklinBanner" style="position: inherit; margin-top: 8px; margin-bottom: 8px; padding: 10px 0; height: 15vw;">
                 <div style = "display:flex; justify-content:space-evenly;  width:80%; height:100%;" >
-                    <img id="alienButton0" class="alienButton" onmousedown="window.app.clickAlienButton(0)">
-                    <img id="alienButton1" class="alienButton" onmousedown="window.app.clickAlienButton(1)">
-                    <img id="alienButton2" class="alienButton" onmousedown="window.app.clickAlienButton(2)">
-                    <img id="alienButton3" class="alienButton" onmousedown="window.app.clickAlienButton(3)">
-                    <img id="alienButton4" class="alienButton" onmousedown="window.app.clickAlienButton(4)">
-                    <img id="alienButton5" class="alienButton" onmousedown="window.app.clickAlienButton(5)">
+                    <div id="alienButton0" class="alienButton" onmousedown="window.app.clickAlienButton(0)"></div>
+                    <div id="alienButton1" class="alienButton" onmousedown="window.app.clickAlienButton(1)"></div>
+                    <div id="alienButton2" class="alienButton" onmousedown="window.app.clickAlienButton(2)"></div>
+                    <div id="alienButton3" class="alienButton" onmousedown="window.app.clickAlienButton(3)"></div>
+                    <div id="alienButton4" class="alienButton" onmousedown="window.app.clickAlienButton(4)"></div>
+                    <div id="alienButton5" class="alienButton" onmousedown="window.app.clickAlienButton(5)"></div>
                 </div>
             </div>
             Choose a username for your Meexarp
