@@ -1210,7 +1210,7 @@ public class main : MonoBehaviour
         introInstructionVideo.texture = introVp.texture;
         introInstructionVideo.gameObject.SetActive(true);
         CameraZoom instructionsCz = introInstructionVideo.gameObject.AddComponent<CameraZoom>();
-        instructionsCz.Setup(.5f, 106f, false, false, false, true, false);
+        instructionsCz.Setup(.5f, 86f, false, false, false, true, false);
         introVp.Play();
         //vp.Pause();
         yield return new WaitForSeconds(1);
