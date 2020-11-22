@@ -760,6 +760,7 @@ public class main : MonoBehaviour
         else if ("sendPlayAgain".Equals(action))
         {
             StopCoroutine("SendEndScreen2");
+            resultsBeepAudioSource.Pause();
             gameState.ResetGameState();
             endScreenPanel.SetActive(false);
             StartRound();
