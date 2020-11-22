@@ -1048,13 +1048,14 @@ public class main : MonoBehaviour
         //null if they don't exist or are not an audience
         Player currentAudience = gameState.GetAudienceByPlayerNumber(currentPlayerNumber);
         bool isVip = currentPlayerNumber == VIP_PLAYER_NUMBER;
-
-        if(gameState.players.ContainsKey(from))
+        bool isPlayer = gameState.players.ContainsKey(from);
+        bool isAudience = gameState.audienceMembers.ContainsKey(from);
+        if (isPlayer)
         {
             Player myPlayer = gameState.players[from];
             sendWelcomeScreenInfoDetails(from, myPlayer.alienNumber, myPlayer);
         }
-        if (gameState.audienceMembers.ContainsKey(from))
+        if (isAudience)
         {
             Player myPlayer = gameState.audienceMembers[from];
             sendWelcomeScreenInfoDetails(from, myPlayer.alienNumber, myPlayer);
@@ -1093,6 +1094,20 @@ public class main : MonoBehaviour
                 }
                 else
                 {
+                    Image[] playerIcons = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
+                    if (isPlayer)
+                    {
+                        List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+                        int playerNum = currentPlayer.playerNumber;
+
+                        playerIconsList[playerNum].gameObject.SetActive(true);
+                        updatePlayerAnimator(playerIconsList[playerNum].GetComponentInChildren<Animator>(), playerNum);
+                        playerIconsList[playerNum].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = gameState.GetPlayerByPlayerNumber(playerNum).nickname;
+                    } else if(isAudience)
+                    {
+                        int playerIconOffset = 14;
+                        playerIcons[playerIconOffset + 6].gameObject.SetActive(true);
+                    }
                     string waitingForPlayerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
                     List<string> payload = new List<string>();
                     payload.Add(waitingForPlayerName);
@@ -1101,6 +1116,16 @@ public class main : MonoBehaviour
                 }
                 break;
             case PhoneViewGameState.SendQuestions:
+                if (isPlayer)
+                {
+                    Image[] playerIcons = answerQuestionsPanel.GetComponentsInChildren<Image>(true);
+                    List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
+                    int playerNum = currentPlayer.playerNumber;
+
+                    playerIconsList[playerNum].gameObject.SetActive(true);
+                    updatePlayerAnimator(playerIconsList[playerNum].GetComponentInChildren<Animator>(), playerNum);
+                    playerIconsList[playerNum].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = gameState.GetPlayerByPlayerNumber(playerNum).nickname;
+                }
                 if (gameState.GetCurrentRound().hasPlayerSubmittedAnswer(currentPlayerNumber)) {
                     AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { }));
                 } else
@@ -1292,9 +1317,7 @@ public class main : MonoBehaviour
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         string playerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
         getPlayerIconTags(playerIcons, "Banner")[0].GetComponentInChildren<TextMeshProUGUI>().text = "It's " + playerName + "'s turn to write questions!";
-
-        int playerTextOffset = 4;
-        int currentPlayerTextOffset = 13;
+        
         Text[] playerTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
@@ -1710,7 +1733,7 @@ public class main : MonoBehaviour
         AutoResizeGrid autoResizeGrid = FindObjectsOfType(typeof(AutoResizeGrid))[2] as AutoResizeGrid;
         autoResizeGrid.enabled = false;
         int panelOffset = 3;
-        int numPlayersAtStart = gameState.GetNumberOfPlayers();
+        int numPlayersAtStart = gameState.GetCurrentRound().answers.Count;
         GameObject[] votingGridTitles = GameObject.FindGameObjectsWithTag("votingTextTitle");
         GameObject[] votingGridQnA = GameObject.FindGameObjectsWithTag("votingTextQnA");
 
@@ -1951,7 +1974,8 @@ public class main : MonoBehaviour
 
         //set the anonymous names of each box
         List<Answers> answersList = gameState.GetCurrentRound().answers;
-        for (int i = 0; i < answersList.Count; i++)
+        int countAtBeginingOfRound = answersList.Count;
+        for (int i = 0; i < countAtBeginingOfRound; i++)
         {
             Answers answers = answersList[i];
             int resultsPanelOffset = 1;
@@ -1973,7 +1997,7 @@ public class main : MonoBehaviour
         autoResizeGrid.enabled = false;
 
         List<Answers> answerList = gameState.GetCurrentRound().answers;
-        for (int i = 0; i < answerList.Count; i++)
+        for (int i = 0; i < countAtBeginingOfRound; i++)
         {
             List<string> namesOfCorrectPeople = new List<string>();
             List<string> namesOfCorrectPeopleForZoomInView = new List<string>();
@@ -2295,7 +2319,7 @@ public class main : MonoBehaviour
         List<Image> playerIconsList = getPlayerIconTags(playerIcons, "AnswerQuestionsPane");
 
         //reset the position of the other panels
-        for (int i = 0; i < 6 - gameState.GetNumberOfPlayers(); i++)
+        for (int i = 0; i < 6 - countAtBeginingOfRound; i++)
         {
             playerIconsList[i].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
         }
@@ -2678,6 +2702,10 @@ public class main : MonoBehaviour
         }
     }
     
+    public int getCurrentRoundNumberOfAnswers()
+    {
+        return gameState.GetCurrentRound().answers.Count;
+    }
 }
 
 public static class IListExtensions

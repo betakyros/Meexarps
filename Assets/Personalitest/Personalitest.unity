@@ -10562,7 +10562,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 549541939}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -14605,6 +14605,7 @@ MonoBehaviour:
   isWouldYouRather: 0
   isAnswerQuestionsGrid: 0
   isWelcomeScreen: 0
+  isResultsPanel: 0
 --- !u!114 &1259476603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14624,6 +14625,7 @@ MonoBehaviour:
   isWouldYouRather: 0
   isAnswerQuestionsGrid: 1
   isWelcomeScreen: 1
+  isResultsPanel: 0
 --- !u!114 &1259476604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14643,6 +14645,7 @@ MonoBehaviour:
   isWouldYouRather: 0
   isAnswerQuestionsGrid: 0
   isWelcomeScreen: 0
+  isResultsPanel: 1
 --- !u!114 &1259476605
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14662,6 +14665,7 @@ MonoBehaviour:
   isWouldYouRather: 0
   isAnswerQuestionsGrid: 0
   isWelcomeScreen: 0
+  isResultsPanel: 1
 --- !u!82 &1259476606
 AudioSource:
   m_ObjectHideFlags: 0
@@ -15005,6 +15009,7 @@ MonoBehaviour:
   isWouldYouRather: 1
   isAnswerQuestionsGrid: 0
   isWelcomeScreen: 0
+  isResultsPanel: 0
 --- !u!114 &1259476613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15024,6 +15029,7 @@ MonoBehaviour:
   isWouldYouRather: 0
   isAnswerQuestionsGrid: 1
   isWelcomeScreen: 0
+  isResultsPanel: 0
 --- !u!1 &1276434047
 GameObject:
   m_ObjectHideFlags: 0

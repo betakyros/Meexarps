@@ -10,6 +10,7 @@ public class AutoResizeGrid : MonoBehaviour
     public bool isWouldYouRather;
     public bool isAnswerQuestionsGrid;
     public bool isWelcomeScreen;
+    public bool isResultsPanel;
     
 
     // Start is called before the first frame update
@@ -28,6 +29,10 @@ public class AutoResizeGrid : MonoBehaviour
         int numCols, numRows;
 
         int numPlayers = gameObject.GetComponent<main>().getNumPlayers() - (isWouldYouRather ? 1 : 0);
+        if(isResultsPanel)
+        {
+            numPlayers = gameObject.GetComponent<main>().getCurrentRoundNumberOfAnswers();
+        }
         int numGridCells = (numPlayers == 0 || isWelcomeScreen) ? 6 : numPlayers;
 
 
