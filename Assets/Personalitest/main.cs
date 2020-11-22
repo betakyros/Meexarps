@@ -360,7 +360,7 @@ public class main : MonoBehaviour
                 {
                     int audienceNumber = 10 + gameState.GetNumberOfAudience();
                     //todo hard code the audience animator to 7 or give them no animations
-                    Player p = new Player(name, from, audienceNumber, 0, animators[1], -1);
+                    Player p = new Player(name, from, audienceNumber, 0, animators[1], 6);
                     gameState.audienceMembers.Add(from, p);
 
                     if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
@@ -374,6 +374,36 @@ public class main : MonoBehaviour
                     }
                 }
             }
+        }
+        else if ("checkName".Equals(action))
+        {
+            playSound = false;
+            string name = data["info"]["name"].ToString().Trim();
+            KeyValuePair<int, Player> currentPlayer = gameState.GetPlayerByName(name);
+            KeyValuePair<int, Player> audiencePlayer = gameState.GetAudienceByName(name);
+            List<string> payload = new List<string>();
+            if (currentPlayer.Value == null && audiencePlayer.Value == null)
+            {
+                if(gameState.GetNumberOfPlayers() < 6)
+                {
+                    payload.Add("You will join as a new Player!");
+                    AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "You will join as a new Player!" }));
+                } else
+                {
+                    AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "You will join as a new Audience Member!" }));
+                }
+            } else if (currentPlayer.Value != null)
+            {
+                AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "You will Reconnect as a Player!" }));
+            } else if (audiencePlayer.Value != null)
+            {
+                AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "You will Reconnect as an Audience Member!" }));
+            } else
+            {
+                AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "An error occured, Sorry! Please email Meexarps@gmail.com" }));
+                Debug.Log("An error occured in checkname");
+            }
+
         }
         else if ("forceAdvance".Equals(action))
         {
@@ -886,6 +916,8 @@ public class main : MonoBehaviour
         List<string> playerNames = gameState.GetPlayerNamesInNumberOrder();
         List<string> payload = new List<string>();
         int currNumPlayers = playerNames.Count;
+        string hasGameStarted = gameState.tvViewGameState == TvViewGameState.WelcomeScreen ? "NOT_STARTED" : "STARTED";
+        payload.Add(hasGameStarted);
         if (currNumPlayers < 6)
         {
             payload.Add("" + playerNames.Count);
