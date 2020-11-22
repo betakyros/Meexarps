@@ -417,7 +417,8 @@ public class main : MonoBehaviour
                 answerQuestionsPanel.SetActive(false);
                 votingPanel.SetActive(false);
                 deactivateResultsPanel();
-                SendEndScreen2();
+                StopAllCoroutines();
+                StartCoroutine("SendEndScreen2");
             }
             /*
             switch (gameState.tvViewGameState)
