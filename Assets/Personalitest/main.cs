@@ -2309,6 +2309,8 @@ public class main : MonoBehaviour
 
     public System.Collections.IEnumerator SendEndScreen2()
     {
+        gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
+        gameState.tvViewGameState = TvViewGameState.EndGameScreen;
         roundCounter.SetActive(false);
         deactivateResultsPanel();
         endScreenPanel.SetActive(true);
@@ -2430,8 +2432,6 @@ public class main : MonoBehaviour
 
             audienceScoreCard.GetComponentInChildren<TextMeshProUGUI>().text = audienceScoresSb.ToString();
         }
-        gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
-        gameState.tvViewGameState = TvViewGameState.EndGameScreen;
     }
 
     private static string CaluclateFriendshipStatus(float correctPercent, string[] friendshipStatusArray)
