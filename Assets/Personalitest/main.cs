@@ -321,10 +321,9 @@ public class main : MonoBehaviour
                 updatePlayerAnimator(image.GetComponentInChildren<Animator>(), p);
 
                 gameState.players.Add(from, p);
-                if(gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
+                sendWelcomeScreenInfo(from, selectedAlien);
+                if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
                 {
-                    Debug.Log("sendingStartGameScreen to " + p.nickname + " at " + System.DateTime.Now.ToString("h:mm:ss:fff tt"));
-                    sendWelcomeScreenInfo(from, selectedAlien);
                     AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                     SendMessageToVip(new JsonAction("allPlayersAreNotReady", gameState.whoIsNotReady().ToArray()));
                     
@@ -883,14 +882,20 @@ public class main : MonoBehaviour
 
     private void sendWelcomeScreenInfo(int from, int alienNumber)
     {
-        int currNumPlayers = gameState.GetNumberOfPlayers();
         BroadcastSelectedAliens(gameState.alienSelections);
+        List<string> playerNames = gameState.GetPlayerNamesInNumberOrder();
+        List<string> payload = new List<string>();
+        int currNumPlayers = playerNames.Count;
         if (currNumPlayers < 6)
         {
-            AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "" + currNumPlayers }));
+            payload.Add("" + playerNames.Count);
+            payload.AddRange(playerNames);
+            AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", payload.ToArray()));
         } else
         {
-            AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", new[] { "full" }));
+            payload.Add("full");
+            payload.AddRange(playerNames);
+            AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", payload.ToArray()));
         }
         int currNumAudience = gameState.GetNumberOfAudience();
 
@@ -913,8 +918,15 @@ public class main : MonoBehaviour
     private void sendWelcomeScreenInfoDetails(int from, int alienNumber, Player myPlayer)
     {
         string vipName = gameState.GetPlayerByPlayerNumber(0).nickname;
+        List<string> playerNames = gameState.GetPlayerNamesInNumberOrder();
+        List<string> payload = new List<string>();
+        payload.Add(myPlayer.nickname);
+        payload.Add("" + myPlayer.playerNumber);
+        payload.Add("" + alienNumber);
+        payload.Add(vipName);
+        payload.AddRange(playerNames);
         AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails",
-            new string[] { myPlayer.nickname, "" + myPlayer.playerNumber, "" + alienNumber, vipName }));
+            payload.ToArray()));
     }
 
     private static void SendIsVip(Player currentPlayer)

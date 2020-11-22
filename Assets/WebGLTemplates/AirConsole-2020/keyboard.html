@@ -636,6 +636,8 @@ path, .jtk-endpoint {
                     }
 
                     var playerCount = payload.data[0];
+                    listOfPlayerNames = payload.data.slice(1);
+
                     if(playerCount == "full") {
                         document.getElementById("welcomeScreenPlayerCount").innerText = "Our Meexarp team has reached capacity!\nYou will be joining as an audience member.";
                         globalCurrNumPlayers = 6;
@@ -670,6 +672,8 @@ path, .jtk-endpoint {
                     playerNumber = payload.data[1];
                     selectedAlien = parseInt(payload.data[2]);
                     vipName = payload.data[3];
+                    listOfPlayerNames = payload.data.slice(4);
+                    globalCurrNumPlayers = listOfPlayerNames.length;
                     var myAlienGifs = document.getElementsByClassName("myAlienGif");
                     Array.prototype.forEach.call(myAlienGifs, currentElement => {
                         setBackgroundImage(currentElement, App.prototype.getPlayerGif(selectedAlien));
@@ -742,6 +746,7 @@ path, .jtk-endpoint {
                     //document.getElementById("roundCountDisplayField").value = payload.data;
                     displayElement(document.getElementById("selectRoundCountView"));
                     listOfPlayerNames = payload.data;
+                    globalCurrNumPlayers = listOfPlayerNames.length;
                     var numPlayers = payload.data.length;
                     if(numPlayers > 4) {
                         App.prototype.clickRoundButton(2);
