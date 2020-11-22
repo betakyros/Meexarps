@@ -2166,10 +2166,10 @@ public class main : MonoBehaviour
 
             int zoomInTime = 1;
             float waitForContextSeconds = 1.5f;
-            int waitForReadSeconds = 5;
+            int waitForReadSeconds = 4;
             float waitForEachAnswer = .5f;
 
-            float totalWaitTime = 3 * waitForContextSeconds + 2 * waitForReadSeconds + (3 + wrongVotesCount) * waitForEachAnswer;
+            float totalWaitTime = 2 * waitForContextSeconds + 2 * waitForReadSeconds + (3 + wrongVotesCount) * waitForEachAnswer;
             cz.Setup(zoomInTime, totalWaitTime, true, true, false, false, true);
 
             rightAndWrongPanelTitle.text = "<b>" + anonymousPlayerName +
@@ -2190,8 +2190,6 @@ public class main : MonoBehaviour
                 }
             }
             yield return new WaitForSeconds(waitForReadSeconds);
-
-            yield return new WaitForSeconds(waitForContextSeconds);
 
             string tileTitle = anonymousPlayerName + " is... \n<color=blue>" + targetPlayerName + "</color>";
             rightAndWrongPanelTitle.text = "<b>" + tileTitle + "</b>";
