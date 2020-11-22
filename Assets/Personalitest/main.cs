@@ -361,7 +361,7 @@ public class main : MonoBehaviour
                 {
                     int audienceNumber = 10 + gameState.GetNumberOfAudience();
                     //todo hard code the audience animator to 7 or give them no animations
-                    Player p = new Player(name, from, audienceNumber, 0, animators[1], -1);
+                    Player p = new Player(name, from, audienceNumber, 0, animators[1], 6);
                     gameState.audienceMembers.Add(from, p);
 
                     if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)

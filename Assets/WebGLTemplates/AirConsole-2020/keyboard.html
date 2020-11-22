@@ -243,6 +243,7 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
 */
 .alienImage {
     height: 6vh;
+    width: 6vh;
 }
 
 .yourGuessImage {
@@ -259,6 +260,19 @@ g.apply(this,arguments),b.jsPlumbUIComponent.apply(this,arguments),this.draw=fun
     top: 0;
     left: 0;
 }
+
+.franklinImage {
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.fullWidthCenteredImage {
+    display:flex; 
+    justify-content:center; 
+    width: 100%
+}
+
 */
 /** JSPLUMB ARTEFACTS **/
 .jtk-endpoint {
@@ -409,12 +423,6 @@ path, .jtk-endpoint {
         var screenIsRotated = false;
         allTextFieldIds.forEach(element => {
             document.getElementById(element+"-system").onfocus = function() {
-                console.log("onfocus");
-                console.log("---------"); 
-                console.log("screen.height: " + screen.height);
-                console.log("window.innerWidth: " + screen.width );
-                console.log("originalScreenHeight: " + originalScreenHeight );
-                console.log("---------"); 
                 if(screen.height != originalScreenHeight &&
                 screen.height == originalScreenWidth &&
                 screen.width != screen.height) {
@@ -424,12 +432,6 @@ path, .jtk-endpoint {
             };
 
             document.getElementById(element+"-system").onblur = function() {
-                console.log("onblur");
-                console.log("---------"); 
-                console.log("screen.height: " + screen.height);
-                console.log("screen.width: " + screen.width);
-                console.log("originalScreenHeight: " + originalScreenHeight );
-                console.log("---------"); 
                 if(screenIsRotated) {
                     document.getElementById("bodyElement").style.transform = "none";
                     screenIsRotated = false;
@@ -496,6 +498,11 @@ path, .jtk-endpoint {
             hideAllViews();
             e.style.display = "block";
             setTimeout(resizeElement, 10);
+        }
+
+        function setBackgroundImage(e, url) {
+            e.style.backgroundImage = "url(" + url + ")";
+            e.classList.add("franklinImage");
         }
 
         //var timer;
@@ -647,15 +654,15 @@ path, .jtk-endpoint {
                     var selectedAliensArray = payload.data[0].split('');
                     for(var i = 0; i < 6; i++) {
                         if(i == selectedAlien) {
-                            document.getElementById("alienButton" + i).className="alienButton-selected";
+                            document.getElementById("alienButton" + i).className="alienButton-selected franklinImage";
                         } else if (selectedAliensArray.includes('' + i)){
-                            document.getElementById("alienButton" + i).className="alienButton-disabled";
+                            document.getElementById("alienButton" + i).className="alienButton-disabled franklinImage";
                             if(selectedAlien == i) {
                                 selectedAlien = -1;
                                 App.prototype.showSnackbar("Someone else claimed your meexarp!");
                             }
                         } else {
-                            document.getElementById("alienButton" + i).className="alienButton";
+                            document.getElementById("alienButton" + i).className="alienButton franklinImage";
                         }
                     }
                 } else if(myAction === "sendWelcomeScreenInfoDetails") {
@@ -666,13 +673,18 @@ path, .jtk-endpoint {
                     console.log("sendWelcomeScreenInfoDetails: " + playerName);
                     var myAlienGifs = document.getElementsByClassName("myAlienGif");
                     Array.prototype.forEach.call(myAlienGifs, currentElement => {
-                        currentElement.src = App.prototype.getPlayerGif(selectedAlien);
+                        setBackgroundImage(currentElement, App.prototype.getPlayerGif(selectedAlien));
                     });
                     if(selectedAlien == 6) {
-                        var wouldYouRatherAlienGif = document.getElementById("wouldYouRatherAlienGif");
-                        wouldYouRatherAlienGif.style.background = "white";
-                        wouldYouRatherAlienGif.style.borderRadius = "50%";
-                        wouldYouRatherAlienGif.style.padding = "5px";
+                        var wouldYouRatherAlienGifWrapper = document.getElementById("wouldYouRatherAlienGifWrapper");
+                        wouldYouRatherAlienGifWrapper.style.background = "white";
+                        wouldYouRatherAlienGifWrapper.style.borderRadius = "50%";
+                        wouldYouRatherAlienGifWrapper.style.padding = "5px";
+
+                        var endGameViewAlienGifWrapper = document.getElementById("endGameViewAlienGifWrapper");
+                        endGameViewAlienGifWrapper.style.background = "white";
+                        endGameViewAlienGifWrapper.style.borderRadius = "50%";
+                        endGameViewAlienGifWrapper.style.padding = "5px";
                     }
                     document.getElementById("startGameScreenViewUsername").innerText = "Welcome, " + playerName + "!";
                     //set up the tutorial
@@ -845,7 +857,7 @@ path, .jtk-endpoint {
                             //add the image to the box
                             var imageId = "sourceImage" + i;
                             var img = document.getElementById(imageId);
-                            img.src = "./icon_questionMark.png";
+                            setBackgroundImage(img, "./icon_questionMark.png")
 
                             var targetId = "targetWindow" + i;
                             var sourceElement = document.getElementById(targetId);
@@ -858,7 +870,7 @@ path, .jtk-endpoint {
                             img.classList.add("votingAlienImage");
                             //todo create a map of playerNames to aliens
                             var alienImage = payload.data[3*numAnswers + i]
-                            img.src = App.prototype.getPlayerGif(parseInt(alienImage));
+                            setBackgroundImage(img, App.prototype.getPlayerGif(parseInt(alienImage)))
 
                             var answersSummary = sanitarize(payload.data[2*numAnswers + i]);
                             /*Work in progress. not sure how it made it into this commit. this is the answer summary to display on the phones*/
@@ -927,26 +939,27 @@ path, .jtk-endpoint {
                         var alienImage = document.createElement('div'); 
                         var guessName = document.createElement('div');
                         if(personalRoundResults[i][1] == "~~~None~~~"){
-                            alienImage.style.backgroundImage="./icon_questionMark.png";
+                            setBackgroundImage(alienImage, "./icon_questionMark.png");
                             guessName.innerHTML="I don't know!"
                         } else {
                             var guessNameText = personalRoundResults[i][1];
-                            alienImage.style.backgroundImage= App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[guessNameText]);
+                            setBackgroundImage(alienImage, App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[guessNameText]));
                             alienImage.classList.add("votingAlienImage");
                             guessName.innerHTML=guessNameText;
                         }
                         alienImage.classList.add("yourGuessImage");
                         guessName.classList.add("sourceWindowLabel");
 
-                        var questionMarkImage = document.createElement('img');
+                        var questionMarkImage = document.createElement('div');
                         if(personalRoundResultsIsReconnect) {
-                            questionMarkImage.src= App.prototype.getPlayerGif(
+                            setBackgroundImage(questionMarkImage, App.prototype.getPlayerGif(
                                 parseInt(payload.data[3*fourthArray + i])
-                            );                                
+                            )); 
                         } else {
-                            questionMarkImage.src="./icon_questionMark.png";
+                            setBackgroundImage(questionMarkImage, "./icon_questionMark.png");
                         }
                         questionMarkImage.className="roundResultsImage";
+                        questionMarkImage.classList.add("franklinImage");
                         var anonName = document.createElement('div');
                         anonName.innerHTML=personalRoundResults[i][0];
                         anonName.classList.add("sourceWindowLabel");
@@ -957,12 +970,18 @@ path, .jtk-endpoint {
                         yourGuessSide.appendChild(guessName);
                         */
                         var alienSideDiv = document.createElement("div");
-                        alienSideDiv.appendChild(questionMarkImage);
+                        var centeringDiv = document.createElement("div");                        
+                        centeringDiv.classList.add("fullWidthCenteredImage");
+                        centeringDiv.appendChild(questionMarkImage);
+                        alienSideDiv.appendChild(centeringDiv);
                         alienSideDiv.appendChild(anonName);
                         alienSideDiv.style.width = "33%";
 
                         var yourGuessDiv = document.createElement("div");
-                        yourGuessDiv.appendChild(alienImage);
+                        var centeringDiv2 = document.createElement("div");                        
+                        centeringDiv2.classList.add("fullWidthCenteredImage");
+                        centeringDiv2.appendChild(alienImage);
+                        yourGuessDiv.appendChild(centeringDiv2);
                         yourGuessDiv.appendChild(guessName);
                         yourGuessDiv.style.width = "33%";
 
@@ -972,13 +991,14 @@ path, .jtk-endpoint {
                         if(personalRoundResultsIsReconnect) {
                             //var rightOrWrong = document.getElementById("roundResultsRightOrWrong");
                             var rightOrWrong = document.createElement("div");
-                            var rightOrWrongImg = document.createElement('img');
+                            var rightOrWrongImg = document.createElement('div');
                             if(personalRoundResults[i][2]) {
-                                rightOrWrongImg.src="./icon_circledCheck.png";
+                                setBackgroundImage(rightOrWrongImg, "./icon_circledCheck.png");
                             } else {
-                                rightOrWrongImg.src="./icon_circledCross.png";                    
+                                setBackgroundImage(rightOrWrongImg, "./icon_circledCross.png");                    
                             }
                             rightOrWrongImg.className="roundResultsImage";
+                            rightOrWrongImg.classList.add("franklinImage");
                             rightOrWrong.appendChild(rightOrWrongImg);
                             //rightOrWrong.style.height="inherit";
                             currentResultContainer.appendChild(rightOrWrong);
@@ -1005,17 +1025,21 @@ path, .jtk-endpoint {
                         */
                         //currentAlien.src = "./alien_purple_idle_transparent.gif";
                         var currentRow = currentUnrevealedNode.childNodes;
-                        currentRow[0].firstChild.src = App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[currTargetName]);
-                        currentRow[0].firstChild.classList.add("votingAlienImage");
-                        var rightOrWrongImg = document.createElement('img');
+                        setBackgroundImage(currentRow[0].firstChild.firstChild, App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[currTargetName]))
+                        currentRow[0].firstChild.firstChild.classList.add("votingAlienImage");
+                        var rightOrWrongImg = document.createElement('div');
 
                         if(personalRoundResults[revealedCount][2]) {
-                            rightOrWrongImg.src="./icon_circledCheck.png";
+                            setBackgroundImage(rightOrWrongImg, "./icon_circledCheck.png");
                         } else {
-                            rightOrWrongImg.src="./icon_circledCross.png";                    
+                            setBackgroundImage(rightOrWrongImg, "./icon_circledCross.png");                    
                         }
-                        rightOrWrongImg.className="roundResultsImage";                     
-                        currentRow[1].appendChild(rightOrWrongImg);
+                        rightOrWrongImg.className="roundResultsImage";     
+                        rightOrWrongImg.classList.add("franklinImage");
+                        var centeringDiv = document.createElement("div");                        
+                        centeringDiv.classList.add("fullWidthCenteredImage");
+                        centeringDiv.appendChild(rightOrWrongImg);
+                        currentRow[1].appendChild(centeringDiv);
 
                         revealedCount++;
                         currentUnrevealedNode = currentUnrevealedNode.nextSibling;
@@ -1553,7 +1577,7 @@ path, .jtk-endpoint {
             
             //populate the alienButtons
             for(var i = 0; i < 6; i++) {
-                document.getElementById("alienButton"+i).style.backgroundImage = App.prototype.getPlayerGif(i);
+                setBackgroundImage(document.getElementById("alienButton"+i), App.prototype.getPlayerGif(i));
             }
 		}
     }
@@ -1730,6 +1754,9 @@ path, .jtk-endpoint {
         bottom: 5px;
         background-color: #CBDAFF;
         width: 95%;
+        margin: auto;
+        left: 0;
+        right: 0;
       }
 
       .franklinInstructionText {
@@ -1771,7 +1798,7 @@ path, .jtk-endpoint {
       }
 
       .tutorialView {
-        z-index:2;
+        z-index:101;
         position:absolute;
         background-color:#CBDAFF; 
         padding:5px;
@@ -1782,6 +1809,9 @@ path, .jtk-endpoint {
         white-space:pre-line;
         overflow-y: scroll;
         top:2vh;
+        margin: auto;
+        left: 0;
+        right: 0;
       }
 
       .tutorialPage{
@@ -1793,7 +1823,7 @@ path, .jtk-endpoint {
       }
 
       .tutorialPageOneRow {
-        height:20vh;
+        height:15vh;
         padding: 10px 0;
         display: flex; 
         align-items: center; 
@@ -1938,13 +1968,13 @@ path, .jtk-endpoint {
   display:flex; justify-content:center;align-items:center;margin:0;" onload="init()">
     <div id="globalWrapper" class="noScrollbar" style="width: 100%; transform-origin: top;align-self: flex-start; overflow-y: scroll;-webkit-overflow-scrolling: touch;">
         <div id="optionsButton" class="optionsButton">
-            <img src="./icon_write.png" onmousedown="window.app.viewSubmitWouldYouRather()" style="height:30px; padding-top:10px;  padding-left: 10px;" />
-            <img src="./icon_gear.png" onmousedown="window.app.viewOptions()" style="height:30px; padding-top:10px;  padding-right: 10px;" />
+            <div class="franklinImage" onmousedown="window.app.viewSubmitWouldYouRather()" style="background-image: url('./icon_write.png');height:30px; width: 30px; margin-top:10px;  margin-left: 10px;" ></div>
+            <div class="franklinImage" onmousedown="window.app.viewOptions()" style="background-image: url('./icon_gear.png'); height:30px; width: 30px; margin-top:10px;  margin-right: 10px;" /></div>
         </div>
         <!-- EVERY VIEW MUST HAVE A CORRESPONDING ENUM IN PHONEVIEWGAMESTATE IN ORDER TO ENABLE RECONNECT-->
         <div class="view" id="loadingScreenView" style="height:unset;padding-top:30%; align-self:flex-start;display:block;">
-            <div>
-                <img style="height:15vh;" src="./alien_purple_idle_transparent.gif" />
+            <div style="width:100%; display: flex; justify-content: center;">
+                <div class="franklinImage" style="height:15vh; width: 15vh; background-image: url('./alien_purple_idle_transparent.gif')" ></div>
             </div>
             <br>
             <div>
@@ -1991,7 +2021,7 @@ path, .jtk-endpoint {
 
         </div> 
         <div class="view" id="startGameScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
-            <img style="height:9vh; opacity:100%;" class="myAlienGif alienButton-selected" src="./alien_purple_idle_transparent.gif" />
+            <div style="height:9vh; width: 9vh; opacity:100%; background-image: url('./alien_purple_idle_transparent.gif');" class="myAlienGif alienButton-selected franklinImage"></div>
         
             <div class="franklinBanner" style="height:9vh;  margin-bottom: 15px; position: inherit;">
                 <div style = "font-size: 26px;" class="franklinBannerInner" id="startGameScreenViewUsername"> Welcome, [Username]</div>
@@ -2020,20 +2050,20 @@ path, .jtk-endpoint {
             <br>
             <br>
             <div id="startGameScreenWelcomeMessageWouldYouRatherNonVip" style="display:none;    color: #3a3a3a;">
-                While you wait, write Would you Rathers via the <img src="./icon_write.png" style="height:20px;"/> icon in the top left. Don't worry, you can write later too!
+                While you wait, write Would you Rathers via the <div class="franklinImage" style="display: inline-block;height:20px;width:20px;background-image:url('./icon_write.png');"></div> icon in the top left. Don't worry, you can write later too!
             </div>
             <div id="startGameScreenWelcomeMessageWouldYouRatherVip" style="display:none;    color: #3a3a3a;">
-                While waiting for players to join, write Would you Rathers via the <img src="./icon_write.png" style="height:20px;" /> icon in the top left. Don't worry, you can write later too!
+                While waiting for players to join, write Would you Rathers via the <div class="franklinImage" style="display: inline-block;height:20px; width: 20px; background-image:url('./icon_write.png');" ></div> icon in the top left. Don't worry, you can write later too!
             </div>
             <br>
         </div>
         <div class="view" id="waitingView" style="align-self:flex-start;padding-top:40%;display:none;">
-            <div>
-                <img style="height:15vh;" src="./icon_lookAtTv.png" />
+            <div style="width: 100%; display: flex; justify-content: center;">
+                <div class="franklinImage"  style="height:15vh;width:15vh; background-image:url('./icon_lookAtTv.png');" ></div>
             </div>
             <br>
             Look at the main screen for instructions. <br> <br>
-            Or tap here <img src="./icon_write.png" onmousedown="window.app.viewSubmitWouldYouRather()" style="height:30px;" />
+            Or tap here <div class="franklinImage" onmousedown="window.app.viewSubmitWouldYouRather()" style="display:inline-block;height:30px; width:30px; background-image:url('./icon_write.png');" ></div>
  to write some new Would you Rathers. 
             <br>
             <br>
@@ -2063,12 +2093,16 @@ path, .jtk-endpoint {
         <div class="view" id="wouldYouRatherView" style="display:none;align-self:flex-start;padding-top:52px;">
             <div class="franklinBanner">
                 <div class="franklinBannerInner" style="width:58%;">Look at the tv and pick a side for the "Would you rather"</div>
-                <img style="height:110%; padding-left: 20px;" src="./icon_lookAtTv.png" />
+                <div class="franklinImage" style="height:10vh; width: 10vh; padding-left: 20px;background-image:url('./icon_lookAtTv.png');"></div>
             </div>
             <br>
             <br>
             <!-- dynamically change this based on playernumber which we have in javascript -->
-            <img style="height:20vh;" id="wouldYouRatherAlienGif" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
+            <div style="width: 100%; display: flex; justify-content: center;">
+                <div id="wouldYouRatherAlienGifWrapper">
+                    <div style="height:20vh; width: 20vh; background-image:url('./alien_purple_idle_transparent.gif');" id="wouldYouRatherAlienGif" class="myAlienGif franklinImage"></div>
+                </div>
+            </div>
             <br>
             <br>
             <div class="pseudo_button" onmousedown="window.app.sendWouldYouRatherAnswer(0)">Left</div>
@@ -2120,11 +2154,11 @@ path, .jtk-endpoint {
             <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black;">
                 <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField1', '')">
                     Clear
-                    <img style="height:20px;" src="./icon_cross.png"/>
+                    <div class="franklinImage" style="height:20px;width:20px;background-image:url('./icon_cross.png');"></div>
                 </div>
                 <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField1')">
                     New
-                    <img style="height:20px;" src="./icon_refresh.png"/>
+                    <div class="franklinImage" style="height:20px;width:20px;background-image:url('./icon_refresh.png');"></div>
                 </div>
             </div>
             <div style="width:100%; text-align:left;"> QUESTION 2</div>
@@ -2141,11 +2175,11 @@ path, .jtk-endpoint {
             <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
                 <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField2', '')">
                     Clear
-                    <img style="height:20px;" src="./icon_cross.png"/>
+                    <div class="franklinImage" style="height:20px;width: 20px; background-image:url('./icon_cross.png');"></div>
                 </div>
                 <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField2')">
                     New
-                    <img style="height:20px;" src="./icon_refresh.png"/>
+                    <div class="franklinImage" style="height:20px;width:20px;background-image:url('./icon_refresh.png');"></div>
                 </div>
             </div>
             <div style="width:100%; text-align:left;"> QUESTION 3</div>
@@ -2161,19 +2195,19 @@ path, .jtk-endpoint {
             <div style="display:flex; flex-direction: row-reverse; margin: 7px; color:black">
                 <div style="display:flex; align-items:center;flex-direction: row-reverse;" onmousedown="window.app.setKeyboardValue('retrieveQuestionsField3', '')">
                     Clear
-                    <img style="height:20px;" src="./icon_cross.png"/>
+                    <div style="height:20px;width:20px; background-image:url('./icon_cross.png');" class="franklinImage" ></div>
                 </div>
                 <div style="display:flex;align-items:center; flex-direction: row-reverse;" onmousedown="window.app.sendRequestAnotherQuestion('retrieveQuestionsField3')">
                     New
-                    <img style="height:20px;" src="./icon_refresh.png"/>
+                    <div class="franklinImage" style="height:20px;width:20px;background-image:url('./icon_refresh.png');" ></div>
                 </div>
             </div>
             <p>
             <div class="pseudo_button" onmousedown="window.app.sendDecidedQuestions()">Send out the questions!</div>
         </div>
         <div class="view" id="skipIntroView" style="height:unset;padding-top:30%; align-self:flex-start;display:none;">
-            <div>
-                <img style="height:15vh;" src="./icon_lookAtTv.png" />
+            <div class="fullWidthCenteredImage">
+                <div class="franklinImage" style="height:15vh;width:15vh; background-image:url('./icon_lookAtTv.png');"></div>
             </div>
             <br>
             <div>
@@ -2183,8 +2217,8 @@ path, .jtk-endpoint {
             <div class="pseudo_button" onmousedown="window.app.sendSkipInstructions()">Skip Intro</div>
         </div>
         <div class="view" id="skipInstructionsView" style="height:unset;padding-top:50%; align-self:flex-start;display:none;">
-            <div>
-                <img style="height:15vh;" src="./icon_lookAtTv.png" />
+            <div class="fullWidthCenteredImage">
+                <div class="franklinImage" style="height:15vh;width:15vh;background-image:url('./icon_lookAtTv.png');" ></div>
             </div>
             <br>
                 Look at the main screen
@@ -2212,7 +2246,7 @@ path, .jtk-endpoint {
             </div>
             <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
                 <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield1', '')">
-                    <img style="height:20px;" src="./icon_cross.png"/>
+                    <div style="height:20px;width:20px; background-image:url('./icon_cross.png');" class="franklinImage" ></div>
                     Clear
                 </div>
             </div>
@@ -2226,7 +2260,7 @@ path, .jtk-endpoint {
             </div>
             <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
                 <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield2', '')">
-                    <img style="height:20px;" src="./icon_cross.png"/>
+                    <div style="height:20px;width:20px; background-image:url('./icon_cross.png');" class="franklinImage" ></div>
                     Clear
                 </div>
             </div>
@@ -2240,7 +2274,7 @@ path, .jtk-endpoint {
             </div>
             <div style="display:flex; flex-direction: row-reverse;margin: 7px; color:black;">
                 <div style="display:flex;align-items:center;" onmousedown="window.app.setKeyboardValue('textfield3', '')">
-                    <img style="height:20px;" src="./icon_cross.png"/>
+                    <div style="height:20px;width:20px; background-image:url('./icon_cross.png');" class="franklinImage" ></div>
                     Clear
                 </div>
             </div>
@@ -2258,61 +2292,85 @@ path, .jtk-endpoint {
                 style="display:flex;width:100%;height:70vh;flex-direction:column;" id="canvas">
                 <div class="votingRow">
                     <div class="window anonymousNameBox targetWindow0" id="targetWindow0">
-                        <img class="targetWindow0 alienImage "id="sourceImage0" onmousedown="window.app.deleteSingleConnection('targetWindow0')">
+                        <div class="fullWidthCenteredImage">
+                            <div class="targetWindow0 alienImage franklinImage"id="sourceImage0" onmousedown="window.app.deleteSingleConnection('targetWindow0')"></div>
+                        </div>
                         <div class="sourceWindowLabel">target 1</div>
                     </div>
                     <div class="window playerNameBox sourceWindow0" id="sourceWindow0">
-                        <img id="targetImage0" class="alienImage sourceWindow0" onmousedown="window.app.deleteSingleConnection('sourceWindow0')">
+                        <div class="fullWidthCenteredImage">
+                            <div id="targetImage0" class="alienImage sourceWindow0 franklinImage" onmousedown="window.app.deleteSingleConnection('sourceWindow0')"></div>
+                        </div>
                         <div class="targetWindowLabel">source 1</div>
                     </div>
                 </div>
                 <div class="votingRow">
                     <div class="window anonymousNameBox targetWindow1" id="targetWindow1">
-                        <img class="targetWindow1 alienImage"id="sourceImage1" onmousedown="window.app.deleteSingleConnection('targetWindow1')">
+                        <div class="fullWidthCenteredImage">
+                            <div class="targetWindow1 alienImage franklinImage"id="sourceImage1" onmousedown="window.app.deleteSingleConnection('targetWindow1')"></div>
+                        </div>
                         <div class="sourceWindowLabel">target 2</div>
                     </div>
                     <div class="window playerNameBox sourceWindow1" id="sourceWindow1">
-                        <img id="targetImage1" class="alienImage sourceWindow1" onmousedown="window.app.deleteSingleConnection('sourceWindow1')">
+                        <div class="fullWidthCenteredImage">
+                            <div id="targetImage1" class="alienImage sourceWindow1 franklinImage" onmousedown="window.app.deleteSingleConnection('sourceWindow1')"></div>
+                        </div>
                         <div class="targetWindowLabel">source 2</div>
                     </div>
                 </div>
                 <div class="votingRow">
                     <div class="window anonymousNameBox targetWindow2" id="targetWindow2">
-                        <img class="targetWindow2 alienImage"id="sourceImage2" onmousedown="window.app.deleteSingleConnection('targetWindow2')">
+                        <div class="fullWidthCenteredImage">
+                            <div class="targetWindow2 alienImage franklinImage"id="sourceImage2" onmousedown="window.app.deleteSingleConnection('targetWindow2')"></div>
+                        </div>
                         <div class="sourceWindowLabel">target 3</div>
                     </div>
                     <div class="window playerNameBox sourceWindow2" id="sourceWindow2">
-                        <img id="targetImage2" class="alienImage sourceWindow2" onmousedown="window.app.deleteSingleConnection('sourceWindow2')">
+                        <div class="fullWidthCenteredImage">
+                            <div id="targetImage2" class="alienImage sourceWindow2 franklinImage" onmousedown="window.app.deleteSingleConnection('sourceWindow2')"></div>
+                        </div>
                         <div class="targetWindowLabel">source 3</div>
                     </div>
                 </div>
                 <div class="votingRow">
                     <div class="window anonymousNameBox targetWindow3" id="targetWindow3">
-                        <img class="targetWindow3 alienImage" id="sourceImage3" onmousedown="window.app.deleteSingleConnection('targetWindow3')">
+                        <div class="fullWidthCenteredImage">
+                            <div class="targetWindow3 alienImage franklinImage" id="sourceImage3" onmousedown="window.app.deleteSingleConnection('targetWindow3')"></div>
+                        </div>
                         <div class="sourceWindowLabel">target 4</div>
                     </div>
                     <div class="window playerNameBox sourceWindow3" id="sourceWindow3">
-                        <img id="targetImage3" class="alienImage sourceWindow3" onmousedown="window.app.deleteSingleConnection('sourceWindow3')">
+                        <div class="fullWidthCenteredImage">
+                            <div id="targetImage3" class="alienImage sourceWindow3 franklinImage" onmousedown="window.app.deleteSingleConnection('sourceWindow3')"></div>
+                        </div>
                         <div class="targetWindowLabel">source 4</div>
                     </div>
                 </div>
                 <div class="votingRow">
                     <div class="window anonymousNameBox targetWindow4" id="targetWindow4">
-                        <img class="targetWindow4 alienImage" id="sourceImage4" onmousedown="window.app.deleteSingleConnection('targetWindow4')">
+                        <div class="fullWidthCenteredImage">
+                            <div class="targetWindow4 alienImage franklinImage" id="sourceImage4" onmousedown="window.app.deleteSingleConnection('targetWindow4')"></div>
+                        </div>
                         <div class="sourceWindowLabel">target 5</div>
                     </div>
                     <div class="window playerNameBox sourceWindow4" id="sourceWindow4">
-                        <img id="targetImage4" class="alienImage sourceWindow4" onmousedown="window.app.deleteSingleConnection('sourceWindow4')">
+                        <div class="fullWidthCenteredImage">
+                            <div id="targetImage4" class="alienImage sourceWindow4 franklinImage" onmousedown="window.app.deleteSingleConnection('sourceWindow4')"></div>
+                        </div>
                         <div class="targetWindowLabel">source 5</div>
                     </div>
                 </div>
                 <div class="votingRow">
                     <div class="window anonymousNameBox targetWindow5" id="targetWindow5">
-                        <img class="targetWindow5 alienImage" id="sourceImage5" onmousedown="window.app.deleteSingleConnection('targetWindow5')">
+                        <div class="fullWidthCenteredImage">
+                            <div class="targetWindow5 alienImage franklinImage" id="sourceImage5" onmousedown="window.app.deleteSingleConnection('targetWindow5')"></div>
+                        </div>
                         <div class="sourceWindowLabel">target 6</div>
                     </div>
                     <div class="window playerNameBox sourceWindow5" id="sourceWindow5">
-                        <img id="targetImage5" class="alienImage sourceWindow5" onmousedown="window.app.deleteSingleConnection('sourceWindow5')">
+                        <div class="fullWidthCenteredImage">
+                            <div id="targetImage5" class="alienImage sourceWindow5 franklinImage" onmousedown="window.app.deleteSingleConnection('sourceWindow5')"></div>
+                        </div>
                         <div class="targetWindowLabel">source 6</div>
                     </div>
                 </div>
@@ -2344,8 +2402,9 @@ path, .jtk-endpoint {
             <br>
             <div  style="display:flex; justify-content:center;">
                 <div style="color:white" id="roundResultsLookAtTv">
-                    <img style="height:8vh;" src="./icon_lookAtTv.png" />
-                    <br>
+                    <div class="fullWidthCenteredImage" >
+                        <div class="franklinImage" style="height:8vh;width:8vh;background-image:url('./icon_lookAtTv.png');"></div>
+                    </div>
                     <br>
                     Look at the tv to see the results
                 </div>
@@ -2356,8 +2415,11 @@ path, .jtk-endpoint {
         <div class="view" id="endGameView" style="padding-top:52px;align-self:flex-start;display:none;">
 
             <!-- dynamically change this based on playernumber which we have in javascript -->
-            <img style="height:20vh;" class="myAlienGif" src="./alien_purple_idle_transparent.gif" />
-        
+            <div class="fullWidthCenteredImage">
+                <div id="endGameViewAlienGifWrapper">
+                    <div style="height:20vh;width:20vh;background-image:url('./alien_purple_idle_transparent.gif');" class="myAlienGif franklinImage"></div>
+                </div>
+            </div>
             <div id="endGameScreenViewUsername" style="font-size:40px">[Username]</div>
             <br>
             <br>
@@ -2387,19 +2449,19 @@ path, .jtk-endpoint {
                 The game is played in 3 phases </div>
                 <div class="tutorialPageOneRow">
                     <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                        <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
+                        <div style="height:100%;width:100%; background-image:url('./meexarpWriteQuestionsImage.png');" class="franklinImage" ></div> 
                     </div>
                     <div style="text-align: left;width:55%;"> 1. Write Questions </div>
                 </div>
                 <div class="tutorialPageOneRow">
                     <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                        <img style="height:100%" src="./meexarpsAnswerQuestionsImage.png" /> 
+                        <div style="height:100%;width:100%; background-image:url('./meexarpsAnswerQuestionsImage.png');" class="franklinImage"></div> 
                     </div>
                     <div style="text-align: left;width:55%;"> 2. Answer Questions </div>
                 </div>
                 <div class="tutorialPageOneRow">
                     <div style="height:100%;width: 33%;display:flex;justify-content:left;">
-                        <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
+                        <div style="height:100%;width:100%; background-image:url('./meexarpGuessWhoIsWhoImage.png');" class="franklinImage"></div> 
                     </div>
                     <div style="text-align: left;width:55%;"> 3. Match Personalities </div>
                 </div>
@@ -2408,55 +2470,55 @@ path, .jtk-endpoint {
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div class="tutorialPageOneRow">
                     <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                        <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
+                        <div style="height:100%;width:100%; background-image:url('./meexarpWriteQuestionsImage.png');" class="franklinImage" ></div> 
                     </div>
                     <div style="text-align: left;width:55%;"> 1a. Write Questions </div>
                 </div>
                 <div id="pageTwoText">[***Player1] or [You] will write 3 personality questions.</div>
                 <br>
-                <img style="width: 100%;" src="./tutorial_writeQuestions.png" /> 
+                <div style="width: 100%;background-image:url('./tutorial_writeQuestions.png');" class="franklinImage" ></div> 
             </div>
             <div id="page3" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div class="tutorialPageOneRow">
                     <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                        <img style="height:100%" src="./meexarpWriteQuestionsImage.png" /> 
+                        <div style="height:100%;width:100%; background-image:url('./meexarpWriteQuestionsImage.png');" class="franklinImage"> </div>
                     </div>
                     <div style="text-align: left;width:55%;"> 1b. Write Questions </div>
                 </div>
                 Other Players will play Would you Rather.
                 <br>
-                <img style="width: 100%;" src="./tutorial_wouldYouRather.png" /> 
+                <div style="width: 100%;background-image:url('./tutorial_wouldYouRather.png');" class="franklinImage"></div> 
             </div>
             <div id="page4" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div class="tutorialPageOneRow">
-                    <div style="height:100%;width: 33%;display:flex;justify-content:center;">
-                        <img style="height:100%" src="./meexarpsAnswerQuestionsImage.png" /> 
+                    <div style="height:100%; width: 33%;display:flex;justify-content:center;">
+                        <div style="height:100%;width:100%;background-image:url('./meexarpsAnswerQuestionsImage.png');" class="franklinImage" > </div>
                     </div>
                     <div style="text-align: left;width:55%;"> 2. Answer Questions </div>
                 </div>
                 <div id="pageFourText">Everyone will answer [*** Player1]'s questions. The answers will be anonymized for phase 3.</div>
                 <br>
-                <img style="width: 100%;" src="./tutorial_answerQuestions.png" /> 
+                <div style="width: 100%;background-image:url('./tutorial_answerQuestions.png');" class="franklinImage" ></div> 
             </div>
             <div id="page5" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div class="tutorialPageOneRow">
                     <div style="height:100%;width: 33%;display:flex;justify-content:left;">
-                        <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
+                        <div style="height:100%;width:100%; background-image:url('./meexarpGuessWhoIsWhoImage.png');" class="franklinImage" ></div> 
                     </div>
                     <div style="text-align: left;width:55%;"> 3a. Match Personalities </div>
                 </div>
                 Lastly, everyone will match the anonymized personalities to their respective Player.
                 <br>
-                <img style="width: 100%;" src="./tutorial_voting.png" /> 
+                <div style="width: 100%;background-image:url('./tutorial_voting.png');" class="franklinImage" ></div> 
             </div>
             <div id="page6" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div class="tutorialPageOneRow">
                     <div style="height:100%;width: 33%;display:flex;justify-content:left;">
-                        <img style="height:100%" src="./meexarpGuessWhoIsWhoImage.png" /> 
+                        <div style="height:100%;width:100%; background-image:url('./meexarpGuessWhoIsWhoImage.png');" class="franklinImage" ></div> 
                     </div>
                     <div style="text-align: left;width:55%;"> 3b. Match Personalities </div>
                 </div>
@@ -2470,7 +2532,7 @@ path, .jtk-endpoint {
         </div>
         
         <div id="submitWouldYouRatherTutorialView" class="tutorialView noScrollbar" style="display:none;white-space:unset;">
-            <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideSubmitWouldYouRather()" style="z-index:2; height:30px; padding-top:10px;" />
+            <div class="topleft franklinImage" onmousedown="window.app.hideSubmitWouldYouRather()" style="z-index:102; height:30px;width:30px; margin-top:10px;background-image:url('./icon_backarrow.png');" ></div>
             <div style="top: 13px;width:100%;font-size:30px;padding-top:52px;">Submit Would You Rather</div>
             <br>
             <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
@@ -2484,7 +2546,7 @@ path, .jtk-endpoint {
             <div style="display:flex; flex-direction: row-reverse;">
                 <div style="display:flex;align-items: center; flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmitTutorialView', '')">
                     Clear
-                    <img style="height:20px;" src="./icon_cross.png"/>
+                    <div style="height:20px;width:20px; background-image:url('./icon_cross.png');" class="franklinImage" ></div>
                 </div>
             </div>
             <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
@@ -2498,7 +2560,7 @@ path, .jtk-endpoint {
             <div style="display:flex; flex-direction: row-reverse;">
                 <div style="display:flex;align-items: center; flex-direction: row-reverse; width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherLeftSubmitTutorialView', '')">
                     Clear
-                    <img style="height:20px;" src="./icon_cross.png"/>
+                    <div style="height:20px;width:20px; background-image:url('./icon_cross.png');" class="franklinImage" ></div>
                 </div>
             </div>
             <div style="display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;">
@@ -2512,7 +2574,7 @@ path, .jtk-endpoint {
             <div style="display:flex; flex-direction: row-reverse;">
                 <div style="display:flex; align-items: center;flex-direction: row-reverse;width:min-content;" onmousedown="window.app.setKeyboardValue('wouldYouRatherRightSubmitTutorialView', '')">
                     Clear
-                    <img style="height:20px;" src="./icon_cross.png"/>
+                    <div style="height:20px;width:20px; background-image:url('./icon_cross.png');" class="franklinImage" ></div>
                 </div>
             </div>
             <br>
@@ -2534,7 +2596,7 @@ path, .jtk-endpoint {
                 <div style="top: 13px;width:100%;font-size:30px;">The Voting Phase is coming up next!</div>
                 <br>
                 <br>
-                <img style="height:15vh; width: 15vh;" src="./icon_lookAtTv.png"/>
+                <div style="height:15vh; width: 15vh; background-image:url('./icon_lookAtTv.png');" class="franklinImage"></div>
                 <br>
                 <div id="votingTutorialText">
                     Look at the main screen to get ready for the tutorial.
@@ -2543,25 +2605,25 @@ path, .jtk-endpoint {
             <div id="votingPage2" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div style="height:100%;">
-                    <img style="height:85%" src="./votingTutorial1.gif" /> 
+                    <div style="height:85%;background-image:url('./votingTutorial1.gif');" class="franklinImage" ></div> 
                 </div>
             </div>
             <div id="votingPage3" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div style="height:100%;">
-                    <img style="height:85%" src="./votingTutorial2.gif" /> 
+                    <div style="height:85%;background-image:url('./votingTutorial2.gif');" class="franklinImage"></div> 
                 </div>
             </div>
             <div id="votingPage4" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div style="height:100%;">
-                    <img style="height:85%" src="./votingTutorial3.gif" /> 
+                    <div style="height:85%;background-image:url('./votingTutorial3.gif');" class="franklinImage" ></div> 
                 </div>
             </div>
             <div id="votingPage5" class="tutorialPage noScrollbar">
                 <div style="top: 13px;width:100%;font-size:30px;">Tutorial</div>
                 <div style="height:100%;">
-                    <img style="height:85%" src="./votingTutorial4.gif" /> 
+                    <div style="height:85%;background-image:url('./votingTutorial4.gif');" class="franklinImage" ></div> 
                 </div>
             </div>
             <div style="display:flex;justify-content:space-evenly;">
@@ -2570,11 +2632,10 @@ path, .jtk-endpoint {
             </div>
             <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
         </div>
-        <div class="view tutorialView" id="creditsView" style="display:none;">
-            <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideCredits()" style="z-index:2; height:30px; padding-top:10px;" />
-            <div class="noScrollbar" style="overflow-y:scroll;">
-
-<p dir="ltr" style="line-height:1.38;text-align: center;margin-top:12pt;margin-bottom:8pt;"><span style="font-size:21pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">Meexarps</span></p>
+        <div class="view tutorialView" id="creditsView" style="display:none;white-space:normal;z-index:102;">
+            <div class="topleft franklinImage" onmousedown="window.app.hideCredits()" style="z-index:103; height:30px; width:30px; margin-top:10px;background-image:url('./icon_backarrow.png');" ></div>
+            <div class="noScrollbar" style="overflow-y:scroll;padding-top:40px;">
+<p dir="ltr" style="line-height:1.38;text-align: center;margin-top:12pt;margin-bottom:8pt;"><span style="font-size:43pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">Meexarps</span></p>
 <p dir="ltr" style="line-height:1.38;text-align: center;margin-top:12pt;margin-bottom:8pt;"><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">A game by Franklin Zheng, Regina Yan, and Vi Nguyen</span></p>
 <p dir="ltr" style="line-height:1.38;text-align: center;margin-top:12pt;margin-bottom:8pt;"><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:700;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">Gameplay:</span><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">&nbsp;Franklin Zheng</span></p>
 <p dir="ltr" style="line-height:1.38;text-align: center;margin-top:12pt;margin-bottom:8pt;"><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:700;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">Character Design, UI, UX:</span><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">&nbsp;Regina Yan (</span><a href="http://reginayan.me/" style="text-decoration:none;"><span style="font-size:11pt;font-family:Arial;color:#1155cc;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:underline;-webkit-text-decoration-skip:none;text-decoration-skip-ink:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">http://reginayan.me/</span></a><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">)&nbsp;</span></p>
@@ -2593,8 +2654,8 @@ path, .jtk-endpoint {
             </div>
             <div class="pseudo_button" onmousedown="window.app.hideCredits()">Close Credits</div>
         </div>   
-        <div class="view optionsView" id="optionsView" style="display:none; z-index:1;padding-top:45px;">
-            <img class="topleft" src="./icon_backarrow.png" onmousedown="window.app.hideOptions()" style="z-index:2; height:30px; padding-top:10px;" />
+        <div class="view optionsView" id="optionsView" style="display:none; z-index:101;padding-top:45px;">
+            <div class="topleft franklinImage" onmousedown="window.app.hideOptions()" style="z-index:102; height:30px; width:30px;margin-top:10px;background-image:url('./icon_backarrow.png');" ></div>
             <div style="position: width:100%;font-size:30px;">Game Options</div>
             <div id="checkboxes" style="text-align:left; margin: 20px 0 0 20px;">
                 <div style="display:none;" id="vipOptionsDiv">
@@ -2639,6 +2700,7 @@ path, .jtk-endpoint {
             <div class="pseudo_button" onmousedown="window.app.viewCredits()">View Credits!</div> <br>
             <br>
         <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
+
     </div>
     <div id="my_keyboard"></div>
     <div style="display:flex; position:absolute; justify-content:center; width: 100%">
