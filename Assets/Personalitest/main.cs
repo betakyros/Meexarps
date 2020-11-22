@@ -2173,7 +2173,7 @@ public class main : MonoBehaviour
             cz.Setup(zoomInTime, totalWaitTime, true, true, false, false, true);
 
             rightAndWrongPanelTitle.text = "<b>" + anonymousPlayerName +
-                " is ???\n\n" + " </b>";
+                " is ???" + " </b>";
 
             rightAndWrongPanelAnimator.SetBool("Open", true);
             yield return new WaitForSeconds(zoomInTime);

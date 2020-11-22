@@ -670,7 +670,6 @@ path, .jtk-endpoint {
                     playerNumber = payload.data[1];
                     selectedAlien = parseInt(payload.data[2]);
                     vipName = payload.data[3];
-                    console.log("sendWelcomeScreenInfoDetails: " + playerName);
                     var myAlienGifs = document.getElementsByClassName("myAlienGif");
                     Array.prototype.forEach.call(myAlienGifs, currentElement => {
                         setBackgroundImage(currentElement, App.prototype.getPlayerGif(selectedAlien));
