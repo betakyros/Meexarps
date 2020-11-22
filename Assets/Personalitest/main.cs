@@ -361,7 +361,7 @@ public class main : MonoBehaviour
                 {
                     int audienceNumber = 10 + gameState.GetNumberOfAudience();
                     //todo hard code the audience animator to 7 or give them no animations
-                    Player p = new Player(name, from, audienceNumber, 0, animators[1], 6);
+                    Player p = new Player(name, from, audienceNumber, 0, animators[1], -1);
                     gameState.audienceMembers.Add(from, p);
 
                     if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
@@ -2899,7 +2899,7 @@ class Round
         for (int i = 0; i < questions.Count; i++)
         {
             string question = questions[i];
-            sb.Append("\t" + question);
+            sb.Append(question);
             if(i <questions.Count - 1)
             sb.Append("<size=10>\n\n</size>");
         }
