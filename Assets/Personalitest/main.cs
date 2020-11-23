@@ -240,7 +240,6 @@ public class main : MonoBehaviour
     {
         string action = data["action"].ToString();
         bool playSound = true;
-        Debug.Log("from: " + from + " action: " + action);
         if(gameState.players.ContainsKey(from))
         {
             string debouncedState = gameState.players[from].LogDebounce(debouncedNoise, blipAudioSource);
@@ -576,7 +575,6 @@ public class main : MonoBehaviour
             List<string> wouldYouRather = new List<string>();
             foreach (JProperty property in ((JObject)(data["info"])).Properties())
             {
-                Debug.Log("property: " + property);
                 wouldYouRather.Add(property.Value.ToString());
             }
             wouldYouRathers.Insert(currentWouldYouRatherIndex, wouldYouRather.ToArray());
@@ -813,7 +811,6 @@ public class main : MonoBehaviour
     private IEnumerator<WaitForSeconds> Wait5secondsThenUnblock(Player p)
     {
         yield return new WaitForSeconds(5);
-        Debug.Log("inputs enabled");
         p.isDebounced = false;
     }
 

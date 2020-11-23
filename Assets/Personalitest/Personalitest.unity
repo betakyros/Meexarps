@@ -17596,7 +17596,7 @@ VideoPlayer:
   m_PlayOnAwake: 0
   m_SkipOnDrop: 1
   m_Looping: 0
-  m_WaitForFirstFrame: 0
+  m_WaitForFirstFrame: 1
   m_FrameReadyEventEnabled: 0
   m_VideoShaders: []
 --- !u!1 &1390126487
@@ -20925,7 +20925,7 @@ VideoPlayer:
   m_PlayOnAwake: 0
   m_SkipOnDrop: 1
   m_Looping: 0
-  m_WaitForFirstFrame: 0
+  m_WaitForFirstFrame: 1
   m_FrameReadyEventEnabled: 0
   m_VideoShaders: []
 --- !u!224 &1668992561
