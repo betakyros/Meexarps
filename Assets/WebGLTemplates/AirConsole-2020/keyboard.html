@@ -465,8 +465,13 @@ path, .jtk-endpoint {
             //keyboard.hide();
         }
         
-        function resizeElement() {
-            keyboard.hide();
+        function resizeElement() {    
+            var keyboardWasUp = keyboard.isKeyboardUp();
+            if(keyboardWasUp) {
+                keyboard.fakeHide();
+                var tempScroll = document.getElementById("globalWrapper").scrollTop;
+            }
+
             var globalWrapper = document.getElementById("globalWrapper");
             if(globalWrapper == null) {
                 return;
@@ -492,6 +497,15 @@ path, .jtk-endpoint {
             } else {
                 globalWrapper.style.height = window.innerHeight;
             }
+            if(keyboardWasUp) {
+                keyboard.fakeShow();
+                var keyboardHeight = (document.getElementById("my_keyboard").clientHeight) * globalWrapper.getAttribute("data-scaleFactor");
+                globalWrapper.style.height = "calc(" + window.innerHeight + "px - " + keyboardHeight + "px)";
+                document.getElementById("globalWrapper").scrollTop = tempScroll;
+            }
+            /*
+            if(keyboard.isKeyboardUp()) {
+            }*/
         }
 
         function displayElement(e) {

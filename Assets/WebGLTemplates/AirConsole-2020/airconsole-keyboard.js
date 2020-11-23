@@ -146,6 +146,18 @@ var oldHeight;
 var newHeight;
 var isKeyboardUp = false;
 
+AirConsoleKeyboard.prototype.isKeyboardUp = function() {
+  return isKeyboardUp;
+};
+
+AirConsoleKeyboard.prototype.fakeHide= function() {
+  this.container.style.display = "none";
+};
+
+AirConsoleKeyboard.prototype.fakeShow= function() {
+  this.container.style.display = "block";
+};
+
 AirConsoleKeyboard.prototype.show = function(input_id, opts) {
   if (input_id == this.active_input_id) {
     this.setCarret();
@@ -571,6 +583,8 @@ AirConsoleKeyboard.prototype.onAction_ = function(action, element) {
   } else if (action == AirConsoleKeyboard.BACKSPACE) {
     if (me.insert_pos >= 1) {
       me.insert_pos--;
+console.log("me.active_input_id : " + me.active_input_id);
+console.log("me.values[me.active_input_id] : " + me.values[me.active_input_id]);
       me.values[me.active_input_id].splice(me.insert_pos, 1);
       me.active_input_div.removeChild(
           me.active_input_div.childNodes[me.insert_pos]);
