@@ -257,7 +257,7 @@ public class main : MonoBehaviour
 
         if ("sendWelcomeInfo".Equals(action))
         {
-            string name = data["info"]["name"].ToString().Trim();
+            string name = ReplaceWhiteSpaceWithNormalSpace(data["info"]["name"].ToString().Trim());
             KeyValuePair<int, Player> currentPlayer = gameState.GetPlayerByName(name);
 
             if (!(currentPlayer.Value == null))
@@ -286,15 +286,16 @@ public class main : MonoBehaviour
                 //remove the nbsp
                 name = Regex.Replace(name, @"\u00a0", " ");
                 int newPlayerNumber = gameState.GetNumberOfPlayers();
-                if(selectedAlien > -1)
+                if (selectedAlien > -1)
                 {
                     gameState.alienSelections[selectedAlien] = new[] { -1, newPlayerNumber };
-                } else
+                }
+                else
                 {
                     //select the next available alien
-                    for(int i = 0; i < 6; i++)
+                    for (int i = 0; i < 6; i++)
                     {
-                        if(!gameState.alienSelections.ContainsKey(i))
+                        if (!gameState.alienSelections.ContainsKey(i))
                         {
                             selectedAlien = i;
                             gameState.alienSelections.Add(i, new[] { -1, newPlayerNumber });
@@ -326,14 +327,16 @@ public class main : MonoBehaviour
                 {
                     AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                     SendMessageToVip(new JsonAction("allPlayersAreNotReady", gameState.whoIsNotReady().ToArray()));
-                    
-                } else
+
+                }
+                else
                 {
                     SendCurrentScreenForReconnect(from, p.playerNumber);
                 }
             }
             // audience
-            else {
+            else
+            {
                 KeyValuePair<int, Player> audiencePlayer = gameState.GetAudienceByName(name);
                 if (!(audiencePlayer.Value == null))
                 {
@@ -380,7 +383,7 @@ public class main : MonoBehaviour
         else if ("checkName".Equals(action))
         {
             playSound = false;
-            string name = data["info"]["name"].ToString().Trim();
+            string name = ReplaceWhiteSpaceWithNormalSpace(data["info"]["name"].ToString().Trim());
             KeyValuePair<int, Player> currentPlayer = gameState.GetPlayerByName(name);
             KeyValuePair<int, Player> audiencePlayer = gameState.GetAudienceByName(name);
             List<string> payload = new List<string>();
@@ -578,7 +581,7 @@ public class main : MonoBehaviour
             List<string> wouldYouRather = new List<string>();
             foreach (JProperty property in ((JObject)(data["info"])).Properties())
             {
-                wouldYouRather.Add(property.Value.ToString());
+                wouldYouRather.Add(ReplaceWhiteSpaceWithNormalSpace(property.Value.ToString()));
             }
             wouldYouRathers.Insert(currentWouldYouRatherIndex, wouldYouRather.ToArray());
         }
@@ -647,7 +650,7 @@ public class main : MonoBehaviour
             List<string> myQuestions = new List<string>();
             foreach (JProperty property in ((JObject)(data["info"])).Properties())
             {
-                myQuestions.Add(property.Value.ToString());
+                myQuestions.Add(ReplaceWhiteSpaceWithNormalSpace(property.Value.ToString()));
             }
             gameState.GetCurrentRound().questions = myQuestions;
             StartCoroutine(PrepareSendQuestions());
@@ -659,7 +662,7 @@ public class main : MonoBehaviour
                 List<string> myAnswers = new List<string>();
                 foreach (JProperty property in ((JObject)(data["info"])).Properties())
                 {
-                    myAnswers.Add(property.Value.ToString());
+                    myAnswers.Add(ReplaceWhiteSpaceWithNormalSpace(property.Value.ToString()));
                 }
                 gameState.GetCurrentRound().answers.Add(
                     new Answers(myAnswers.ToArray(), gameState.players[from].playerNumber, GenerateAnonymousPlayerName()));
@@ -774,6 +777,11 @@ public class main : MonoBehaviour
                 blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
             } 
         }
+    }
+
+    private static string ReplaceWhiteSpaceWithNormalSpace(string name)
+    {
+        return Regex.Replace(name, @"\s+", " ");
     }
 
     void OnAdShow()
