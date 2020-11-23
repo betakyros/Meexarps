@@ -64,7 +64,6 @@ AirConsoleKeyboard.prototype.bind = function(input_id, opts) {
   var me = this;
   var input_div = document.getElementById(input_id);
   bindingsFunctions[input_id] = function (event) {
-    console.log("addbinding");
     me.show(input_id, opts);
     event.stopPropagation();
     event.preventDefault();
@@ -201,7 +200,6 @@ AirConsoleKeyboard.prototype.softHide = function() {
   this.active_input_id = undefined;
   this.active_input_div = undefined;
   if(isKeyboardUp) {
-      console.log("iskeyboardup softhide");
       var globalWrapper = document.getElementById("globalWrapper");
 
       globalWrapper.style.height = oldHeight;
@@ -583,8 +581,6 @@ AirConsoleKeyboard.prototype.onAction_ = function(action, element) {
   } else if (action == AirConsoleKeyboard.BACKSPACE) {
     if (me.insert_pos >= 1) {
       me.insert_pos--;
-console.log("me.active_input_id : " + me.active_input_id);
-console.log("me.values[me.active_input_id] : " + me.values[me.active_input_id]);
       me.values[me.active_input_id].splice(me.insert_pos, 1);
       me.active_input_div.removeChild(
           me.active_input_div.childNodes[me.insert_pos]);

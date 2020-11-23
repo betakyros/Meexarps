@@ -668,6 +668,10 @@ path, .jtk-endpoint {
                         document.getElementById("welcomeScreenBeforeGameStart").style.display = "none";
                         document.getElementById("welcomeScreenAfterGameStart").style.display = "block";
                     }
+                } else if(myAction === "confirmNameSubmission") {
+                    App.prototype.showFirstTutorial();
+
+                    //TODO update some message if the selection fails
                 } else if(myAction === "checkNameResponse") {
                     document.getElementById("checkNameButton").style.display = "none";
                     document.getElementById("postCheckName").style.display = "block";
@@ -1138,7 +1142,7 @@ path, .jtk-endpoint {
                         }
 				    };
 				    me.air_console.message(AirConsole.SCREEN, message);
-                    App.prototype.showFirstTutorial();
+                    //App.prototype.showFirstTutorial();
                     //displayElement(document.getElementById("startGameScreenView"));
                 } else{
                     //todo display some error message

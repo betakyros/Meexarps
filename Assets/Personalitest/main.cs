@@ -321,6 +321,7 @@ public class main : MonoBehaviour
 
                 gameState.players.Add(from, p);
                 sendWelcomeScreenInfo(from, selectedAlien);
+                AirConsole.instance.Message(from, new JsonAction("confirmNameSubmission", new string[] { " " }));
                 if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
                 {
                     AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
@@ -367,7 +368,9 @@ public class main : MonoBehaviour
                         GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<TextMeshProUGUI>().text = "<color=white>Audience: " + gameState.audienceMembers.Count + "</color>";
                         AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                         sendWelcomeScreenInfo(from, -1);
-                    } else
+                        AirConsole.instance.Message(from, new JsonAction("confirmNameSubmission", new string[] { " " }));
+                    }
+                    else
                     {
                         SendCurrentScreenForReconnect(from, p.playerNumber);
                     }
