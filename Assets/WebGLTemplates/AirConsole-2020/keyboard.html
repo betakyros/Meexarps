@@ -465,6 +465,11 @@ path, .jtk-endpoint {
             //keyboard.hide();
         }
         
+        /* on ios the address bar is only hidden after you scroll */
+        var initialGlobalWrapper = document.getElementById("globalWrapper");
+        globalWrapper.style.height = "calc(" + window.innerHeight + "px - " + "1" + "px)";;
+        globalWrapper.scrollTo(0,1);
+
         function resizeElement() {    
             var keyboardWasUp = keyboard.isKeyboardUp();
             if(keyboardWasUp) {
@@ -497,6 +502,7 @@ path, .jtk-endpoint {
             } else {
                 globalWrapper.style.height = window.innerHeight;
             }
+
             if(keyboardWasUp) {
                 keyboard.fakeShow();
                 var keyboardHeight = (document.getElementById("my_keyboard").clientHeight) * globalWrapper.getAttribute("data-scaleFactor");
@@ -623,6 +629,7 @@ path, .jtk-endpoint {
                   isVip = true;
                   //document.getElementById("optionsButton").style.display = "block";
                   document.getElementById("vipOptionsDiv").style.display = "block";
+                  document.getElementById("vipOptionsDiv2").style.display = "block";
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("startGameButton").style.display = "inline-block";
                 } else if(myAction === "allPlayersAreNotReady") {
@@ -2736,24 +2743,11 @@ path, .jtk-endpoint {
                         <div class="optionsTextLabel">Nsfw Questions Enabled</div>
                     </div>
                     -->
-                    <br>
-                    <div style="display:flex">
-                        <label class="switch" for="anonymousNameCheckbox" >
-                            <input id="anonymousNameCheckbox" type="checkbox" onchange="window.app.saveOptions()">
-                            <span class="slider round"></span>
-                        </label>
-                        <div class="optionsTextLabel">Anonymous Names Enabled</div>
-                    </div>
-                    <br>
                     <div style="text-align: center; padding-right: 20px;">Volume</div>
                     <div class="volumecontainer">
                         <input type="range" min="0" max="100" value="50" class="volume" id="volumeSlider">
                     </div>
                     <div id="volumeDisplay" style="text-align: center; padding-right: 20px;">Volume</div>
-                    <br>
-                    <div style="display:flex;justify-content:center;margin-right: 20px;">
-                        <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Skip to End</div> <br>
-                    </div>
                     <br>
                 </div>
                 <div style="display:flex">
@@ -2763,6 +2757,19 @@ path, .jtk-endpoint {
                     </label>
                     <div class="optionsTextLabel">Use system keyboard (Not supported on all phones)</div>
                 </div><br>
+                <div style="display:none;" id="vipOptionsDiv2">
+                    <div style="display:flex">
+                        <label class="switch" for="anonymousNameCheckbox" >
+                            <input id="anonymousNameCheckbox" type="checkbox" onchange="window.app.saveOptions()">
+                            <span class="slider round"></span>
+                        </label>
+                        <div class="optionsTextLabel">Anonymous Names Enabled</div>
+                    </div>
+                    <br>
+                    <div style="display:flex;justify-content:center;margin-right: 20px;">
+                        <div class="pseudo_button" onmousedown="window.app.forceAdvance()">Skip to Results Screen</div> <br>
+                    </div>
+                </div>
             </div>
             <br>
             <div class="pseudo_button" onmousedown="window.app.viewCredits()">View Credits!</div> <br>
