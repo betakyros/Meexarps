@@ -16,6 +16,8 @@ TagManager:
   - votingTextTitle
   - votingTextQnA
   - AnswerQuestionsGridBackground
+  - SplashScreenImage
+  - WinterSplashScreenImage
   layers:
   - Default
   - TransparentFX
