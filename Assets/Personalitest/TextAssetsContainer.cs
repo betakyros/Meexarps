@@ -6,6 +6,8 @@ public static class TextAssetsContainer
     public static string rawWouldYouRatherText;
     public static string rawAnonymousNamesText;
     public static string rawFriendshipTipsText;
+    public static string rawHolidayWouldYouRathersText;
+    public static string rawHolidayQuestionsText;
     public static bool isWebGl = false;
 
     public static void setRawQuestionsText(string s)
@@ -27,6 +29,14 @@ public static class TextAssetsContainer
     public static void setRawFriendshipTipsText(string s)
     {
         rawFriendshipTipsText = s;
+    }
+    public static void setRawHolidayWouldYouRathersText(string s)
+    {
+        rawHolidayWouldYouRathersText = s;
+    }
+    public static void setRawHolidayQuestionsText(string s)
+    {
+        rawHolidayQuestionsText = s;
     }
 
     public static void setIsWebGl(bool b)

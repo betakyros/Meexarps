@@ -13,6 +13,7 @@ public class main : MonoBehaviour
     public Text gameStateText;
     public TextMeshProUGUI welcomeInstructionsText;
     private static List<QuestionCategory> questionCategories;
+    private static QuestionCategory seasonalQuestionCategory;
     private static string[] anonymousNames;
     //(question, left answer, right answer)
     private static List<string[]> wouldYouRathers;
@@ -69,9 +70,18 @@ public class main : MonoBehaviour
     private Dictionary<string, bool> options = new Dictionary<string, bool>();
     private float optionsVolume;
 
+    private bool isWinterHolidaySeason = System.DateTime.Today.Month == 1 || System.DateTime.Today.Month == 12;
+
     // Start is called before the first frame update
     void Start()
     {
+        if(isWinterHolidaySeason)
+        {
+            GameObject.FindWithTag("SplashScreenImage").gameObject.SetActive(false);
+        } else
+        {
+            GameObject.FindWithTag("WinterSplashScreenImage").gameObject.SetActive(false);
+        }
         StartAllLevels(welcomeScreenAudioSources);
         ExceptionHandling.SetupExceptionHandling(errorPanel);
         InitializeOptions();
@@ -81,6 +91,8 @@ public class main : MonoBehaviour
         string rawAnonymousNames;
         string rawWouldYouRathers;
         string rawFriendshipTips;
+        string rawHolidayQuestions = null;
+        string rawHolidayWouldYouRathers = null;
         //read the resources
         //if playing on AirConsole
         if (TextAssetsContainer.isWebGl)
@@ -90,6 +102,11 @@ public class main : MonoBehaviour
             rawAnonymousNames = TextAssetsContainer.rawAnonymousNamesText;
             rawWouldYouRathers = TextAssetsContainer.rawWouldYouRatherText;
             rawFriendshipTips = TextAssetsContainer.rawFriendshipTipsText;
+            if(isWinterHolidaySeason)
+            {
+                rawHolidayQuestions = TextAssetsContainer.rawHolidayQuestionsText;
+                rawHolidayWouldYouRathers = TextAssetsContainer.rawHolidayWouldYouRathersText;
+            }
         }
         //if playing locally
         else
@@ -100,6 +117,11 @@ public class main : MonoBehaviour
             rawAnonymousNames = Resources.GetAnonymousNames();
             rawWouldYouRathers = Resources.GetWouldYouRathers();
             rawFriendshipTips = Resources.GetFriendshipTips();
+            if(isWinterHolidaySeason)
+            {
+                rawHolidayWouldYouRathers = Resources.GetHolidayWouldYouRathers();
+                rawHolidayQuestions = Resources.GetHolidayQuestions();
+            }
         }
         questionCategories = new List<QuestionCategory>();
         ParseQuestions(rawQuestions, rawNsfwQuestions, newLinesRegex);
@@ -117,6 +139,23 @@ public class main : MonoBehaviour
         friendshipTips.Shuffle();
         tempWouldYouRathers.Shuffle();
         wouldYouRathers = tempWouldYouRathers;
+
+        //seasonal content
+        if (isWinterHolidaySeason)
+        {
+            //questions
+            ParseSeasonalQuestions(rawHolidayQuestions, newLinesRegex);
+
+            //wouldyourathers
+            string[] seasonalWouldYouRathersLines = newLinesRegex.Split(rawHolidayWouldYouRathers);
+            List<string[]> tempSeasonalWouldYouRathers = new List<string[]>();
+            foreach (string s in seasonalWouldYouRathersLines)
+            {
+                tempSeasonalWouldYouRathers.Add(s.Split('|'));
+            }
+            tempSeasonalWouldYouRathers.Shuffle();
+            wouldYouRathers.InsertRange(0, tempSeasonalWouldYouRathers);
+        }
 
         blips.Shuffle();
 
@@ -183,6 +222,11 @@ public class main : MonoBehaviour
         addLinesToCategory(questionsLines, false);
         addLinesToCategory(nsfwQuestionsLines, true);
     }
+    void ParseSeasonalQuestions(string rawQuestions, Regex newLinesRegex)
+    {
+        string[] questionsLines = newLinesRegex.Split(rawQuestions);
+        addLinesToSeasonalCategory(questionsLines, false);
+    }
 
     private static void addLinesToCategory(string[] lines, bool isNsfw)
     {
@@ -206,6 +250,16 @@ public class main : MonoBehaviour
             }
 
         }
+    }
+
+    private static void addLinesToSeasonalCategory(string[] lines, bool isNsfw)
+    {
+        List<string> questions = new List<string>();
+        for (int i = 1; i < lines.Length; i++)
+        {
+            questions.Add(lines[i]);
+        }
+        seasonalQuestionCategory = new QuestionCategory(questions.ToArray(), lines[0], isNsfw);
     }
 
     void OnReady(string code)
@@ -1400,8 +1454,9 @@ public class main : MonoBehaviour
 
     public void SendSelectCategory(int deviceId)
     {
+        //-1 is write my own, -2 is seasonal
         KeyValuePair<string, int>[] categoriesToSend = new KeyValuePair<string, int>[] {
-            GetNextCategoryName(),
+            isWinterHolidaySeason ? GetSeasonalCategoryName() : GetNextCategoryName(),
             GetNextCategoryName(),
             GetNextCategoryName(),
             GetNextCategoryName(),
@@ -1449,6 +1504,11 @@ public class main : MonoBehaviour
         }
         return new KeyValuePair<string, int>(questionCategory.categoryName, tempCurrentCategoryIndex);
     }
+    //seasonal questions will always be the first cateogry
+    private KeyValuePair<string, int> GetSeasonalCategoryName()
+    {
+        return new KeyValuePair<string, int>(seasonalQuestionCategory.categoryName, -2);
+    }
 
     public void SendRetrieveQuestions(int deviceId, bool localWriteMyOwnQuestions)
     {
@@ -1469,7 +1529,7 @@ public class main : MonoBehaviour
                 GetNextQuestion(),
                 GetNextQuestion(),
                 GetNextQuestion(),
-                questionCategories[selectedCategory % questionCategories.Count].categoryName
+                selectedCategory == -2 ? seasonalQuestionCategory.categoryName : questionCategories[selectedCategory % questionCategories.Count].categoryName
             };
             writeMyOwnQuestions = false;
         }
@@ -2646,7 +2706,7 @@ public class main : MonoBehaviour
 
     private string GetNextQuestion()
     {
-        QuestionCategory qc = questionCategories[selectedCategory % questionCategories.Count];
+        QuestionCategory qc = selectedCategory == -2 ? seasonalQuestionCategory : questionCategories[selectedCategory % questionCategories.Count];
         return qc.questions[currentQuestionIndex++ % qc.questions.Length];
     }
     private string GetRandomQuestion()
@@ -3256,6 +3316,14 @@ static class Resources
     public static string GetWouldYouRathers()
     {
         return System.IO.File.ReadAllText(prependTextResourceFilepath("wouldYouRathers.txt"));
+    }
+    public static string GetHolidayWouldYouRathers()
+    {
+        return System.IO.File.ReadAllText(prependTextResourceFilepath("winterWouldYouRathers.txt"));
+    }
+    public static string GetHolidayQuestions()
+    {
+        return System.IO.File.ReadAllText(prependTextResourceFilepath("winterQuestions.txt"));
     }
 
     public static string GetFriendshipTips()

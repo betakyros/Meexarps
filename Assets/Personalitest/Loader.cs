@@ -13,6 +13,11 @@ public class Loader : MonoBehaviour
     private bool isWouldYouRathersLoaded = false;
     private bool isAnonymousNamesLoaded = false;
     private bool isFriendshipTipsLoaded = false;
+
+    private bool isWinterHolidaySeason = DateTime.Today.Month == 1 || DateTime.Today.Month == 12;
+    private bool isHolidayQuestionsLoaded = false;
+    private bool isHolidayWouldYouRathersLoaded = false;
+
     void Start()
     {
         // if webGL, this will be something like "http://..."
@@ -43,8 +48,15 @@ public class Loader : MonoBehaviour
 
     void Update()
     {
+        bool seasonalContentReady = true;
+        //Check seasonal questions
+        if (isWinterHolidaySeason)
+        {
+            seasonalContentReady = isHolidayQuestionsLoaded && isHolidayWouldYouRathersLoaded;
+        }
+
         // check to see if asset has been successfully read yet
-        if (isQuestionsLoaded && isNsfwQuestionsLoaded && isWouldYouRathersLoaded && isAnonymousNamesLoaded & isFriendshipTipsLoaded)
+        if (seasonalContentReady && isQuestionsLoaded && isNsfwQuestionsLoaded && isWouldYouRathersLoaded && isAnonymousNamesLoaded & isFriendshipTipsLoaded)
         {
             // once asset is successfully read, 
             // load the next screen (e.g. main menu or gameplay)
@@ -63,6 +75,67 @@ public class Loader : MonoBehaviour
     private IEnumerator SendRequest()
     {
         string assetPath = Application.streamingAssetsPath;
+
+        if(isWinterHolidaySeason)
+        {
+            using (UnityWebRequest request = UnityWebRequest.Get(Path.Combine(assetPath, "winterWouldYouRathers.txt")))
+            {
+                yield return request.SendWebRequest();
+
+                if (request.isNetworkError || request.isHttpError)
+                {
+                    // handle failure
+                }
+                else
+                {
+                    try
+                    {
+                        // entire file is returned via downloadHandler
+                        string fileContents = request.downloadHandler.text;
+                        Debug.Log("Loader holidayWouldYouRather: " + fileContents);
+                        // or
+                        //byte[] fileContents = request.downloadHandler.data;
+
+                        // do whatever you need to do with the file contents
+                        TextAssetsContainer.setRawHolidayWouldYouRathersText(fileContents);
+                        isHolidayWouldYouRathersLoaded = true;
+                    }
+                    catch (Exception x)
+                    {
+                        Debug.Log("failed to load holiday would you rather");
+                    }
+                }
+            }
+
+            using (UnityWebRequest request = UnityWebRequest.Get(Path.Combine(assetPath, "winterQuestions.txt")))
+            {
+                yield return request.SendWebRequest();
+
+                if (request.isNetworkError || request.isHttpError)
+                {
+                    // handle failure
+                }
+                else
+                {
+                    try
+                    {
+                        // entire file is returned via downloadHandler
+                        string fileContents = request.downloadHandler.text;
+                        Debug.Log("Loader winterQuestions: " + fileContents);
+                        // or
+                        //byte[] fileContents = request.downloadHandler.data;
+
+                        // do whatever you need to do with the file contents
+                        TextAssetsContainer.setRawHolidayQuestionsText(fileContents);
+                        isHolidayQuestionsLoaded = true;
+                    }
+                    catch (Exception x)
+                    {
+                        Debug.Log("failed to load holiday questions");
+                    }
+                }
+            }
+        }
 
         using (UnityWebRequest request = UnityWebRequest.Get(Path.Combine(assetPath, "questions.txt")))
         {
