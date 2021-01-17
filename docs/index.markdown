@@ -1,6 +1,6 @@
 ---
 layout: meexarpPage
-title:  "Meexarps Home"
+title:  "Meexarps"
 ---
 
-{% include home.html %}
+{% include landing.html %}

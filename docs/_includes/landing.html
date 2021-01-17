@@ -1,0 +1,67 @@
+<div class="withPageMarginWrapper">
+  <div class="withPageMargin">
+    <div style="display:flex; justify-content:center;width:100%;flex-direction:column;align-items:center;">
+      <h1 style="padding-top: 10px; font-size:4em; margin-bottom:0px;">Play now</h1>
+      <h2 style="margin-top:0px; text-align:center;">Free for 2 players. Purchase an <a href="https://www.airconsole.com/hero">Airconsole Hero</a> subscription to unlock more players.</h2>
+      <div style="width:80%">
+        <div class="video_wrapper">
+          <iframe allowfullscreen="true"
+            allow="autoplay; microphone; camera"
+            src="https://www.airconsole.com/?embed#!play=com.betakyros.knowyourfriends"
+            scrolling="no"
+            frameborder="0"
+            width="100%"
+            height="100%">
+          </iframe>
+        </div>
+      </div>
+      <h1 style="padding-top: 10px; font-size:4em;">Watch the Trailer</h1>
+      <div style="width:80%">
+        <div class="video_wrapper">
+          <iframe src="https://www.youtube.com/embed/jrgst5bWMrU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+      <h1 style="padding-top: 30px; font-size:4em;">Detailed Instructions</h1>
+      <h2 style="margin-top:0;">Click to Expand</h2>
+      <button type="button" class="collapsible">1. Get AirConsole hero (One person in your group)</button>
+      <div class="content">
+
+        <ol>
+          <li>Visit <a href="https://www.airconsole.com/hero">Airconsole</a> for full instructions or read below for a short version.</li>
+        	<li>Download the AirConsole App from Apple&rsquo;s AppStore or Google Play.</li>
+        	<li>Launch the app and tap the menu icon on the top right</li>
+        	<li>Tap the Airconsole Hero icon.</li>
+        	<li>The hero subscription costs 5 dollars a month.</li>
+        </ol>
+      </div>
+      <button type="button" class="collapsible">2. Go to AirConsole.com</button>
+      <div class="content">
+        <ol>
+          <li>The host clicks on <a href="https://www.airconsole.com/play/card-games/meexarps">this link</a> to go to AirConsole. Then click start.</li>
+          <li>The host shares their screen.</li>
+          <li>(Each Player) On your phone, navigate to airconsole.com or Download the app.</li>
+          <li>(Each Player) On your phone, enter the room code on the screen</li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+  //collapsable info
+  var coll = document.getElementsByClassName("collapsible");
+  var i;
+
+  for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      var content = this.nextElementSibling;
+      if (content.style.maxHeight){
+        content.style.maxHeight = null;
+      } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+      }
+    });
+  }
+
+</script>

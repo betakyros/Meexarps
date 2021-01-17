@@ -1,6 +1,9 @@
 main:
-  - title: "Home"
+  - title: "Landing"
     url: /
+
+  - title: "Home"
+    url: /home
 
   - title: "Freebies"
     url: /freebies
