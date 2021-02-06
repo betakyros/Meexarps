@@ -281,6 +281,9 @@ public class main : MonoBehaviour
         if (gameState.players.ContainsKey(from))
         {
             SendCurrentScreenForReconnect(from, gameState.players[from].playerNumber);
+        } else
+        {
+            SendInitialRequestToPhone();
         }
     }
 
@@ -583,13 +586,7 @@ public class main : MonoBehaviour
         }
         else if ("requestWelcomeScreenInfo".Equals(action))
         {
-            if(storyPanel.activeSelf)
-            {
-                AirConsole.instance.Broadcast(new JsonAction("sendSkipIntro", new string[] { " " }));
-            } else
-            {
-                sendWelcomeScreenInfo(-1, -1);
-            }
+            SendInitialRequestToPhone();
             playSound = false;
         }
         else if("sendReady".Equals(action))
@@ -830,6 +827,18 @@ public class main : MonoBehaviour
                 //play a sound to confirm the input
                 blipAudioSource.PlayOneShot(blips[gameState.players[from].playerNumber], Random.Range(.5f, 1f));
             } 
+        }
+    }
+
+    private void SendInitialRequestToPhone()
+    {
+        if (storyPanel.activeSelf)
+        {
+            AirConsole.instance.Broadcast(new JsonAction("sendSkipIntro", new string[] { " " }));
+        }
+        else
+        {
+            sendWelcomeScreenInfo(-1, -1);
         }
     }
 

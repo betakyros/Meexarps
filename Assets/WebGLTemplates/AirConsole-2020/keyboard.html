@@ -602,13 +602,6 @@ path, .jtk-endpoint {
             var isAudience = false;
             var useSystemKeyboard = false;
             var isNameAlreadySet = false;
-            me.air_console.onConnect = function(device_id) {
-				var message = {
-					'action': "requestWelcomeScreenInfo",
-					'info': {}
-				};
-				me.air_console.message(AirConsole.SCREEN, message);
-            };
             me.air_console.onMessage = function(from, data) {               
                 if(typeof data == 'string') {
                     payload = JSON.parse(data);
@@ -2029,7 +2022,88 @@ path, .jtk-endpoint {
             background-color: #ffeab0;
             padding: 14px 30px;
           }
-}
+        }
+
+        /* Round Count Select Grid styles*/
+        /*
+    .grid-wrapper{
+      margin: 0 auto;
+      width:80%;
+      padding:30px;
+    }
+
+    .card-content{
+      border: 1px solid #CCC;
+      border-radius: 3px;
+      padding:25px 25px 10px 25px;
+      * { cursor:pointer; }
+    }
+
+    .card-wrapper{
+      position:relative;
+      width:235px;
+      height: 270px;
+      float:left;
+      margin-right:25px
+    }
+    .c-card{ position: absolute; top:0; left:0; opacity:0; visibility:hidden;
+      ~ .card-content{
+         transition : all 500ms ease-out;
+        .card-state-icon{
+          position:absolute;
+          top:5px;
+          right:5px;
+          z-index:2;
+          width:20px;
+          height:20px;
+          background:url("http://alvarosanchez.com/images/c-state-icons.svg") no-repeat;
+          background-position: 0 0;
+          transition : all 100ms ease-out;
+        }
+    
+        &:before{
+          position:absolute;
+          top:1px;
+          right:1px;
+          content:"";
+          width: 0;
+          height: 0;
+          border-top: 52px solid #CCC;
+          border-left: 52px solid transparent;
+          transition : all 200ms ease-out;
+        }
+        &:after{
+          position:absolute;
+          top:1px;
+          right:1px;
+          content:"";
+          width: 0;
+          height: 0;
+          border-top: 50px solid #FFF;
+          border-left: 50px solid transparent;
+          transition : all 200ms ease-out;
+        }
+        &:hover{
+          border: 1px solid #6dc5dc;
+          .card-state-icon{ background-position: -30px 0; }
+          &:before{ border-top: 52px solid #6dc5dc; }
+        }
+      }
+  
+
+      &:checked ~ .card-content{
+        border: 1px solid #6dc5dc;
+        .card-state-icon{ background-position: -90px 2px; }
+        &:before{ border-top: 52px solid #6dc5dc; } 
+        &:after{ border-top: 52px solid #6dc5dc; }
+      }
+      &:checked:hover ~ .card-content{
+        .card-state-icon{ background-position: -60px 2px; }
+        &:before{ border-top: 52px solid #6dc5dc; } 
+        &:after{ border-top: 52px solid #6dc5dc; }
+      }
+    }
+    */
     </style>
   </head>
   <body id="bodyElement" style="font-family: Autour One; font-size: 14px; background-color:#6CA7FF; text-align: center;
@@ -2167,6 +2241,21 @@ path, .jtk-endpoint {
                 <button id="roundCountButton5" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(5)">5</button>
                 <button id="roundCountButton6" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(6)">6</button>
             </div>
+            <!--
+            <div class="grid-wrapper">
+                <div class="card-wrapper">
+                    <input class="c-card" type="checkbox" id="1" value="1" checked="checked">
+                        <div class="card-content">
+                            <div class="card-state-icon"></div>
+                            <label for="1">
+                                <div id="selectQuestionWriterCardImage1" class="image"></div>
+                                <div id="selectQuestionWriterCardName1">Player Name</div>
+                            </label>
+                        </div>
+                    </input>
+                </div>
+            </div>
+            -->
             <br>
             <br>
             <div class="pseudo_button" onmousedown="window.app.sendSetRoundCount()" style="margin:5px">Start Game</div>
