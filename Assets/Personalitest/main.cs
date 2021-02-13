@@ -624,7 +624,13 @@ public class main : MonoBehaviour
         else if ("sendSetRoundCount".Equals(action))
         {
             gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
-            gameState.numRoundsPerGame = data["info"].ToObject<int>();
+            List<int> tempListOfQuestionWriters = new List<int>();
+            foreach (string questionWriterName in data["info"].ToObject<List<string>>())
+            {
+                int currentPlayerNumber = gameState.GetPlayerByName(questionWriterName).Value.playerNumber;
+                tempListOfQuestionWriters.Add(currentPlayerNumber);
+            }
+            gameState.questionWriters = tempListOfQuestionWriters;
             ExitWelcomeScreen();
         }
         else if ("sendSubmitWouldYouRather".Equals(action))
@@ -871,8 +877,9 @@ public class main : MonoBehaviour
         //    "With " + gameState.GetNumberOfPlayers() + " players it will take about  " + (3 + gameState.GetNumberOfPlayers()) + " minutes per round. Note: With fewer rounds, some players will not get to submit questions.";
         //AirConsole.instance.Broadcast(new JsonAction("selectRoundCountView", new[] { gameState.GetNumberOfPlayers() + "" }));
         SetVolumeForLevel(welcomeScreenAudioSources, 2);
-        List<string> playersNames = gameState.GetPlayerNamesInNumberOrder();
-        SendMessageToVip(new JsonAction("selectRoundCountView", playersNames.ToArray()));
+        List<string> playersNamesAndAlienNumbers = gameState.GetPlayerNamesInNumberOrder();
+        playersNamesAndAlienNumbers.AddRange(gameState.GetAlienNumberInNumberOrder());
+        SendMessageToVip(new JsonAction("selectRoundCountView", playersNamesAndAlienNumbers.ToArray()));
         gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
         /*
         introAudioSource.Stop();
@@ -988,6 +995,7 @@ public class main : MonoBehaviour
     {
         BroadcastSelectedAliens(gameState.alienSelections);
         List<string> playerNames = gameState.GetPlayerNamesInNumberOrder();
+        List<string> playerAlienNumber = gameState.GetAlienNumberInNumberOrder();
         List<string> payload = new List<string>();
         int currNumPlayers = playerNames.Count;
         string hasGameStarted = gameState.tvViewGameState == TvViewGameState.WelcomeScreen ? "NOT_STARTED" : "STARTED";
@@ -996,11 +1004,13 @@ public class main : MonoBehaviour
         {
             payload.Add("" + playerNames.Count);
             payload.AddRange(playerNames);
+            payload.AddRange(playerAlienNumber);
             AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", payload.ToArray()));
         } else
         {
             payload.Add("full");
             payload.AddRange(playerNames);
+            payload.AddRange(playerAlienNumber);
             AirConsole.instance.Broadcast(new JsonAction("sendWelcomeScreenInfo", payload.ToArray()));
         }
         int currNumAudience = gameState.GetNumberOfAudience();
@@ -1025,12 +1035,14 @@ public class main : MonoBehaviour
     {
         string vipName = gameState.GetPlayerByPlayerNumber(0).nickname;
         List<string> playerNames = gameState.GetPlayerNamesInNumberOrder();
+        List<string> alienNumbers = gameState.GetAlienNumberInNumberOrder();
         List<string> payload = new List<string>();
         payload.Add(myPlayer.nickname);
         payload.Add("" + myPlayer.playerNumber);
         payload.Add("" + alienNumber);
         payload.Add(vipName);
         payload.AddRange(playerNames);
+        payload.AddRange(alienNumbers);
         AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails",
             payload.ToArray()));
     }
@@ -1148,7 +1160,7 @@ public class main : MonoBehaviour
                 break;
             case PhoneViewGameState.SendSelectRoundNumberScreen:
                 List<string> playersNames = gameState.GetPlayerNamesInNumberOrder();
-
+                playersNames.AddRange(gameState.GetAlienNumberInNumberOrder());
                 SendMessageIfVipElseSendWaitScreen(from, currentPlayerNumber,
                     new JsonAction("selectRoundCountView", playersNames.ToArray())
                 );
@@ -1161,7 +1173,7 @@ public class main : MonoBehaviour
                 AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] {}));
                 break;
             case PhoneViewGameState.SendWouldYouRather:
-                if (currentPlayerNumber == gameState.GetCurrentRoundNumber())
+                if (currentPlayerNumber == gameState.GetCurrentWritingPlayer().playerNumber)
                 //if (currentPlayer.Value.playerNumber == gameState.GetCurrentRoundNumber())
                 {
                     SendSelectCategory(from);
@@ -1182,7 +1194,7 @@ public class main : MonoBehaviour
                         int playerIconOffset = 14;
                         playerIcons[playerIconOffset + 6].gameObject.SetActive(true);
                     }
-                    string waitingForPlayerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
+                    string waitingForPlayerName = gameState.GetCurrentWritingPlayer().nickname;
                     List<string> payload = new List<string>();
                     payload.Add(waitingForPlayerName);
                     payload.Add("true");
@@ -1371,7 +1383,7 @@ public class main : MonoBehaviour
         }
         //also set the current player's icon to inactive
         //playerIcons[playerIconOffset + gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
-        playerIconsList[gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
+        playerIconsList[gameState.GetCurrentWritingPlayer().playerNumber].gameObject.SetActive(false);
 
         /*
         //set the current player's icon to true
@@ -1389,7 +1401,7 @@ public class main : MonoBehaviour
         */
         //Set the current player's name
         Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
-        string playerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
+        string playerName = gameState.GetCurrentWritingPlayer().nickname;
         getPlayerIconTags(playerIcons, "Banner")[0].GetComponentInChildren<TextMeshProUGUI>().text = "It's " + playerName + "'s turn to write questions!";
         
         Text[] playerTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
@@ -1399,7 +1411,7 @@ public class main : MonoBehaviour
         }
 
         //controllers in the retrieve questions state will ignore would you rathers
-        int currentPlayerTurnDeviceId = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).deviceId;
+        int currentPlayerTurnDeviceId = gameState.GetCurrentWritingPlayer().deviceId;
         SendSelectCategory(currentPlayerTurnDeviceId);
 
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
@@ -1560,7 +1572,7 @@ public class main : MonoBehaviour
         List<Image> playerIconTags = getPlayerIconTags(playerIconPanels, "WouldYouRatherPlayerIcon");
         for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
         {
-            if (i == gameState.GetCurrentRoundNumber()) {
+            if (i == gameState.GetCurrentWritingPlayer().playerNumber) {
                 //don't do anything for the current player
                 continue;
             }
@@ -1579,7 +1591,7 @@ public class main : MonoBehaviour
         //right answer
         wouldYouRatherTexts[3].text = currentWouldYouRather[2];
         //Maybe send the possible answers here
-        string waitingForPlayerName = gameState.GetPlayerByPlayerNumber(gameState.GetCurrentRoundNumber()).nickname;
+        string waitingForPlayerName = gameState.GetCurrentWritingPlayer().nickname;
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendWouldYouRather", new[] { waitingForPlayerName })));
     }
 
@@ -2412,7 +2424,7 @@ public class main : MonoBehaviour
         Animator nextActionBannerAnimator = resultsPanel.GetComponentsInChildren<Animator>()[2];
         nextActionBannerAnimator.SetBool("isOpen", true);
 
-        if (gameState.GetCurrentRoundNumber() == gameState.numRoundsPerGame - 1)
+        if (gameState.GetCurrentRoundNumber() == gameState.GetNumRoundsPerGame() - 1)
         {
             SendMessageToVip(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
 //            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " })));
@@ -3120,7 +3132,7 @@ class GameState
     public List<Round> rounds { get; set; }
     public PhoneViewGameState phoneViewGameState;
     public TvViewGameState tvViewGameState;
-    public int numRoundsPerGame { get; set; }
+    public List<int> questionWriters { get; set; }
     public int totalCorrectGuesses { get; set; }
     public int totalWrongGuesses { get; set; }
     public int totalAudienceCorrectGuesses { get; set; }
@@ -3143,6 +3155,11 @@ class GameState
         totalCorrectGuesses = 0;
         totalAudienceWrongGuesses = 0;
         totalAudienceCorrectGuesses = 0;
+    }
+
+    public int GetNumRoundsPerGame()
+    {
+        return this.questionWriters.Count;
     }
 
     public Player GetPlayerByPlayerNumber(int playerNumber)
@@ -3203,6 +3220,16 @@ class GameState
         return p;
     }
 
+    public List<string> GetAlienNumberInNumberOrder()
+    {
+        List<string> p = new List<string>();
+        for (int i = 0; i < players.Count; i++)
+        {
+            p.Add(GetPlayerByPlayerNumber(i).alienNumber + "");
+        }
+        return p;
+    }
+
     public void ResetGameState()
     {
         rounds = new List<Round>();
@@ -3212,6 +3239,10 @@ class GameState
     public int GetNumberOfPlayers()
     {
         return players.Count;
+    }
+    public Player GetCurrentWritingPlayer()
+    {
+        return GetPlayerByPlayerNumber(this.questionWriters[GetCurrentRoundNumber()]);
     }
 
     public int GetNumberOfAudience()
@@ -3265,7 +3296,7 @@ class GameState
     public void updateRoundCounter(GameObject roundCounter)
     {
         roundCounter.GetComponentsInChildren<TextMeshProUGUI>()[1].text = (GetCurrentRoundNumber() + 1) + 
-            "<size=15> of " + numRoundsPerGame + "</size>";
+            "<size=15> of " + this.GetNumRoundsPerGame() + "</size>";
         roundCounter.SetActive(true);
     }
 }

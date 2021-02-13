@@ -540,6 +540,7 @@ path, .jtk-endpoint {
         var showingAnswerHelpText = false;
         var globalCurrNumPlayers = 0;
         var listOfPlayerNames;
+        var listOfAlienNumbers;
         var playerName;
         var playerNumber;
         //var myTimer = 0;
@@ -582,6 +583,16 @@ path, .jtk-endpoint {
           };
           const reg = /[&<>"'/]/ig;
           return string.replace(reg, (match)=>(map[match]));
+        }
+
+        function updatePlayerNamesAndAlienGifs(list) {
+            var halfList = list.length/2;
+            listOfPlayerNames = list.slice(0, halfList);
+            listOfAlienNumbers = list.slice(halfList, payload.data.length);
+            globalCurrNumPlayers = halfList;
+            if(document.getElementById("selectRoundCountView").style.display == "block") {
+                App.prototype.clickRoundButton();
+            }
         }
 
         App.prototype.hideAnswerHelpText = function hideAnswerHelpText() {
@@ -660,7 +671,8 @@ path, .jtk-endpoint {
                     }
                     var hasGameStarted = payload.data[0] == "STARTED";
                     var playerCount = payload.data[1];
-                    listOfPlayerNames = payload.data.slice(2);
+                    var listOfPlayerNamesAndAlienNumbers = payload.data.slice(2);
+                    updatePlayerNamesAndAlienGifs(listOfPlayerNamesAndAlienNumbers);
 
                     if(playerCount == "full") {
                         document.getElementById("welcomeScreenPlayerCount").innerText = "Our Meexarp team has reached capacity!\nYou will be joining as an audience member.";
@@ -708,7 +720,9 @@ path, .jtk-endpoint {
                     playerNumber = payload.data[1];
                     selectedAlien = parseInt(payload.data[2]);
                     vipName = payload.data[3];
-                    listOfPlayerNames = payload.data.slice(4);
+                    var listOfPlayerNamesAndAlienNumbers = payload.data.slice(4);
+                    updatePlayerNamesAndAlienGifs(listOfPlayerNamesAndAlienNumbers);
+
                     globalCurrNumPlayers = listOfPlayerNames.length;
                     var myAlienGifs = document.getElementsByClassName("myAlienGif");
                     Array.prototype.forEach.call(myAlienGifs, currentElement => {
@@ -781,7 +795,8 @@ path, .jtk-endpoint {
                     //document.getElementById("roundCountInputField").value = payload.data;
                     //document.getElementById("roundCountDisplayField").value = payload.data;
                     displayElement(document.getElementById("selectRoundCountView"));
-                    listOfPlayerNames = payload.data;
+                    updatePlayerNamesAndAlienGifs(payload.data);
+
                     globalCurrNumPlayers = listOfPlayerNames.length;
                     var numPlayers = payload.data.length;
                     if(numPlayers > 4) {
@@ -1213,26 +1228,42 @@ path, .jtk-endpoint {
             }
 
             var roundCountValue = 1;
-            App.prototype.clickRoundButton = function clickRoundButton(roundNumberButton) {
-                roundCountValue = roundNumberButton;
+            var questionWriterList = [];
+            App.prototype.clickRoundButton = function clickRoundButton(initialCount) {
+                questionWriterList = [];
                 for(var i = 0; i < globalCurrNumPlayers; i++) {
-                    document.getElementById("roundCountButton" + (i+1)).style.display = "block";
-                    if(i+1 == roundNumberButton) {
-                        document.getElementById("roundCountButton" + (i+1)).style.backgroundColor = "white";
-                    } else {
-                        document.getElementById("roundCountButton" + (i+1)).style.backgroundColor = "Transparent";
+                    document.getElementById("roundCountCheckboxWrapper" + (i+1)).style.display = "block";
+                    setBackgroundImage(document.getElementById("roundCountCheckboxImage"+(i+1)), App.prototype.getPlayerGif(parseInt(listOfAlienNumbers[i])));
+                    document.getElementById("roundCountCheckboxName"+(i+1)).innerText = listOfPlayerNames[i];
+
+                    var currentCheckbox = document.getElementById("roundCountCheckbox"+(i+1));
+                    //if there is an initial count, default select those characters
+                    if(initialCount && i < initialCount) {
+                        currentCheckbox.checked = true;
+                    }
+
+                    if(currentCheckbox.checked) {
+                        questionWriterList.push(listOfPlayerNames[i]);
                     }
                 }
-                var roundDetailsText = "Rounds: " + roundCountValue + "\n";
-                roundDetailsText += "\nTime: " + (3 + (2*parseInt(globalCurrNumPlayers)) * roundCountValue) + "min";
-
-                roundDetailsText += "\n\nMeexarps who will write questions:\n";
-                roundDetailsText += listOfPlayerNames[0];
-                for(var i = 1; i < roundCountValue; i++) {
-                    roundDetailsText += "\n" + listOfPlayerNames[i];
+                roundCountValue = questionWriterList.length;
+                var roundDetailsTextTv = "Rounds: " + roundCountValue + "\n";
+                var roundDetailsTextPhone = "Approx. Game Time: ";
+                if(roundCountValue == 0) {
+                    roundDetailsTextTv += "\n Please select at least one question writer."
+                    roundDetailsTextPhone = "Please select at least one question writer.";
+                } else {
+                    var calculatedGameTime = (3 + (2*parseInt(globalCurrNumPlayers)) * roundCountValue)
+                    roundDetailsTextTv += "\nTime: " + calculatedGameTime + "min";
+                    roundDetailsTextPhone += calculatedGameTime;
+                    roundDetailsTextTv += "\n\nMeexarps who will write questions:\n";
+                    roundDetailsTextTv += questionWriterList[0];
+                    for(var i = 1; i < roundCountValue; i++) {
+                        roundDetailsTextTv += "\n" + questionWriterList[i];
+                    }
                 }
-                document.getElementById("timeEstimateDiv").innerText = roundDetailsText;
-                App.prototype.sendHoverRoundCount(roundDetailsText);
+                document.getElementById("timeEstimateDiv").innerText = roundDetailsTextPhone;
+                App.prototype.sendHoverRoundCount(roundDetailsTextTv);
             }
             
 
@@ -1246,12 +1277,16 @@ path, .jtk-endpoint {
 			}
 
             App.prototype.sendSetRoundCount = function sendSetRoundCount() {
-				var message = {
-					'action': "sendSetRoundCount",
-					'info': roundCountValue
-				};
+                if(roundCountValue == 0) {
+                    document.getElementById("timeEstimateDiv").innerText = "You cannot start the game with 0 question writers."
+                } else {
+				    var message = {
+					    'action': "sendSetRoundCount",
+					    'info': questionWriterList
+				    };
 
-				me.air_console.message(AirConsole.SCREEN, message);
+				    me.air_console.message(AirConsole.SCREEN, message);
+                }
 			}
 
             App.prototype.sendSubmitWouldYouRather = function sendSubmitWouldYouRather(isTutorialView) {
@@ -1728,6 +1763,57 @@ path, .jtk-endpoint {
         color: #555; 
         font-style: italic;
       }
+      /* https://codepen.io/alvasavi/pen/QwNLKL */
+      .roundCountGrid {
+          display:flex;
+          flex-wrap: wrap;
+          justify-content: space-evenly;
+          padding-top: 15px;
+      }
+      
+      .roundCountLabel {
+          display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+      }
+
+      .roundCountCheckboxName {
+          padding-top: 5%;
+      }
+
+      .cardwrapper{
+          position:relative;
+          width:25vw;
+          height: 25vw;
+          border-radius: 100%;
+        }
+        .selectRoundCountImage {
+            height: 70%;
+            width: 70%;
+            border-radius: 100%;
+          background-position: center;
+          background-color: transparent;
+          border-style: solid;
+          border-width: 1px;
+          box-shadow: 0 4px 7px #4a6eef;
+          align-self: center;
+        }
+
+        .selectRoundCountImage:active {
+            box-shadow: 0 5px 0px #4a6eef;
+            transform: translateY(4px);
+        }
+        
+        .playerCheckbox:checked ~ .card-content > label > .selectRoundCountImage {
+            background-color: white;
+        }
+
+        
+    .playerCheckbox {
+        display:none;
+    }
 
       .roundCountButton {
           background-color: Transparent;
@@ -2024,7 +2110,7 @@ path, .jtk-endpoint {
           }
         }
 
-        /* Round Count Select Grid styles*/
+
         /*
     .grid-wrapper{
       margin: 0 auto;
@@ -2227,40 +2313,72 @@ path, .jtk-endpoint {
             Waiting...
             <div id="waitingFor"></div>
         </div>
-        <div class="view" id="selectRoundCountView" style="display:none; align-self:flex-start;padding-top:35%;">
-            Select the number of rounds. One Meexarp writes questions each round.
+        <div class="view" id="selectRoundCountView" style="display:none; align-self:flex-start;padding-top:52px;">
+            <div style="padding-top:10px; font-size:26;">Select the Meexarps who will write questions.</div>
             <br>
-            <!--
-            <input type="range" id="roundCountInputField" min="1" max="6" oninput="roundCountDisplayField.value = roundCountInputField.value">
-            -->
-            <div style="display:flex; flex-direction:row; justify-content:space-evenly;">
-                <button id="roundCountButton1" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(1)">1</button>
-                <button id="roundCountButton2" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(2)">2</button>
-                <button id="roundCountButton3" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(3)">3</button>
-                <button id="roundCountButton4" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(4)">4</button>
-                <button id="roundCountButton5" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(5)">5</button>
-                <button id="roundCountButton6" style="display:none;" class="roundCountButton" onmousedown="window.app.clickRoundButton(6)">6</button>
-            </div>
-            <!--
-            <div class="grid-wrapper">
-                <div class="card-wrapper">
-                    <input class="c-card" type="checkbox" id="1" value="1" checked="checked">
-                        <div class="card-content">
-                            <div class="card-state-icon"></div>
-                            <label for="1">
-                                <div id="selectQuestionWriterCardImage1" class="image"></div>
-                                <div id="selectQuestionWriterCardName1">Player Name</div>
-                            </label>
-                        </div>
-                    </input>
+            <div id="timeEstimateDiv" style="padding-top:15px; color:rgb(58, 58, 58); font-style: italic"></div>
+            <div id="roundCountGrid" class="roundCountGrid">
+            
+                <div class="cardWrapper" id="roundCountCheckboxWrapper1" style="display:none;">
+                    <input type="checkbox" id="roundCountCheckbox1" class="playerCheckbox" onchange="window.app.clickRoundButton()"/>
+                    <div class="card-content">
+                        <label for="roundCountCheckbox1" class="roundCountLabel">
+                            <div id="roundCountCheckboxImage1" class="franklinImage selectRoundCountImage"></div>
+                            <div id="roundCountCheckboxName1" class="roundCountCheckboxName"></div>
+                         </label>
+                     </div>
+                </div>
+                <div class="cardWrapper" id="roundCountCheckboxWrapper2"  style="display:none;" >
+                    <input type="checkbox" id="roundCountCheckbox2"class="playerCheckbox" onchange="window.app.clickRoundButton()"/>
+                    <div class="card-content">
+                        <label for="roundCountCheckbox2" class="roundCountLabel">
+                            <div id="roundCountCheckboxImage2" class="franklinImage selectRoundCountImage"></div>
+                            <div id="roundCountCheckboxName2" class="roundCountCheckboxName"></div>
+                         </label>
+                     </div>
+                </div>
+                <div class="cardWrapper" id="roundCountCheckboxWrapper3"  style="display:none;">
+                    <input type="checkbox" id="roundCountCheckbox3" class="playerCheckbox" onchange="window.app.clickRoundButton()"/>
+                    <div class="card-content">
+                        <label for="roundCountCheckbox3" class="roundCountLabel">
+                            <div id="roundCountCheckboxImage3" class="franklinImage selectRoundCountImage"></div>
+                            <div id="roundCountCheckboxName3" class="roundCountCheckboxName"></div>
+                         </label>
+                     </div>
+                </div>
+                <div class="cardWrapper" id="roundCountCheckboxWrapper4"  style="display:none;">
+                    <input type="checkbox" id="roundCountCheckbox4" class="playerCheckbox" onchange="window.app.clickRoundButton()"/>
+                    <div class="card-content">
+                        <label for="roundCountCheckbox4" class="roundCountLabel">
+                            <div id="roundCountCheckboxImage4" class="franklinImage selectRoundCountImage"></div>
+                            <div id="roundCountCheckboxName4" class="roundCountCheckboxName"></div>
+                         </label>
+                     </div>
+                </div>
+                <div class="cardWrapper" id="roundCountCheckboxWrapper5"  style="display:none;">
+                    <input type="checkbox" id="roundCountCheckbox5" class="playerCheckbox" onchange="window.app.clickRoundButton()"/>
+                    <div class="card-content">
+                        <label for="roundCountCheckbox5" class="roundCountLabel" >
+                            <div id="roundCountCheckboxImage5" class="franklinImage selectRoundCountImage"></div>
+                            <div id="roundCountCheckboxName5" class="roundCountCheckboxName"></div>
+                         </label>
+                     </div>
+                </div>
+                <div class="cardWrapper" id="roundCountCheckboxWrapper6"  style="display:none;">
+                    <input type="checkbox" id="roundCountCheckbox6" class="playerCheckbox" onchange="window.app.clickRoundButton()" />
+                    <div class="card-content">
+                        <label for="roundCountCheckbox6" class="roundCountLabel">
+                            <div id="roundCountCheckboxImage6" class="franklinImage selectRoundCountImage"></div>
+                            <div id="roundCountCheckboxName6" class="roundCountCheckboxName"></div>
+                         </label>
+                     </div>
                 </div>
             </div>
-            -->
+            </ul>
             <br>
             <br>
             <div class="pseudo_button" onmousedown="window.app.sendSetRoundCount()" style="margin:5px">Start Game</div>
             <br>
-            <div id="timeEstimateDiv" style="padding-top:15px;"></div>
         </div>
         <div class="view" id="wouldYouRatherView" style="display:none;align-self:flex-start;padding-top:52px;">
             <div class="franklinBanner">
