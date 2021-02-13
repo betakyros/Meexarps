@@ -18,6 +18,8 @@ TagManager:
   - AnswerQuestionsGridBackground
   - SplashScreenImage
   - WinterSplashScreenImage
+  - VotingPanelGrid
+  - ResultsPanelGrid
   layers:
   - Default
   - TransparentFX
