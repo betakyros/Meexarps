@@ -3495,7 +3495,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.5, y: 0.000061035156}
+  m_AnchoredPosition: {x: 0.5, y: 0}
   m_SizeDelta: {x: -1, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &322632356
@@ -7093,7 +7093,7 @@ GameObject:
   - component: {fileID: 642111348}
   m_Layer: 5
   m_Name: VotingPanelGrid
-  m_TagString: Untagged
+  m_TagString: VotingPanelGrid
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10285,7 +10285,7 @@ GameObject:
   - component: {fileID: 873418168}
   m_Layer: 5
   m_Name: ResultsPanelGrid
-  m_TagString: Untagged
+  m_TagString: ResultsPanelGrid
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14011,7 +14011,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.5, y: 0.000061035156}
+  m_AnchoredPosition: {x: 0.5, y: 0}
   m_SizeDelta: {x: -1, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1209018783
@@ -19649,7 +19649,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: A Friendship Study
+  m_text: A Friendship Study <size=22>v1.0.1</size>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4e36f6dc52e964a4790aab8611573c74, type: 2}
   m_sharedMaterial: {fileID: 21883083607855310, guid: 4e36f6dc52e964a4790aab8611573c74,

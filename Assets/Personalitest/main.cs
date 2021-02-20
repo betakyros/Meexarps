@@ -825,7 +825,8 @@ public class main : MonoBehaviour
             resultsBeepAudioSource.Pause();
             gameState.ResetGameState();
             endScreenPanel.SetActive(false);
-            StartRound();
+            //StartRound();
+            AirConsole.instance.ShowAd();
         }
         if(gameState.players.ContainsKey(from))
         {
@@ -869,7 +870,11 @@ public class main : MonoBehaviour
 
     private void ContinueSendStartGame()
     {
-        GameObject.Find("WelcomeScreenPanel").SetActive(false);
+        GameObject gameObject = GameObject.Find("WelcomeScreenPanel");
+        if(gameObject != null)
+        {
+            gameObject.SetActive(false);
+        }
         selectRoundNumberPanel.SetActive(true);
         selectRoundNumberPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].text = "<color=white>The Head Researcher (<color=#325EFB>" +
             gameState.GetPlayerByPlayerNumber(0).nickname + "</color>) is selecting a game length.</color>";
@@ -977,7 +982,6 @@ public class main : MonoBehaviour
         StopAllLevels(welcomeScreenAudioSources);
         //introAudioSource.Stop();
         StartAllLevels(thinkingAudioSources);
-        selectRoundNumberPanel.GetComponentsInChildren<Image>(true)[1].gameObject.SetActive(true);
         StartCoroutine(ShowIntroInstrucitons(2));
     }
 
@@ -1302,12 +1306,12 @@ public class main : MonoBehaviour
     //todo remove parameter
     private IEnumerator<WaitForSeconds> ShowIntroInstrucitons(float seconds)
     {
+        selectRoundNumberPanel.GetComponentsInChildren<Image>(true)[1].gameObject.SetActive(true);
         //flash the instructions
         SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendSkipInstructions", new string[] {}));
         //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
         gameState.phoneViewGameState = PhoneViewGameState.SendSkipInstructionsScreen;
 
-        Image[] images = votingPanel.GetComponentsInChildren<Image>();
         introVp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "meexarpsTutorial.mp4");
 
         introVp.Prepare();
@@ -1332,6 +1336,7 @@ public class main : MonoBehaviour
         introVp.Pause();
         yield return new WaitForSeconds(1);
         introInstructionVideo.gameObject.SetActive(false);
+        selectRoundNumberPanel.GetComponentsInChildren<Image>(true)[1].gameObject.SetActive(false);
         Destroy(instructionsCz);
         //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendVoting", new string[] { " " })));
         selectRoundNumberPanel.SetActive(false);
@@ -1737,13 +1742,20 @@ public class main : MonoBehaviour
         //gameState.GetCurrentRound().answers.Shuffle();
 
         List<Answers> answersList = gameState.GetCurrentRound().answers;
+        GameObject votingPanelGrid = GameObject.FindGameObjectWithTag("VotingPanelGrid");
+        //re-enable all panels
+        Image[] votingPanelCards = votingPanelGrid.GetComponentsInChildren<Image>(true);
+        int gridOffset = 1;
+        for (int i = 0; i < 6; i++)
+        {
+            votingPanelCards[gridOffset + i].gameObject.SetActive(true);
+        }
         for (int i = 0; i < answersList.Count; i++)
         {
             Answers answers = answersList[i];
             anonymousPlayerNames.Add(answers.anonymousPlayerName);
-            int answerPanelOffset = 2;
-            TextMeshProUGUI myTitle = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset + 2*i];
-            TextMeshProUGUI myQandA = votingPanel.GetComponentsInChildren<TextMeshProUGUI>()[answerPanelOffset + 2*i + 1];
+            TextMeshProUGUI myTitle = votingPanelGrid.GetComponentsInChildren<TextMeshProUGUI>()[2*i];
+            TextMeshProUGUI myQandA = votingPanelGrid.GetComponentsInChildren<TextMeshProUGUI>()[2*i + 1];
             //todo set the text size to the same size as the panel
             myTitle.text = answers.anonymousPlayerName;
             myQandA.text = "";
@@ -1772,6 +1784,7 @@ public class main : MonoBehaviour
             }
             instructionVideo.texture = vp.texture;
             instructionVideo.gameObject.SetActive(true);
+            instructionVideo.gameObject.GetComponent<RectTransform>().SetAsLastSibling();
             CameraZoom instructionsCz = instructionVideo.gameObject.AddComponent<CameraZoom>();
             instructionsCz.Setup(.5f, 20f, false, false, false, true, false);
             vp.Play();
@@ -1826,12 +1839,10 @@ public class main : MonoBehaviour
         autoResizeGrid.enabled = false;
         int panelOffset = 3;
         int numPlayersAtStart = gameState.GetCurrentRound().answers.Count;
-        GameObject[] votingGridTitles = GameObject.FindGameObjectsWithTag("votingTextTitle");
         GameObject[] votingGridQnA = GameObject.FindGameObjectsWithTag("votingTextQnA");
 
         for (int i = 0; i < numPlayersAtStart; i++)
         {
-            TextMeshProUGUI myTitle = votingGridTitles[i].GetComponentInChildren<TextMeshProUGUI>();
             TextMeshProUGUI myQnAText = votingGridQnA[i].GetComponentInChildren<TextMeshProUGUI>();
             myQnAText.text ="";
 
@@ -1880,7 +1891,7 @@ public class main : MonoBehaviour
         Image[] playerIcons = votingPanel.GetComponentsInChildren<Image>(true);
         List<Image> playerIconsList = getPlayerIconTags(playerIcons, "AnswerQuestionsPane");
         //reset the ordering of the panels
-        for (int i = 0; i < 6 - gameState.GetNumberOfPlayers(); i++)
+        for (int i = 0; i < 6 - numPlayersAtStart; i++)
         {
             playerIconsList[i].gameObject.GetComponent<RectTransform>().SetAsLastSibling();
         }
@@ -2067,12 +2078,16 @@ public class main : MonoBehaviour
         //set the anonymous names of each box
         List<Answers> answersList = gameState.GetCurrentRound().answers;
         int countAtBeginingOfRound = answersList.Count;
+        GameObject resultsPanelGrid = GameObject.FindGameObjectWithTag("ResultsPanelGrid");
+        Image[] resultsPanelCards = resultsPanelGrid.GetComponentsInChildren<Image>(true);
+        int rPanelOffset = 1;
+
         for (int i = 0; i < countAtBeginingOfRound; i++)
         {
             Answers answers = answersList[i];
-            int resultsPanelOffset = 1;
-            TextMeshProUGUI myTitle = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[resultsPanelOffset + 2*i];
-            TextMeshProUGUI myQandA = resultsPanel.GetComponentsInChildren<TextMeshProUGUI>()[resultsPanelOffset + 2*i + 1];
+            GameObject currentResultPanel = resultsPanelCards[i + rPanelOffset].gameObject;
+            TextMeshProUGUI myTitle = currentResultPanel.GetComponentsInChildren<TextMeshProUGUI>()[0];
+            TextMeshProUGUI myQandA = currentResultPanel.GetComponentsInChildren<TextMeshProUGUI>()[1];
 
             myTitle.text = answers.anonymousPlayerName;
             myQandA.text = "";
