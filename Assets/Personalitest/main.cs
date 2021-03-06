@@ -2434,7 +2434,7 @@ public class main : MonoBehaviour
         autoResizeGrid.enabled = true;
 
         GameObject.FindWithTag("Banner").GetComponentInChildren<TextMeshProUGUI>().text = "Waiting for <color=#325EFB>" +
-                gameState.GetPlayerByPlayerNumber(0).nickname + "</color> to continue   <sprite=0>";
+                gameState.GetPlayerByPlayerNumber(0).nickname + "</color> to continue";
 
         Animator nextActionBannerAnimator = resultsPanel.GetComponentsInChildren<Animator>()[2];
         nextActionBannerAnimator.SetBool("isOpen", true);

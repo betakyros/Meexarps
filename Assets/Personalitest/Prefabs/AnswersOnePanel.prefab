@@ -106,7 +106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 856118648315190179}
   - component: {fileID: 856118648315190181}
-  - component: {fileID: 5356711021495963934}
+  - component: {fileID: 4991915970478137006}
   m_Layer: 5
   m_Name: Title
   m_TagString: votingTextTitle
@@ -141,7 +141,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 856118648315190178}
   m_CullTransparentMesh: 0
---- !u!114 &5356711021495963934
+--- !u!114 &4991915970478137006
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 856118648315190178}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Script: {fileID: 11500000, guid: 142862eacae1fc34db32964b32f0585a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -181,7 +181,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
+  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -305,7 +305,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7210066649352523239}
   - component: {fileID: 3569879000582539687}
-  - component: {fileID: 7359796358328595869}
+  - component: {fileID: 8694398438169365476}
   m_Layer: 0
   m_Name: Questions
   m_TagString: votingTextQnA
@@ -340,7 +340,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3205315806638561032}
   m_CullTransparentMesh: 0
---- !u!114 &7359796358328595869
+--- !u!114 &8694398438169365476
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -349,7 +349,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3205315806638561032}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Script: {fileID: 11500000, guid: 142862eacae1fc34db32964b32f0585a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -380,7 +380,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
+  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
