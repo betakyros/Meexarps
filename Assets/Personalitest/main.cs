@@ -32,6 +32,7 @@ public class main : MonoBehaviour
     public GameObject resultsPanel;
     public GameObject endScreenPanel;
     public GameObject errorPanel;
+    public GameObject audienceScoreCard;
     public Canvas canvas;
 //    public AudioSource introAudioSource;
     public AudioSource mainLoopAudioSource;
@@ -826,6 +827,8 @@ public class main : MonoBehaviour
             gameState.ResetGameState();
             endScreenPanel.SetActive(false);
             //StartRound();
+            StopAllLevels(thinkingAudioSources);
+            StartAllLevels(welcomeScreenAudioSources);
             AirConsole.instance.ShowAd();
         }
         if(gameState.players.ContainsKey(from))
@@ -2510,7 +2513,6 @@ public class main : MonoBehaviour
         }
 
         bool shouldShowAudienceScorecard = false;
-        GameObject audienceScoreCard = GameObject.FindWithTag("AudienceScoreCard");
         if (audienceScoreCard != null)
         {
             if (gameState.audienceMembers.Count == 0)
@@ -2520,6 +2522,7 @@ public class main : MonoBehaviour
             else
             {
                 shouldShowAudienceScorecard = true;
+                audienceScoreCard.SetActive(true);
                 GameObject.FindWithTag("PercentCorrectAndStatusContainer").gameObject.GetComponent<RectTransform>().anchorMax
                     = new Vector2(.7f, .95f);
             }
@@ -3170,6 +3173,18 @@ class GameState
         totalCorrectGuesses = 0;
         totalAudienceWrongGuesses = 0;
         totalAudienceCorrectGuesses = 0;
+        foreach(Player p in players.Values)
+        {
+            p.numWrong = 0;
+            p.points = 0;
+            p.bestFriendPoints.Clear();
+        }
+        foreach(Player p in audienceMembers.Values)
+        {
+            p.numWrong = 0;
+            p.points = 0;
+            p.bestFriendPoints.Clear();
+        }
     }
 
     public int GetNumRoundsPerGame()

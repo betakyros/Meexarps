@@ -14699,6 +14699,7 @@ MonoBehaviour:
   resultsPanel: {fileID: 2029282604}
   endScreenPanel: {fileID: 443703434}
   errorPanel: {fileID: 322632354}
+  audienceScoreCard: {fileID: 1843563638}
   canvas: {fileID: 1796393344}
   mainLoopAudioSource: {fileID: 0}
   blipAudioSource: {fileID: 1259476609}
@@ -22156,7 +22157,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 2
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 4e36f6dc52e964a4790aab8611573c74, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -22220,7 +22221,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1745409547
