@@ -272,3 +272,13 @@ You need to turn $1000 dollars into $10000 in a month, how do you do it?
 You wake up and realize all of your clothes are stolen and your communication devices are dead. How do you get to the store and buy some new clothes?
 You are now the villian of your favorite Disney movie. What would you do to succeed in your evil plans?
 You wake up in a hospital bed. Gasp! You've been in a coma for 10 years. What is the first question non-medical you ask upon waking up?
+---
+Emoji
+What are your favorite 3 emojis?
+How many emojis are too many?
+What emoji(s) best represent your personality?
+Tell me a personal story using mostly emojis.
+Describe a vacation you'd enjoy using mostly emojis.
+Describe your favorite TV show or movie using mostly emojis.
+You've won a large sum of money. Use emojis to describe how you're feeling.
+Tell me about your average weekday using emojis.
