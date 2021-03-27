@@ -56,6 +56,7 @@ public class main : MonoBehaviour
     public AudioClip debouncedNoise;
     public Animator[] animators;
     public GameObject roundCounter;
+    public SocketClientFranklin socketClient;
 
     private int currentCategoryIndex;
     private int selectedCategory;
@@ -73,9 +74,17 @@ public class main : MonoBehaviour
 
     private bool isWinterHolidaySeason = System.DateTime.Today.Month == 1 || System.DateTime.Today.Month == 12;
 
+    //don't foret to check if the airconsole script is disabled
+    private bool isAirconsole = true;
+
     // Start is called before the first frame update
     void Start()
     {
+        if(!isAirconsole)
+        {
+            socketClient.Connect();
+        }
+
         if(isWinterHolidaySeason)
         {
             GameObject.FindWithTag("SplashScreenImage").gameObject.SetActive(false);
@@ -159,13 +168,15 @@ public class main : MonoBehaviour
         }
 
         blips.Shuffle();
-
-        AirConsole.instance.onReady += OnReady;
-        AirConsole.instance.onMessage += OnMessage;
-        AirConsole.instance.onConnect += OnConnect;
-        AirConsole.instance.onDisconnect += OnDisconnect;
-        AirConsole.instance.onAdComplete += OnAdComplete;
-        AirConsole.instance.onAdShow+= OnAdShow;
+        if (isAirconsole)
+        {
+            AirConsole.instance.onReady += OnReady;
+            AirConsole.instance.onMessage += OnMessage;
+            AirConsole.instance.onConnect += OnConnect;
+            AirConsole.instance.onDisconnect += OnDisconnect;
+            AirConsole.instance.onAdComplete += OnAdComplete;
+            AirConsole.instance.onAdShow += OnAdShow;
+        }
         gameState = new GameState();
         currentQuestionIndex = 0;
         currentWouldYouRatherIndex = 0;
@@ -307,7 +318,7 @@ public class main : MonoBehaviour
             }
             else if (debouncedState.Equals("DEBOUNCED"))
             {
-                AirConsole.instance.Message(from, new JsonAction("debounced", new string[] { " " }));
+                SendMessageToPhone(from, new JsonAction("debounced", new string[] { " " }));
                 StartCoroutine(Wait5secondsThenUnblock(gameState.players[from]));
                 return;
             }
@@ -323,7 +334,7 @@ public class main : MonoBehaviour
                 //prevent players from using the same name
                 if (gameState.phoneViewGameState.Equals(PhoneViewGameState.SendStartGameScreen))
                 {
-                    AirConsole.instance.Message(from, new JsonAction("nameAlreadyTaken", new string[] { " " }));
+                    SendMessageToPhone(from, new JsonAction("nameAlreadyTaken", new string[] { " " }));
                     return;
                 }
                 //reconnect case
@@ -380,10 +391,10 @@ public class main : MonoBehaviour
 
                 gameState.players.Add(from, p);
                 sendWelcomeScreenInfo(from, selectedAlien);
-                AirConsole.instance.Message(from, new JsonAction("confirmNameSubmission", new string[] { " " }));
+                SendMessageToPhone(from, new JsonAction("confirmNameSubmission", new string[] { " " }));
                 if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
                 {
-                    AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
+                    SendMessageToPhone(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                     SendMessageToVip(new JsonAction("allPlayersAreNotReady", gameState.whoIsNotReady().ToArray()));
 
                 }
@@ -401,7 +412,7 @@ public class main : MonoBehaviour
                     //prevent players from using the same name
                     if (gameState.phoneViewGameState.Equals(PhoneViewGameState.SendStartGameScreen))
                     {
-                        AirConsole.instance.Message(from, new JsonAction("nameAlreadyTaken", new string[] { " " }));
+                        SendMessageToPhone(from, new JsonAction("nameAlreadyTaken", new string[] { " " }));
                         return;
                     }
                     //reconnect case
@@ -427,9 +438,9 @@ public class main : MonoBehaviour
                     if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
                     {
                         GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<TextMeshProUGUI>().text = "<color=white>Audience: " + gameState.audienceMembers.Count + "</color>";
-                        AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
+                        SendMessageToPhone(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
                         sendWelcomeScreenInfo(from, -1);
-                        AirConsole.instance.Message(from, new JsonAction("confirmNameSubmission", new string[] { " " }));
+                        SendMessageToPhone(from, new JsonAction("confirmNameSubmission", new string[] { " " }));
                     }
                     else
                     {
@@ -450,20 +461,20 @@ public class main : MonoBehaviour
                 if(gameState.GetNumberOfPlayers() < 6)
                 {
                     payload.Add("You will join as a new Player!");
-                    AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "You will join as a new Player!" }));
+                    SendMessageToPhone(from, new JsonAction("checkNameResponse", new string[] { "You will join as a new Player!" }));
                 } else
                 {
-                    AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "You will join as a new Audience Member!" }));
+                    SendMessageToPhone(from, new JsonAction("checkNameResponse", new string[] { "You will join as a new Audience Member!" }));
                 }
             } else if (currentPlayer.Value != null)
             {
-                AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "You will Reconnect as a Player!" }));
+                SendMessageToPhone(from, new JsonAction("checkNameResponse", new string[] { "You will Reconnect as a Player!" }));
             } else if (audiencePlayer.Value != null)
             {
-                AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "You will Reconnect as an Audience Member!" }));
+                SendMessageToPhone(from, new JsonAction("checkNameResponse", new string[] { "You will Reconnect as an Audience Member!" }));
             } else
             {
-                AirConsole.instance.Message(from, new JsonAction("checkNameResponse", new string[] { "An error occured, Sorry! Please email Meexarps@gmail.com" }));
+                SendMessageToPhone(from, new JsonAction("checkNameResponse", new string[] { "An error occured, Sorry! Please email Meexarps@gmail.com" }));
                 Debug.Log("An error occured in checkname");
             }
 
@@ -547,8 +558,7 @@ public class main : MonoBehaviour
             int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
             if (gameState.alienSelections.ContainsKey(selectedAlien))
             {
-                AirConsole.instance.Message(from, JsonUtility.ToJson(
-                    new JsonAction("sendAlienSelectionFailed", new[] { ""})));
+                SendMessageToPhone(from, new JsonAction("sendAlienSelectionFailed", new[] { ""}));
             } else
             {
                 //remove the previous selection
@@ -567,8 +577,7 @@ public class main : MonoBehaviour
 
             if (from == GetVipDeviceId())
             {
-                AirConsole.instance.Message(GetVipDeviceId(), JsonUtility.ToJson(
-                    new JsonAction("sendRetrieveOptions", new[] { options["nsfwQuestions"].ToString(), optionsVolume.ToString(), options["anonymousNames"].ToString() })));
+                SendMessageToPhone(GetVipDeviceId(), new JsonAction("sendRetrieveOptions", new[] { options["nsfwQuestions"].ToString(), optionsVolume.ToString(), options["anonymousNames"].ToString() }));
             }
         }
         else if ("sendSaveOptions".Equals(action))
@@ -701,7 +710,7 @@ public class main : MonoBehaviour
             {
                 nextQuestion = GetNextQuestion();
             }
-            AirConsole.instance.Message(from, new JsonAction("sendAnotherQuestion", new string[] { elementId, nextQuestion }));
+            SendMessageToPhone(from, new JsonAction("sendAnotherQuestion", new string[] { elementId, nextQuestion }));
         }
         else if ("sendDecidedQuestions".Equals(action))
         {
@@ -792,7 +801,7 @@ public class main : MonoBehaviour
                 List<string> playersWhoHaventSubmitted = calculatePlayersWhoHaventSubmitted(votes);
                 foreach (int playerNum in votes.Keys)
                 {
-                    AirConsole.instance.Message(gameState.GetPlayerByPlayerNumber(playerNum).deviceId,
+                    SendMessageToPhone(gameState.GetPlayerByPlayerNumber(playerNum).deviceId,
                         new JsonAction("sendWaitScreen", playersWhoHaventSubmitted.ToArray()));
                 }
 
@@ -804,7 +813,7 @@ public class main : MonoBehaviour
                         if (!gameState.GetCurrentRound().audienceVotes.ContainsKey(audienceMember.playerNumber))
                         {
                             shouldWaitForAudience = true;
-                            AirConsole.instance.Message(audienceMember.deviceId,
+                            SendMessageToPhone(audienceMember.deviceId,
                                 new JsonAction("forceCollectAnswers", new[] { "false" }));
                         }
                     }
@@ -1050,13 +1059,13 @@ public class main : MonoBehaviour
         payload.Add(vipName);
         payload.AddRange(playerNames);
         payload.AddRange(alienNumbers);
-        AirConsole.instance.Message(from, new JsonAction("sendWelcomeScreenInfoDetails",
+        SendMessageToPhone(from, new JsonAction("sendWelcomeScreenInfoDetails",
             payload.ToArray()));
     }
 
     private static void SendIsVip(Player currentPlayer)
     {
-        AirConsole.instance.Message(currentPlayer.deviceId, new JsonAction("setIsVip", new[] { "" }));
+        SendMessageToPhone(currentPlayer.deviceId, new JsonAction("setIsVip", new[] { "" }));
     }
 
     private bool isAudienceMember(int from)
@@ -1077,7 +1086,7 @@ public class main : MonoBehaviour
     {
         foreach (Player p in gameState.players.Values)
         {
-            AirConsole.instance.Message(p.deviceId, jsonAction);
+            SendMessageToPhone(p.deviceId, jsonAction);
         }
 
         foreach (Player p in gameState.audienceMembers.Values)
@@ -1088,7 +1097,7 @@ public class main : MonoBehaviour
 
     private static void sendWaitScreenToPlayer(Player p)
     {
-        AirConsole.instance.Message(p.deviceId, new JsonAction("sendWaitScreen", new string[] { }));
+        SendMessageToPhone(p.deviceId, new JsonAction("sendWaitScreen", new string[] { }));
     }
 
     private void SendMessageToVipAndSendWaitScreenToEveryoneElse(JsonAction jsonAction)
@@ -1097,7 +1106,7 @@ public class main : MonoBehaviour
         {
             if(p.playerNumber == VIP_PLAYER_NUMBER)
             {
-                AirConsole.instance.Message(p.deviceId, jsonAction);
+                SendMessageToPhone(p.deviceId, jsonAction);
             }
             else
             {
@@ -1115,11 +1124,11 @@ public class main : MonoBehaviour
     {
         if (currentPlayerNumber == VIP_PLAYER_NUMBER)
         {
-            AirConsole.instance.Message(from, jsonAction);
+            SendMessageToPhone(from, jsonAction);
         }
         else
         {
-            AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] {}));
+            SendMessageToPhone(from, new JsonAction("sendWaitScreen", new string[] {}));
         }
     }
 
@@ -1129,7 +1138,7 @@ public class main : MonoBehaviour
         {
             if (p.playerNumber == VIP_PLAYER_NUMBER)
             {
-                AirConsole.instance.Message(p.deviceId, jsonAction);
+                SendMessageToPhone(p.deviceId, jsonAction);
             }
         }
     }
@@ -1162,7 +1171,7 @@ public class main : MonoBehaviour
         switch (gameState.phoneViewGameState)
         {
             case PhoneViewGameState.SendStartGameScreen:
-                AirConsole.instance.Message(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
+                SendMessageToPhone(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
 
                 break;
             case PhoneViewGameState.SendSelectRoundNumberScreen:
@@ -1177,7 +1186,7 @@ public class main : MonoBehaviour
                     new JsonAction("sendSkipInstructions", new string[] { " " }));
                 break;
             case PhoneViewGameState.SendWaitScreen:
-                AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] {}));
+                SendMessageToPhone(from, new JsonAction("sendWaitScreen", new string[] {}));
                 break;
             case PhoneViewGameState.SendWouldYouRather:
                 if (currentPlayerNumber == gameState.GetCurrentWritingPlayer().playerNumber)
@@ -1205,7 +1214,7 @@ public class main : MonoBehaviour
                     List<string> payload = new List<string>();
                     payload.Add(waitingForPlayerName);
                     payload.Add("true");
-                    AirConsole.instance.Message(from, new JsonAction("sendWouldYouRather", payload.ToArray()));
+                    SendMessageToPhone(from, new JsonAction("sendWouldYouRather", payload.ToArray()));
                 }
                 break;
             case PhoneViewGameState.SendQuestions:
@@ -1220,7 +1229,7 @@ public class main : MonoBehaviour
                     playerIconsList[playerNum].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = gameState.GetPlayerByPlayerNumber(playerNum).nickname;
                 }
                 if (gameState.GetCurrentRound().hasPlayerSubmittedAnswer(currentPlayerNumber)) {
-                    AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { }));
+                    SendMessageToPhone(from, new JsonAction("sendWaitScreen", new string[] { }));
                 } else
                 {
                     SendQuestions(from);
@@ -1230,7 +1239,7 @@ public class main : MonoBehaviour
                 if (gameState.GetCurrentRound().votes.ContainsKey(currentPlayerNumber) || gameState.GetCurrentRound().audienceVotes.ContainsKey(currentPlayerNumber))
                 {
                     List<string> playersWhoHaventSubmitted = calculatePlayersWhoHaventSubmitted(gameState.GetCurrentRound().votes);
-                    AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", playersWhoHaventSubmitted.ToArray()));
+                    SendMessageToPhone(from, new JsonAction("sendWaitScreen", playersWhoHaventSubmitted.ToArray()));
                 }
                 else
                 {
@@ -1257,11 +1266,11 @@ public class main : MonoBehaviour
             case PhoneViewGameState.SendEndScreen:
                 string currentBestFriend = CalculateBestFriend(currentPlayer);
 
-                AirConsole.instance.Message(currentPlayer.deviceId, new JsonAction("sendEndScreen", new string[] { "" + currentPlayer.points,
+                SendMessageToPhone(currentPlayer.deviceId, new JsonAction("sendEndScreen", new string[] { "" + currentPlayer.points,
                     (currentPlayer.numWrong + currentPlayer.points).ToString(), currentBestFriend }));
                 break;
             default:
-                AirConsole.instance.Message(from, new JsonAction("sendWaitScreen", new string[] { " " }));
+                SendMessageToPhone(from, new JsonAction("sendWaitScreen", new string[] { " " }));
                 break;
         }
     }
@@ -1512,7 +1521,7 @@ public class main : MonoBehaviour
             categoriesToSend[5].Key
         };
 
-        AirConsole.instance.Message(deviceId, new JsonAction("sendSelectCategory", stringifiedCategoriesToSend));
+        SendMessageToPhone(deviceId, new JsonAction("sendSelectCategory", stringifiedCategoriesToSend));
     }
 
     private KeyValuePair<string, int> GetNextCategoryName()
@@ -1562,7 +1571,7 @@ public class main : MonoBehaviour
             };
             writeMyOwnQuestions = false;
         }
-        AirConsole.instance.Message(deviceId, new JsonAction("sendRetrieveQuestions", questionsToSend));
+        SendMessageToPhone(deviceId, new JsonAction("sendRetrieveQuestions", questionsToSend));
     }
 
     public void SendWouldYouRather()
@@ -1639,7 +1648,7 @@ public class main : MonoBehaviour
             SendMessageToPlayersAndSendWaitScreenToAudience(new JsonAction("sendQuestions", questionsToSend));
             foreach(Player audience in gameState.audienceMembers.Values)
             {
-                AirConsole.instance.Message(audience.deviceId, JsonUtility.ToJson(new JsonAction("sendVotingTutorialScreen", questionsToSend)));
+                SendMessageToPhone(audience.deviceId, new JsonAction("sendVotingTutorialScreen", questionsToSend));
             }
             gameState.phoneViewGameState = PhoneViewGameState.SendQuestions;
             gameState.tvViewGameState = TvViewGameState.AnswerQuestionsScreen;
@@ -1649,11 +1658,11 @@ public class main : MonoBehaviour
         {
             if (isAudienceMember(playerDeviceId))
             {
-                AirConsole.instance.Message(playerDeviceId, JsonUtility.ToJson(new JsonAction("sendVotingTutorialScreen", questionsToSend)));
+                SendMessageToPhone(playerDeviceId, new JsonAction("sendVotingTutorialScreen", questionsToSend));
             }
             else
             {
-                AirConsole.instance.Message(playerDeviceId, JsonUtility.ToJson(new JsonAction("sendQuestions", questionsToSend)));
+                SendMessageToPhone(playerDeviceId, new JsonAction("sendQuestions", questionsToSend));
             }
         }
     }
@@ -1727,7 +1736,7 @@ public class main : MonoBehaviour
         /*TODO this is not in the same order as anonymous player names*/
         listToSend.AddRange(playerAnswers);
         listToSend.AddRange(alienNumbers);
-        AirConsole.instance.Message(playerDeviceId, JsonUtility.ToJson(new JsonAction("sendVoting", listToSend.ToArray())));
+        SendMessageToPhone(playerDeviceId, new JsonAction("sendVoting", listToSend.ToArray()));
     }
 
     //todo remove parameter
@@ -1905,9 +1914,9 @@ public class main : MonoBehaviour
     private static void debugOnPhone(string key, string value)
     {
         Debug.Log(key + ": " + value);
-        AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("debug", new string[] { key+ ": " + value})));
+        JsonAction jsonAction = new JsonAction("debug", new string[] { key + ": " + value });
+        BroadcastToAllPhones(jsonAction);
     }
-
     private void sendEveryonePersonalizedRoundResults(List<Answers> answerList)
     {
         Round currentRound = gameState.GetCurrentRound();
@@ -1997,7 +2006,7 @@ public class main : MonoBehaviour
 
 
         //send the current player their answerset
-        AirConsole.instance.Message(currentPlayer.deviceId, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
+        SendMessageToPhone(currentPlayer.deviceId, new JsonAction("sendPersonalRoundResults", personalRoundResults.ToArray()));
     }
 
     private static void incrementBestFriends(Player currentPlayer, List<string> guesses, List<string> actual)
@@ -2062,7 +2071,7 @@ public class main : MonoBehaviour
             if (!gameState.GetCurrentRound().audienceVotes.ContainsKey(audienceMember.playerNumber))
             {
                 shouldWaitForAudience = true;
-                AirConsole.instance.Message(audienceMember.deviceId,
+                SendMessageToPhone(audienceMember.deviceId,
                     new JsonAction("forceCollectAnswers", new[] { "true" }));
             }
         }
@@ -2484,14 +2493,14 @@ public class main : MonoBehaviour
         {
             string currentBestFriend = CalculateBestFriend(p);
 
-            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, (p.numWrong + p.points).ToString(), currentBestFriend }));
+            SendMessageToPhone(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, (p.numWrong + p.points).ToString(), currentBestFriend }));
         }
 
         foreach (Player p in gameState.audienceMembers.Values)
         {
             string currentBestFriend = CalculateBestFriend(p);
 
-            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, (p.numWrong + p.points).ToString(), currentBestFriend }));
+            SendMessageToPhone(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, (p.numWrong + p.points).ToString(), currentBestFriend }));
         }
 
         int offset = 0;
@@ -2656,7 +2665,7 @@ public class main : MonoBehaviour
             playerCounter++;
             string currentBestFriend = CalculateBestFriend(p);
 
-            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
+            SendMessageToPhone(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
 
         }
         StringBuilder audiencePointsSB = new StringBuilder(100);
@@ -2673,7 +2682,7 @@ public class main : MonoBehaviour
             endScreenPanel.GetComponentsInChildren<TextMeshProUGUI>()[0].text = audiencePointsSB.ToString();
             string currentBestFriend = CalculateBestFriend(p);
 
-            AirConsole.instance.Message(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
+            SendMessageToPhone(p.deviceId, new JsonAction("sendEndScreen", new string[] { "" + p.points, currentBestFriend }));
 
         }
         
@@ -2811,7 +2820,15 @@ public class main : MonoBehaviour
             }
         }
     }
-    
+    private static void BroadcastToAllPhones(JsonAction jsonAction)
+    {
+        AirConsole.instance.Broadcast(jsonAction);
+    }
+    private static void SendMessageToPhone(int from, JsonAction jsonAction)
+    {
+        AirConsole.instance.Message(from, jsonAction);
+    }
+
     public int getCurrentRoundNumberOfAnswers()
     {
         return gameState.GetCurrentRound().answers.Count;
