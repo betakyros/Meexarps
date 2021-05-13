@@ -8,10 +8,10 @@ const path = require('path');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/controller.html'));
+  res.sendFile(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2020/controller.html'));
 })
 
-app.use(express.static(__dirname))
+app.use(express.static(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2020')))
 const server = createServer(app);
 const wss = new WebSocket.Server({ server });
 var connectionNumber = 0;
