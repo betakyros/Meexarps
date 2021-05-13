@@ -1,0 +1,1 @@
+web: node ./Personalitest/Assets/WebGLTemplates/AirConsole-2020/index.js
