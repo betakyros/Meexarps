@@ -6,12 +6,14 @@ const path = require('path');
 
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2020/controller.html'));
 })
 
 app.use(express.static(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2020')))
+	.listen(PORT, () => console.log("Listening on ${PORT}"));
 const server = createServer(app);
 const wss = new WebSocket.Server({ server });
 var connectionNumber = 0;
@@ -73,8 +75,9 @@ wss.on('connection', function(ws) {
   });
 });
 
-server.listen(process.env.PORT ||8080, function() {
-  console.log('Listening on http://localhost:8080');
+server.listen(8080, function() {
+  var portNumber = process.env.PORT ? "" + process.env.PORT : "8080";
+  console.log('Listening on http://localhost:' + portNumber);
 });
 
 function getTvScreen() {
