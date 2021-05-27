@@ -377,7 +377,7 @@ path, .jtk-endpoint {
         if(!isAirconsole) {
             //initialize websocket
             //socket = new WebSocket('ws://localhost:8080');
-            socket = new WebSocket('ws://meexarps-server.herokuapp.com');
+            socket = new WebSocket('wss://meexarps-server.herokuapp.com');
         
             //websocket
             socket.onmessage = function(event) {

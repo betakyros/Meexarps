@@ -18,7 +18,7 @@ public class SocketClientFranklin : MonoBehaviour
     async void Start()
     {
 //        websocket = new WebSocket("ws://localhost:8080");
-        websocket = new WebSocket("ws://meexarps-server.herokuapp.com");
+        websocket = new WebSocket("wss://meexarps-server.herokuapp.com");
 //    https://meexarps-server.herokuapp.com/
         websocket.OnOpen += () =>
         {
