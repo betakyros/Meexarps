@@ -17,8 +17,9 @@ public class SocketClientFranklin : MonoBehaviour
     // Start is called before the first frame update
     async void Start()
     {
-        websocket = new WebSocket("ws://localhost:8080");
-
+//        websocket = new WebSocket("ws://localhost:8080");
+        websocket = new WebSocket("ws://meexarps-server.herokuapp.com");
+//    https://meexarps-server.herokuapp.com/
         websocket.OnOpen += () =>
         {
             Debug.Log("Connection open!");
