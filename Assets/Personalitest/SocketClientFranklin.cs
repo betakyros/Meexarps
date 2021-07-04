@@ -1,83 +1,53 @@
 ﻿using UnityEngine;
-using NativeWebSocket;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Threading.Tasks;
+using Firesplash.UnityAssets.SocketIO;
 
 public class SocketClientFranklin : MonoBehaviour
 {
-    static WebSocket websocket { get; set; }
+    public SocketIOCommunicator socketIoCommunicator;
 
-    public WebSocket getWebSocket()
+    public SocketIOCommunicator getSocketIoCommunicator()
     {
-        return websocket;
+        return socketIoCommunicator;
     }
 
     // Start is called before the first frame update
-    async void Start()
+    void Start()
     {
-//        websocket = new WebSocket("ws://localhost:8080");
-        websocket = new WebSocket("wss://meexarps-server.herokuapp.com");
-//    https://meexarps-server.herokuapp.com/
-        websocket.OnOpen += () =>
+        socketIoCommunicator.Instance.On("connect", (String data) =>
         {
-            Debug.Log("Connection open!");
-        };
+            Debug.Log("Connected");
+            socketIoCommunicator.Instance.Emit("computerMessage", "init", true);
+        });
 
-        websocket.OnError += (e) =>
+        socketIoCommunicator.Instance.On("disconnect", (String data) =>
         {
-            Debug.Log("Error! " + e);
-        };
-
-        websocket.OnClose += (e) =>
-        {
-            Debug.Log("Connection closed!");
-        };
-
-        websocket.OnMessage += (bytes) =>
-        {
-            /*
-            Debug.Log("OnMessage!");
-            Debug.Log(bytes);
-            */
-            // getting the message as a string
-            var message = System.Text.Encoding.UTF8.GetString(bytes);
-            Debug.Log("OnMessage! " + message);
-        };
-
-        // waiting for messages
-        await websocket.Connect();
-    }
-
-    void Update()
-    {
-#if !UNITY_WEBGL || UNITY_EDITOR
-        websocket.DispatchMessageQueue();
-#endif
+            Debug.Log("Disconnected");
+        });
     }
 
     //target = -1 is a broadcast
-    public async void SendWebSocketMessage(string message)
+    public void SendWebSocketMessage(string message)
     {
-        await WaitForConnection();
-        if (websocket.State == WebSocketState.Open)
-        {
-            await websocket.SendText(message);
-        }
+        //await WaitForConnection();
+        socketIoCommunicator.Instance.Emit("computerMessage", message);
     }
     public async Task<bool> WaitForConnection()
     {
-        while (websocket == null || websocket.State != WebSocketState.Open)
+        
+        while (Application.isPlaying && (socketIoCommunicator == null || socketIoCommunicator.Instance == null || !socketIoCommunicator.Instance.IsConnected()))
         {
             Debug.Log("waiting 1s for socket to open");
             await Task.Delay(1000);
         }
+        
         return true;
     }
 
-    private async void OnApplicationQuit()
+    private void OnApplicationQuit()
     {
-        await websocket.Close();
+        Debug.Log("closing application");
+        socketIoCommunicator.Instance.Close();
     }
 }

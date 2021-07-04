@@ -343,6 +343,7 @@ path, .jtk-endpoint {
 }
     </style>
     <script src="https://cdn.rangetouch.com/2.0.1/rangetouch.js"></script>
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
     <script type="text/javascript">
     var keyboard;
     var isAirconsole = false;
@@ -377,22 +378,31 @@ path, .jtk-endpoint {
         if(!isAirconsole) {
             //initialize websocket
             //socket = new WebSocket('ws://localhost:8080');
-            socket = new WebSocket('wss://meexarps-server.herokuapp.com');
-        
-            //websocket
-            socket.onmessage = function(event) {
-                console.log(event);
-                //first parameter unused
-                App.prototype.receiveMessages(-1, event.data);
-            }
-            socket.onopen = function(event) {
-	            console.log('Connected to: ' + event.currentTarget.url);
+            //socket = new WebSocket('wss://meexarps-server.herokuapp.com');
+            console.log("startingto connect");
+            //const socket = io('wss://meexarps-server.herokuapp.com');
+            //const socket = io('ws://localhost:8080');
+            socket = io();
+
+            socket.on("connect", function(event) {
+                
+	            console.log('Connected to: ' + event);
                 var systemSetup = {
                     "action" : "system",
                     "isPhone" : "true"
                 };
-                socket.send(JSON.stringify(systemSetup));
-	        };
+                socket.emit("phoneMessage", JSON.stringify(systemSetup));
+                
+               console.log("connected");
+	        });
+            socket.on("computerMessage", function(event) {
+                console.log("computerMessage: " + JSON.stringify(event));
+                App.prototype.receiveMessages(-1, event);
+            });
+            socket.onAny((event, ...args) => {
+                console.log("messageReceived: ");
+                console.log(event, args);
+            });
         }
         //reimplement scrolling using touch events
         var x = document.getElementsByClassName("noScrollbar");
@@ -1732,11 +1742,12 @@ path, .jtk-endpoint {
                     me.air_console.message(AirConsole.SCREEN, message);
                 } else {
                     //websocket
+                    /*
                     var wrappedMessage = {
                         'action' : "phoneMessage",
                         'message': message
-                    };
-                    socket.send(JSON.stringify(wrappedMessage));
+                    };*/
+                    socket.emit("phoneMessage", JSON.stringify(message));
 
                 }
             

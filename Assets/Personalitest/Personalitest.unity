@@ -14661,6 +14661,7 @@ GameObject:
   - component: {fileID: 1259476606}
   - component: {fileID: 1259476607}
   - component: {fileID: 1259476608}
+  - component: {fileID: 1259476614}
   m_Layer: 0
   m_Name: Scripts
   m_TagString: Untagged
@@ -14734,7 +14735,7 @@ MonoBehaviour:
   - {fileID: 1308981084}
   - {fileID: 766083804}
   roundCounter: {fileID: 867767614}
-  socketClient: {fileID: 1259476608}
+  socket: {fileID: 1259476608}
 --- !u!114 &1259476602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15019,6 +15020,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3647a0a55ba9f9f43a2345d35d7e21ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  socketIoCommunicator: {fileID: 1259476614}
 --- !u!82 &1259476609
 AudioSource:
   m_ObjectHideFlags: 0
@@ -15191,6 +15193,21 @@ MonoBehaviour:
   isAnswerQuestionsGrid: 1
   isWelcomeScreen: 0
   isResultsPanel: 0
+--- !u!114 &1259476614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259476600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a51bb71fdd88524994e50b1dd0eb958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  socketIOAddress: localhost:3000
+  secureConnection: 0
+  autoConnect: 1
 --- !u!1 &1276434047
 GameObject:
   m_ObjectHideFlags: 0

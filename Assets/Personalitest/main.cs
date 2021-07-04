@@ -56,7 +56,7 @@ public class main : MonoBehaviour
     public AudioClip debouncedNoise;
     public Animator[] animators;
     public GameObject roundCounter;
-    public SocketClientFranklin socketClient;
+    public SocketClientFranklin socket;
 
     private int currentCategoryIndex;
     private int selectedCategory;
@@ -71,7 +71,6 @@ public class main : MonoBehaviour
     private bool writeMyOwnQuestions = false;
     private Dictionary<string, bool> options = new Dictionary<string, bool>();
     private float optionsVolume;
-    private static SocketClientFranklin socket;
 
     private bool isWinterHolidaySeason = System.DateTime.Today.Month == 1 || System.DateTime.Today.Month == 12;
 
@@ -81,11 +80,6 @@ public class main : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(!isAirconsole)
-        {
-            socket = new SocketClientFranklin();
-        }
-
         if(isWinterHolidaySeason)
         {
             GameObject.FindWithTag("SplashScreenImage").gameObject.SetActive(false);
@@ -179,7 +173,17 @@ public class main : MonoBehaviour
             AirConsole.instance.onAdShow += OnAdShow;
         } else
         {
-            InitializeWebsocket();
+            socket.getSocketIoCommunicator().Instance.On("phoneMessage", (data) =>
+            {
+                Debug.Log("phoneMessage");
+                Debug.Log(data);
+                Debug.Log(JToken.Parse(data));
+                JToken parsedData = JToken.Parse(data);
+                Debug.Log((int)parsedData["clientId"]);
+                Debug.Log(parsedData["data"]);
+
+                OnMessage((int)parsedData["clientId"], parsedData["data"]);
+            });
         }
         gameState = new GameState();
         currentQuestionIndex = 0;
@@ -187,40 +191,6 @@ public class main : MonoBehaviour
         audienceWouldYouRathers = new Dictionary<int, int>();
         StartCoroutine(waitThreeSecondsThenDisplayWelcomeScreen());
         ChangeBackground(3);
-    }
-
-    private async void InitializeWebsocket()
-    {
-        await socket.WaitForConnection();
-        JObject msg = new JObject();
-        msg.Add("action", "system");
-        msg.Add("isPhone", false);
-        msg.Add("playerNumber", -1);
-        socket.SendWebSocketMessage(msg.ToString());
-
-        socket.getWebSocket().OnMessage += (bytes) => {
-            JToken token = JToken.Parse(Encoding.UTF8.GetString(bytes));
-            string json = token.ToString();
-            Debug.Log("Action! " + token["action"]);
-            Debug.Log("clientId! " + token["clientId"]);
-            Debug.Log("playerNumber! " + token["playerNumber"]);
-
-
-            int clientId = token["clientId"].ToObject<int>();
-            JToken data = token["data"];
-            OnMessage(clientId, data);
-            /*
-            if (token["playerNumber"] == null)
-            {
-                int clientId = token["clientId"].ToObject<int>();
-                OnMessage(clientId, JToken.Parse(json));
-            } else
-            {
-                int playerNumber = token["playerNumber"].ToObject<int>();
-                OnMessage(playerNumber, JToken.Parse(json));
-            }
-            */
-        };
     }
 
     private IEnumerator<WaitForSeconds> waitThreeSecondsThenDisplayWelcomeScreen()
@@ -981,7 +951,7 @@ public class main : MonoBehaviour
         return playersWhoHaventSubmitted;
     }
 
-    private static void BroadcastSelectedAliens(Dictionary<int, int[]> alienSelections)
+    private void BroadcastSelectedAliens(Dictionary<int, int[]> alienSelections)
     {
         string selectedAliens = "";
         foreach (int alienNumber in alienSelections.Keys)
@@ -1117,7 +1087,7 @@ public class main : MonoBehaviour
             payload.ToArray()));
     }
 
-    private static void SendIsVip(Player currentPlayer)
+    private void SendIsVip(Player currentPlayer)
     {
         SendMessageToPhone(currentPlayer.deviceId, new JsonAction("setIsVip", new[] { "" }));
     }
@@ -1149,7 +1119,7 @@ public class main : MonoBehaviour
         }
     }
 
-    private static void sendWaitScreenToPlayer(Player p)
+    private void sendWaitScreenToPlayer(Player p)
     {
         SendMessageToPhone(p.deviceId, new JsonAction("sendWaitScreen", new string[] { }));
     }
@@ -1965,7 +1935,7 @@ public class main : MonoBehaviour
         autoResizeGrid.enabled = true;
     }
 
-    private static void debugOnPhone(string key, string value)
+    private void debugOnPhone(string key, string value)
     {
         Debug.Log(key + ": " + value);
         JsonAction jsonAction = new JsonAction("debug", new string[] { key + ": " + value });
@@ -2874,7 +2844,7 @@ public class main : MonoBehaviour
             }
         }
     }
-    private static void BroadcastToAllPhones(JsonAction jsonAction)
+    private void BroadcastToAllPhones(JsonAction jsonAction)
     {
         if(isAirconsole)
         {
@@ -2882,24 +2852,29 @@ public class main : MonoBehaviour
         }
         else
         {
+            
             JObject msg = new JObject();
             msg.Add("action", "broadcast");
             msg.Add("data", JToken.FromObject(jsonAction));
             socket.SendWebSocketMessage(msg.ToString());
+            
+            socket.SendWebSocketMessage(JToken.FromObject(msg).ToString());
         }
     }
-    private static void SendMessageToPhone(int from, JsonAction jsonAction)
+    private void SendMessageToPhone(int from, JsonAction jsonAction)
     {
         if (isAirconsole)
         {
             AirConsole.instance.Message(from, jsonAction);
         } else
         {
+            
             JObject msg = new JObject();
             msg.Add("action", "message");
             msg.Add("from", "" + from);
             msg.Add("data", JToken.FromObject(jsonAction));
-            socket.SendWebSocketMessage(msg.ToString());
+            
+            socket.SendWebSocketMessage(JToken.FromObject(msg).ToString());
         }
     }
 

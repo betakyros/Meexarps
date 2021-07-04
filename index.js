@@ -1,7 +1,8 @@
 //const crypto = require('crypto');
 const express = require('express');
 const { createServer } = require('http');
-const WebSocket = require('ws');
+//const WebSocket = require('ws');
+
 const path = require('path');
 
 
@@ -9,14 +10,95 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2020/controller.html'));
-})
+  res.sendFile(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2020/keyboard.html'));
+});
 
 app.use(express.static(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2020')));
 const server = createServer(app);
-server.listen(PORT, () => console.log("Listening on ${PORT}"))
-const wss = new WebSocket.Server({ server });
-var connectionNumber = 0;
+const io = require("socket.io")(server, {});
+
+var computerSocket;
+var playerSockets = [];
+  io.on("connection", (socket) => {
+	  console.log("connection started");
+
+	  socket.join("room1");
+	  console.log(socket.rooms); 
+	  socket.onAny((eventName, ...args) => {
+		console.log(eventName, args);
+		});
+
+		socket.on("phoneMessage", (data) => {
+			var jsonData = JSON.parse(data);
+			console.log("phoneMessage", jsonData);
+			console.log("data", jsonData.action);
+			if(computerSocket) {
+				if(jsonData.action == "system") {
+					console.log("phoneMessage - system", jsonData);	
+					var playerNumber = playerSockets.push(socket.id) - 1;
+					var initJson = {
+						"data": {"action":"websocketInitialConnect"}, 
+						"clientId": playerNumber
+					};
+					console.log("computerSocket: " + computerSocket);
+					socket.to(computerSocket.id).emit("phoneMessage", initJson);
+				} else {
+					console.log("phoneMessage - normal", jsonData);	
+					var playerNumber = playerSockets.lastIndexOf(socket.id)
+					var wrappedJsonData = {
+						"data":jsonData, 
+						"clientId": playerNumber
+					};
+					socket.to(computerSocket.id).emit("phoneMessage", wrappedJsonData);
+				}
+			}
+		});
+	
+		socket.on("computerMessage", (data) => {
+			if(data == "init") {
+				console.log("setting computer socket: " + socket);
+
+				computerSocket = socket;
+				return;
+			}
+			
+			var jsonData = data;
+			console.log("computer message: " + jsonData);
+			console.log("computerSocket: " + computerSocket);
+			console.log("!computerSocket: " + !computerSocket);
+
+			if(data.action == 'broadcast') {
+				console.log("broadcasting", data.data);
+				socket.broadcast.emit("computerMessage", jsonData.data);	
+			} else if (data.action == 'message') {
+				console.log("messaging " + jsonData.from);
+				socket.to(playerSockets[jsonData.from]).emit("computerMessage", jsonData.data);
+			} else {
+				console.log("unknown computer message");
+			}
+		});
+	});
+  io.on("disconnect", (reason) => {
+		console.log(reason); // "ping timeout"
+	  });
+  io.on("open", (data) => {
+	  console.log("open", data);
+	});
+  
+	io.on("message", (data) => {
+		console.log("message", data);
+	});
+
+	
+
+server.listen(PORT, () => console.log("Listening on ${PORT}"));
+/*
+io.use((socket, next) => {
+	console.log("used");
+});
+*/
+//const wss = new WebSocket.Server({ server });
+var connectionNumber = 0;/*
 wss.on('connection', function(ws) {
   console.log("client joined.");
   ws.id = connectionNumber;
@@ -74,6 +156,7 @@ wss.on('connection', function(ws) {
     console.log("client left.");
   });
 });
+*/
 
 function getTvScreen() {
 	for (var it = wss.clients.values(), currWs= null; currWs=it.next().value; ) {
