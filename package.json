@@ -10,7 +10,7 @@
     "express": "^4.17.1",
     "socket.io": "^4.1.2",
     "socketio": "^1.0.0",
-    "ws": "^7.4.5"
+    "ws": "^7.4.6"
   },
   "devDependencies": {},
   "scripts": {
