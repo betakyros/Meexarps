@@ -22,7 +22,6 @@ var playerSockets = [];
   io.on("connection", (socket) => {
 	  console.log("connection started");
 
-	  socket.join("room1");
 	  console.log(socket.rooms); 
 	  socket.onAny((eventName, ...args) => {
 		console.log(eventName, args);
@@ -39,9 +38,18 @@ var playerSockets = [];
 					"data": {"action":"websocketInitialConnect"}, 
 					"clientId": playerNumber
 				};
-				console.log("computerSocket: " + computerSocket);
-				console.log("roomCode: " + jsonData.roomCode);
-				//socket.to(computerSocket.id).emit("phoneMessage", initJson);
+				console.log("io.sockets.adapter.rooms["+jsonData.roomCode+"]: " + io.sockets.adapter.rooms[jsonData.roomCode]);
+				console.log("socket.id: " +socket.id);
+				if(io.sockets.adapter.rooms[jsonData.roomCode]) {
+					socket.join(jsonData.roomCode);
+					socket.to(jsonData.roomCode).emit("phoneMessage", initJson);
+				} else {
+					console.log("room doesn't exist")
+					var roomDoesntExist = {
+						"action":"roomDoesntExist"
+					};
+					socket.emit("systemMessage", roomDoesntExist);
+				}
 			}
 			if(computerSocket) {
 				console.log("phoneMessage - normal", jsonData);	
