@@ -348,6 +348,7 @@ path, .jtk-endpoint {
     var keyboard;
     var isAirconsole = false;
     var socket;
+    var roomCode;
 
 
     function init() {
@@ -382,14 +383,17 @@ path, .jtk-endpoint {
             console.log("startingto connect");
             //const socket = io('wss://meexarps-server.herokuapp.com');
             //const socket = io('ws://localhost:8080');
-            socket = io();
+            socket = io({
+                autoConnect: false
+            });
 
             socket.on("connect", function(event) {
                 
 	            console.log('Connected to: ' + event);
                 var systemSetup = {
                     "action" : "system",
-                    "isPhone" : "true"
+                    "isPhone" : "true",
+                    "roomCode": roomCode
                 };
                 socket.emit("phoneMessage", JSON.stringify(systemSetup));
                 
@@ -403,6 +407,8 @@ path, .jtk-endpoint {
                 console.log("messageReceived: ");
                 console.log(event, args);
             });
+
+            displayElement(document.getElementById("enterRoomCode"));
         }
         //reimplement scrolling using touch events
         var x = document.getElementsByClassName("noScrollbar");
@@ -1228,14 +1234,15 @@ path, .jtk-endpoint {
                 }
 			}
 
-            App.prototype.CheckName = function CheckName() {
+            /* THIS IS WHERE RESPONSES ARE DEFINED */
+            App.prototype.sendWelcomeInfo = function sendWelcomeInfo() {
                 /*
                 var nickname = document.getElementById('nickname').innerText;
                 */
-                var nickname = App.prototype.getKeyboardValue("nickname");
+                var roomCode = App.prototype.getKeyboardValue("nickname");
                 if(nickname) {
 				    var message = {
-					    'action': "checkName",
+					    'action': "sendWelcomeInfo",
 					    'info': {
                             'name': nickname,
                             'avatarId': 0,
@@ -1243,10 +1250,20 @@ path, .jtk-endpoint {
                         }
 				    };
 				    App.prototype.sendMessage(message);
+                    //App.prototype.showFirstTutorial();
                     //displayElement(document.getElementById("startGameScreenView"));
                 } else{
                     //todo display some error message
                 }
+			}
+
+            App.prototype.sendRoomCode = function sendRoomCode() {
+                /*
+                var nickname = document.getElementById('nickname').innerText;
+                */
+                roomCode = App.prototype.getKeyboardValue("roomCode");
+                console.log("room Code entered: " + roomCode);
+                socket.connect();
 			}
 
             App.prototype.sendStartGame = function sendStartGame() {
@@ -1830,6 +1847,7 @@ path, .jtk-endpoint {
           -webkit-user-select: text;
            user-select: text;
           text-align: left;
+          min-height: 18px;
       }
 
       .franklinInput:focus {
@@ -2290,6 +2308,20 @@ path, .jtk-endpoint {
             <div>
                 Waiting to Connect...
             </div>
+        </div>
+        <div class="view" id="enterRoomCode" style="height:unset;padding-top:30%; align-self:flex-start;display:block;">
+            <div style="width:100%; display: flex; justify-content: center;">
+                <div class="franklinImage" style="height:15vh; width: 15vh; background-image: url('./alien_purple_idle_transparent.gif')" ></div>
+            </div>
+            <br>
+            <div>
+                Enter Room Code
+            </div>
+            <div style="margin: 8px 0;width: 20%;margin:auto;" style="justify-content:center;">
+                <span  placeholder="Enter Room Code" class="franklinInput" contenteditable="true" id="roomCode-system" 
+                onmousedown="window.app.setPlaceholder('roomCode-system', '')" onblur="window.app.setPlaceholder('roomCode-system', 'Enter Room Code')"></span>
+            </div>
+            <div class="pseudo_button" onmousedown="window.app.sendRoomCode()">Join Room</div>
         </div>
         <div class="view" id="welcomeScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
             <p style="font-size:20px;">Welcome to</p>

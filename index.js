@@ -32,25 +32,25 @@ var playerSockets = [];
 			var jsonData = JSON.parse(data);
 			console.log("phoneMessage", jsonData);
 			console.log("data", jsonData.action);
+			if(jsonData.action == "system") {
+				console.log("phoneMessage - system", jsonData);	
+				var playerNumber = playerSockets.push(socket.id) - 1;
+				var initJson = {
+					"data": {"action":"websocketInitialConnect"}, 
+					"clientId": playerNumber
+				};
+				console.log("computerSocket: " + computerSocket);
+				console.log("roomCode: " + jsonData.roomCode);
+				//socket.to(computerSocket.id).emit("phoneMessage", initJson);
+			}
 			if(computerSocket) {
-				if(jsonData.action == "system") {
-					console.log("phoneMessage - system", jsonData);	
-					var playerNumber = playerSockets.push(socket.id) - 1;
-					var initJson = {
-						"data": {"action":"websocketInitialConnect"}, 
-						"clientId": playerNumber
-					};
-					console.log("computerSocket: " + computerSocket);
-					socket.to(computerSocket.id).emit("phoneMessage", initJson);
-				} else {
-					console.log("phoneMessage - normal", jsonData);	
-					var playerNumber = playerSockets.lastIndexOf(socket.id)
-					var wrappedJsonData = {
-						"data":jsonData, 
-						"clientId": playerNumber
-					};
-					socket.to(computerSocket.id).emit("phoneMessage", wrappedJsonData);
-				}
+				console.log("phoneMessage - normal", jsonData);	
+				var playerNumber = playerSockets.lastIndexOf(socket.id)
+				var wrappedJsonData = {
+					"data":jsonData, 
+					"clientId": playerNumber
+				};
+				socket.to(computerSocket.id).emit("phoneMessage", wrappedJsonData);
 			}
 		});
 	
