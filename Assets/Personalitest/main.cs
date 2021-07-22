@@ -184,6 +184,19 @@ public class main : MonoBehaviour
 
                 OnMessage((int)parsedData["clientId"], parsedData["data"]);
             });
+
+            socket.getSocketIoCommunicator().Instance.On("setRoomCode", (data) =>
+            {
+                Debug.Log("setRoomCode");
+                Debug.Log(data);
+                Debug.Log(JToken.Parse(data));
+                JToken parsedData = JToken.Parse(data);
+                Debug.Log(parsedData["roomCode"]);
+
+                Debug.Log("roomCode");
+                OnReadySteam(parsedData["roomCode"].ToString());
+            });
+
         }
         gameState = new GameState();
         currentQuestionIndex = 0;
@@ -287,6 +300,11 @@ public class main : MonoBehaviour
         gameCode = code;
         welcomeInstructionsText.text = "Navigate to airconsole.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!";
     }
+    void OnReadySteam(string code)
+    {
+        gameCode = code;
+        welcomeInstructionsText.text = "Navigate to meexaps.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!";
+    }
 
     void Update()
     {
@@ -334,8 +352,9 @@ public class main : MonoBehaviour
 
         if ("websocketInitialConnect".Equals(action))
         {
+            Debug.Log("websocketInitialConnect");
             OnConnect(from);
-        }
+        } 
         else if ("sendWelcomeInfo".Equals(action))
         {
             string name = ReplaceWhiteSpaceWithNormalSpace(data["info"]["name"].ToString().Trim());

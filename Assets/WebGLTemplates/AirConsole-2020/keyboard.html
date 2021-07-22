@@ -1224,30 +1224,10 @@ path, .jtk-endpoint {
                 /*
                 var nickname = document.getElementById('nickname').innerText;
                 */
-                var nickname = App.prototype.getKeyboardValue("nickname");
-                if(nickname) {
-				    var message = {
-					    'action': "sendWelcomeInfo",
-					    'info': {
-                            'name': nickname,
-                            'avatarId': 0,
-                            'selectedAlien': selectedAlien
-                        }
-				    };
-				    App.prototype.sendMessage(message);
-                    //App.prototype.showFirstTutorial();
-                    //displayElement(document.getElementById("startGameScreenView"));
-                } else{
-                    //todo display some error message
-                }
-			}
+                console.log("nickname: ");
 
-            /* THIS IS WHERE RESPONSES ARE DEFINED */
-            App.prototype.sendWelcomeInfo = function sendWelcomeInfo() {
-                /*
-                var nickname = document.getElementById('nickname').innerText;
-                */
-                var roomCode = App.prototype.getKeyboardValue("nickname");
+                var nickname = App.prototype.getKeyboardValue("nickname");
+                console.log("nickname: " + nickname);
                 if(nickname) {
 				    var message = {
 					    'action': "sendWelcomeInfo",

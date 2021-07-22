@@ -17,8 +17,6 @@ app.use(express.static(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2
 const server = createServer(app);
 const io = require("socket.io")(server, {});
 
-var computerSocket;
-var playerSockets = [];
   io.on("connection", (socket) => {
 	  console.log("connection started");
 
@@ -29,58 +27,70 @@ var playerSockets = [];
 
 		socket.on("phoneMessage", (data) => {
 			var jsonData = JSON.parse(data);
-			console.log("phoneMessage", jsonData);
-			console.log("data", jsonData.action);
-			if(jsonData.action == "system") {
-				console.log("phoneMessage - system", jsonData);	
-				var playerNumber = playerSockets.push(socket.id) - 1;
-				var initJson = {
-					"data": {"action":"websocketInitialConnect"}, 
-					"clientId": playerNumber
-				};
-				console.log("io.sockets.adapter.rooms["+jsonData.roomCode+"]: " + io.sockets.adapter.rooms[jsonData.roomCode]);
-				console.log("socket.id: " +socket.id);
-				if(io.sockets.adapter.rooms[jsonData.roomCode]) {
+			if(jsonData.action == "system") {	
+				console.log("system");			
+				if(io.sockets.adapter.rooms.get(jsonData.roomCode)) {
 					socket.join(jsonData.roomCode);
-					socket.to(jsonData.roomCode).emit("phoneMessage", initJson);
+					if(!io.sockets.adapter.rooms.get(jsonData.roomCode)["playerSockets"]) {
+						io.sockets.adapter.rooms.get(jsonData.roomCode)["playerSockets"] = [];
+					}
+					var playerNumber = io.sockets.adapter.rooms.get(jsonData.roomCode)["playerSockets"].push(socket.id) - 1;
+					var initJson = {
+						"data": {"action":"websocketInitialConnect"}, 
+						"clientId": playerNumber
+					};
+					var computerSockeId = io.sockets.adapter.rooms.get(jsonData.roomCode)["computerSocket"].id;
+					socket.to(computerSockeId).emit("phoneMessage", initJson);
 				} else {
-					console.log("room doesn't exist")
+					console.log("roomDoesntExist");			
+
 					var roomDoesntExist = {
 						"action":"roomDoesntExist"
 					};
 					socket.emit("systemMessage", roomDoesntExist);
 				}
-			}
-			if(computerSocket) {
-				console.log("phoneMessage - normal", jsonData);	
-				var playerNumber = playerSockets.lastIndexOf(socket.id)
-				var wrappedJsonData = {
-					"data":jsonData, 
-					"clientId": playerNumber
-				};
-				socket.to(computerSocket.id).emit("phoneMessage", wrappedJsonData);
+			} else {
+				socket.rooms.forEach(room => {
+					if(io.sockets.adapter.rooms.get(room)["computerSocket"]) {
+						console.log("phoneMessage - normal", JSON.stringify(jsonData));	
+						var playerNumber = io.sockets.adapter.rooms.get(room)["playerSockets"].lastIndexOf(socket.id)
+						var wrappedJsonData = {
+							"data":jsonData, 
+							"clientId": playerNumber
+						};
+						socket.to(io.sockets.adapter.rooms.get(room)["computerSocket"].id).emit("phoneMessage", wrappedJsonData);
+					}
+				})
 			}
 		});
 	
 		socket.on("computerMessage", (data) => {
 			if(data == "init") {
-				console.log("setting computer socket: " + socket);
-
-				computerSocket = socket;
+				var newRoomCode = getRandomString(4);
+				while(io.sockets.adapter.rooms.get(newRoomCode)) {
+					newRoomCode = getRandomString(4);
+				}
+				socket.join(newRoomCode);
+				io.sockets.adapter.rooms.get(newRoomCode)["computerSocket"] = socket;
+				var roomCodeJson = {
+					"roomCode":newRoomCode 
+				};
+				socket.emit("setRoomCode", roomCodeJson);
 				return;
 			}
 			
 			var jsonData = data;
-			console.log("computer message: " + jsonData);
-			console.log("computerSocket: " + computerSocket);
-			console.log("!computerSocket: " + !computerSocket);
-
 			if(data.action == 'broadcast') {
-				console.log("broadcasting", data.data);
-				socket.broadcast.emit("computerMessage", jsonData.data);	
+				socket.rooms.forEach(room => {
+					socket.to(room).emit("computerMessage", jsonData.data);
+				});	
 			} else if (data.action == 'message') {
-				console.log("messaging " + jsonData.from);
-				socket.to(playerSockets[jsonData.from]).emit("computerMessage", jsonData.data);
+				socket.rooms.forEach(room => {
+					if(io.sockets.adapter.rooms.get(room)["playerSockets"]) {
+						var playerSocket = io.sockets.adapter.rooms.get(room)["playerSockets"][jsonData.from];
+						socket.to(playerSocket).emit("computerMessage", jsonData.data);	
+					}
+				})
 			} else {
 				console.log("unknown computer message");
 			}
@@ -182,4 +192,13 @@ function getStreamByClientId(targetClientId) {
 			return currWs;
 		}
 	}
+}
+
+function getRandomString(length) {
+    var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var result = '';
+    for ( var i = 0; i < length; i++ ) {
+        result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+    }
+    return result;
 }
