@@ -28,18 +28,19 @@ const io = require("socket.io")(server, {});
 		socket.on("phoneMessage", (data) => {
 			var jsonData = JSON.parse(data);
 			if(jsonData.action == "system") {	
-				console.log("system");			
-				if(io.sockets.adapter.rooms.get(jsonData.roomCode)) {
-					socket.join(jsonData.roomCode);
-					if(!io.sockets.adapter.rooms.get(jsonData.roomCode)["playerSockets"]) {
-						io.sockets.adapter.rooms.get(jsonData.roomCode)["playerSockets"] = [];
+				console.log("system");
+				var roomCode = jsonData.roomCode.toUpperCase();
+				if(io.sockets.adapter.rooms.get(roomCode)) {
+					socket.join(roomCode);
+					if(!io.sockets.adapter.rooms.get(roomCode)["playerSockets"]) {
+						io.sockets.adapter.rooms.get(roomCode)["playerSockets"] = [];
 					}
-					var playerNumber = io.sockets.adapter.rooms.get(jsonData.roomCode)["playerSockets"].push(socket.id) - 1;
+					var playerNumber = io.sockets.adapter.rooms.get(roomCode)["playerSockets"].push(socket.id) - 1;
 					var initJson = {
 						"data": {"action":"websocketInitialConnect"}, 
 						"clientId": playerNumber
 					};
-					var computerSockeId = io.sockets.adapter.rooms.get(jsonData.roomCode)["computerSocket"].id;
+					var computerSockeId = io.sockets.adapter.rooms.get(roomCode)["computerSocket"].id;
 					socket.to(computerSockeId).emit("phoneMessage", initJson);
 				} else {
 					console.log("roomDoesntExist");			
