@@ -1,4 +1,5 @@
 //const crypto = require('crypto');
+const { Console } = require('console');
 const express = require('express');
 const { createServer } = require('http');
 //const WebSocket = require('ws');
@@ -22,7 +23,12 @@ const io = require("socket.io")(server, {});
 
 	  console.log(socket.rooms); 
 	  socket.onAny((eventName, ...args) => {
-		console.log(eventName, args);
+		  var color = eventName.includes("computer") ? "\x1b[33m" : eventName.includes("phone") ? "\x1b[36m" : "";
+		  if(Array.isArray(args)) {
+			console.log(color, eventName, JSON.stringify(args));
+		  } else {
+			console.log(color,eventName, args);
+		  }
 		});
 
 		socket.on("phoneMessage", (data) => {
@@ -43,7 +49,8 @@ const io = require("socket.io")(server, {});
 					var computerSockeId = io.sockets.adapter.rooms.get(roomCode)["computerSocket"].id;
 					socket.to(computerSockeId).emit("phoneMessage", initJson);
 				} else {
-					console.log("roomDoesntExist");			
+					console.log("roomDoesntExist");	
+					console.log("rooms: " + JSON.stringify(io.sockets.adapter.rooms));		
 
 					var roomDoesntExist = {
 						"action":"roomDoesntExist"
@@ -77,6 +84,7 @@ const io = require("socket.io")(server, {});
 					"roomCode":newRoomCode 
 				};
 				socket.emit("setRoomCode", roomCodeJson);
+				console.log("roomCode: " + roomCodeJson);
 				return;
 			}
 			
@@ -110,7 +118,7 @@ const io = require("socket.io")(server, {});
 
 	
 
-server.listen(PORT, () => console.log("Listening on ${PORT}"));
+server.listen(PORT, () => console.log(`Listening on ${PORT}`));
 /*
 io.use((socket, next) => {
 	console.log("used");

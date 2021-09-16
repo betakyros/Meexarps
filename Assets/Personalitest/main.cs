@@ -1074,7 +1074,7 @@ public class main : MonoBehaviour
         }
         int currNumAudience = gameState.GetNumberOfAudience();
 
-        if (from > 0)
+        if (from >= 0)
         {
             if (currNumAudience == 0)
             {
