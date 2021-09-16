@@ -8,6 +8,7 @@ public class WouldYouRatherTimer : MonoBehaviour
 {
     public TextMeshProUGUI timerText;
     private float startTime;
+    private float duration = 20f;
 
     // Start is called before the first frame update
     void Start()
@@ -20,12 +21,17 @@ public class WouldYouRatherTimer : MonoBehaviour
     {
         if(null != timerText)
         {
-            timerText.SetText(Mathf.RoundToInt(20f - ((Time.time - startTime) % 60)) + "");
+            timerText.SetText(Mathf.RoundToInt(duration - ((Time.time - startTime) % 60)) + "");
         }
     }
 
     public void SetTimerText(TextMeshProUGUI t)
     {
         timerText = t;
+    }
+
+    public void SetTimerDuration(float f)
+    {
+        duration = f;
     }
 }

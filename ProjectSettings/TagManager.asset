@@ -20,6 +20,8 @@ TagManager:
   - WinterSplashScreenImage
   - VotingPanelGrid
   - ResultsPanelGrid
+  - OfflineVotingPanel
+  - OfflineVotingText
   layers:
   - Default
   - TransparentFX

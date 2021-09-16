@@ -27,6 +27,7 @@ public class main : MonoBehaviour
     public GameObject welcomeScreenPanel;
     public GameObject selectRoundNumberPanel;
     public GameObject wouldYouRatherPanel;
+    public GameObject offlineQuestionPanel;
     public GameObject answerQuestionsPanel;
     public GameObject votingPanel;
     public GameObject resultsPanel;
@@ -64,6 +65,8 @@ public class main : MonoBehaviour
     private int currentQuestionIndex;
     private int currentWouldYouRatherIndex;
     private string gameCode;
+    private bool isOfflineMode = false;
+    private int offlineWouldYouRatherCount = 0;
     private static int VIP_PLAYER_NUMBER = 0;
     private static int AUDIENCE_THRESHOLD = 6;
     private static int AUDIENCE_ALIEN_NUMBER = 6;
@@ -232,6 +235,21 @@ public class main : MonoBehaviour
         }
         */
         fadeStoryScreenScript.Setup(3.0f);
+        if (gameCode == null)
+        {
+            isOfflineMode = true;
+            OnReadyOffline();
+            yield return new WaitForSeconds(3);
+
+            CancelInvoke();
+            GameObject gameObject = GameObject.Find("WelcomeScreenPanel");
+            if (gameObject != null)
+            {
+                gameObject.SetActive(false);
+            }
+            ExitWelcomeScreen();
+            StartRound();
+        }
         sendWelcomeScreenInfo(-1, -1);
     }
 
@@ -304,6 +322,10 @@ public class main : MonoBehaviour
     {
         gameCode = code;
         welcomeInstructionsText.text = "Navigate to meexaps.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!";
+    }
+    void OnReadyOffline()
+    {
+        welcomeInstructionsText.text = "Could not connect to Meexarps servers. Starting in offline mode!";
     }
 
     void Update()
@@ -715,17 +737,7 @@ public class main : MonoBehaviour
             else
             {
                 playerNumber = gameState.players[from].playerNumber;
-                Image[] images = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
-                List<Image> iconTags = getPlayerIconTags(images, "WouldYouRatherPlayerIcon");
-                float xOffset = canvas.GetComponent<RectTransform>().rect.width * 0.2f/* * canvas.scaleFactor*/;
-                if (leftOrRight == 0)
-                {
-                    movePlayerIcon(iconTags[playerNumber], -1 * xOffset);
-                }
-                else
-                {
-                    movePlayerIcon(iconTags[playerNumber], xOffset);
-                }
+                moveWouldYouRatherIcon(leftOrRight, playerNumber);
             }
         }
         else if ("sendCategory".Equals(action))
@@ -892,6 +904,21 @@ public class main : MonoBehaviour
         }
     }
 
+    private void moveWouldYouRatherIcon(int leftOrRight, int playerNumber)
+    {
+        Image[] images = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
+        List<Image> iconTags = getPlayerIconTags(images, "WouldYouRatherPlayerIcon");
+        float xOffset = canvas.GetComponent<RectTransform>().rect.width * 0.2f/* * canvas.scaleFactor*/;
+        if (leftOrRight == 0)
+        {
+            movePlayerIcon(iconTags[playerNumber], -1 * xOffset);
+        }
+        else
+        {
+            movePlayerIcon(iconTags[playerNumber], xOffset);
+        }
+    }
+
     private void SendInitialRequestToPhone()
     {
         if (storyPanel.activeSelf)
@@ -1037,7 +1064,10 @@ public class main : MonoBehaviour
         StopAllLevels(welcomeScreenAudioSources);
         //introAudioSource.Stop();
         StartAllLevels(thinkingAudioSources);
-        StartCoroutine(ShowIntroInstrucitons(2));
+        if(!isOfflineMode)
+        {
+            StartCoroutine(ShowIntroInstrucitons(2));
+        }
     }
 
     private void SetAudienceWouldYouRatherCounters(int leftAudience, int rightAudience)
@@ -1413,69 +1443,74 @@ public class main : MonoBehaviour
         //set isOpen to false
         wouldYouRatherPanel.SetActive(true);
 
-        //also sets to true
-        gameState.updateRoundCounter(roundCounter);
-        moveRoundCounter(false);
+        if (!isOfflineMode)
+        {
+            //also sets to true
+            gameState.updateRoundCounter(roundCounter);
+            moveRoundCounter(false);
+            //display only the active players without the current question writer
+            int playerIconOffset = 14;
+            Image[] playerIcons = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
+            List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
 
-        //display only the active players without the current question writer
-        int playerIconOffset = 14;
-        Image[] playerIcons = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
-        List<Image> playerIconsList = getPlayerIconTags(playerIcons, "WouldYouRatherPlayerIcon");
-
-        //i = 6 also disables audience icon
-        //for (int i = 6; i >= gameState.GetNumberOfPlayers(); i--)
-        for (int i = 5; i >= gameState.GetNumberOfPlayers(); i--)
-        {
-            //playerIcons[playerIconOffset + i].gameObject.SetActive(false);
-            playerIconsList[i].gameObject.SetActive(false);
-        }
-        //reset all active players to active
-        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
-        {
-            //playerIcons[playerIconOffset + i].gameObject.SetActive(true);
-            playerIconsList[i].gameObject.SetActive(true);
-            //GameObject g = playerIconsList[i].GetComponentInChildren<Animator>().gameObject;
-            updatePlayerAnimator(playerIconsList[i].GetComponentInChildren<Animator>(), i);
-        }
-        if (gameState.audienceMembers.Count > 0)
-        {
-            playerIcons[playerIconOffset + 6].gameObject.SetActive(true);
-        }
-        //also set the current player's icon to inactive
-        //playerIcons[playerIconOffset + gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
-        playerIconsList[gameState.GetCurrentWritingPlayer().playerNumber].gameObject.SetActive(false);
-
-        /*
-        //set the current player's icon to true
-        int currentPlayerIconPanelOffset = 14;
-        for (int i = 0; i < 6; i++)
-        {
-            if(i == gameState.GetCurrentRoundNumber())
+            //i = 6 also disables audience icon
+            //for (int i = 6; i >= gameState.GetNumberOfPlayers(); i--)
+            for (int i = 5; i >= gameState.GetNumberOfPlayers(); i--)
             {
-                playerIcons[currentPlayerIconPanelOffset + i].gameObject.SetActive(true);
-            } else
-            {
-                playerIcons[currentPlayerIconPanelOffset + i].gameObject.SetActive(false);
+                //playerIcons[playerIconOffset + i].gameObject.SetActive(false);
+                playerIconsList[i].gameObject.SetActive(false);
             }
-        }
-        */
-        //Set the current player's name
-        Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
-        string playerName = gameState.GetCurrentWritingPlayer().nickname;
-        getPlayerIconTags(playerIcons, "Banner")[0].GetComponentInChildren<TextMeshProUGUI>().text = "It's " + playerName + "'s turn to write questions!";
-        
-        Text[] playerTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
-        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
-        {
-            playerIconsList[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
-        }
+            //reset all active players to active
+            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+            {
+                //playerIcons[playerIconOffset + i].gameObject.SetActive(true);
+                playerIconsList[i].gameObject.SetActive(true);
+                //GameObject g = playerIconsList[i].GetComponentInChildren<Animator>().gameObject;
+                updatePlayerAnimator(playerIconsList[i].GetComponentInChildren<Animator>(), i);
+            }
+            if (gameState.audienceMembers.Count > 0)
+            {
+                playerIcons[playerIconOffset + 6].gameObject.SetActive(true);
+            }
+            //also set the current player's icon to inactive
+            //playerIcons[playerIconOffset + gameState.GetCurrentRoundNumber()].gameObject.SetActive(false);
+            playerIconsList[gameState.GetCurrentWritingPlayer().playerNumber].gameObject.SetActive(false);
 
-        //controllers in the retrieve questions state will ignore would you rathers
-        int currentPlayerTurnDeviceId = gameState.GetCurrentWritingPlayer().deviceId;
-        SendSelectCategory(currentPlayerTurnDeviceId);
+            /*
+            //set the current player's icon to true
+            int currentPlayerIconPanelOffset = 14;
+            for (int i = 0; i < 6; i++)
+            {
+                if(i == gameState.GetCurrentRoundNumber())
+                {
+                    playerIcons[currentPlayerIconPanelOffset + i].gameObject.SetActive(true);
+                } else
+                {
+                    playerIcons[currentPlayerIconPanelOffset + i].gameObject.SetActive(false);
+                }
+            }
+            */
+            //Set the current player's name
+            Text[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
+            string playerName = gameState.GetCurrentWritingPlayer().nickname;
+            getPlayerIconTags(playerIcons, "Banner")[0].GetComponentInChildren<TextMeshProUGUI>().text = "It's " + playerName + "'s turn to write questions!";
 
+            Text[] playerTexts = wouldYouRatherPanel.GetComponentsInChildren<Text>(true);
+            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+            {
+                playerIconsList[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text = gameState.GetPlayerByPlayerNumber(i).nickname;
+            }
+
+            //controllers in the retrieve questions state will ignore would you rathers
+            int currentPlayerTurnDeviceId = gameState.GetCurrentWritingPlayer().deviceId;
+            SendSelectCategory(currentPlayerTurnDeviceId);
+        }
         gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
         gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
+        if(isOfflineMode)
+        {
+            offlineWouldYouRatherCount = 0;
+        }
         InvokeRepeating("SendWouldYouRather", 0f, 20f);
     }
 
@@ -1626,22 +1661,26 @@ public class main : MonoBehaviour
         }
         WouldYouRatherTimer wyrt = wouldYouRatherPanel.AddComponent<WouldYouRatherTimer>();
         wyrt.SetTimerText(wouldYouRatherPanel.GetComponentsInChildren<TextMeshProUGUI>()[1]);
-        //reset the icons
-        int playerIconOffset = 5;
-        Image[] playerIconPanels = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
-        List<Image> playerIconTags = getPlayerIconTags(playerIconPanels, "WouldYouRatherPlayerIcon");
-        for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+        if (!isOfflineMode)
         {
-            if (i == gameState.GetCurrentWritingPlayer().playerNumber) {
-                //don't do anything for the current player
-                continue;
+            //reset the icons
+            int playerIconOffset = 5;
+            Image[] playerIconPanels = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
+            List<Image> playerIconTags = getPlayerIconTags(playerIconPanels, "WouldYouRatherPlayerIcon");
+            for (int i = 0; i < gameState.GetNumberOfPlayers(); i++)
+            {
+                if (i == gameState.GetCurrentWritingPlayer().playerNumber)
+                {
+                    //don't do anything for the current player
+                    continue;
+                }
+                movePlayerIcon(playerIconTags[i], 0);
             }
-            movePlayerIcon(playerIconTags[i], 0);
-        }
-        audienceWouldYouRathers.Clear();
-        if(gameState.audienceMembers.Count != 0)
-        {
-            SetAudienceWouldYouRatherCounters(0, 0);
+            audienceWouldYouRathers.Clear();
+            if (gameState.audienceMembers.Count != 0)
+            {
+                SetAudienceWouldYouRatherCounters(0, 0);
+            }
         }
         TextMeshProUGUI[] wouldYouRatherTexts = wouldYouRatherPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
         string[] currentWouldYouRather = wouldYouRathers[currentWouldYouRatherIndex++ % wouldYouRathers.Count];
@@ -1650,9 +1689,61 @@ public class main : MonoBehaviour
         wouldYouRatherTexts[2].text = currentWouldYouRather[1];
         //right answer
         wouldYouRatherTexts[3].text = currentWouldYouRather[2];
-        //Maybe send the possible answers here
-        string waitingForPlayerName = gameState.GetCurrentWritingPlayer().nickname;
-        BroadcastToAllPhones(new JsonAction("sendWouldYouRather", new[] { waitingForPlayerName }));
+        if (!isOfflineMode)
+        {
+            //Maybe send the possible answers here
+            string waitingForPlayerName = gameState.GetCurrentWritingPlayer().nickname;
+            BroadcastToAllPhones(new JsonAction("sendWouldYouRather", new[] { waitingForPlayerName }));
+        } else
+        {
+            Image[] playerIconPanels = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
+
+            List<Image> playerIconTags = getPlayerIconTags(playerIconPanels, "WouldYouRatherPlayerIcon");
+            for (int i = 0; i < 6; i++)
+            {
+                movePlayerIcon(playerIconTags[i], 0);
+            }
+            StartCoroutine(OfflineWouldYouRather());
+            
+            offlineWouldYouRatherCount++;
+            if(offlineWouldYouRatherCount > 3)
+            {
+                //Stop the would you rathers
+                CancelInvoke();
+                StartCoroutine(OfflineQuestionPhase());
+            }
+        }
+    }
+
+    private IEnumerator<WaitForSeconds> OfflineQuestionPhase()
+    {
+        wouldYouRatherPanel.SetActive(false);
+        offlineQuestionPanel.SetActive(true);
+        offlineQuestionPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].text = GetRandomQuestion() + "\n\n" + GetRandomQuestion() + "\n\n" + GetRandomQuestion();
+
+        WouldYouRatherTimer oldWouldYouRatherTimer = offlineQuestionPanel.GetComponent<WouldYouRatherTimer>();
+        if (null == oldWouldYouRatherTimer)
+        {
+            Destroy(oldWouldYouRatherTimer);
+        }
+        int questionTime = 180;
+        WouldYouRatherTimer wyrt = offlineQuestionPanel.AddComponent<WouldYouRatherTimer>();
+        wyrt.SetTimerDuration(questionTime);
+        wyrt.SetTimerText(offlineQuestionPanel.GetComponentsInChildren<TextMeshProUGUI>()[2]);
+        yield return new WaitForSeconds(questionTime);
+        offlineQuestionPanel.SetActive(false);
+        StartRound();
+    }
+
+    private IEnumerator<WaitForSeconds> OfflineWouldYouRather()
+    {
+        yield return new WaitForSeconds(8);
+        for (int i = 0; i < 6; i++)
+        {
+            int leftOrRight = Random.Range(0, 2);
+            moveWouldYouRatherIcon(leftOrRight, i);
+            yield return new WaitForSeconds(Random.Range(0f, 2f));
+        }
     }
 
     private void movePlayerIcon(Image playerIcon, float x)
