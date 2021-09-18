@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Firesplash.UnityAssets.SocketIO;
+using Newtonsoft.Json.Linq;
 
 public class SocketClientFranklin : MonoBehaviour
 {
@@ -18,7 +19,10 @@ public class SocketClientFranklin : MonoBehaviour
         socketIoCommunicator.Instance.On("connect", (String data) =>
         {
             Debug.Log("Connected");
-            socketIoCommunicator.Instance.Emit("computerMessage", "init", true);
+            JObject msg = new JObject();
+            msg.Add("action", "init");
+
+            socketIoCommunicator.Instance.Emit("computerMessage", JToken.FromObject(msg).ToString());
         });
 
         socketIoCommunicator.Instance.On("disconnect", (String data) =>

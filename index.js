@@ -21,13 +21,16 @@ const io = require("socket.io")(server, {});
   io.on("connection", (socket) => {
 	  console.log("connection started");
 
-	  console.log(socket.rooms); 
+	  console.log(JSON.stringify(socket.rooms)); 
 	  socket.onAny((eventName, ...args) => {
 		  var color = eventName.includes("computer") ? "\x1b[33m" : eventName.includes("phone") ? "\x1b[36m" : "";
+
 		  if(Array.isArray(args)) {
-			console.log(color, eventName, JSON.stringify(args));
+			console.log(color, eventName, args);
+			console.log('compMessage: ', args);
 		  } else {
 			console.log(color,eventName, args);
+			console.log('compMessage: ', args);
 		  }
 		});
 
@@ -35,7 +38,7 @@ const io = require("socket.io")(server, {});
 			var jsonData = JSON.parse(data);
 			if(jsonData.action == "system") {	
 				console.log("system");
-				var roomCode = jsonData.roomCode.toUpperCase();
+				var roomCode = jsonData.roomCode.toUpperCase().trim();
 				if(io.sockets.adapter.rooms.get(roomCode)) {
 					socket.join(roomCode);
 					if(!io.sockets.adapter.rooms.get(roomCode)["playerSockets"]) {
@@ -73,7 +76,13 @@ const io = require("socket.io")(server, {});
 		});
 	
 		socket.on("computerMessage", (data) => {
-			if(data == "init") {
+			// when running in unity, data comes in as a json object. 
+			// when running in browser, data comes in as a string
+			var jsonData = data;
+			if(typeof data === "string") {
+				jsonData = JSON.parse(data);
+			} 
+			if(jsonData.action === "init") {
 				var newRoomCode = getRandomString(4);
 				while(io.sockets.adapter.rooms.get(newRoomCode)) {
 					newRoomCode = getRandomString(4);
@@ -88,12 +97,11 @@ const io = require("socket.io")(server, {});
 				return;
 			}
 			
-			var jsonData = data;
-			if(data.action == 'broadcast') {
+			if(jsonData.action === 'broadcast') {
 				socket.rooms.forEach(room => {
 					socket.to(room).emit("computerMessage", jsonData.data);
 				});	
-			} else if (data.action == 'message') {
+			} else if (jsonData.action === 'message') {
 				socket.rooms.forEach(room => {
 					if(io.sockets.adapter.rooms.get(room)["playerSockets"]) {
 						var playerSocket = io.sockets.adapter.rooms.get(room)["playerSockets"][jsonData.from];

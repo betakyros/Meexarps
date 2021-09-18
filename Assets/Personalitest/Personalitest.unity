@@ -15681,7 +15681,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   socketIOAddress: meexarps.herokuapp.com
-  secureConnection: 0
+  secureConnection: 1
   autoConnect: 1
 --- !u!1 &1262472307
 GameObject:

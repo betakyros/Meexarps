@@ -316,12 +316,9 @@ PlayerSettings:
   openGLRequireES31AEP: 0
   openGLRequireES32: 0
   m_TemplateCustomTags:
-    PROGRESS_BAR_BACKGROUND_COLOR: '#7eb2ff'
-    PROGRESS_BAR_COLOR: '#496eee'
-    PROGRESS_BAR_HEIGHT: 4%
-    PROGRESS_BAR_OFFSET_LEFT: 0%
-    PROGRESS_BAR_OFFSET_TOP: 0%
-    PROGRESS_BAR_WIDTH: 100%
+    BACKGROUND: 
+    OPTIMIZE_FOR_PIXEL_ART: 
+    SCALE_TO_FIT: 
   mobileMTRendering:
     iPhone: 1
     tvOS: 1
@@ -561,7 +558,7 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: PROJECT:AirConsole-2020
+  webGLTemplate: PROJECT:BetterMinimal
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 2
