@@ -1708,8 +1708,7 @@ public class main : MonoBehaviour
             offlineWouldYouRatherCount++;
             if(offlineWouldYouRatherCount > 3)
             {
-                //Stop the would you rathers
-                CancelInvoke();
+                Debug.Log("CalledOfflineQuestionPhase");
                 StartCoroutine(OfflineQuestionPhase());
             }
         }
@@ -1717,6 +1716,9 @@ public class main : MonoBehaviour
 
     private IEnumerator<WaitForSeconds> OfflineQuestionPhase()
     {
+        //Stop the would you rathers
+        CancelInvoke();
+
         wouldYouRatherPanel.SetActive(false);
         offlineQuestionPanel.SetActive(true);
         offlineQuestionPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].text = GetRandomQuestion() + "\n\n" + GetRandomQuestion() + "\n\n" + GetRandomQuestion();
@@ -1728,20 +1730,24 @@ public class main : MonoBehaviour
         }
         int questionTime = 180;
         WouldYouRatherTimer wyrt = offlineQuestionPanel.AddComponent<WouldYouRatherTimer>();
-        wyrt.SetTimerDuration(questionTime);
+        wyrt.SetTimerDuration((float)questionTime);
         wyrt.SetTimerText(offlineQuestionPanel.GetComponentsInChildren<TextMeshProUGUI>()[2]);
         yield return new WaitForSeconds(questionTime);
         offlineQuestionPanel.SetActive(false);
         StartRound();
+        Debug.Log("Called StartRound");
     }
 
     private IEnumerator<WaitForSeconds> OfflineWouldYouRather()
     {
         yield return new WaitForSeconds(8);
+        int[] playerNumbers = new int[] {0, 1, 2, 3, 4, 5};
+        playerNumbers.Shuffle();
+
         for (int i = 0; i < 6; i++)
         {
             int leftOrRight = Random.Range(0, 2);
-            moveWouldYouRatherIcon(leftOrRight, i);
+            moveWouldYouRatherIcon(leftOrRight, playerNumbers[i]);
             yield return new WaitForSeconds(Random.Range(0f, 2f));
         }
     }
