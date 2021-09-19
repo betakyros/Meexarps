@@ -49,6 +49,11 @@ public class SocketClientFranklin : MonoBehaviour
         return true;
     }
 
+    public string GetConnectionUrl()
+    {
+        return socketIoCommunicator.socketIOAddress;
+    }
+
     private void OnApplicationQuit()
     {
         Debug.Log("closing application");

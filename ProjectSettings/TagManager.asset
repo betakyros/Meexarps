@@ -22,6 +22,7 @@ TagManager:
   - ResultsPanelGrid
   - OfflineVotingPanel
   - OfflineVotingText
+  - RoomCodeValue
   layers:
   - Default
   - TransparentFX

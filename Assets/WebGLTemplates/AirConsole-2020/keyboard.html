@@ -1134,6 +1134,7 @@ path, .jtk-endpoint {
                     displayElement(document.getElementById("roundResultsView"));
                 } else if(myAction === "sendRevealNextPersonalRoundResult") {
                     var currTargetName = payload.data[0];
+
                     if(currTargetName == playerName || personalRoundResultsIsReconnect) {
                         haveIBeenRevealed = true;
                     } else {
@@ -1143,25 +1144,27 @@ path, .jtk-endpoint {
                         var currentAlien = alienSide.getElementsByTagName("img").item(revealedCount);
                         */
                         //currentAlien.src = "./alien_purple_idle_transparent.gif";
-                        var currentRow = currentUnrevealedNode.childNodes;
-                        setBackgroundImage(currentRow[0].firstChild.firstChild, App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[currTargetName]))
-                        currentRow[0].firstChild.firstChild.classList.add("votingAlienImage");
-                        var rightOrWrongImg = document.createElement('div');
+                        if(currentUnrevealedNode != null) { 
+                            var currentRow = currentUnrevealedNode.childNodes;
+                            setBackgroundImage(currentRow[0].firstChild.firstChild, App.prototype.getPlayerGif(playerNameToAlienNumberDictionary[currTargetName]))
+                            currentRow[0].firstChild.firstChild.classList.add("votingAlienImage");
+                            var rightOrWrongImg = document.createElement('div');
 
-                        if(personalRoundResults[revealedCount][2]) {
-                            setBackgroundImage(rightOrWrongImg, "./icon_circledCheck.png");
-                        } else {
-                            setBackgroundImage(rightOrWrongImg, "./icon_circledCross.png");                    
+                            if(personalRoundResults[revealedCount][2]) {
+                                setBackgroundImage(rightOrWrongImg, "./icon_circledCheck.png");
+                            } else {
+                                setBackgroundImage(rightOrWrongImg, "./icon_circledCross.png");                    
+                            }
+                            rightOrWrongImg.className="roundResultsImage";     
+                            rightOrWrongImg.classList.add("franklinImage");
+                            var centeringDiv = document.createElement("div");                        
+                            centeringDiv.classList.add("fullWidthCenteredImage");
+                            centeringDiv.appendChild(rightOrWrongImg);
+                            currentRow[1].appendChild(centeringDiv);
+
+                            revealedCount++;
+                            currentUnrevealedNode = currentUnrevealedNode.nextSibling;
                         }
-                        rightOrWrongImg.className="roundResultsImage";     
-                        rightOrWrongImg.classList.add("franklinImage");
-                        var centeringDiv = document.createElement("div");                        
-                        centeringDiv.classList.add("fullWidthCenteredImage");
-                        centeringDiv.appendChild(rightOrWrongImg);
-                        currentRow[1].appendChild(centeringDiv);
-
-                        revealedCount++;
-                        currentUnrevealedNode = currentUnrevealedNode.nextSibling;
                     }
                 } else if(myAction === "sendNextRoundScreen") {
                     document.getElementById("roundResultsLookAtTv").style.display = "none";
@@ -1252,6 +1255,24 @@ path, .jtk-endpoint {
                 roomCode = App.prototype.getKeyboardValue("roomCode");
                 console.log("room Code entered: " + roomCode);
                 socket.connect();
+			}
+
+            App.prototype.CheckName = function CheckName() {
+                var nickname = App.prototype.getKeyboardValue("nickname");
+                if(nickname) {
+				    var message = {
+					    'action': "checkName",
+					    'info': {
+                            'name': nickname,
+                            'avatarId': 0,
+                            'selectedAlien': selectedAlien
+                        }
+				    };
+				    App.prototype.sendMessage(message);
+                    //displayElement(document.getElementById("startGameScreenView"));
+                } else{
+                    //todo display some error message
+                }
 			}
 
             App.prototype.sendStartGame = function sendStartGame() {
@@ -1766,6 +1787,13 @@ path, .jtk-endpoint {
     }
     </script>
     <style type="text/css">
+
+
+
+      * {
+        user-select: none;
+      }
+
       .textfield {
         display: inline-block;
         border: 1px solid #888888;
@@ -2303,7 +2331,7 @@ path, .jtk-endpoint {
             </div>
             <br>
             <div>
-                Enter Room Code room
+                Enter Room Code
             </div>
             <div style="margin: 8px 0;width: 20%;margin:auto;" style="justify-content:center;">
                 <span  placeholder="Enter Room Code" class="franklinInput" contenteditable="true" id="roomCode-system" 

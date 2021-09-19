@@ -34,6 +34,8 @@ public class main : MonoBehaviour
     public GameObject endScreenPanel;
     public GameObject errorPanel;
     public GameObject audienceScoreCard;
+    public GameObject roomCodePanel;
+
     public Canvas canvas;
 //    public AudioSource introAudioSource;
     public AudioSource mainLoopAudioSource;
@@ -321,7 +323,8 @@ public class main : MonoBehaviour
     void OnReadySteam(string code)
     {
         gameCode = code;
-        welcomeInstructionsText.text = "Navigate to meexaps.com and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!";
+        welcomeInstructionsText.text = "Navigate to " + socket.GetConnectionUrl() + " and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!";
+        roomCodePanel.GetComponentsInChildren<TextMeshProUGUI>()[1].text = code;
     }
     void OnReadyOffline()
     {
@@ -538,6 +541,7 @@ public class main : MonoBehaviour
             {
                 CancelInvoke();
                 roundCounter.SetActive(false);
+                roomCodePanel.SetActive(false);
                 welcomeScreenPanel.SetActive(false);
                 selectRoundNumberPanel.SetActive(false);
                 wouldYouRatherPanel.SetActive(false);
@@ -1057,6 +1061,10 @@ public class main : MonoBehaviour
         }
 
         SendQuestions();
+        if (!isAirconsole)
+        {
+            moveRoomCodePanel(2);
+        }
     }
 
     private void ExitWelcomeScreen()
@@ -1447,7 +1455,12 @@ public class main : MonoBehaviour
         {
             //also sets to true
             gameState.updateRoundCounter(roundCounter);
+            roomCodePanel.SetActive(true);
             moveRoundCounter(false);
+            if (!isAirconsole)
+            {
+                moveRoomCodePanel(1);
+            }
             //display only the active players without the current question writer
             int playerIconOffset = 14;
             Image[] playerIcons = wouldYouRatherPanel.GetComponentsInChildren<Image>(true);
@@ -2222,6 +2235,10 @@ public class main : MonoBehaviour
         votingPanel.SetActive(false);
         resultsPanel.SetActive(true);
         moveRoundCounter(true);
+        if(!isAirconsole)
+        {
+            moveRoomCodePanel(3);
+        }
         //SendWaitScreenToEveryone();
         //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendPersonalRoundResults", new string[] { " " })));
         gameState.phoneViewGameState = PhoneViewGameState.SendPersonalRoundResultsScreen;
@@ -2606,9 +2623,38 @@ public class main : MonoBehaviour
         
     }
 
+    private void moveRoomCodePanel(int positionNum)
+    {
+        RectTransform roomCodeTransform = roomCodePanel.GetComponent<RectTransform>();
+
+        Vector2 origRoomCodeAnchorMin = roomCodeTransform.anchorMin;
+        Vector2 origRoomCodeAnchorMax = roomCodeTransform.anchorMax;
+        //LOW
+        if (positionNum == 1)
+        {
+            roomCodeTransform.anchorMin = new Vector2(origRoomCodeAnchorMin.x, .45f);
+            roomCodeTransform.anchorMax = new Vector2(origRoomCodeAnchorMax.x, .7f);
+        }
+        //MIDDLE
+        else if (positionNum == 2)
+        {
+            roomCodeTransform.anchorMin = new Vector2(origRoomCodeAnchorMin.x, .65f);
+            roomCodeTransform.anchorMax = new Vector2(origRoomCodeAnchorMax.x, .9f);
+        }
+        //HIGH
+        else if (positionNum == 3)
+        {
+            roomCodeTransform.anchorMin = new Vector2(origRoomCodeAnchorMin.x, .75f);
+            roomCodeTransform.anchorMax = new Vector2(origRoomCodeAnchorMax.x, 1f);
+        }
+    }
+
     private void moveRoundCounter(bool moveUp)
     {
         RectTransform roundCounterTransform = roundCounter.GetComponent<RectTransform>();
+
+
+
         Vector2 origAnchorMin = roundCounterTransform.anchorMin;
         Vector2 origAnchorMax = roundCounterTransform.anchorMax;
         if (moveUp)
@@ -2627,6 +2673,7 @@ public class main : MonoBehaviour
         gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
         gameState.tvViewGameState = TvViewGameState.EndGameScreen;
         roundCounter.SetActive(false);
+        roomCodePanel.SetActive(false);
         deactivateResultsPanel();
         endScreenPanel.SetActive(true);
         foreach (Player p in gameState.players.Values)
