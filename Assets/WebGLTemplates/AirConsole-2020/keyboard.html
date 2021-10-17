@@ -383,22 +383,40 @@ path, .jtk-endpoint {
             console.log("startingto connect");
             //const socket = io('wss://meexarps-server.herokuapp.com');
             //const socket = io('ws://localhost:8080');
+            const phoneId = crypto.randomUUID();
             socket = io({
-                autoConnect: false
+                autoConnect: false,
+                query:{
+                    "phoneId": phoneId
+                }
+            });
+
+            socket.on("reconnect", function(event) {
+                console.log("reconnect")
             });
 
             socket.on("connect", function(event) {
-                
-	            console.log('Connected to: ' + event);
+                isDisconnected = false;
+                //TODO if reconnect, display toast, dont do this other stuff
+                console.log('Connected to: ' + event);
                 var systemSetup = {
                     "action" : "system",
                     "isPhone" : "true",
-                    "roomCode": roomCode
+                    "roomCode": roomCode,
+                    "playerNumber" : playerNumber
                 };
                 socket.emit("phoneMessage", JSON.stringify(systemSetup));
-                
-               console.log("connected");
+                console.log("connected");
+            
 	        });
+            socket.on("disconnect", (reason) => {
+                //TODO display toast
+                console.log("disconnected: " + reason);
+                isDisconnected = true;
+            });
+            socket.on("connect_error", (error) => {
+                console.log("connect error: " + error);
+            });
             socket.on("computerMessage", function(event) {
                 console.log("computerMessage: " + JSON.stringify(event));
                 App.prototype.receiveMessages(-1, event);
@@ -674,6 +692,7 @@ path, .jtk-endpoint {
             var isAudience = false;
             var useSystemKeyboard = false;
             var isNameAlreadySet = false;
+            var isDisconnected = false;
             App.prototype.receiveMessages = function(from, data) {               
                 if(typeof data == 'string') {
                     payload = JSON.parse(data);
@@ -1767,14 +1786,8 @@ path, .jtk-endpoint {
                 if(isAirconsole){
                     me.air_console.message(AirConsole.SCREEN, message);
                 } else {
-                    //websocket
-                    /*
-                    var wrappedMessage = {
-                        'action' : "phoneMessage",
-                        'message': message
-                    };*/
+                    message["roomCode"] = roomCode;
                     socket.emit("phoneMessage", JSON.stringify(message));
-
                 }
             
             }

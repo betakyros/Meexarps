@@ -20,8 +20,6 @@ const io = require("socket.io")(server, {});
 
   io.on("connection", (socket) => {
 	  console.log("connection started");
-
-	  console.log(JSON.stringify(socket.rooms)); 
 	  socket.onAny((eventName, ...args) => {
 		  var color = eventName.includes("computer") ? "\x1b[33m" : eventName.includes("phone") ? "\x1b[36m" : "";
 
@@ -35,22 +33,39 @@ const io = require("socket.io")(server, {});
 		});
 
 		socket.on("phoneMessage", (data) => {
-			var jsonData = JSON.parse(data);
+			console.log("queryParams.phoneId");
+			const phoneId = socket.handshake.query.phoneId;
+			console.log(socket.handshake.query.phoneId);
+			let jsonData = JSON.parse(data);
+			let roomCode = jsonData.roomCode.toUpperCase().trim();
 			if(jsonData.action == "system") {	
 				console.log("system");
-				var roomCode = jsonData.roomCode.toUpperCase().trim();
+				
 				if(io.sockets.adapter.rooms.get(roomCode)) {
 					socket.join(roomCode);
-					if(!io.sockets.adapter.rooms.get(roomCode)["playerSockets"]) {
-						io.sockets.adapter.rooms.get(roomCode)["playerSockets"] = [];
+					var room = io.sockets.adapter.rooms.get(roomCode);
+					if(!room["playerSockets"]) {
+						room["playerSockets"] = [];
+						room["phoneIds"] = [];
 					}
-					var playerNumber = io.sockets.adapter.rooms.get(roomCode)["playerSockets"].push(socket.id) - 1;
-					var initJson = {
-						"data": {"action":"websocketInitialConnect"}, 
-						"clientId": playerNumber
-					};
-					var computerSockeId = io.sockets.adapter.rooms.get(roomCode)["computerSocket"].id;
-					socket.to(computerSockeId).emit("phoneMessage", initJson);
+					var playerNumber;
+					var isSameBrowserReconnect = jsonData.playerNumber != null;
+					if(!isSameBrowserReconnect) {
+						
+						playerNumber = room["playerSockets"].push(socket.id) - 1;
+						room["phoneIds"][playerNumber] = phoneId;
+						var initJson = {
+							"data": {"action":"websocketInitialConnect"}, 
+							"clientId": playerNumber
+						};
+						var computerSockeId = io.sockets.adapter.rooms.get(roomCode)["computerSocket"].id;
+						socket.to(computerSockeId).emit("phoneMessage", initJson);
+					} else {
+						console.log("sameBrowserReconnect");
+						playerNumber = jsonData.playerNumber;
+						io.sockets.adapter.rooms.get(roomCode)["playerSockets"][playerNumber] = socket.id;
+					}
+
 				} else {
 					console.log("roomDoesntExist");	
 					console.log("rooms: " + JSON.stringify(io.sockets.adapter.rooms));		
@@ -62,15 +77,19 @@ const io = require("socket.io")(server, {});
 					socket.disconnect();
 				}
 			} else {
-				socket.rooms.forEach(room => {
-					if(io.sockets.adapter.rooms.get(room)["computerSocket"]) {
+				console.log("not system");
+				//incase the user disconnected
+				socket.join(roomCode);
+				socket.rooms.forEach(rm => {
+					console.log("Curr Room: " + rm + " myRoom: " + roomCode);
+					if(io.sockets.adapter.rooms.get(rm)["computerSocket"]) {
 						console.log("phoneMessage - normal", JSON.stringify(jsonData));	
-						var playerNumber = io.sockets.adapter.rooms.get(room)["playerSockets"].lastIndexOf(socket.id)
+						var playerNumber = io.sockets.adapter.rooms.get(rm)["phoneIds"].lastIndexOf(phoneId)
 						var wrappedJsonData = {
 							"data":jsonData, 
 							"clientId": playerNumber
 						};
-						socket.to(io.sockets.adapter.rooms.get(room)["computerSocket"].id).emit("phoneMessage", wrappedJsonData);
+						socket.to(io.sockets.adapter.rooms.get(rm)["computerSocket"].id).emit("phoneMessage", wrappedJsonData);
 					}
 				})
 			}
@@ -115,7 +134,7 @@ const io = require("socket.io")(server, {});
 		});
 	});
   io.on("disconnect", (reason) => {
-		console.log(reason); // "ping timeout"
+		console.log("disconnect", reason); // "ping timeout"
 	  });
   io.on("open", (data) => {
 	  console.log("open", data);
