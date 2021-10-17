@@ -59,6 +59,7 @@ const io = require("socket.io")(server, {});
 						"action":"roomDoesntExist"
 					};
 					socket.emit("systemMessage", roomDoesntExist);
+					socket.disconnect();
 				}
 			} else {
 				socket.rooms.forEach(room => {
