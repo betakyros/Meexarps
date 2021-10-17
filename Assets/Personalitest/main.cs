@@ -3020,10 +3020,6 @@ public class main : MonoBehaviour
             msg.Add("action", "broadcast");
             msg.Add("data", JToken.FromObject(jsonAction));
             socket.SendWebSocketMessage(msg.ToString());
-            Debug.Log(msg);
-            Debug.Log(msg.ToString());
-            Debug.Log(JToken.FromObject(msg).ToString());
-            socket.SendWebSocketMessage(JToken.FromObject(msg).ToString());
         }
     }
     private void SendMessageToPhone(int from, JsonAction jsonAction)
