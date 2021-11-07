@@ -391,10 +391,6 @@ path, .jtk-endpoint {
                 }
             });
 
-            socket.on("reconnect", function(event) {
-                console.log("reconnect")
-            });
-
             socket.on("connect", function(event) {
                 console.log('Connected to: ' + event);
                 var systemSetup = {
@@ -405,10 +401,15 @@ path, .jtk-endpoint {
                 };
                 socket.emit("phoneMessage", JSON.stringify(systemSetup));
                 console.log("connected");
+                if(isDisconnected) {
+                    isDisconnected = false;
+                    App.prototype.showSnackbar("Reconnected. If propblems persist please refresh with the same code and username.");
+                }
             
 	        });
             socket.on("disconnect", (reason) => {
                 console.log("disconnected: " + reason);
+                isDisconnected = true;
                 App.prototype.showSnackbar("Disconnected. If propblems persist please refresh with the same code and username.");
             });
             socket.on("connect_error", (error) => {
