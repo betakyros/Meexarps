@@ -349,7 +349,7 @@ path, .jtk-endpoint {
     var isAirconsole = false;
     var socket;
     var roomCode;
-
+    let isDisconnected = false;
 
     function init() {
         window.onerror = function(msg, url, line, col, error) {
@@ -690,7 +690,6 @@ path, .jtk-endpoint {
             var isAudience = false;
             var useSystemKeyboard = false;
             var isNameAlreadySet = false;
-            var isDisconnected = false;
             App.prototype.receiveMessages = function(from, data) {               
                 if(typeof data == 'string') {
                     payload = JSON.parse(data);
