@@ -396,8 +396,6 @@ path, .jtk-endpoint {
             });
 
             socket.on("connect", function(event) {
-                isDisconnected = false;
-                //TODO if reconnect, display toast, dont do this other stuff
                 console.log('Connected to: ' + event);
                 var systemSetup = {
                     "action" : "system",
@@ -410,9 +408,8 @@ path, .jtk-endpoint {
             
 	        });
             socket.on("disconnect", (reason) => {
-                //TODO display toast
                 console.log("disconnected: " + reason);
-                isDisconnected = true;
+                App.prototype.showSnackbar("Disconnected. If propblems persist please refresh with the same code and username.");
             });
             socket.on("connect_error", (error) => {
                 console.log("connect error: " + error);
