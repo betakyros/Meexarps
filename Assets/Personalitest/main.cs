@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine.Video;
 using TMPro;
+using SFB;
 
 public class main : MonoBehaviour
 {
@@ -14,10 +15,10 @@ public class main : MonoBehaviour
     public TextMeshProUGUI welcomeInstructionsText;
     private static List<QuestionCategory> questionCategories;
     private static QuestionCategory seasonalQuestionCategory;
-    private static string[] anonymousNames;
+    private static List<string> anonymousNames;
     //(question, left answer, right answer)
     private static List<string[]> wouldYouRathers;
-    private static string[] friendshipTips;
+    private static List<string> friendshipTips;
     private int friendshipTipIndex;
     private GameState gameState;
     public List<GameObject> welcomePanels;
@@ -60,6 +61,7 @@ public class main : MonoBehaviour
     public Animator[] animators;
     public GameObject roundCounter;
     public SocketClientFranklin socket;
+    public Button fileUploadButton;
 
     private int currentCategoryIndex;
     private int selectedCategory;
@@ -76,16 +78,132 @@ public class main : MonoBehaviour
     private bool writeMyOwnQuestions = false;
     private Dictionary<string, bool> options = new Dictionary<string, bool>();
     private float optionsVolume;
+    private Regex newLinesRegex = new Regex(@"\r\n|\n|\r", RegexOptions.Singleline);
+
 
     private bool isWinterHolidaySeason = System.DateTime.Today.Month == 1 || System.DateTime.Today.Month == 12;
 
     //don't foret to check if the airconsole script is disabled
     private static bool isAirconsole = false;
+#if UNITY_WEBGL && !UNITY_EDITOR
+    //
+    // WebGL
+    //
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void UploadFile(string gameObjectName, string methodName, string filter, bool multiple);
+
+    public void UploadCustomQuestions()
+    {
+        UploadFile(gameObject.name, "OnFileUpload", ".txt", true);
+    }
+
+    // Called from browser
+    public void OnFileUpload(string urls)
+    {
+        StartCoroutine(OutputRoutine(urls.Split(',')));
+    }
+
+#else
+    //
+    // Standalone platforms & editor
+    //
+    private void UploadCustomQuestions()
+    {
+        // var paths = StandaloneFileBrowser.OpenFilePanel("Title", "", "txt", true);
+        var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", "", true);
+        if (paths.Length > 0)
+        {
+            var urlArr = new List<string>(paths.Length);
+            for (int i = 0; i < paths.Length; i++)
+            {
+                urlArr.Add(new System.Uri(paths[i]).AbsoluteUri);
+            }
+            StartCoroutine(OutputRoutine(urlArr.ToArray()));
+        }
+    }
+#endif
+
+    private System.Collections.IEnumerator OutputRoutine(string[] urlArr)
+    {
+        var outputText = "";
+        string output = "";
+        string rawCustomQuestions = "";
+
+        for (int i = 0; i < urlArr.Length; i++)
+        {
+            var loader = new WWW(urlArr[i]);
+            yield return loader;
+            outputText = loader.text;
+            Debug.Log(urlArr[i]);
+            if (System.IO.Path.GetFileNameWithoutExtension(urlArr[i]).ToLower().Contains("wouldyourather"))
+            {
+                Debug.Log("isWouldYouRather");
+                Debug.Log(outputText);
+                ParseCustomWouldYouRather(outputText);
+            }
+            else if (System.IO.Path.GetFileNameWithoutExtension(urlArr[i]).ToLower().Contains("questions"))
+            {
+                Debug.Log("isCustomQuestions");
+                rawCustomQuestions += outputText;
+            }
+            else if (System.IO.Path.GetFileNameWithoutExtension(urlArr[i]).ToLower().Contains("anonymousnames"))
+            {
+                Debug.Log("isCustomAnonymousNames");
+                ParseCustomAnonymousNames(outputText);
+            }
+            else if (System.IO.Path.GetFileNameWithoutExtension(urlArr[i]).ToLower().Contains("friendshiptips"))
+            {
+                Debug.Log("isCustomFriendshipTips");
+                ParseCustomFriendshipTips(outputText);
+            }
+        }
+        if(!rawCustomQuestions.Equals(""))
+        {
+            Debug.Log("isCustomQuestions2");
+            ParseCustomQuestions(rawCustomQuestions);
+        } 
+        output = outputText;
+    }
+
+    private void ParseCustomWouldYouRather(string rawWouldYouRathers)
+    {
+        string[] wouldYouRathersLines = newLinesRegex.Split(rawWouldYouRathers);
+        List<string[]> tempWouldYouRathers = new List<string[]>();
+        foreach (string s in wouldYouRathersLines)
+        {
+            tempWouldYouRathers.Add(s.Split('|'));
+        }
+        tempWouldYouRathers.Shuffle();
+        wouldYouRathers.InsertRange(0, tempWouldYouRathers);
+    }
+    private void ParseCustomQuestions(string rawQuestions)
+    {
+        string[] questionsLines = newLinesRegex.Split(rawQuestions);
+        List<QuestionCategory> customQuestions = new List<QuestionCategory>();
+        addLinesToCategory(questionsLines, false, customQuestions);
+        questionCategories.InsertRange(0, customQuestions);
+    }
+    private void ParseCustomAnonymousNames(string rawAnonymousNames)
+    {
+        List<string> tempAnonymousNames = new List<string>();
+        tempAnonymousNames.AddRange(newLinesRegex.Split(rawAnonymousNames));
+        anonymousNames.InsertRange(0, tempAnonymousNames);
+    }
+    private void ParseCustomFriendshipTips(string rawFriendshipTips)
+    {
+        List<string> tempFriendshipTips = new List<string>();
+        tempFriendshipTips.AddRange(newLinesRegex.Split(rawFriendshipTips));
+        friendshipTips.InsertRange(0, tempFriendshipTips);
+        friendshipTipIndex = 0;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        if(isWinterHolidaySeason)
+        fileUploadButton.onClick.AddListener(delegate { UploadCustomQuestions(); });
+        //var folderPath = StandaloneFileBrowser.OpenFolderPanel("Select the Custom Folder", "", false);
+        
+        if (isWinterHolidaySeason)
         {
             GameObject.FindWithTag("SplashScreenImage").gameObject.SetActive(false);
         } else
@@ -95,8 +213,8 @@ public class main : MonoBehaviour
         StartAllLevels(welcomeScreenAudioSources);
         ExceptionHandling.SetupExceptionHandling(errorPanel);
         InitializeOptions();
-        var newLinesRegex = new Regex(@"\r\n|\n|\r", RegexOptions.Singleline);
         string rawQuestions;
+        string customWouldYouRathers;
         string rawNsfwQuestions;
         string rawAnonymousNames;
         string rawWouldYouRathers;
@@ -121,7 +239,8 @@ public class main : MonoBehaviour
         //if playing locally
         else
         {
-
+            //customWouldYouRathers = Resources.GetCustomWouldYouRathers(paths[0]);
+            //customWouldYouRathers = Resources.GetCustomWouldYouRathers(paths);
             rawQuestions = Resources.GetQuestions();
             rawNsfwQuestions = Resources.GetNsfwQuestions();
             rawAnonymousNames = Resources.GetAnonymousNames();
@@ -134,9 +253,11 @@ public class main : MonoBehaviour
             }
         }
         questionCategories = new List<QuestionCategory>();
-        ParseQuestions(rawQuestions, rawNsfwQuestions, newLinesRegex);
-        anonymousNames = newLinesRegex.Split(rawAnonymousNames);
-        friendshipTips = newLinesRegex.Split(rawFriendshipTips);
+        ParseQuestions(rawQuestions, rawNsfwQuestions, newLinesRegex, questionCategories);
+        anonymousNames = new List<string>();
+        friendshipTips = new List<string>();
+        anonymousNames.AddRange(newLinesRegex.Split(rawAnonymousNames));
+        friendshipTips.AddRange(newLinesRegex.Split(rawFriendshipTips));
         string[] wouldYouRathersLines = newLinesRegex.Split(rawWouldYouRathers);
         List<string[]> tempWouldYouRathers = new List<string[]>();
         foreach (string s in wouldYouRathersLines)
@@ -257,7 +378,7 @@ public class main : MonoBehaviour
 
     public void UpdateLoadingScreenTips()
     {
-        GameObject.FindWithTag("loadingScreenTips").GetComponent<TextMeshProUGUI>().text = friendshipTips[friendshipTipIndex++ % friendshipTips.Length];
+        GameObject.FindWithTag("loadingScreenTips").GetComponent<TextMeshProUGUI>().text = friendshipTips[friendshipTipIndex++ % friendshipTips.Count];
     }
 
     private void InitializeOptions()
@@ -268,12 +389,12 @@ public class main : MonoBehaviour
         originalBlipVolume = blipAudioSource.volume;
     }
 
-    void ParseQuestions(string rawQuestions, string rawNsfwQuestions, Regex newLinesRegex)
+    void ParseQuestions(string rawQuestions, string rawNsfwQuestions, Regex newLinesRegex, List<QuestionCategory> q)
     {
         string[] questionsLines = newLinesRegex.Split(rawQuestions);
         string[] nsfwQuestionsLines = newLinesRegex.Split(rawNsfwQuestions);
-        addLinesToCategory(questionsLines, false);
-        addLinesToCategory(nsfwQuestionsLines, true);
+        addLinesToCategory(questionsLines, false, q);
+        addLinesToCategory(nsfwQuestionsLines, true, q);
     }
     void ParseSeasonalQuestions(string rawQuestions, Regex newLinesRegex)
     {
@@ -281,28 +402,38 @@ public class main : MonoBehaviour
         addLinesToSeasonalCategory(questionsLines, false);
     }
 
-    private static void addLinesToCategory(string[] lines, bool isNsfw)
+    private static void addLinesToCategory(string[] lines, bool isNsfw, List<QuestionCategory> q)
     {
         string currentCategoryName = null;
         List<string> questions = null;
         for (int i = 0; i < lines.Length; i++)
         {
-            if (lines[i] == "---")
-            {
-                if (currentCategoryName != null)
+            /*try
+            {*/
+                if (lines[i] == "---")
                 {
-                    questionCategories.Add(new QuestionCategory(questions.ToArray(), currentCategoryName, isNsfw));
+                    if (currentCategoryName != null)
+                    {
+                        q.Add(new QuestionCategory(questions.ToArray(), currentCategoryName, isNsfw));
+                    }
+                    i++;
+                    if (i < lines.Length)
+                    {
+                        currentCategoryName = lines[i];
+                        questions = new List<string>();
+                    }
                 }
-                i++;
-                currentCategoryName = lines[i];
-                questions = new List<string>();
-            }
-            else
-            {
-                questions.Add(lines[i]);
-            }
+                else
+                {
+                    questions.Add(lines[i]);
+                }
 
-        }
+            /*}
+            catch
+            {
+                Debug.Log("Error parsing line: " + lines[i]);
+            }*/
+        } 
     }
 
     private static void addLinesToSeasonalCategory(string[] lines, bool isNsfw)
@@ -2926,7 +3057,7 @@ public class main : MonoBehaviour
             return "Personality " + anonymousPlayerNumbers[anonymousPlayerNumberCount++]; 
         }
 
-        return anonymousNames[(anonymousNameCounter++)%anonymousNames.Length];
+        return anonymousNames[(anonymousNameCounter++)%anonymousNames.Count];
     }
 
     public bool HasEveryoneSubmittedAnswers()
@@ -3626,6 +3757,11 @@ static class Resources
     public static string GetFriendshipTips()
     {
         return System.IO.File.ReadAllText(prependTextResourceFilepath("friendshipTips.txt"));
+    }
+
+    public static string GetCustomWouldYouRathers(string filepath)
+    {
+        return System.IO.File.ReadAllText(filepath);
     }
 
     private static string prependTextResourceFilepath(string filename)
