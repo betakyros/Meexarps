@@ -450,7 +450,7 @@ public class main : MonoBehaviour
     void OnReadySteam(string code)
     {
         gameCode = code;
-        welcomeInstructionsText.text = "Navigate to " + socket.GetConnectionUrl() + " and enter <size=39><b>" + code.Replace(" ", "") + "</b></size> to join!";
+        welcomeInstructionsText.text = "Navigate to <b><color=#00FFF1>" + socket.GetConnectionUrl() + "</b></color> and enter <size=39><b><color=#00FFF1>" + code.Replace(" ", "") + "</color></b></size> to join!";
         roomCodePanel.GetComponentsInChildren<TextMeshProUGUI>()[1].text = code;
     }
     void OnReadyOffline()
