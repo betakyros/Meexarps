@@ -201,7 +201,6 @@ public class main : MonoBehaviour
     void Start()
     {
         fileUploadButton.onClick.AddListener(delegate { UploadCustomQuestions(); });
-        //var folderPath = StandaloneFileBrowser.OpenFolderPanel("Select the Custom Folder", "", false);
         
         if (isWinterHolidaySeason)
         {
@@ -214,7 +213,6 @@ public class main : MonoBehaviour
         ExceptionHandling.SetupExceptionHandling(errorPanel);
         InitializeOptions();
         string rawQuestions;
-        string customWouldYouRathers;
         string rawNsfwQuestions;
         string rawAnonymousNames;
         string rawWouldYouRathers;
@@ -239,8 +237,6 @@ public class main : MonoBehaviour
         //if playing locally
         else
         {
-            //customWouldYouRathers = Resources.GetCustomWouldYouRathers(paths[0]);
-            //customWouldYouRathers = Resources.GetCustomWouldYouRathers(paths);
             rawQuestions = Resources.GetQuestions();
             rawNsfwQuestions = Resources.GetNsfwQuestions();
             rawAnonymousNames = Resources.GetAnonymousNames();
@@ -3757,11 +3753,6 @@ static class Resources
     public static string GetFriendshipTips()
     {
         return System.IO.File.ReadAllText(prependTextResourceFilepath("friendshipTips.txt"));
-    }
-
-    public static string GetCustomWouldYouRathers(string filepath)
-    {
-        return System.IO.File.ReadAllText(filepath);
     }
 
     private static string prependTextResourceFilepath(string filename)
