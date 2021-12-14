@@ -92,15 +92,19 @@ public class main : MonoBehaviour
     [System.Runtime.InteropServices.DllImport("__Internal")]
     private static extern void UploadFile(string gameObjectName, string methodName, string filter, bool multiple);
 
+
     public void UploadCustomQuestions()
     {
         UploadFile(gameObject.name, "OnFileUpload", ".txt", true);
+
     }
 
     // Called from browser
-    public void OnFileUpload(string urls)
+    public System.Collections.IEnumerator OnFileUpload(string urls)
     {
         StartCoroutine(OutputRoutine(urls.Split(',')));
+        yield return null;
+
     }
 
 #else
@@ -109,6 +113,7 @@ public class main : MonoBehaviour
     //
     private void UploadCustomQuestions()
     {
+        
         // var paths = StandaloneFileBrowser.OpenFilePanel("Title", "", "txt", true);
         var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", "", true);
         if (paths.Length > 0)
@@ -122,52 +127,62 @@ public class main : MonoBehaviour
         }
     }
 #endif
-
     private System.Collections.IEnumerator OutputRoutine(string[] urlArr)
     {
+
         var outputText = "";
-        string output = "";
-        string rawCustomQuestions = "";
+        List<string> rawCustomQuestions = new List<string>();
+        List<string> rawCustomWouldYouRathers = new List<string>();
+        List<string> rawCustomAnonymousNames = new List<string>();
+        List<string> rawCustomFriendshipTips = new List<string>();
 
         for (int i = 0; i < urlArr.Length; i++)
         {
             var loader = new WWW(urlArr[i]);
             yield return loader;
             outputText = loader.text;
-            Debug.Log(urlArr[i]);
-            if (System.IO.Path.GetFileNameWithoutExtension(urlArr[i]).ToLower().Contains("wouldyourather"))
+            string[] lines = newLinesRegex.Split(outputText);
+            string[] bodyLines = new string[lines.Length-1];
+            string typeOfFile = lines[0].ToLower();
+            System.Array.Copy(lines, 1, bodyLines, 0, lines.Length-1);
+            if ("wouldyourather".Equals(typeOfFile))
             {
-                Debug.Log("isWouldYouRather");
-                Debug.Log(outputText);
-                ParseCustomWouldYouRather(outputText);
+                rawCustomWouldYouRathers.AddRange(bodyLines);
             }
-            else if (System.IO.Path.GetFileNameWithoutExtension(urlArr[i]).ToLower().Contains("questions"))
+            else if ("questions".Equals(typeOfFile))
             {
-                Debug.Log("isCustomQuestions");
-                rawCustomQuestions += outputText;
+                rawCustomQuestions.AddRange(bodyLines);
             }
-            else if (System.IO.Path.GetFileNameWithoutExtension(urlArr[i]).ToLower().Contains("anonymousnames"))
+            else if ("anonymousnames".Equals(typeOfFile))
             {
-                Debug.Log("isCustomAnonymousNames");
-                ParseCustomAnonymousNames(outputText);
+                rawCustomAnonymousNames.AddRange(bodyLines);
             }
-            else if (System.IO.Path.GetFileNameWithoutExtension(urlArr[i]).ToLower().Contains("friendshiptips"))
+            else if ("friendshiptips".Equals(typeOfFile))
             {
-                Debug.Log("isCustomFriendshipTips");
-                ParseCustomFriendshipTips(outputText);
+                rawCustomFriendshipTips.AddRange(bodyLines);
+                
             }
         }
-        if(!rawCustomQuestions.Equals(""))
+        if (rawCustomWouldYouRathers.Count > 0)
         {
-            Debug.Log("isCustomQuestions2");
-            ParseCustomQuestions(rawCustomQuestions);
-        } 
-        output = outputText;
+            ParseCustomWouldYouRather(rawCustomWouldYouRathers.ToArray());
+        }
+        if (rawCustomQuestions.Count > 0)
+        {
+            ParseCustomQuestions(rawCustomQuestions.ToArray());
+        }
+        if (rawCustomAnonymousNames.Count > 0)
+        {
+            ParseCustomAnonymousNames(rawCustomAnonymousNames.ToArray());
+        }
+        if (rawCustomQuestions.Count > 0)
+        {
+            ParseCustomFriendshipTips(rawCustomFriendshipTips.ToArray());
+        }
     }
 
-    private void ParseCustomWouldYouRather(string rawWouldYouRathers)
+    private void ParseCustomWouldYouRather(string[] wouldYouRathersLines)
     {
-        string[] wouldYouRathersLines = newLinesRegex.Split(rawWouldYouRathers);
         List<string[]> tempWouldYouRathers = new List<string[]>();
         foreach (string s in wouldYouRathersLines)
         {
@@ -176,23 +191,25 @@ public class main : MonoBehaviour
         tempWouldYouRathers.Shuffle();
         wouldYouRathers.InsertRange(0, tempWouldYouRathers);
     }
-    private void ParseCustomQuestions(string rawQuestions)
+    private void ParseCustomQuestions(string[] questionsLines)
     {
-        string[] questionsLines = newLinesRegex.Split(rawQuestions);
         List<QuestionCategory> customQuestions = new List<QuestionCategory>();
         addLinesToCategory(questionsLines, false, customQuestions);
+        customQuestions.Shuffle();
         questionCategories.InsertRange(0, customQuestions);
     }
-    private void ParseCustomAnonymousNames(string rawAnonymousNames)
+    private void ParseCustomAnonymousNames(string[] anonymousNamesLines)
     {
         List<string> tempAnonymousNames = new List<string>();
-        tempAnonymousNames.AddRange(newLinesRegex.Split(rawAnonymousNames));
+        tempAnonymousNames.AddRange(anonymousNamesLines);
+        tempAnonymousNames.Shuffle();
         anonymousNames.InsertRange(0, tempAnonymousNames);
     }
-    private void ParseCustomFriendshipTips(string rawFriendshipTips)
+    private void ParseCustomFriendshipTips(string[] friendshipTipsLines)
     {
         List<string> tempFriendshipTips = new List<string>();
-        tempFriendshipTips.AddRange(newLinesRegex.Split(rawFriendshipTips));
+        tempFriendshipTips.AddRange(friendshipTipsLines);
+        tempFriendshipTips.Shuffle();
         friendshipTips.InsertRange(0, tempFriendshipTips);
         friendshipTipIndex = 0;
     }
@@ -200,8 +217,9 @@ public class main : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        fileUploadButton.onClick.AddListener(delegate { UploadCustomQuestions(); });
-        
+        #if UNITY_EDITOR
+            fileUploadButton.onClick.AddListener(UploadCustomQuestions);
+        #endif        
         if (isWinterHolidaySeason)
         {
             GameObject.FindWithTag("SplashScreenImage").gameObject.SetActive(false);
@@ -402,11 +420,11 @@ public class main : MonoBehaviour
     {
         string currentCategoryName = null;
         List<string> questions = null;
-        for (int i = 0; i < lines.Length; i++)
+        for (int i = 0; i <= lines.Length; i++)
         {
             /*try
             {*/
-                if (lines[i] == "---")
+                if (i == lines.Length || lines[i] == "---")
                 {
                     if (currentCategoryName != null)
                     {

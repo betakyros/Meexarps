@@ -3848,6 +3848,7 @@ GameObject:
   - component: {fileID: 324655185}
   - component: {fileID: 324655184}
   - component: {fileID: 324655183}
+  - component: {fileID: 324655186}
   m_Layer: 5
   m_Name: FileUploadButton
   m_TagString: Untagged
@@ -3956,6 +3957,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 324655181}
   m_CullTransparentMesh: 0
+--- !u!114 &324655186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324655181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a293d0e928d044a8ceedddc38afb55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m: {fileID: 1259476601}
 --- !u!1 &332270984
 GameObject:
   m_ObjectHideFlags: 0
@@ -25228,7 +25242,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.9, y: 0.65}
   m_AnchorMax: {x: 1, y: 0.9}
-  m_AnchoredPosition: {x: 0.050231934, y: 0.000061035156}
+  m_AnchoredPosition: {x: 0.05029297, y: 0.000061035156}
   m_SizeDelta: {x: -0.099975586, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1879235980
