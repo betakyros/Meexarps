@@ -179,6 +179,13 @@ public class main : MonoBehaviour
         {
             ParseCustomFriendshipTips(rawCustomFriendshipTips.ToArray());
         }
+
+        GameObject.FindWithTag("Banner").GetComponentInChildren<TextMeshProUGUI>().text = "Successfully loaded " + urlArr.Length + " file(s)";
+
+        Animator fileUploadSuccessfulBanner = welcomeScreenPanel.GetComponentsInChildren<Animator>()[0];
+        fileUploadSuccessfulBanner.SetBool("isOpen", true);
+        yield return new WaitForSeconds(2);
+        fileUploadSuccessfulBanner.SetBool("isOpen", false);
     }
 
     private void ParseCustomWouldYouRather(string[] wouldYouRathersLines)
