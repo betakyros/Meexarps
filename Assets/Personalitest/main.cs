@@ -332,7 +332,7 @@ public class main : MonoBehaviour
             });
 
         }
-        gameState = new GameState();
+        gameState = new GameState(this);
         currentQuestionIndex = 0;
         currentWouldYouRatherIndex = 0;
         audienceWouldYouRathers = new Dictionary<int, int>();
@@ -1031,7 +1031,17 @@ public class main : MonoBehaviour
                 ContinueSendStartGame();
             }
         }
-        if(gameState.players.ContainsKey(from))
+        else if ("phoneScreenHeartbeat".Equals(action))
+        {
+            playSound = false;
+            string phoneState = data["info"].ToObject<string>();
+
+            if(!phoneState.Equals(gameState.phoneViewGameState))
+            {
+                SendCurrentScreenForReconnect(from, gameState.players[from].playerNumber);
+            }
+        }
+        if (gameState.players.ContainsKey(from))
         {
             if (playSound) {
                 //play a sound to confirm the input
@@ -1103,7 +1113,7 @@ public class main : MonoBehaviour
         List<string> playersNamesAndAlienNumbers = gameState.GetPlayerNamesInNumberOrder();
         playersNamesAndAlienNumbers.AddRange(gameState.GetAlienNumberInNumberOrder());
         SendMessageToVip(new JsonAction("selectRoundCountView", playersNamesAndAlienNumbers.ToArray()));
-        gameState.phoneViewGameState = PhoneViewGameState.SendSelectRoundNumberScreen;
+        gameState.SetPhoneViewGameState(PhoneViewGameState.SendSelectRoundNumberScreen);
         /*
         introAudioSource.Stop();
         mainLoopAudioSource.Play();
@@ -1525,7 +1535,7 @@ public class main : MonoBehaviour
     public void SendWaitScreenToEveryone()
     {
         BroadcastToAllPhones(new JsonAction("sendWaitScreen", new string[] {}));
-        gameState.phoneViewGameState = PhoneViewGameState.SendWaitScreen;
+        gameState.SetPhoneViewGameState(PhoneViewGameState.SendWaitScreen);
     }
 
     //todo remove parameter
@@ -1535,7 +1545,7 @@ public class main : MonoBehaviour
         //flash the instructions
         SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendSkipInstructions", new string[] {}));
         //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
-        gameState.phoneViewGameState = PhoneViewGameState.SendSkipInstructionsScreen;
+        gameState.SetPhoneViewGameState(PhoneViewGameState.SendSkipInstructionsScreen);
 
         introVp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "meexarpsTutorial.mp4");
 
@@ -1650,7 +1660,7 @@ public class main : MonoBehaviour
             int currentPlayerTurnDeviceId = gameState.GetCurrentWritingPlayer().deviceId;
             SendSelectCategory(currentPlayerTurnDeviceId);
         }
-        gameState.phoneViewGameState = PhoneViewGameState.SendWouldYouRather;
+        gameState.SetPhoneViewGameState(PhoneViewGameState.SendWouldYouRather);
         gameState.tvViewGameState = TvViewGameState.SubmitQuestionsScreen;
         if(isOfflineMode)
         {
@@ -1934,7 +1944,7 @@ public class main : MonoBehaviour
             {
                 SendMessageToPhone(audience.deviceId, new JsonAction("sendVotingTutorialScreen", questionsToSend));
             }
-            gameState.phoneViewGameState = PhoneViewGameState.SendQuestions;
+            gameState.SetPhoneViewGameState(PhoneViewGameState.SendQuestions);
             gameState.tvViewGameState = TvViewGameState.AnswerQuestionsScreen;
         }
         //reconnect case
@@ -2064,7 +2074,7 @@ public class main : MonoBehaviour
         {
             SendMessageToVipAndSendWaitScreenToEveryoneElse(new JsonAction("sendSkipInstructions", new string[] {  }));
             //            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendSkipInstructions", new string[] { " " })));
-            gameState.phoneViewGameState = PhoneViewGameState.SendSkipInstructionsScreen;
+            gameState.SetPhoneViewGameState(PhoneViewGameState.SendSkipInstructionsScreen);
 
             Image[] images = votingPanel.GetComponentsInChildren<Image>();
             vp.url = System.IO.Path.Combine(Application.streamingAssetsPath + "/", "meexarpsGuessingTutorial.mp4");
@@ -2120,7 +2130,7 @@ public class main : MonoBehaviour
         listToSend.AddRange(anonymousPlayerNames);
         AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendVoting", listToSend.ToArray())));
         */
-        gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
+        gameState.SetPhoneViewGameState(PhoneViewGameState.SendVoting);
 
         StartCoroutine(DoZoom(2));
 
@@ -2331,7 +2341,7 @@ public class main : MonoBehaviour
         ChangeBackground(2);
         //TODO shuffle answers
         SendVoting();
-        gameState.phoneViewGameState = PhoneViewGameState.SendVoting;
+        gameState.SetPhoneViewGameState(PhoneViewGameState.SendVoting);
         gameState.tvViewGameState = TvViewGameState.VotingScreen;
     }
 
@@ -2366,7 +2376,7 @@ public class main : MonoBehaviour
         }
         //SendWaitScreenToEveryone();
         //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendPersonalRoundResults", new string[] { " " })));
-        gameState.phoneViewGameState = PhoneViewGameState.SendPersonalRoundResultsScreen;
+        gameState.SetPhoneViewGameState(PhoneViewGameState.SendPersonalRoundResultsScreen);
         gameState.tvViewGameState = TvViewGameState.RoundResultsScreen;
 
         //set the anonymous names of each box
@@ -2737,13 +2747,13 @@ public class main : MonoBehaviour
         {
             SendMessageToVip(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " }));
 //            AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendAdvanceToResultsScreen", new string[] { " " })));
-            gameState.phoneViewGameState = PhoneViewGameState.SendAdvanceToResultsScreen;
+            gameState.SetPhoneViewGameState(PhoneViewGameState.SendAdvanceToResultsScreen);
         }
         else
         {
             SendMessageToVip(new JsonAction("sendNextRoundScreen", new string[] { " " }));
             //AirConsole.instance.Broadcast(JsonUtility.ToJson(new JsonAction("sendNextRoundScreen", new string[] { " " })));
-            gameState.phoneViewGameState = PhoneViewGameState.SendNextRoundScreen;
+            gameState.SetPhoneViewGameState(PhoneViewGameState.SendNextRoundScreen);
         }
         
     }
@@ -2795,7 +2805,7 @@ public class main : MonoBehaviour
 
     public System.Collections.IEnumerator SendEndScreen2()
     {
-        gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
+        gameState.SetPhoneViewGameState(PhoneViewGameState.SendEndScreen);
         gameState.tvViewGameState = TvViewGameState.EndGameScreen;
         roundCounter.SetActive(false);
         roomCodePanel.SetActive(false);
@@ -2998,7 +3008,7 @@ public class main : MonoBehaviour
 
         }
         
-        gameState.phoneViewGameState = PhoneViewGameState.SendEndScreen;
+        gameState.SetPhoneViewGameState(PhoneViewGameState.SendEndScreen);
     }
 
     private string CalculateBestFriend(Player p)
@@ -3132,7 +3142,7 @@ public class main : MonoBehaviour
             }
         }
     }
-    private void BroadcastToAllPhones(JsonAction jsonAction)
+    public void BroadcastToAllPhones(JsonAction jsonAction)
     {
         if(isAirconsole)
         {
@@ -3507,16 +3517,25 @@ class GameState
     public int totalWrongGuesses { get; set; }
     public int totalAudienceCorrectGuesses { get; set; }
     public int totalAudienceWrongGuesses { get; set; }
+    private main m { get; set; }
 
-    public GameState()
+    public GameState(main m)
     {
+        this.m = m;
         players = new Dictionary<int, Player>();
         alienSelections = new Dictionary<int, int[]>();
         audienceMembers = new Dictionary<int, Player>();
         rounds = new List<Round>();
         tvViewGameState = TvViewGameState.WelcomeScreen;
-        phoneViewGameState = PhoneViewGameState.SendStartGameScreen;
+        SetPhoneViewGameState(PhoneViewGameState.SendStartGameScreen);
         ResetGuesses();
+    }
+
+    public void SetPhoneViewGameState(PhoneViewGameState p)
+    {
+        phoneViewGameState = p;
+        Debug.Log(p.ToString());
+        m.BroadcastToAllPhones(new JsonAction("updatePhoneState", new[] { p.ToString() }));
     }
 
     public void ResetGuesses()
