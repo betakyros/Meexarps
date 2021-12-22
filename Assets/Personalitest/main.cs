@@ -159,8 +159,7 @@ public class main : MonoBehaviour
             }
             else if ("friendshiptips".Equals(typeOfFile))
             {
-                rawCustomFriendshipTips.AddRange(bodyLines);
-                
+                rawCustomFriendshipTips.AddRange(bodyLines);                
             }
         }
         if (rawCustomWouldYouRathers.Count > 0)
@@ -175,7 +174,7 @@ public class main : MonoBehaviour
         {
             ParseCustomAnonymousNames(rawCustomAnonymousNames.ToArray());
         }
-        if (rawCustomQuestions.Count > 0)
+        if (rawCustomFriendshipTips.Count > 0)
         {
             ParseCustomFriendshipTips(rawCustomFriendshipTips.ToArray());
         }
@@ -322,25 +321,13 @@ public class main : MonoBehaviour
         {
             socket.getSocketIoCommunicator().Instance.On("phoneMessage", (data) =>
             {
-                Debug.Log("phoneMessage");
-                Debug.Log(data);
-                Debug.Log(JToken.Parse(data));
                 JToken parsedData = JToken.Parse(data);
-                Debug.Log((int)parsedData["clientId"]);
-                Debug.Log(parsedData["data"]);
-
                 OnMessage((int)parsedData["clientId"], parsedData["data"]);
             });
 
             socket.getSocketIoCommunicator().Instance.On("setRoomCode", (data) =>
             {
-                Debug.Log("setRoomCode");
-                Debug.Log(data);
-                Debug.Log(JToken.Parse(data));
                 JToken parsedData = JToken.Parse(data);
-                Debug.Log(parsedData["roomCode"]);
-
-                Debug.Log("roomCode");
                 OnReadySteam(parsedData["roomCode"].ToString());
             });
 
@@ -448,12 +435,6 @@ public class main : MonoBehaviour
                 {
                     questions.Add(lines[i]);
                 }
-
-            /*}
-            catch
-            {
-                Debug.Log("Error parsing line: " + lines[i]);
-            }*/
         } 
     }
 
@@ -529,7 +510,6 @@ public class main : MonoBehaviour
 
         if ("websocketInitialConnect".Equals(action))
         {
-            Debug.Log("websocketInitialConnect");
             OnConnect(from);
         } 
         else if ("sendWelcomeInfo".Equals(action))
@@ -1900,7 +1880,6 @@ public class main : MonoBehaviour
         yield return new WaitForSeconds(questionTime);
         offlineQuestionPanel.SetActive(false);
         StartRound();
-        Debug.Log("Called StartRound");
     }
 
     private IEnumerator<WaitForSeconds> OfflineWouldYouRather()
@@ -2216,12 +2195,6 @@ public class main : MonoBehaviour
         autoResizeGrid.enabled = true;
     }
 
-    private void debugOnPhone(string key, string value)
-    {
-        Debug.Log(key + ": " + value);
-        JsonAction jsonAction = new JsonAction("debug", new string[] { key + ": " + value });
-        BroadcastToAllPhones(jsonAction);
-    }
     private void sendEveryonePersonalizedRoundResults(List<Answers> answerList)
     {
         Round currentRound = gameState.GetCurrentRound();

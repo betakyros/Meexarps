@@ -377,10 +377,6 @@ path, .jtk-endpoint {
         }
         
         if(!isAirconsole) {
-            //initialize websocket
-            //socket = new WebSocket('ws://localhost:8080');
-            //socket = new WebSocket('wss://meexarps-server.herokuapp.com');
-            console.log("startingto connect");
             //const socket = io('wss://meexarps-server.herokuapp.com');
             //const socket = io('ws://localhost:8080');
             const phoneId = App.prototype.generateUUID();
@@ -392,7 +388,6 @@ path, .jtk-endpoint {
             });
 
             socket.on("connect", function(event) {
-                console.log('Connected to: ' + event);
                 var systemSetup = {
                     "action" : "system",
                     "isPhone" : "true",
@@ -400,7 +395,6 @@ path, .jtk-endpoint {
                     "playerNumber" : playerNumber
                 };
                 socket.emit("phoneMessage", JSON.stringify(systemSetup));
-                console.log("connected");
                 if(isDisconnected) {
                     isDisconnected = false;
                     App.prototype.showSnackbar("Reconnected. If propblems persist please refresh with the same code and username.");
@@ -420,12 +414,10 @@ path, .jtk-endpoint {
                 App.prototype.receiveMessages(-1, event);
             });
             socket.on("systemMessage", function(event) {
-                console.log("systemMessage: " + JSON.stringify(event));
                 App.prototype.receiveMessages(-1, event);
             });
 
             socket.onAny((event, ...args) => {
-                console.log("messageReceived: ");
                 console.log(event, args);
             });
 
@@ -699,7 +691,6 @@ path, .jtk-endpoint {
                 
                 myAction = payload.action;
 
-                console.log("myaction: "+myAction);
                 /* THIS IS WHERE ACTIONS ARE RECEIVED */
                 if(myAction === "debug") {
                    console.log("Debug: " + payload.data[0]);
@@ -849,7 +840,6 @@ path, .jtk-endpoint {
                     document.getElementById("useSystemKeyboard").checked = useSystemKeyboard;//useSystemKeyboard
                 } else if(myAction === "sendStartGameScreen") {
                 var d = new Date();
-                console.log("sendStartGameScreen: " + playerName + " AT TIME: " + d.toLocaleString() + ":" + d.getMilliseconds());
                     displayElement(document.getElementById("startGameScreenView"));
 
                 } else if(myAction === "debounced") {
@@ -1240,13 +1230,8 @@ path, .jtk-endpoint {
 
             /* THIS IS WHERE RESPONSES ARE DEFINED */
             App.prototype.sendWelcomeInfo = function sendWelcomeInfo() {
-                /*
-                var nickname = document.getElementById('nickname').innerText;
-                */
-                console.log("nickname: ");
 
                 var nickname = App.prototype.getKeyboardValue("nickname");
-                console.log("nickname: " + nickname);
                 if(nickname) {
 				    var message = {
 					    'action': "sendWelcomeInfo",
@@ -1269,7 +1254,6 @@ path, .jtk-endpoint {
                 var nickname = document.getElementById('nickname').innerText;
                 */
                 roomCode = App.prototype.getKeyboardValue("roomCode");
-                console.log("room Code entered: " + roomCode);
                 socket.connect();
 			}
 
@@ -1779,7 +1763,6 @@ path, .jtk-endpoint {
             }
 
             App.prototype.sendMessage = function sendMessage(message) {
-            console.log("send message called: " + isAirconsole);
                 if(isAirconsole){
                     me.air_console.message(AirConsole.SCREEN, message);
                 } else {
