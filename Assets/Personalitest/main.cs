@@ -70,6 +70,7 @@ public class main : MonoBehaviour
     private int currentWouldYouRatherIndex;
     private string gameCode;
     private bool isOfflineMode = false;
+    private int offlineQuestionCount = 0;
     private int offlineWouldYouRatherCount = 0;
     private static int VIP_PLAYER_NUMBER = 0;
     private static int AUDIENCE_THRESHOLD = 6;
@@ -370,18 +371,23 @@ public class main : MonoBehaviour
         {
             isOfflineMode = true;
             OnReadyOffline();
-            yield return new WaitForSeconds(3);
 
-            CancelInvoke();
-            GameObject gameObject = GameObject.Find("WelcomeScreenPanel");
-            if (gameObject != null)
-            {
-                gameObject.SetActive(false);
-            }
-            ExitWelcomeScreen();
-            StartRound();
+            // On button press, start in offline mode
         }
         sendWelcomeScreenInfo(-1, -1);
+    }
+
+    public void StartInOfflineMode()
+    {
+        isOfflineMode = true;
+        CancelInvoke();
+        GameObject gameObject = GameObject.Find("WelcomeScreenPanel");
+        if (gameObject != null)
+        {
+            gameObject.SetActive(false);
+        }
+        ExitWelcomeScreen();
+        StartRound();
     }
 
     public void UpdateLoadingScreenTips()
@@ -461,7 +467,7 @@ public class main : MonoBehaviour
     }
     void OnReadyOffline()
     {
-        welcomeInstructionsText.text = "Could not connect to Meexarps servers. Starting in offline mode!";
+        welcomeInstructionsText.text = "Could not connect to Meexarps servers. Refresh or start in offline mode to continue.";
     }
 
     void Update()
@@ -1863,7 +1869,6 @@ public class main : MonoBehaviour
             offlineWouldYouRatherCount++;
             if(offlineWouldYouRatherCount > 3)
             {
-                Debug.Log("CalledOfflineQuestionPhase");
                 StartCoroutine(OfflineQuestionPhase());
             }
         }
@@ -1876,7 +1881,7 @@ public class main : MonoBehaviour
 
         wouldYouRatherPanel.SetActive(false);
         offlineQuestionPanel.SetActive(true);
-        offlineQuestionPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].text = GetRandomQuestion() + "\n\n" + GetRandomQuestion() + "\n\n" + GetRandomQuestion();
+        offlineQuestionPanel.GetComponentsInChildren<TextMeshProUGUI>()[1].text = GetRandomOfflineQuestion() + "\n\n" + GetRandomOfflineQuestion() + "\n\n" + GetRandomOfflineQuestion();
 
         WouldYouRatherTimer oldWouldYouRatherTimer = offlineQuestionPanel.GetComponent<WouldYouRatherTimer>();
         if (null == oldWouldYouRatherTimer)
@@ -3088,7 +3093,15 @@ public class main : MonoBehaviour
         } while ((!options["nsfwQuestions"] && qc.isNsfw));
         return qc.questions[Random.Range(0, qc.questions.Length)];
     }
-
+    private string GetRandomOfflineQuestion()
+    {
+        QuestionCategory qc;
+        do
+        {
+            qc = questionCategories[offlineQuestionCount++];
+        } while ((!options["nsfwQuestions"] && qc.isNsfw));
+        return qc.questions[Random.Range(0, qc.questions.Length)];
+    }
     public int getNumPlayers()
     {
         return gameState.GetNumberOfPlayers();
