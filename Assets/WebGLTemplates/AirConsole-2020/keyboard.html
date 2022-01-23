@@ -383,37 +383,44 @@ path, .jtk-endpoint {
             //const socket = io('ws://localhost:8080');
             const phoneId = App.prototype.generateUUID();
             socket = io({
-                autoConnect: false,
                 query:{
                     "phoneId": phoneId
                 }
             });
 
-            //Send a heartbeat to make sure we're on the correct phone screen
-            setInterval(App.prototype.sendPhoneScreenHeartbeat, 3000); 
-
             socket.on("connect", function(event) {
-                var systemSetup = {
-                    "action" : "system",
-                    "isPhone" : "true",
-                    "roomCode": roomCode,
-                    "playerNumber" : playerNumber
-                };
-                socket.emit("phoneMessage", JSON.stringify(systemSetup));
-                isConnected = true;
+                console.log("Connected");
                 if(isDisconnected) {
                     isDisconnected = false;
-                    App.prototype.showSnackbar("Reconnected. If propblems persist please refresh with the same code and username.");
+                    App.prototype.joinRoom();
+                    
+                    console.log("reconnect");
+                    App.prototype.showSnackbar("Reconnected. If propblems persist please refresh with the same code (" + roomCode + ") and username ("+playerName+").");
                 }
             
 	        });
             socket.on("disconnect", (reason) => {
+                var logMetricMessage = {
+                    "action" : "metric",
+                    "isPhone" : "true",
+                    "roomCode": roomCode,
+                    "playerNumber" : playerNumber,
+                    "metricName" : "disconnectPhone"
+                };
+                socket.emit("phoneMessage", JSON.stringify(logMetricMessage));
+
                 console.log("disconnected: " + reason);
                 isDisconnected = true;
                 App.prototype.showSnackbar("Disconnected. If propblems persist please refresh with the same code and username.");
             });
             socket.on("connect_error", (error) => {
                 console.log("connect error: " + error);
+                isDisconnected = true;
+                App.prototype.showSnackbar("Disconnected. If propblems persist please refresh with the same code and username.");
+            });
+            socket.on("reconnect", () => {
+                console.log("reconnect");
+                App.prototype.showSnackbar("Reconnected. If propblems persist please refresh with the same code (" + roomCode + ") and username ("+playerName+").");
             });
             socket.on("computerMessage", function(event) {
                 console.log("computerMessage: " + JSON.stringify(event));
@@ -1274,7 +1281,22 @@ path, .jtk-endpoint {
                 var nickname = document.getElementById('nickname').innerText;
                 */
                 roomCode = App.prototype.getKeyboardValue("roomCode");
-                socket.connect();
+                App.prototype.joinRoom();
+			}
+
+            App.prototype.joinRoom = function joinRoom() {
+                var systemSetup = {
+                    "action" : "system",
+                    "isPhone" : "true",
+                    "roomCode": roomCode,
+                    "playerNumber" : playerNumber
+                };
+                socket.emit("phoneMessage", JSON.stringify(systemSetup));
+                isConnected = true;
+                if(isDisconnected) {
+                    isDisconnected = false;
+                    App.prototype.showSnackbar("Reconnected. If problems persist please refresh with the same code and username.");
+                }
 			}
 
             App.prototype.CheckName = function CheckName() {
@@ -2363,7 +2385,7 @@ path, .jtk-endpoint {
                 Enter Room Code
             </div>
             <div style="margin: 8px 0;width: 20%;margin:auto;" style="justify-content:center;">
-                <span  placeholder="Enter Room Code" class="franklinInput" contenteditable="true" id="roomCode-system" 
+                <span style="text-transform: uppercase;" placeholder="Enter Room Code" class="franklinInput" contenteditable="true" id="roomCode-system" 
                 onmousedown="window.app.setPlaceholder('roomCode-system', '')" onblur="window.app.setPlaceholder('roomCode-system', 'Enter Room Code')"></span>
             </div>
             <div class="pseudo_button" onmousedown="window.app.sendRoomCode()">Join Room</div>
@@ -3142,7 +3164,7 @@ path, .jtk-endpoint {
         </div>   
         <div class="view optionsView" id="optionsView" style="display:none; z-index:101;padding-top:45px;">
             <div class="topleft franklinImage" onmousedown="window.app.hideOptions()" style="z-index:102; height:30px; width:30px;margin-top:10px;background-image:url('./icon_backarrow.png');" ></div>
-            <div style="position: width:100%;font-size:30px;">Game Options</div>
+            <div style="width:100%;font-size:30px;">Game Options</div>
             <div id="checkboxes" style="text-align:left; margin: 20px 0 0 20px;">
                 <div style="display:none;" id="vipOptionsDiv">
                     <!--

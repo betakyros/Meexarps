@@ -18,26 +18,32 @@ app.use(express.static(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2
 const server = createServer(app);
 const io = require("socket.io")(server, {});
 
-  io.on("connection", (socket) => {
-	  socket.onAny((eventName, ...args) => {
-		  var color = eventName.includes("computer") ? "\x1b[33m" : eventName.includes("phone") ? "\x1b[36m" : "";
+  	io.on("connection", (socket) => {
+		  //for debug logging
+	//   socket.onAny((eventName, ...args) => {
+	// 	  var isComputer =  eventName.includes("computer");
+	// 	  var color = isComputer ? "\x1b[33m" : eventName.includes("phone") ? "\x1b[36m" : "";
 
-		//   if(Array.isArray(args)) {
-		// 	console.log(color, eventName, args);
-		// 	console.log('compMessage: ', args);
-		//   } else {
-		// 	console.log(color,eventName, args);
-		// 	console.log('compMessage: ', args);
-		//   }
-		});
+	// 	  if(Array.isArray(args)) {
+	// 		console.log(color, eventName, args);
+	// 		console.log(isComputer ? 'compMessage: ' : 'phoneMessage', args);
+	// 	  } else {
+	// 		console.log(color,eventName, args);
+	// 		console.log(isComputer ? 'compMessage: ' : 'phoneMessage', args);
+	// 	  }
+	// 	});
 
 		socket.on("phoneMessage", (data) => {
 			const phoneId = socket.handshake.query.phoneId;
 			let jsonData = JSON.parse(data);
 			let roomCode = jsonData.roomCode.toUpperCase().trim();
-			if(jsonData.action == "system") {	
+			if(jsonData.action === "metric") {
+				logProductMetric(jsonData.metricName, roomCode);
+			
+			} else if(jsonData.action == "system") {	
 				if(io.sockets.adapter.rooms.get(roomCode)) {
 					socket.join(roomCode);
+					logProductMetric("PlayerJoined")
 					var room = io.sockets.adapter.rooms.get(roomCode);
 					if(!room["playerSockets"]) {
 						room["playerSockets"] = [];
@@ -45,6 +51,7 @@ const io = require("socket.io")(server, {});
 					}
 					var playerNumber;
 					var isSameBrowserReconnect = jsonData.playerNumber != null;
+
 					if(!isSameBrowserReconnect) {
 						
 						playerNumber = room["playerSockets"].push(socket.id) - 1;
@@ -71,9 +78,7 @@ const io = require("socket.io")(server, {});
 				//incase the user disconnected
 				socket.join(roomCode);
 				socket.rooms.forEach(rm => {
-					console.log("Curr Room: " + rm + " myRoom: " + roomCode);
 					if(io.sockets.adapter.rooms.get(rm)["computerSocket"]) {
-						console.log("phoneMessage - normal", JSON.stringify(jsonData));	
 						var playerNumber = io.sockets.adapter.rooms.get(rm)["phoneIds"].lastIndexOf(phoneId)
 						var wrappedJsonData = {
 							"data":jsonData, 
@@ -103,7 +108,12 @@ const io = require("socket.io")(server, {});
 					"roomCode":newRoomCode 
 				};
 				socket.emit("setRoomCode", roomCodeJson);
+				logProductMetric("gameStarted")
 				return;
+			}
+			
+			if(jsonData.data.action === "sendEndScreen") {
+				logProductMetric("sendEndScreen");
 			}
 			
 			if(jsonData.action === 'broadcast') {
@@ -114,6 +124,7 @@ const io = require("socket.io")(server, {});
 				socket.rooms.forEach(room => {
 					if(io.sockets.adapter.rooms.get(room)["playerSockets"]) {
 						var playerSocket = io.sockets.adapter.rooms.get(room)["playerSockets"][jsonData.from];
+						
 						socket.to(playerSocket).emit("computerMessage", jsonData.data);	
 					}
 				})
@@ -122,8 +133,15 @@ const io = require("socket.io")(server, {});
 			}
 		});
 	});
-  io.on("disconnect", (reason) => {
-		console.log("disconnect", reason); // "ping timeout"
+
+	
+	io.on("reconnect", () => {
+		//does trigger idk why
+	});
+
+  	io.on("disconnect", () => {
+		console.log("disconnectServer"); // "ping timeout"
+		logProductMetric("disconnectServer")
 	  });
 
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));
@@ -135,4 +153,12 @@ function getRandomString(length) {
         result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
     }
     return result;
+}
+
+function logProductMetric(metric, context) {
+	var contextPart = "";
+	if(context) {
+		contextPart = "." + context;
+	}
+	console.log("MEEXARPSMETRICS." + metric + contextPart)
 }
