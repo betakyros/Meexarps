@@ -8,6 +8,7 @@ public class WouldYouRatherTimer : MonoBehaviour
 {
     public TextMeshProUGUI timerText;
     private float startTime;
+    //this is just the display. must match         InvokeRepeating("SendWouldYouRather", 0f, 1f);
     private float duration = 20f;
 
     // Start is called before the first frame update

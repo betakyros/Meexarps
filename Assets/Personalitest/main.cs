@@ -80,6 +80,7 @@ public class main : MonoBehaviour
     private Dictionary<string, bool> options = new Dictionary<string, bool>();
     private float optionsVolume;
     private Regex newLinesRegex = new Regex(@"\r\n|\n|\r", RegexOptions.Singleline);
+    private List<string> loadingCustomContentErrors = new List<string>();
 
 
     private bool isWinterHolidaySeason = System.DateTime.Today.Month == 1 || System.DateTime.Today.Month == 12;
@@ -180,7 +181,17 @@ public class main : MonoBehaviour
             ParseCustomFriendshipTips(rawCustomFriendshipTips.ToArray());
         }
 
-        GameObject.FindWithTag("Banner").GetComponentInChildren<TextMeshProUGUI>().text = "Successfully loaded " + urlArr.Length + " file(s)";
+        if(loadingCustomContentErrors.Count == 0)
+        {
+            GameObject.FindWithTag("Banner").GetComponentInChildren<TextMeshProUGUI>().text = "Successfully loaded " + urlArr.Length + " file(s)";
+        } else
+        {
+            GameObject.FindWithTag("Banner").GetComponentInChildren<TextMeshProUGUI>().text = "Loaded " + urlArr.Length + " file(s) with errors. Check the console for details (press F12)";
+            foreach(string error in loadingCustomContentErrors)
+            {
+                Debug.Log(error);
+            }
+        }
 
         Animator fileUploadSuccessfulBanner = welcomeScreenPanel.GetComponentsInChildren<Animator>()[0];
         fileUploadSuccessfulBanner.SetBool("isOpen", true);
@@ -191,9 +202,17 @@ public class main : MonoBehaviour
     private void ParseCustomWouldYouRather(string[] wouldYouRathersLines)
     {
         List<string[]> tempWouldYouRathers = new List<string[]>();
-        foreach (string s in wouldYouRathersLines)
+        for( int i = 0; i < wouldYouRathersLines.Length; i++)
         {
-            tempWouldYouRathers.Add(s.Split('|'));
+            string s = wouldYouRathersLines[i];
+            string[] currWouldYouRather = s.Split('|');
+            if(currWouldYouRather.Length != 3)
+            {
+                loadingCustomContentErrors.Add("Error parsing would you rather line number: " + i + "| text: " + s + "| expected 3 parts but got " + currWouldYouRather.Length);
+            } else //if there are no errors
+            {
+                tempWouldYouRathers.Add(s.Split('|'));
+            }
         }
         tempWouldYouRathers.Shuffle();
         wouldYouRathers.InsertRange(0, tempWouldYouRathers);
@@ -416,7 +435,7 @@ public class main : MonoBehaviour
         addLinesToSeasonalCategory(questionsLines, false);
     }
 
-    private static void addLinesToCategory(string[] lines, bool isNsfw, List<QuestionCategory> q)
+    private void addLinesToCategory(string[] lines, bool isNsfw, List<QuestionCategory> q)
     {
         string currentCategoryName = null;
         List<string> questions = null;
@@ -424,23 +443,29 @@ public class main : MonoBehaviour
         {
             /*try
             {*/
-                if (i == lines.Length || lines[i] == "---")
+            if (i == lines.Length || lines[i] == "---")
+            {
+                if (currentCategoryName != null)
                 {
-                    if (currentCategoryName != null)
-                    {
-                        q.Add(new QuestionCategory(questions.ToArray(), currentCategoryName, isNsfw));
-                    }
-                    i++;
-                    if (i < lines.Length)
-                    {
-                        currentCategoryName = lines[i];
-                        questions = new List<string>();
-                    }
+                    q.Add(new QuestionCategory(questions.ToArray(), currentCategoryName, isNsfw));
                 }
-                else
+                i++;
+                if (i < lines.Length)
+                {
+                    currentCategoryName = lines[i];
+                    questions = new List<string>();
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(lines[i]))
+                {
+                    loadingCustomContentErrors.Add("Whitespace detected in personality question: " + currentCategoryName + ", skipping");
+                } else
                 {
                     questions.Add(lines[i]);
                 }
+            }
         } 
     }
 
