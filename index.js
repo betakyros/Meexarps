@@ -1,6 +1,8 @@
 //const crypto = require('crypto');
 const { Console } = require('console');
+const e = require('express');
 const express = require('express');
+const { json } = require('express/lib/response');
 const { createServer } = require('http');
 //const WebSocket = require('ws');
 
@@ -36,14 +38,19 @@ const io = require("socket.io")(server, {});
 		socket.on("phoneMessage", (data) => {
 			const phoneId = socket.handshake.query.phoneId;
 			let jsonData = JSON.parse(data);
-			let roomCode = jsonData.roomCode.toUpperCase().trim();
+			let roomCode = "";
+			if(jsonData.roomCode) {
+				roomCode = jsonData.roomCode.toUpperCase().trim();
+			} else {
+				//ignore this phone message. it is malformed
+			}
 			if(jsonData.action === "metric") {
 				logProductMetric(jsonData.metricName, roomCode);
 			
 			} else if(jsonData.action == "system") {	
 				if(io.sockets.adapter.rooms.get(roomCode)) {
 					socket.join(roomCode);
-					logProductMetric("PlayerJoined")
+					logProductMetric("PlayerJoined", roomCode)
 					var room = io.sockets.adapter.rooms.get(roomCode);
 					if(!room["playerSockets"]) {
 						room["playerSockets"] = [];
@@ -97,6 +104,22 @@ const io = require("socket.io")(server, {});
 			if(typeof data === "string") {
 				jsonData = JSON.parse(data);
 			} 
+
+			if(jsonData.action === "log") {
+				console.log(jsonData.message);
+				if(jsonData.context === "error") {
+					logProductMetric("error");
+				} else if(jsonData.context === "sendEndScreen") {
+					logProductMetric("sendEndScreen");
+				}
+				return;
+			}
+
+			if(jsonData.action === "metric") {
+				logProductMetric(jsonData.metricName, jsonData.roomCode);
+				return;
+			}
+
 			if(jsonData.action === "init") {
 				var newRoomCode = getRandomString(4);
 				while(io.sockets.adapter.rooms.get(newRoomCode)) {
@@ -108,12 +131,8 @@ const io = require("socket.io")(server, {});
 					"roomCode":newRoomCode 
 				};
 				socket.emit("setRoomCode", roomCodeJson);
-				logProductMetric("gameStarted")
+				logProductMetric("gameStarted", newRoomCode)
 				return;
-			}
-			
-			if(jsonData.data.action === "sendEndScreen") {
-				logProductMetric("sendEndScreen");
 			}
 			
 			if(jsonData.action === 'broadcast') {
@@ -128,8 +147,6 @@ const io = require("socket.io")(server, {});
 						socket.to(playerSocket).emit("computerMessage", jsonData.data);	
 					}
 				})
-			} else {
-				console.log("unknown computer message");
 			}
 		});
 	});

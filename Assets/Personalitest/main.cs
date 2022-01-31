@@ -206,12 +206,12 @@ public class main : MonoBehaviour
         {
             string s = wouldYouRathersLines[i];
             string[] currWouldYouRather = s.Split('|');
-            if(currWouldYouRather.Length != 3)
+            if (currWouldYouRather.Length != 3)
             {
                 loadingCustomContentErrors.Add("Error parsing would you rather line number: " + i + "| text: " + s + "| expected 3 parts but got " + currWouldYouRather.Length);
             } else //if there are no errors
             {
-                tempWouldYouRathers.Add(s.Split('|'));
+                tempWouldYouRathers.Add(currWouldYouRather);
             }
         }
         tempWouldYouRathers.Shuffle();
@@ -254,7 +254,6 @@ public class main : MonoBehaviour
             GameObject.FindWithTag("WinterSplashScreenImage").gameObject.SetActive(false);
         }
         StartAllLevels(welcomeScreenAudioSources);
-        ExceptionHandling.SetupExceptionHandling(errorPanel);
         InitializeOptions();
         string rawQuestions;
         string rawNsfwQuestions;
@@ -331,6 +330,7 @@ public class main : MonoBehaviour
         blips.Shuffle();
         if (isAirconsole)
         {
+            ExceptionHandling.SetupExceptionHandling(errorPanel, null);
             AirConsole.instance.onReady += OnReady;
             AirConsole.instance.onMessage += OnMessage;
             AirConsole.instance.onConnect += OnConnect;
@@ -339,6 +339,7 @@ public class main : MonoBehaviour
             AirConsole.instance.onAdShow += OnAdShow;
         } else
         {
+            ExceptionHandling.SetupExceptionHandling(errorPanel, socket);
             socket.getSocketIoCommunicator().Instance.On("phoneMessage", (data) =>
             {
                 JToken parsedData = JToken.Parse(data);
@@ -348,7 +349,9 @@ public class main : MonoBehaviour
             socket.getSocketIoCommunicator().Instance.On("setRoomCode", (data) =>
             {
                 JToken parsedData = JToken.Parse(data);
-                OnReadySteam(parsedData["roomCode"].ToString());
+                string roomCode = parsedData["roomCode"].ToString();
+                OnReadySteam(roomCode);
+                socket.roomCode = roomCode;
             });
 
         }
@@ -2837,6 +2840,13 @@ public class main : MonoBehaviour
     {
         gameState.SetPhoneViewGameState(PhoneViewGameState.SendEndScreen);
         gameState.tvViewGameState = TvViewGameState.EndGameScreen;
+
+        JObject msg = new JObject();
+        msg.Add("action", "metric");
+        msg.Add("roomCode", gameCode);
+        msg.Add("metricName", "ENDGAME");
+        socket.SendWebSocketMessage(msg.ToString());
+
         roundCounter.SetActive(false);
         roomCodePanel.SetActive(false);
         deactivateResultsPanel();

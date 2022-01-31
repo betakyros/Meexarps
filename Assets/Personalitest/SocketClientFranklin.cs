@@ -6,6 +6,8 @@ using Newtonsoft.Json.Linq;
 
 public class SocketClientFranklin : MonoBehaviour
 {
+
+    public string roomCode;
     public SocketIOCommunicator socketIoCommunicator;
 
     public SocketIOCommunicator getSocketIoCommunicator()
@@ -28,6 +30,14 @@ public class SocketClientFranklin : MonoBehaviour
         socketIoCommunicator.Instance.On("disconnect", (String data) =>
         {
             Debug.Log("Disconnected");
+
+            Debug.Log("Connected");
+            JObject msg = new JObject();
+            msg.Add("action", "metric");
+            msg.Add("roomCode", roomCode);
+            msg.Add("metricName", "DisconnectComputer");
+
+            socketIoCommunicator.Instance.Emit("computerMessage", JToken.FromObject(msg).ToString());
         });
     }
 
