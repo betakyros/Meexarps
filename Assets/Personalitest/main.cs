@@ -137,6 +137,7 @@ public class main : MonoBehaviour
         List<string> rawCustomWouldYouRathers = new List<string>();
         List<string> rawCustomAnonymousNames = new List<string>();
         List<string> rawCustomFriendshipTips = new List<string>();
+        loadingCustomContentErrors = new List<string>();
 
         for (int i = 0; i < urlArr.Length; i++)
         {
@@ -180,22 +181,22 @@ public class main : MonoBehaviour
         {
             ParseCustomFriendshipTips(rawCustomFriendshipTips.ToArray());
         }
-
-        if(loadingCustomContentErrors.Count == 0)
+        GameObject banner = GameObject.FindWithTag("Banner");
+        if (loadingCustomContentErrors.Count == 0)
         {
-            GameObject.FindWithTag("Banner").GetComponentInChildren<TextMeshProUGUI>().text = "Successfully loaded " + urlArr.Length + " file(s)";
+            banner.GetComponentInChildren<TextMeshProUGUI>().text = "Successfully loaded " + urlArr.Length + " file(s)";
         } else
         {
-            GameObject.FindWithTag("Banner").GetComponentInChildren<TextMeshProUGUI>().text = "Loaded " + urlArr.Length + " file(s) with errors. Check the console for details (press F12)";
+            banner.GetComponentInChildren<TextMeshProUGUI>().text = "Loaded " + urlArr.Length + " file(s) with " + loadingCustomContentErrors.Count + " errors. Check the console for details (press F12)";
             foreach(string error in loadingCustomContentErrors)
             {
                 Debug.Log(error);
             }
         }
 
-        Animator fileUploadSuccessfulBanner = welcomeScreenPanel.GetComponentsInChildren<Animator>()[0];
+        Animator fileUploadSuccessfulBanner = banner.GetComponentsInChildren<Animator>()[0];
         fileUploadSuccessfulBanner.SetBool("isOpen", true);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(5);
         fileUploadSuccessfulBanner.SetBool("isOpen", false);
     }
 
