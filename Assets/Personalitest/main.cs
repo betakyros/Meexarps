@@ -14,6 +14,7 @@ public class main : MonoBehaviour
     public Text gameStateText;
     public TextMeshProUGUI welcomeInstructionsText;
     private static List<QuestionCategory> questionCategories;
+    private static List<QuestionCategory> customQuestionCategories;
     private static QuestionCategory seasonalQuestionCategory;
     private static List<string> anonymousNames;
     //(question, left answer, right answer)
@@ -64,8 +65,11 @@ public class main : MonoBehaviour
     public Button fileUploadButton;
 
     private int currentCategoryIndex;
+    private int currentCustomCategoryIndex;
     private int selectedCategory;
+    private bool selectedCategoryIsCustom;
     private List<int> sentCategoryIndices;
+    private List<bool> sentCategoryIsCustom;
     private int currentQuestionIndex;
     private int currentWouldYouRatherIndex;
     private string gameCode;
@@ -223,7 +227,7 @@ public class main : MonoBehaviour
         List<QuestionCategory> customQuestions = new List<QuestionCategory>();
         addLinesToCategory(questionsLines, false, customQuestions);
         customQuestions.Shuffle();
-        questionCategories.InsertRange(0, customQuestions);
+        customQuestionCategories.InsertRange(0, customQuestions);
     }
     private void ParseCustomAnonymousNames(string[] anonymousNamesLines)
     {
@@ -293,6 +297,7 @@ public class main : MonoBehaviour
             }
         }
         questionCategories = new List<QuestionCategory>();
+        customQuestionCategories = new List<QuestionCategory>();
         ParseQuestions(rawQuestions, rawNsfwQuestions, newLinesRegex, questionCategories);
         anonymousNames = new List<string>();
         friendshipTips = new List<string>();
@@ -306,6 +311,7 @@ public class main : MonoBehaviour
         }
         //randomize the order of the resources
         questionCategories.Shuffle();
+        customQuestionCategories.Shuffle();
         anonymousNames.Shuffle();
         friendshipTips.Shuffle();
         tempWouldYouRathers.Shuffle();
@@ -915,7 +921,8 @@ public class main : MonoBehaviour
         {
             int buttonNumber = data["info"]["buttonNumber"].ToObject<int>();
             selectedCategory = sentCategoryIndices[buttonNumber - 1];
-            SendRetrieveQuestions(from, buttonNumber == 6);
+            selectedCategoryIsCustom = sentCategoryIsCustom[buttonNumber - 1];
+            SendRetrieveQuestions(from, buttonNumber == 6, selectedCategoryIsCustom);
         }
         else if ("sendRequestAnotherQuestion".Equals(action))
         {
@@ -928,7 +935,7 @@ public class main : MonoBehaviour
             }
             else
             {
-                nextQuestion = GetNextQuestion();
+                nextQuestion = GetNextQuestion(selectedCategoryIsCustom);
             }
             SendMessageToPhone(from, new JsonAction("sendAnotherQuestion", new string[] { elementId, nextQuestion }));
         }
@@ -1760,13 +1767,14 @@ public class main : MonoBehaviour
 
     public void SendSelectCategory(int deviceId)
     {
+        int numCustomQuestions = customQuestionCategories.Count;
         //-1 is write my own, -2 is seasonal
         KeyValuePair<string, int>[] categoriesToSend = new KeyValuePair<string, int>[] {
-            isWinterHolidaySeason ? GetSeasonalCategoryName() : GetNextCategoryName(),
-            GetNextCategoryName(),
-            GetNextCategoryName(),
-            GetNextCategoryName(),
-            GetNextCategoryName(),
+            isWinterHolidaySeason ? GetSeasonalCategoryName() : GetNextCategoryName(false),
+            GetNextCategoryName(numCustomQuestions > 0),
+            GetNextCategoryName(numCustomQuestions > 1),
+            GetNextCategoryName(false),
+            GetNextCategoryName(false),
             new KeyValuePair<string, int> ("I'll write my own", -1)
         };
         List<int> currentSentCategoryIndices = new List<int>();
@@ -1777,7 +1785,17 @@ public class main : MonoBehaviour
         currentSentCategoryIndices.Add(categoriesToSend[4].Value);
         currentSentCategoryIndices.Add(categoriesToSend[5].Value);
 
+
+        List<bool> currentSentCategoryIsCustom = new List<bool>();
+        currentSentCategoryIsCustom.Add(false);
+        currentSentCategoryIsCustom.Add(numCustomQuestions > 0);
+        currentSentCategoryIsCustom.Add(numCustomQuestions > 1);
+        currentSentCategoryIsCustom.Add(false);
+        currentSentCategoryIsCustom.Add(false);
+        currentSentCategoryIsCustom.Add(false);
+
         sentCategoryIndices = currentSentCategoryIndices;
+        sentCategoryIsCustom = currentSentCategoryIsCustom;
 
         string[] stringifiedCategoriesToSend = new string[]
         {
@@ -1792,20 +1810,34 @@ public class main : MonoBehaviour
         SendMessageToPhone(deviceId, new JsonAction("sendSelectCategory", stringifiedCategoriesToSend));
     }
 
-    private KeyValuePair<string, int> GetNextCategoryName()
+    private KeyValuePair<string, int> GetNextCategoryName(bool isCustom)
     {
         QuestionCategory questionCategory;
         int tempCurrentCategoryIndex;
         if(options["nsfwQuestions"])
         {
-            tempCurrentCategoryIndex = currentCategoryIndex;
-            questionCategory = questionCategories[currentCategoryIndex++ % questionCategories.Count];
+            if(!isCustom)
+            {
+                tempCurrentCategoryIndex = currentCategoryIndex;
+                questionCategory = questionCategories[currentCategoryIndex++ % questionCategories.Count];
+            } else
+            {
+                tempCurrentCategoryIndex = currentCustomCategoryIndex;
+                questionCategory = customQuestionCategories[currentCustomCategoryIndex++ % customQuestionCategories.Count];
+            }
         } else
         {
             do
             {
-                tempCurrentCategoryIndex = currentCategoryIndex;
-                questionCategory = questionCategories[currentCategoryIndex++ % questionCategories.Count];
+                if (!isCustom)
+                {
+                    tempCurrentCategoryIndex = currentCategoryIndex;
+                    questionCategory = questionCategories[currentCategoryIndex++ % questionCategories.Count];
+                } else
+                {
+                    tempCurrentCategoryIndex = currentCustomCategoryIndex;
+                    questionCategory = customQuestionCategories[currentCustomCategoryIndex++ % customQuestionCategories.Count];
+                }
             } while (questionCategory.isNsfw);
         }
         return new KeyValuePair<string, int>(questionCategory.categoryName, tempCurrentCategoryIndex);
@@ -1816,7 +1848,7 @@ public class main : MonoBehaviour
         return new KeyValuePair<string, int>(seasonalQuestionCategory.categoryName, -2);
     }
 
-    public void SendRetrieveQuestions(int deviceId, bool localWriteMyOwnQuestions)
+    public void SendRetrieveQuestions(int deviceId, bool localWriteMyOwnQuestions, bool isCustom)
     {
         string[] questionsToSend;
         if (localWriteMyOwnQuestions)
@@ -1832,9 +1864,9 @@ public class main : MonoBehaviour
         else
         {
             questionsToSend = new string[] {
-                GetNextQuestion(),
-                GetNextQuestion(),
-                GetNextQuestion(),
+                GetNextQuestion(isCustom),
+                GetNextQuestion(isCustom),
+                GetNextQuestion(isCustom),
                 selectedCategory == -2 ? seasonalQuestionCategory.categoryName : questionCategories[selectedCategory % questionCategories.Count].categoryName
             };
             writeMyOwnQuestions = false;
@@ -3115,10 +3147,17 @@ public class main : MonoBehaviour
         return gameState.GetCurrentRound().votes.Count == gameState.GetNumberOfPlayers();
     }
 
-    private string GetNextQuestion()
+    private string GetNextQuestion(bool isCustom)
     {
-        QuestionCategory qc = selectedCategory == -2 ? seasonalQuestionCategory : questionCategories[selectedCategory % questionCategories.Count];
-        return qc.questions[currentQuestionIndex++ % qc.questions.Length];
+        if(!isCustom)
+        {
+            QuestionCategory qc = selectedCategory == -2 ? seasonalQuestionCategory : questionCategories[selectedCategory % questionCategories.Count];
+            return qc.questions[currentQuestionIndex++ % qc.questions.Length];
+        } else
+        {
+            QuestionCategory qc = customQuestionCategories[selectedCategory % customQuestionCategories.Count];
+            return qc.questions[currentQuestionIndex++ % qc.questions.Length];
+        }
     }
     private string GetRandomQuestion()
     {

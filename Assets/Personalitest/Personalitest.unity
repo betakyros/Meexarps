@@ -15652,6 +15652,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3647a0a55ba9f9f43a2345d35d7e21ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roomCode: 
   socketIoCommunicator: {fileID: 1259476614}
 --- !u!82 &1259476609
 AudioSource:
@@ -27144,7 +27145,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18.8
+  m_fontSize: 19.65
   m_fontSizeBase: 18.97
   m_fontWeight: 400
   m_enableAutoSizing: 1
