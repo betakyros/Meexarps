@@ -664,12 +664,12 @@ public class main : MonoBehaviour
                     Player p = new Player(name, from, audienceNumber, 0, animators[1], 6);
                     gameState.audienceMembers.Add(from, p);
 
+                    sendWelcomeScreenInfo(from, -1);
+                    SendMessageToPhone(from, new JsonAction("confirmNameSubmission", new string[] { " " }));
                     if (gameState.phoneViewGameState == PhoneViewGameState.SendStartGameScreen)
                     {
                         GameObject.FindWithTag("AudienceCounter").GetComponentInChildren<TextMeshProUGUI>().text = "<color=white>Audience: " + gameState.audienceMembers.Count + "</color>";
                         SendMessageToPhone(from, new JsonAction("sendStartGameScreen", new string[] { " " }));
-                        sendWelcomeScreenInfo(from, -1);
-                        SendMessageToPhone(from, new JsonAction("confirmNameSubmission", new string[] { " " }));
                     }
                     else
                     {
@@ -1295,7 +1295,6 @@ public class main : MonoBehaviour
             BroadcastToAllPhones(new JsonAction("sendWelcomeScreenInfo", payload.ToArray()));
         }
         int currNumAudience = gameState.GetNumberOfAudience();
-
         if (from >= 0)
         {
             if (currNumAudience == 0)
