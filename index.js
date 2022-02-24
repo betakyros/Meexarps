@@ -22,18 +22,18 @@ const io = require("socket.io")(server, {});
 
   	io.on("connection", (socket) => {
 		  //for debug logging
-	//   socket.onAny((eventName, ...args) => {
-	// 	  var isComputer =  eventName.includes("computer");
-	// 	  var color = isComputer ? "\x1b[33m" : eventName.includes("phone") ? "\x1b[36m" : "";
+	  socket.onAny((eventName, ...args) => {
+		  var isComputer =  eventName.includes("computer");
+		  var color = isComputer ? "\x1b[33m" : eventName.includes("phone") ? "\x1b[36m" : "";
 
-	// 	  if(Array.isArray(args)) {
-	// 		console.log(color, eventName, args);
-	// 		console.log(isComputer ? 'compMessage: ' : 'phoneMessage', args);
-	// 	  } else {
-	// 		console.log(color,eventName, args);
-	// 		console.log(isComputer ? 'compMessage: ' : 'phoneMessage', args);
-	// 	  }
-	// 	});
+		  if(Array.isArray(args)) {
+			console.log(color, eventName, args);
+			console.log(isComputer ? 'compMessage: ' : 'phoneMessage', args);
+		  } else {
+			console.log(color,eventName, args);
+			console.log(isComputer ? 'compMessage: ' : 'phoneMessage', args);
+		  }
+		});
 
 		socket.on("phoneMessage", (data) => {
 			const phoneId = socket.handshake.query.phoneId;
