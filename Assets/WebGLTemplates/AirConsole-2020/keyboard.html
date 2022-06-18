@@ -1872,6 +1872,10 @@ path, .jtk-endpoint {
         font-family: "Autour One";
         box-shadow: 0 4px 7px #4A6EEF;
         margin-bottom: 12px;
+        
+        -webkit-user-select: none; /* Safari */
+        -ms-user-select: none; /* IE 10 and IE 11 */
+        user-select: none; /* Standard syntax */
       }
 
       .pseudo_button:active {
@@ -1884,6 +1888,10 @@ path, .jtk-endpoint {
           border-width: thin;
           border-style: solid;
           background-color: transparent;
+          
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
       }
 
       .initially_hidden_pseudo_button {
@@ -1930,6 +1938,13 @@ path, .jtk-endpoint {
         color: #555; 
         font-style: italic;
       }
+   
+      .prevent-select {
+        -webkit-user-select: none; /* Safari */
+        -ms-user-select: none; /* IE 10 and IE 11 */
+        user-select: none; /* Standard syntax */
+      }
+
       /* https://codepen.io/alvasavi/pen/QwNLKL */
       .roundCountGrid {
           display:flex;
