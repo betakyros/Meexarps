@@ -15,7 +15,6 @@ public class SocketClientFranklin : MonoBehaviour
         return socketIoCommunicator;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         socketIoCommunicator.Instance.On("connect", (String data) =>

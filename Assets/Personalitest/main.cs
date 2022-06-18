@@ -86,6 +86,8 @@ public class main : MonoBehaviour
     private Regex newLinesRegex = new Regex(@"\r\n|\n|\r", RegexOptions.Singleline);
     private List<string> loadingCustomContentErrors = new List<string>();
 
+    private List<List<string>> actionList = new List<List<string>>();
+
 
     private bool isWinterHolidaySeason = System.DateTime.Today.Month == 1 || System.DateTime.Today.Month == 12;
 
@@ -337,7 +339,7 @@ public class main : MonoBehaviour
         blips.Shuffle();
         if (isAirconsole)
         {
-            ExceptionHandling.SetupExceptionHandling(errorPanel, null);
+            ExceptionHandling.SetupExceptionHandling(errorPanel, null, this);
             AirConsole.instance.onReady += OnReady;
             AirConsole.instance.onMessage += OnMessage;
             AirConsole.instance.onConnect += OnConnect;
@@ -346,7 +348,7 @@ public class main : MonoBehaviour
             AirConsole.instance.onAdShow += OnAdShow;
         } else
         {
-            ExceptionHandling.SetupExceptionHandling(errorPanel, socket);
+            ExceptionHandling.SetupExceptionHandling(errorPanel, socket, this);
             socket.getSocketIoCommunicator().Instance.On("phoneMessage", (data) =>
             {
                 JToken parsedData = JToken.Parse(data);
@@ -533,6 +535,8 @@ public class main : MonoBehaviour
     void OnMessage(int from, JToken data)
     {
         string action = data["action"].ToString();
+
+        addToActionList("Received: " + action + " from: " + from, data.ToString());
         bool playSound = true;
         if(gameState.players.ContainsKey(from))
         {
@@ -2872,7 +2876,6 @@ public class main : MonoBehaviour
     {
         gameState.SetPhoneViewGameState(PhoneViewGameState.SendEndScreen);
         gameState.tvViewGameState = TvViewGameState.EndGameScreen;
-
         JObject msg = new JObject();
         msg.Add("action", "metric");
         msg.Add("roomCode", gameCode);
@@ -3241,6 +3244,8 @@ public class main : MonoBehaviour
             JObject msg = new JObject();
             msg.Add("action", "broadcast");
             msg.Add("data", JToken.FromObject(jsonAction));
+            addToActionList("Broadcast Message: " + jsonAction.action, jsonAction.ToString());
+
             socket.SendWebSocketMessage(msg.ToString());
         }
     }
@@ -3256,7 +3261,8 @@ public class main : MonoBehaviour
             msg.Add("action", "message");
             msg.Add("from", "" + from);
             msg.Add("data", JToken.FromObject(jsonAction));
-            
+
+            addToActionList("Send Message: " + jsonAction.action + " to: " + from, jsonAction.ToString());
             socket.SendWebSocketMessage(JToken.FromObject(msg).ToString());
         }
     }
@@ -3264,6 +3270,37 @@ public class main : MonoBehaviour
     public int getCurrentRoundNumberOfAnswers()
     {
         return gameState.GetCurrentRound().answers.Count;
+    }
+
+    public void addToActionList(string shortMessage, string data)
+    {
+        actionList.Add(new List<string> { shortMessage, data });
+    }
+
+    public void printActionList()
+    {
+        StringBuilder sb = new StringBuilder();
+        Debug.Log("Printing action list");
+        int i = 0;
+        actionList.ForEach(action => {
+            string temp = i++ + " " + action[0];
+            Debug.Log(temp);
+            sb.AppendLine(temp);
+            }
+        );
+        for(int j = 3; j > 0; j--)
+        {
+            string temp = j + " to last " + actionList[actionList.Count - j][1];
+            Debug.Log(temp);
+            sb.AppendLine(temp);
+        }
+        
+        JObject msg = new JObject();
+        msg.Add("action", "log");
+        msg.Add("message", sb.ToString());
+        msg.Add("context", "");
+
+        socket.SendWebSocketMessage(msg.ToString());
     }
 }
 

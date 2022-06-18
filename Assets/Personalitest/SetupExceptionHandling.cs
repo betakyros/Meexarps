@@ -6,9 +6,10 @@ public class ExceptionHandling
 {
     private static GameObject errorPanel;
     private static SocketClientFranklin socket;
+    private static main m;
 
     static bool isExceptionHandlingSetup;
-    public static void SetupExceptionHandling(GameObject ePanel, SocketClientFranklin s)
+    public static void SetupExceptionHandling(GameObject ePanel, SocketClientFranklin s, main ma)
     {
         if (!isExceptionHandlingSetup)
         {
@@ -16,6 +17,7 @@ public class ExceptionHandling
             isExceptionHandlingSetup = true;
             Application.logMessageReceived += HandleException;
             socket = s;
+            m = ma;
         }
     }
 
@@ -24,6 +26,8 @@ public class ExceptionHandling
 
         if (type == LogType.Exception)
         {
+            m.printActionList();
+
             errorPanel.SetActive(true);
             Text errorText = errorPanel.GetComponentInChildren<Text>();
             errorText.text = "ERROR: " + condition + "\n" + stackTrace;
