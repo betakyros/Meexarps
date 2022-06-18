@@ -79,7 +79,7 @@ const io = require("socket.io")(server, {});
 						"action":"roomDoesntExist"
 					};
 					socket.emit("systemMessage", roomDoesntExist);
-					socket.disconnect();
+					//socket.disconnect();
 				}
 			} else {
 				//incase the user disconnected
