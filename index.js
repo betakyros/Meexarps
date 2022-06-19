@@ -60,8 +60,8 @@ const io = require("socket.io")(server, {});
 					var isSameBrowserReconnect = jsonData.playerNumber != null;
 
 					if(!isSameBrowserReconnect) {
-						
-						playerNumber = room["playerSockets"].push(socket.id) - 1;
+						room["playerSockets"].push(socket.id)
+						playerNumber =  room["latestConnectionNum"]++;
 						room["phoneIds"][playerNumber] = phoneId;
 						var initJson = {
 							"data": {"action":"websocketInitialConnect"}, 
@@ -127,6 +127,7 @@ const io = require("socket.io")(server, {});
 				}
 				socket.join(newRoomCode);
 				io.sockets.adapter.rooms.get(newRoomCode)["computerSocket"] = socket;
+				io.sockets.adapter.rooms.get(newRoomCode)["latestConnectionNum"] = 0;
 				var roomCodeJson = {
 					"roomCode":newRoomCode 
 				};

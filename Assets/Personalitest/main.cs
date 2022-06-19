@@ -575,6 +575,21 @@ public class main : MonoBehaviour
                 {
                     Player cp = currentPlayer.Value;
                     gameState.players.Remove(currentPlayer.Key);
+                    if(gameState.players.ContainsKey(from))
+                    {
+                        JObject msg = new JObject();
+                        msg.Add("action", "metric");
+                        msg.Add("roomCode", gameCode);
+                        msg.Add("metricName", "DUPLICATEKEY");
+                        socket.SendWebSocketMessage(msg.ToString());
+
+                        JObject msg2 = new JObject();
+                        msg2.Add("action", "log");
+                        msg2.Add("message", "Trying to add a key that already exists nickname: " + cp.nickname + " original from: " 
+                            + cp.playerNumber + " current from: " + from + " player at that from: " + gameState.players[from]);
+                        msg2.Add("context", "");
+                        socket.SendWebSocketMessage(msg.ToString());
+                    }
                     gameState.players.Add(from, new Player(name, from, cp.playerNumber, 0,
                         cp.points, cp.numWrong, animators[cp.alienNumber],
                         cp.bestFriendPoints, cp.alienNumber));
@@ -653,6 +668,21 @@ public class main : MonoBehaviour
                     {
                         gameState.audienceMembers.Remove(audiencePlayer.Key);
                         Player ap = audiencePlayer.Value;
+                        if (gameState.audienceMembers.ContainsKey(from))
+                        {
+                            JObject msg = new JObject();
+                            msg.Add("action", "metric");
+                            msg.Add("roomCode", gameCode);
+                            msg.Add("metricName", "DUPLICATEKEY");
+                            socket.SendWebSocketMessage(msg.ToString());
+
+                            JObject msg2 = new JObject();
+                            msg2.Add("action", "log");
+                            msg2.Add("message", "Trying to add a key that already exists nickname: " + ap.nickname + " original from: "
+                                + ap.playerNumber + " current from: " + from + " player at that from: " + gameState.audienceMembers[from]);
+                            msg2.Add("context", "");
+                            socket.SendWebSocketMessage(msg.ToString());
+                        }
                         //todo hard code the audience animator to 7 or give them no animations
                         gameState.audienceMembers.Add(from, new Player(name, from, ap.playerNumber, 0,
                             ap.points, ap.numWrong, ap.myAnimator, ap.bestFriendPoints,
