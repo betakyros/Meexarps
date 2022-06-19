@@ -917,7 +917,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -1474,7 +1474,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -2301,6 +2301,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4991915970478137006, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 5356711021495963934, guid: bd0daa42530b64847a5c05c8ebc757f3,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -2311,6 +2317,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8694398438169365476, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &207802251 stripped
@@ -3466,6 +3478,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 3bcb65c5095e09947b3e254ce9a6183a,
         type: 3}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &308928904 stripped
@@ -5006,6 +5024,12 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 6.75
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 8465333319222278804, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_inputSource
@@ -5317,7 +5341,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -6657,7 +6681,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -6870,6 +6894,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 2937b1dde05b3f84dbcf1769448bfaed,
         type: 3}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &559965672 stripped
@@ -7253,7 +7283,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -7388,7 +7418,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -7707,7 +7737,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -8043,6 +8073,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4991915970478137006, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 5356711021495963934, guid: bd0daa42530b64847a5c05c8ebc757f3,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -8053,6 +8089,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8694398438169365476, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &683980682 stripped
@@ -8137,7 +8179,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -8395,7 +8437,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -8889,7 +8931,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -9325,6 +9367,12 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 6.75
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 8465333319222278804, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_inputSource
@@ -9425,7 +9473,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -10428,7 +10476,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -10563,7 +10611,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -10781,6 +10829,12 @@ PrefabInstance:
       propertyPath: m_text
       value: Jeff
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &818891282 stripped
@@ -10866,7 +10920,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -11377,7 +11431,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -11634,6 +11688,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 2630fe613a0b1ff4aa6728a4b83bbc32,
         type: 3}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &915438760 stripped
@@ -11795,7 +11855,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -12550,6 +12610,12 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 6.75
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 8465333319222278804, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_inputSource
@@ -12850,6 +12916,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4991915970478137006, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 5356711021495963934, guid: bd0daa42530b64847a5c05c8ebc757f3,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -12860,6 +12932,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8694398438169365476, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &1054070702 stripped
@@ -14079,6 +14157,12 @@ PrefabInstance:
       propertyPath: m_text
       value: Sabby
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &1157951245 stripped
@@ -14246,6 +14330,12 @@ PrefabInstance:
       propertyPath: m_text
       value: Meep Morp
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &1162331731 stripped
@@ -14898,7 +14988,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -15131,7 +15221,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -16799,6 +16889,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4991915970478137006, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 5356711021495963934, guid: bd0daa42530b64847a5c05c8ebc757f3,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -16809,6 +16905,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8694398438169365476, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &1305382793 stripped
@@ -18043,7 +18145,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -18501,7 +18603,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -18809,6 +18911,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: fe8010849b74e7d4a9ebb3a26212086a,
         type: 3}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &1368959827 stripped
@@ -19810,7 +19918,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -20331,7 +20439,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -20650,6 +20758,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 791cf2ea8f0cb20488bdca69f9e4750f,
         type: 3}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &1479068990 stripped
@@ -21126,6 +21240,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4991915970478137006, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 5356711021495963934, guid: bd0daa42530b64847a5c05c8ebc757f3,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -21142,6 +21262,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: bf1945f479064464fb37ae2daa950390,
         type: 3}
+    - target: {fileID: 8694398438169365476, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &1513922699 stripped
@@ -21235,7 +21361,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 19.2
   m_fontSizeBase: 18.97
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -21567,6 +21693,12 @@ PrefabInstance:
       propertyPath: m_text
       value: Bix Boop
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &1556969011 stripped
@@ -22529,7 +22661,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -23349,7 +23481,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
@@ -23557,7 +23689,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -24510,6 +24642,12 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 6.75
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 8465333319222278804, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_inputSource
@@ -24829,7 +24967,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -25030,6 +25168,12 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &1827941635 stripped
@@ -25595,6 +25739,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4991915970478137006, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 5356711021495963934, guid: bd0daa42530b64847a5c05c8ebc757f3,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -25605,6 +25755,12 @@ PrefabInstance:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8694398438169365476, guid: bd0daa42530b64847a5c05c8ebc757f3,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd0daa42530b64847a5c05c8ebc757f3, type: 3}
 --- !u!224 &1852882312 stripped
@@ -25937,6 +26093,12 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 6.75
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 8465333319222278804, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_inputSource
@@ -26119,6 +26281,12 @@ PrefabInstance:
       propertyPath: m_text
       value: Shim Sham
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &1883605541 stripped
@@ -26420,6 +26588,12 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 6.75
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     - target: {fileID: 8465333319222278804, guid: 481838b17fbf821499a7627f6a515c8f,
         type: 3}
       propertyPath: m_inputSource
@@ -27145,7 +27319,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.65
+  m_fontSize: 21.3
   m_fontSizeBase: 18.97
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -27457,7 +27631,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -29122,7 +29296,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -29673,6 +29847,12 @@ PrefabInstance:
       propertyPath: m_text
       value: Flaxor
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!224 &2106455653 stripped
@@ -29924,6 +30104,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7511574769967343081, guid: 481838b17fbf821499a7627f6a515c8f,
+        type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 481838b17fbf821499a7627f6a515c8f, type: 3}
 --- !u!1001 &5755657899111689683
@@ -30182,7 +30368,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 384cb07c48f71fa47bbe969e46697433, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 1613c082695317d43a5332174a635490, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: 0
