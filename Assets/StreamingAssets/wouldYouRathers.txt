@@ -1,4 +1,4 @@
-Would you rather not need to eat, or not need to sleep?|Never Eat|Never Sleep
+﻿Would you rather not need to eat, or not need to sleep?|Never Eat|Never Sleep
 Would you rather be able to stop time for an hour or rewind 15 minutes?|Stop Time|Rewind Time
 Would you rather be rich with average intelligence or Intelligent with average wealth?|Rich!|Intelligent!
 Would you rather be able to professionally play 3 instruments, or fluently speak 3 languages|Instruments|Language
@@ -175,13 +175,13 @@ When giving a gift to a friend, would you rather make something personal or buy 
 Are you susceptible to "hanger" (anger from hunger)?|Not really|I NEED FOOD NOW!
 Do you prefer to talk or listen?|Talk|Listen
 Do you prefer to reminisce with stories or pictures?|Telling stories|Looking through pictures
-Do you prefer emoticons :D or emojis ???|:D|??
-Do you prefer cats or dogs?|??|??
-Which do you think is cooler? Snowboarding or skiing?|??|??
-Would you rather sing or play an instrument?|??|??
-When listening to music, do you prefer brass or strings?|??|??
-Would you rather travel to a mountain or visit the beach?|??|???
-For relaxing, do you prefer a shower or a bath?|??|??
-Do you prefer Hamburgers or Pizza?|??|??
-Do you prefer Spaghetti or Rice?|??|??
-Do you prefer to cook or order takeout?|??|??
+Do you prefer emoticons :D or emojis ☺️|:D|☺️
+Do you prefer cats or dogs?|🐱|🐶
+Which do you think is cooler? Snowboarding or skiing?|🏂|⛷️
+Would you rather sing or play an instrument?|🎤|🎺
+When listening to music, do you prefer brass or strings?|📯|🪕
+Would you rather travel to a mountain or visit the beach?|⛰️|🏖️
+For relaxing, do you prefer a shower or a bath?|🚿|🛀
+Do you prefer Hamburgers or Pizza?|🍔|🍕
+Do you prefer Spaghetti or Rice?|🍝|🍚
+Do you prefer to cook or order takeout?|👩‍🍳|🥡
