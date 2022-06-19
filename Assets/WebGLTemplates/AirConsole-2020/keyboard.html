@@ -311,9 +311,11 @@ path, .jtk-endpoint {
   border-radius: 2px;
   padding: 16px;
   position: fixed;
-  z-index: 4;
+  z-index: 104;
   bottom: 30px;
   font-size: 17px;
+  border-style: solid;
+  border-width: 1px;
 }
 
 .snackbar.show {
@@ -1436,6 +1438,7 @@ path, .jtk-endpoint {
                     "" == wouldYouRatherLeftSubmit ||
                     "" == wouldYouRatherRightSubmit) {
                     //don't submit if we are missing a field
+                    document.getElementById("submitWouldYouRatherError").style.display = "block";
                     return;
                 }
                 var message = {
@@ -1446,6 +1449,7 @@ path, .jtk-endpoint {
                         wouldYouRatherRightSubmit
                     }
 				};
+                document.getElementById("submitWouldYouRatherError").style.display = "none";
                 var x = document.getElementById("snackbar");
                 x.classList.add("show");
                 setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
@@ -3069,6 +3073,9 @@ path, .jtk-endpoint {
             </div>
             <br>
             <div id="submitWouldYouRatherButtonTutorialView" class="pseudo_button" onmousedown="window.app.sendSubmitWouldYouRather(true)">Submit Would You Rather</div>
+            <div class="view" id="submitWouldYouRatherError" style="display:none;color:red;font-style:italic;">
+                All three fields must be filled in
+            </div>
             <br>
             <!--<div class="pseudo_button" onmousedown="window.app.setKeyboardValue('wouldYouRatherSubmit', '')" style="margin:5px">Force game to move onto next step</div>-->
         </div>
@@ -3231,7 +3238,7 @@ path, .jtk-endpoint {
     <div style="display:flex; position:absolute; justify-content:center; width: 100%">
         <div id="snackbarGlobal" class="snackbar"></div>
     </div>
-    <div style="display:flex; position:absolute; justify-content:center; width: 100%">
+    <div style="display:flex; position:absolute; justify-content:center; width: 100%;">
         <div id="snackbar" class="snackbar">Would you rather submitted</div>
     </div>
 
