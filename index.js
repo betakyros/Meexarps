@@ -67,11 +67,18 @@ const io = require("socket.io")(server, {});
 							"data": {"action":"websocketInitialConnect"}, 
 							"clientId": playerNumber
 						};
-						var computerSockeId = io.sockets.adapter.rooms.get(roomCode)["computerSocket"].id;
-						socket.to(computerSockeId).emit("phoneMessage", initJson);
+						if(!room["computerSocket"]) {
+							console.log("ERROR: computer connection does not exist.");
+							console.log("Room: ");
+							console.log(room);
+							console.log("Computer Socket: ");
+							console.log(room["computerSocket"]);
+						}
+						var computerSocketId = room["computerSocket"].id;
+						socket.to(computerSocketId).emit("phoneMessage", initJson);
 					} else {
 						playerNumber = jsonData.playerNumber;
-						io.sockets.adapter.rooms.get(roomCode)["playerSockets"][playerNumber] = socket.id;
+						room["playerSockets"][playerNumber] = socket.id;
 					}
 
 				} else {
