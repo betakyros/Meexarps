@@ -506,12 +506,17 @@ public class main : MonoBehaviour
     {
         welcomeInstructionsText.text = "Could not connect to Meexarps servers. Refresh or start in offline mode to continue.";
     }
+    void Awake()
+    {
+        Debug.Log("Main Awoken");
+    }
 
     void Update()
     {
         if(null == gameState)
         {
             Debug.Log("Gamestate is now null!");
+            printActionList();
         }
     }
 
@@ -536,7 +541,7 @@ public class main : MonoBehaviour
     {
         string action = data["action"].ToString();
 
-        addToActionList("Received: " + action + " from: " + from, data.ToString());
+        addToActionList("Received: " + action + " from: " + from, Newtonsoft.Json.JsonConvert.SerializeObject(data));
         bool playSound = true;
         if(gameState.players.ContainsKey(from))
         {
@@ -3274,7 +3279,7 @@ public class main : MonoBehaviour
             JObject msg = new JObject();
             msg.Add("action", "broadcast");
             msg.Add("data", JToken.FromObject(jsonAction));
-            addToActionList("Broadcast Message: " + jsonAction.action, jsonAction.ToString());
+            addToActionList("Broadcast Message: " + jsonAction.action, Newtonsoft.Json.JsonConvert.SerializeObject(jsonAction));
 
             socket.SendWebSocketMessage(msg.ToString());
         }
@@ -3292,7 +3297,7 @@ public class main : MonoBehaviour
             msg.Add("from", "" + from);
             msg.Add("data", JToken.FromObject(jsonAction));
 
-            addToActionList("Send Message: " + jsonAction.action + " to: " + from, jsonAction.ToString());
+            addToActionList("Send Message: " + jsonAction.action + " to: " + from, Newtonsoft.Json.JsonConvert.SerializeObject(jsonAction));
             socket.SendWebSocketMessage(JToken.FromObject(msg).ToString());
         }
     }
@@ -3318,7 +3323,7 @@ public class main : MonoBehaviour
             sb.AppendLine(temp);
             }
         );
-        for(int j = 3; j > 0; j--)
+        for(int j = System.Math.Min(3, actionList.Count); j > 0; j--)
         {
             string temp = j + " to last " + actionList[actionList.Count - j][1];
             Debug.Log(temp);
