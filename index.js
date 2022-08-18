@@ -15,10 +15,15 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2020/keyboard.html'));
 });
-
 app.use(express.static(path.join(__dirname, '/Assets/WebGLTemplates/AirConsole-2020')));
-const server = createServer(app);
-const io = require("socket.io")(server, {});
+
+const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+const io = require("socket.io")(server, {
+	pingTimeout: 600000,
+	cors: {
+		origin: "http://localhost:3000"
+	}
+});
 
   	io.on("connection", (socket) => {
 		  //for debug logging
@@ -168,8 +173,6 @@ const io = require("socket.io")(server, {});
 		console.log("disconnectServer"); // "ping timeout"
 		logProductMetric("disconnectServer")
 	  });
-
-server.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 function getRandomString(length) {
     var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
