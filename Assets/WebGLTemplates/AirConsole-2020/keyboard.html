@@ -788,9 +788,11 @@ path, .jtk-endpoint {
                         document.getElementById("welcomeScreenBeforeGameStart").style.display = "none";
                         document.getElementById("selectAlienAndUsername").style.display = "none";
                         document.getElementById("beforeReconnectView").style.display = "block";
-
+                        var playerRejoinButtonsDiv = document.getElementById("playerRejoinButtons");
+                        //clear out the rejoin buttons 
+                        document.getElementById("playerRejoinButtons").innerHTML = '';
                         listOfPlayerNames.forEach(playerName => {
-                            var playerRejoinButtonsDiv = document.getElementById("playerRejoinButtons");
+                            
                             var rejoinButton = document.createElement("div");
                             rejoinButton.classList.add("pseudo_button");
                             rejoinButton.innerHTML = "Rejoin as " + playerName;
