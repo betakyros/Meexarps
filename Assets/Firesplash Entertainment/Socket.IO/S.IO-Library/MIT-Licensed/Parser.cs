@@ -9,7 +9,7 @@
             if(data.Length == 1) {
                 return new SIOEventStructure()
                 {
-                    eventName = eventName.TrimEnd('"'),
+                    eventName = (eventName.Length > 1 && eventName[eventName.Length - 1] == '"' ? eventName.Remove(eventName.Length - 1) : eventName),
                     data = null
                 };
             }
@@ -19,7 +19,7 @@
             {
                 return new SIOEventStructure()
                 {
-                    eventName = eventName.TrimEnd('"'),
+                    eventName = (eventName.Length > 1 && eventName[eventName.Length - 1] == '"' ? eventName.Remove(eventName.Length - 1) : eventName),
                     data = data[1].Substring(1, data[1].Length - 3)
                 };
             }
@@ -27,8 +27,8 @@
             //Json data
             return new SIOEventStructure()
             {
-                eventName = eventName,
-                data = data[1].TrimEnd(']')
+                eventName = (eventName.Length > 1 && eventName[eventName.Length - 1] == '"' ? eventName.Remove(eventName.Length - 1) : eventName),
+                data = (data[1].Length > 1 && data[1][data[1].Length - 1] == ']' ? data[1].Remove(data[1].Length - 1) : data[1])
             };
         }
 

@@ -8,6 +8,7 @@ namespace Firesplash.UnityAssets.SocketIO.Internal
 	/// <summary>
 	/// This behavior holds an action queue and dispatches those actions on the unity player's main thread. It's singleton is accessed through SIODispatcher.Instance
 	/// </summary>
+	[AddComponentMenu("Networking/Socket.IO/Dispatcher (No need to add this manually, read the docs)")]
 	internal class SIODispatcher : MonoBehaviour
 	{
 		private static SIODispatcher _instance = null;

@@ -508,7 +508,6 @@ public class main : MonoBehaviour
     }
     void Awake()
     {
-        Debug.Log("Main Awoken");
     }
 
     void Update()

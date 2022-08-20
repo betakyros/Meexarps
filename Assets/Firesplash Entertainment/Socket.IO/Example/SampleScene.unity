@@ -151,9 +151,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a51bb71fdd88524994e50b1dd0eb958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  socketIOAddress: sio-v4-example.unityassets.i01.clu.firesplash.de
+  socketIOAddress: address-is-set-dynamically-in-script
   secureConnection: 1
   autoConnect: 0
+  autoReconnect: 1
 --- !u!4 &647273189
 Transform:
   m_ObjectHideFlags: 0

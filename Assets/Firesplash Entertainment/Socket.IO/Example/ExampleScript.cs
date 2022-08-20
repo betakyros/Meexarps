@@ -2,6 +2,13 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+
+#if HAS_JSON_NET
+//If Json.Net is installed, this is required for Example 6. See documentation for information on how to install Json.NET
+//Please note that most recent unity versions bring Json.Net with them by default, you would only need to enable the compiler flag as documented.
+using Newtonsoft.Json;
+#endif
 
 public class ExampleScript : MonoBehaviour
 {
@@ -51,7 +58,7 @@ public class ExampleScript : MonoBehaviour
             {
                 version = Application.unityVersion
             };
-            sioCom.Instance.Emit("ItsMe", JsonUtility.ToJson(me));
+            sioCom.Instance.Emit("ItsMe", JsonUtility.ToJson(me), false); //Please note the third parameter which is semi-required if JSON.Net is not installed
 
         });
 
@@ -65,16 +72,36 @@ public class ExampleScript : MonoBehaviour
         });
 
 
-        //EXAMPLE 5: Listening for an event with JSON payload
+        //EXAMPLE 5: Listening for an event with JSON Object payload
         sioCom.Instance.On("TechData", (string payload) =>
         {
             ServerTechData srv = JsonUtility.FromJson<ServerTechData>(payload);
             Debug.Log("Received the POD name from the server. Upadting UI. Oh! It's " + srv.timestamp + " by the way.");
             uiPodName.text = "I talked to " + srv.podName;
+
+            //Let's ask for random numbers (example 6 below)
+            sioCom.Instance.Emit("SendNumbers");
         });
 
 
-        //When the conversation is done, the server will close out connection.
+        //EXAMPLE 6: Listening for an event with JSON Array payload
+        sioCom.Instance.On("RandomNumbers", (string payload) =>
+        {
+            Debug.Log("We received the following JSON payload from the server for example 6: " + payload);
+
+            //Please note that unity's JsonUtility is not able to parse JSON arrays. You would need JSON.Net for this task.
+            //This is how it works - if Json.NET is installed:
+#if HAS_JSON_NET
+            int[] numbers = JsonConvert.DeserializeObject<int[]>(payload);
+            Debug.Log("Thanks to Json.NET we were able to decode the numbers: " + string.Join(", ", numbers));
+#endif
+
+            //Send a goodbye to the server
+            sioCom.Instance.Emit("Goodbye", "Thanks for talking to me!", true); //Please note the third parameter which is semi-required if JSON.Net is not installed
+        });
+
+
+        //When the conversation is done, the server will close our connection after we said Goodbye
         sioCom.Instance.On("disconnect", (string payload) => {
             if (payload.Equals("io server disconnect"))
             {
@@ -89,6 +116,18 @@ public class ExampleScript : MonoBehaviour
 
 
         //We are now ready to actually connect
-        sioCom.Instance.Connect();
+        //The simnple way will use the parameters set in the inspector (or with a former call to Connect(...)):
+        //sioCom.Instance.Connect();
+
+        //For this example we will also show how to transmit a token or other data for authentication purposes:
+        //PLEASE NOTE: You can only transmit primitives using the "authPayload". int, string, float...
+        SIOAuthPayload auth = new SIOAuthPayload();
+        auth.AddElement("id", 1234); //The server will access this using socket.handshake.auth.id
+        auth.AddElement("token", "UnitySample-abc123zyx"); //The server will access this using socket.handshake.auth.token
+        //You could again use the component config for the target by using
+        //sioCom.Instance.Connect(auth);
+
+        //But the following command shows how you can programmatically connect to any server at any given time - in this case including our previously set auth information
+        sioCom.Instance.Connect("https://sio-v4-example.unityassets.i01.clu.firesplash.de", false, auth);
     }
 }

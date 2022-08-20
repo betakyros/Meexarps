@@ -23,20 +23,19 @@ public class SocketClientFranklin : MonoBehaviour
             JObject msg = new JObject();
             msg.Add("action", "init");
 
-            socketIoCommunicator.Instance.Emit("computerMessage", JToken.FromObject(msg).ToString());
+            socketIoCommunicator.Instance.Emit("computerMessage", JToken.FromObject(msg).ToString(), false);
         });
 
         socketIoCommunicator.Instance.On("disconnect", (String data) =>
         {
             Debug.Log("Disconnected");
 
-            Debug.Log("Connected");
             JObject msg = new JObject();
             msg.Add("action", "metric");
             msg.Add("roomCode", roomCode);
             msg.Add("metricName", "DisconnectComputer");
 
-            socketIoCommunicator.Instance.Emit("computerMessage", JToken.FromObject(msg).ToString());
+            socketIoCommunicator.Instance.Emit("computerMessage", JToken.FromObject(msg).ToString(), false);
         });
     }
 
@@ -44,7 +43,7 @@ public class SocketClientFranklin : MonoBehaviour
     public void SendWebSocketMessage(string message)
     {
         //await WaitForConnection();
-        socketIoCommunicator.Instance.Emit("computerMessage", message);
+        socketIoCommunicator.Instance.Emit("computerMessage", message, false);
     }
     public async Task<bool> WaitForConnection()
     {

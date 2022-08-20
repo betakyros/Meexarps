@@ -5,8 +5,6 @@ using Firesplash.UnityAssets.SocketIO.MIT.Packet;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -15,13 +13,16 @@ using UnityEngine;
 using Decoder = Firesplash.UnityAssets.SocketIO.MIT.Decoder;
 using Encoder = Firesplash.UnityAssets.SocketIO.MIT.Encoder;
 
+#if HAS_JSON_NET
+using Newtonsoft.Json;
+#endif
+
 internal class SocketIONativeInstance : SocketIOInstance
 {
     private ClientWebSocket Socket;
 
     Thread WebSocketReaderThread, WebSocketWriterThread, WatchdogThread;
 
-    string targetAddress;
     int pingInterval, pingTimeout;
     DateTime lastPing;
 
@@ -32,13 +33,14 @@ internal class SocketIONativeInstance : SocketIOInstance
     private BlockingCollection<Tuple<DateTime, string>> sendQueue = new BlockingCollection<Tuple<DateTime, string>>();
 
     private CancellationTokenSource cTokenSrc;
-    private string SocketID; //This is set on connect but not used anywhere... We still leave it in for later reference
-
-    internal SocketIONativeInstance(string instanceName, string targetAddress) : base(instanceName, targetAddress)
+    public override string SocketID
     {
-        SocketIOManager.LogDebug("Creating Native Socket.IO instance for " + instanceName);
-        this.InstanceName = instanceName;
-        this.targetAddress = "ws" + targetAddress.Substring(4);
+        get; internal set;
+    }
+
+    internal SocketIONativeInstance(string gameObjectName, string targetAddress, bool enableReconnect) : base(gameObjectName, targetAddress, enableReconnect)
+    {
+        SocketIOManager.LogDebug("Creating Native Socket.IO instance for " + gameObjectName);
 
         //Initialize MIT-Licensed helpers
         parser = new Parser();
@@ -49,13 +51,28 @@ internal class SocketIONativeInstance : SocketIOInstance
         Socket = new ClientWebSocket();
     }
 
-    public override void Connect()
+    ~SocketIONativeInstance()
     {
+        PrepareDestruction(); //This makes sure that we cleanly disconnect instead of forcefully dropping connection
+    }
+
+    public override void Connect(string targetAddress, bool enableReconnect, SIOAuthPayload authPayload)
+    {
+        base.Connect(targetAddress, enableReconnect, authPayload);
+
         Task.Run(async () =>
         {
+            //We need a fresh (uncancelled) source
+            cTokenSrc = new CancellationTokenSource();
+
+            if (ReconnectAttempts > 0)
+            {
+                SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("reconnect_attempt", ReconnectAttempts.ToString()); }));
+            }
+
             //Kill all remaining threads
             if (Socket != null && Socket.State == WebSocketState.Open) await Socket.CloseAsync(WebSocketCloseStatus.ProtocolError, "Reconnect required", cTokenSrc.Token);
-            else if (ReconnectAttempts > 0) SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("reconnecting", ReconnectAttempts.ToString()); }));
+            //else if (ReconnectAttempts > 0) SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("reconnect_attempt", ReconnectAttempts.ToString()); }));
 
             lock (Socket)
             {
@@ -64,25 +81,50 @@ internal class SocketIONativeInstance : SocketIOInstance
 
             try
             {
-                Uri baseUri = new Uri(targetAddress);
-                Uri connectTarget = new Uri(baseUri.Scheme + "://" + baseUri.Host + ":" + baseUri.Port + "/socket.io/?EIO=4&transport=websocket" + (baseUri.Query.Length > 1 ? "&" + baseUri.Query.Substring(1) : ""));
-                await Socket.ConnectAsync(connectTarget, cTokenSrc.Token);
-                for (int i = 0; i < 50 && Socket.State != WebSocketState.Open; i++) Thread.Sleep(25);
-                if (Socket.State != WebSocketState.Open) return; //let the watchdog try it again
+                string websocketAddress = "ws" + targetAddress.Substring(4);
+                if (targetAddress.IndexOf("/", 8) == -1) websocketAddress += "/socket.io/";
+                Uri baseUri = new Uri(websocketAddress);
+
+                SocketIOManager.LogDebug("Connecting to server " + baseUri.Scheme + "://" + baseUri.Host + ":" + baseUri.Port + " on path " + baseUri.AbsolutePath);
+                Uri connectTarget = new Uri(baseUri.Scheme + "://" + baseUri.Host + ":" + baseUri.Port + baseUri.AbsolutePath + "?EIO=4&transport=websocket" + (baseUri.Query.Length > 1 ? "&" + baseUri.Query.Substring(1) : ""));
+                await Socket.ConnectAsync(connectTarget, CancellationToken.None);
+                for (int i = 0; i < 50 && Socket.State != WebSocketState.Open; i++) Thread.Sleep(50);
+                if (Socket.State != WebSocketState.Open)
+                {
+                    //Something went wrong. This should not happen. Stop operation, wait a moment and try again
+                    cTokenSrc.Cancel();
+                    Thread.Sleep(1500);
+                    Connect();
+                }
             }
             catch (Exception e)
             {
                 if (ReconnectAttempts == 0)
                 {
-                    SocketIOManager.LogError(InstanceName + ": " + e.Message);
-                    SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("connect_error", e.Message); }));
+                    SocketIOManager.LogError(InstanceName + ": " + e.GetType().Name + " - " + e.Message + " (" + targetAddress + ")");
+                    if (e.GetType().Equals(typeof(WebSocketException))) SocketIOManager.LogWarning(InstanceName + ": Please make sure that your server supports the 'websocket' transport. Load-Balancers, Reverse Proxies and similar appliances often require special configuration.");
+                    if (e.GetType().Equals(typeof(System.Security.Authentication.AuthenticationException))) SocketIOManager.LogWarning(InstanceName + ": Please verify that your server is using a valid SSL certificate which is trusted by this client's system CA store");
+                    SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("connect_error", e.GetType().Name + " - " + e.Message); }));
+                    //SIODispatcher.Instance?.Enqueue(new Action(() => { RaiseSIOEvent("connect_timeout", null); }));
                 }
                 else
                 {
-                    SocketIOManager.LogError(InstanceName + ": " + e.Message + " (while reconnecting) ");
-                    SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("reconnect_error", e.Message); }));
+                    SocketIOManager.LogError(InstanceName + ": " + e.GetType().Name + " - " + e.Message + " (while reconnecting) ");
+                    SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("reconnect_error", e.GetType().Name + " - " + e.Message); }));
                 }
                 Status = SIOStatus.ERROR;
+
+                //Limit the max reconnect attemts
+                if (ReconnectAttempts > 150)
+                {
+                    Status = SIOStatus.ERROR;
+                    SIODispatcher.Instance?.Enqueue(new Action(() => { RaiseSIOEvent("reconnect_failed"); }));
+                    return;
+                }
+
+                //An error occured while connecting, we need to reconnect.
+                Thread.Sleep(500 + (ReconnectAttempts++ * 1000));
+                if (!cTokenSrc.IsCancellationRequested) Connect(authPayload);
                 return;
             }
 
@@ -110,22 +152,23 @@ internal class SocketIONativeInstance : SocketIOInstance
             {
                 SocketIOManager.LogError("Exception while starting threads on " + InstanceName + ": " + e.ToString());
                 Status = SIOStatus.ERROR;
+                return;
             }
-            
-            Status = SIOStatus.CONNECTED;
-            SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("connect", null); }));
         });
-
-        base.Connect();
     }
 
-    public override void Close()
+    //This stops all threads and work
+    public void FinishOperation()
     {
         Status = SIOStatus.DISCONNECTED;
-        EmitClose();
-
-        //Stop threads ASAP
         cTokenSrc.Cancel();
+    }
+
+    //Sends a close notice to the server and finishes operations
+    public override void Close()
+    {
+        if (Status != SIOStatus.DISCONNECTED) EmitCloseAndDisconnect();
+        FinishOperation();
     }
 
 
@@ -146,30 +189,34 @@ internal class SocketIONativeInstance : SocketIOInstance
         base.Emit(EventName);
     }
 
+#if !HAS_JSON_NET
+    [Obsolete]
+#endif
     public override void Emit(string EventName, string Data)
     {
-        EmitMessage(-1, string.Format("[\"{0}\",{1}]", EventName, Data));
+        bool DataIsPlainText = false;
+        try
+        {
+#if HAS_JSON_NET
+            Newtonsoft.Json.Linq.JObject.Parse(Data);
+#else
+            UnityEngine.JsonUtility.FromJson(Data, null);
+#endif
+        }
+        catch (Exception)
+        {
+            //We re-use the bool. This happens if the "Data" object contains no valid json data
+            DataIsPlainText = true;
+        }
+        Emit(EventName, Data, DataIsPlainText);
         base.Emit(EventName, Data);
     }
 
-    public override void Emit(string EventName, string Data, bool handleJSONAsPlainText)
+    public override void Emit(string EventName, string Data, bool DataIsPlainText)
     {
-        if (!handleJSONAsPlainText)
-        {
-            try
-            {
-                UnityEngine.JsonUtility.FromJson(Data, null);
-            }
-            catch (Exception)
-            {
-                //We re-use the bool. This happens if the "Data" object contains no valid json data
-                handleJSONAsPlainText = true;
-            }
-        }
-
-        if (handleJSONAsPlainText) EmitMessage(-1, string.Format("[\"{0}\",\"{1}\"]", EventName, Data));
+        if (DataIsPlainText) EmitMessage(-1, string.Format("[\"{0}\",\"{1}\"]", EventName, Data));
         else EmitMessage(-1, string.Format("[\"{0}\",{1}]", EventName, Data));
-        base.Emit(EventName, Data);
+        base.Emit(EventName, Data, DataIsPlainText);
     }
 
 
@@ -179,10 +226,25 @@ internal class SocketIONativeInstance : SocketIOInstance
         EmitPacket(new SocketPacket(EnginePacketType.MESSAGE, SocketPacketType.EVENT, 0, "/", id, json));
     }
 
-    void EmitClose()
+    void EmitCloseAndDisconnect()
     {
-        EmitPacket(new SocketPacket(EnginePacketType.MESSAGE, SocketPacketType.DISCONNECT, 0, "/", -1, ""));
-        EmitPacket(new SocketPacket(EnginePacketType.CLOSE));
+        if (Socket.State != WebSocketState.Open) return; //We can't close a session that is not connected
+
+        //this is ran outside of the send queue as it is already being cancelled
+        Task.Run(async () =>
+        {
+            try
+            {
+                await WritePacketToSIOSocketAsync(Encoder.Encode(new SocketPacket(EnginePacketType.MESSAGE, SocketPacketType.DISCONNECT, 0, "/", -1, "")), CancellationToken.None);
+                //await WritePacketToSIOSocketAsync(Encoder.Encode(new SocketPacket(EnginePacketType.CLOSE)), CancellationToken.None);
+                if (Socket.State == WebSocketState.Open) await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "normal disconnect", CancellationToken.None); //Usually the server closes the connection but if not... We'll do this cleanly.
+            }
+            catch (Exception e)
+            {
+                SocketIOManager.LogWarning("Could not cleanly close Socket.IO connection: " + e.ToString());
+            }
+            RaiseSIOEvent("close");
+        });
     }
 
     void EmitPacket(SocketPacket packet)
@@ -196,6 +258,8 @@ internal class SocketIONativeInstance : SocketIOInstance
 
     private async void SIOSocketReader()
     {
+        bool haveIEverBeenConnected = false;
+        
         while (!cTokenSrc.Token.IsCancellationRequested)
         {
             var message = "";
@@ -212,12 +276,14 @@ internal class SocketIONativeInstance : SocketIOInstance
             }
             catch
             {
+                if (Status != SIOStatus.CONNECTED) return; //Yeah, we already know. Wait for reconnect
+
                 //Something went wrong
                 if (cTokenSrc.Token.IsCancellationRequested) return;
+                if (Status == SIOStatus.CONNECTED) Socket.Abort();
                 Status = SIOStatus.ERROR;
-                SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("disconnect", "transport error"); }));
-                Socket.Abort();
-                break;
+                SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent((haveIEverBeenConnected ? "disconnect" : (ReconnectAttempts > 0 ? "reconnect_error" : "connect_error")), (Socket.State == WebSocketState.CloseReceived || Socket.State == WebSocketState.Closed ? "transport close" : "transport error")); }));
+                return;
             }
 
             if (res == null)
@@ -225,9 +291,9 @@ internal class SocketIONativeInstance : SocketIOInstance
 
             if (res.MessageType == WebSocketMessageType.Close)
             {
-                Status = SIOStatus.DISCONNECTED;
-                Close();
-                SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("disconnect", "io server disconnect"); }));
+                if (cTokenSrc.Token.IsCancellationRequested || Status != SIOStatus.CONNECTED) return;
+                Status = SIOStatus.ERROR;
+                SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent((haveIEverBeenConnected ? "disconnect" : (ReconnectAttempts > 0 ? "reconnect_error" : "connect_error")), "transport close"); }));
                 return;
             }
             else if (res.MessageType == WebSocketMessageType.Text)
@@ -239,25 +305,31 @@ internal class SocketIONativeInstance : SocketIOInstance
                 }
                 message += Encoding.UTF8.GetString(buffer).TrimEnd('\0');
 
+#if VERBOSE
+                SocketIOManager.LogDebug("WS < " + message);
+#endif
+
                 SocketPacket packet = Decoder.Decode(message);
 
                 switch (packet.enginePacketType)
                 {
                     case EnginePacketType.OPEN:
                         SocketOpenData sockData = JsonUtility.FromJson<SocketOpenData>(packet.json);
-                        SocketID = sockData.sid;
+                        SocketID = null;
                         pingInterval = sockData.pingInterval;
                         pingTimeout = sockData.pingTimeout;
 
+                        //Serialize Payload
+                        string payload = "";
+                        if (authPayload != null) payload = authPayload.GetPayloadJSON();
+
                         //Hey Server, how are you today?
-                        EmitPacket(new SocketPacket(EnginePacketType.MESSAGE, SocketPacketType.CONNECT, 0, "/", -1, ""));
+                        EmitPacket(new SocketPacket(EnginePacketType.MESSAGE, SocketPacketType.CONNECT, 0, "/", -1, payload));
 
                         SIODispatcher.Instance.Enqueue(new Action(() =>
                         {
                             RaiseSIOEvent("open");
                         }));
-
-                        ReconnectAttempts = 0;
                         break;
 
                     case EnginePacketType.CLOSE:
@@ -268,19 +340,37 @@ internal class SocketIONativeInstance : SocketIOInstance
                         break;
 
                     case EnginePacketType.MESSAGE:
-                        if (packet.json == "")
+                        if (packet.socketPacketType == SocketPacketType.EVENT && packet.json == "")
                         {
                             buffer = null;
                             message = "";
                             continue;
                         }
 
-                        if (packet.socketPacketType == SocketPacketType.ACK)
+                        if (packet.socketPacketType == SocketPacketType.CONNECT)
+                        {
+                            //Extract socket id
+                            string tmpExtractionSubstr = packet.json.Substring(packet.json.IndexOf("sid\":") + 4).Trim();
+                            tmpExtractionSubstr = tmpExtractionSubstr.Substring(tmpExtractionSubstr.IndexOf("\"") + 1, tmpExtractionSubstr.IndexOf("}") - 1);
+                            SocketID = tmpExtractionSubstr.Substring(0, tmpExtractionSubstr.IndexOf("\""));
+
+                            //invoke "connect" event
+                            Status = SIOStatus.CONNECTED;
+                            if (ReconnectAttempts > 0) SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("reconnect", null); }));
+                            SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("connect", null); }));
+                            haveIEverBeenConnected = true;
+                            ReconnectAttempts = 0;
+                        }
+                        else if (packet.socketPacketType == SocketPacketType.DISCONNECT)
+                        {
+                            SIODispatcher.Instance.Enqueue(new Action(() => { RaiseSIOEvent("disconnect", "io server disconnect"); }));
+                            FinishOperation();
+                        }
+                        else if (packet.socketPacketType == SocketPacketType.ACK)
                         {
                             SocketIOManager.LogWarning("ACK is not supported by this library.");
                         }
-
-                        if (packet.socketPacketType == SocketPacketType.EVENT)
+                        else if (packet.socketPacketType == SocketPacketType.EVENT)
                         {
                             SIOEventStructure e = Parser.Parse(packet.json);
                             SIODispatcher.Instance.Enqueue(new Action(() =>
@@ -314,32 +404,52 @@ internal class SocketIONativeInstance : SocketIOInstance
 
     private async void SIOSocketWriter()
     {
-        while (Socket.State == WebSocketState.Open && !cTokenSrc.Token.IsCancellationRequested)
+        while (Socket.State == WebSocketState.Open)
         {
             var msg = sendQueue.Take(cTokenSrc.Token);
             if (msg.Item1.Add(new TimeSpan(0, 0, 10)) < DateTime.UtcNow)
             {
                 continue;
             }
-            var buffer = Encoding.UTF8.GetBytes(msg.Item2);
-            try
+            await WritePacketToSIOSocketAsync(msg.Item2, cTokenSrc.Token);
+            if (sendQueue.Count < 1)
             {
-                await Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, cTokenSrc.Token);
+                if (cTokenSrc.Token.IsCancellationRequested) return;
+                Thread.Sleep(50);
             }
-            catch (Exception)
+        }
+    }
+
+    async Task WritePacketToSIOSocketAsync(string msg, CancellationToken ct)
+    {
+        if (Socket == null || Socket.State != WebSocketState.Open)
+        {
+#if UNITY_EDITOR
+            //SocketIOManager.LogWarning("You tried to send data over a closed WebSocket. This can sometimes happen when closing the application or stopping \"playMode\" without closing the Socket.IO connection first and is only logged in the editor. You can ignore this warning as it's only a Best-Practice warning");
+#endif
+            return;
+        }
+
+#if VERBOSE
+        SocketIOManager.LogDebug("WS > " + msg);
+#endif
+        var buffer = Encoding.UTF8.GetBytes(msg);
+        try
+        {
+            await Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, ct);
+        }
+        catch (Exception e)
+        {
+            SIODispatcher.Instance.Enqueue(new Action(() =>
             {
-                SIODispatcher.Instance.Enqueue(new Action(() =>
-                {
-                    RaiseSIOEvent("error");
-                }));
-                lock (Socket)
-                {
-                    Socket.Abort();
-                    Status = SIOStatus.ERROR;
-                }
-                break;
+                RaiseSIOEvent("error");
+            }));
+            lock (Socket)
+            {
+                if (Status == SIOStatus.CONNECTED) Socket.Abort();
+                Status = SIOStatus.ERROR;
             }
-            if (sendQueue.Count < 1) Thread.Sleep(50);
+            throw e; //pass on
         }
     }
 
@@ -356,37 +466,30 @@ internal class SocketIONativeInstance : SocketIOInstance
 
             if (Status == SIOStatus.RECONNECTING) continue; //Wait for running attempt to end
 
-            if (Socket.State == WebSocketState.Open && Status != SIOStatus.CONNECTED) throw new InvalidDataException("Websocket and Socket.IO states differ. This may not happen."); //Something went wrong. Cancel this watchdog
-            else if (DateTime.Now.Subtract(lastPing).TotalSeconds > (pingInterval + pingTimeout) || Socket.State != WebSocketState.Open)
+            if (DateTime.Now.Subtract(lastPing).TotalSeconds > (pingInterval + pingTimeout) || Socket.State != WebSocketState.Open)
             {
                 if (cTokenSrc.IsCancellationRequested) return;
-                
+
                 //Send events for some constellations
                 if (Socket.State == WebSocketState.Open) SIODispatcher.Instance?.Enqueue(new Action(() => { RaiseSIOEvent("disconnect", "ping timeout"); }));
                 else if (Status == SIOStatus.CONNECTED) SIODispatcher.Instance?.Enqueue(new Action(() => { RaiseSIOEvent("disconnect", "transport close"); }));
 
-                Status = SIOStatus.RECONNECTING;
+                //Set the status flag
+                if (enableAutoReconnect) Status = SIOStatus.RECONNECTING;
+                else Status = SIOStatus.DISCONNECTED;
 
-                //Limit the max reconnect attemts
-                if (ReconnectAttempts > 150)
+                //We need to stop the handler threads before reconnecting else we might see double reconnects as of exceptions raised in them
+                if (WebSocketReaderThread != null && WebSocketReaderThread.IsAlive) WebSocketReaderThread.Abort();
+                if (WebSocketWriterThread != null && WebSocketWriterThread.IsAlive) WebSocketWriterThread.Abort();
+
+                if (enableAutoReconnect)
                 {
-                    Status = SIOStatus.ERROR;
-                    SIODispatcher.Instance?.Enqueue(new Action(() => { RaiseSIOEvent("reconnect_failed"); }));
-                    return; //End this thread
-                }
+                    Thread.Sleep(300 + (ReconnectAttempts++ * 1500) + rng.Next(50, 1000)); //Wait a moment in favor of the event handler and add some delay and jitter, not to hammer the server
 
-                if (ReconnectAttempts == 0)
-                {
-                    //Timeout or socket closed
-                    SIODispatcher.Instance?.Enqueue(new Action(() => { RaiseSIOEvent("connect_timeout", null); }));
-                    //Thread.Sleep(15);
-                    
+                    if (cTokenSrc.IsCancellationRequested) return;
+                    Connect(); //reconnect
                 }
-
-                Thread.Sleep(300 + (ReconnectAttempts++ * 1500) + rng.Next(50, 200 * ReconnectAttempts)); //Wait a moment in favor of the event handler and add some delay and jitter, not to hammer the server
-                
-                if (cTokenSrc.IsCancellationRequested) return;
-                Connect(); //reconnect
+                return; //End the watchdog. It will be restarted after successful connect
             }
         }
     }

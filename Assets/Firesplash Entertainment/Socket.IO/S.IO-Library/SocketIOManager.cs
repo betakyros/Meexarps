@@ -45,7 +45,6 @@ namespace Firesplash.UnityAssets.SocketIO.Internal
 
         private SocketIOManager()
         {
-            //TODO implement editor fallback to native mode
             SIOInstances = new Dictionary<string, SocketIOInstance>();
 
 #if UNITY_WEBGL
@@ -63,7 +62,7 @@ namespace Firesplash.UnityAssets.SocketIO.Internal
             //Dummy
         }
 
-        internal SocketIOInstance CreateSIOInstance(string instanceName, string targetAddress)
+        internal SocketIOInstance CreateSIOInstance(string instanceName, string targetAddress, bool autoReconnect)
         {
             
             if (SIOInstances.ContainsKey(instanceName))
@@ -79,12 +78,12 @@ namespace Firesplash.UnityAssets.SocketIO.Internal
             if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
 #if UNITY_WEBGL
-                inst = new SocketIOWebGLInstance(instanceName, targetAddress);
+                inst = new SocketIOWebGLInstance(instanceName, targetAddress, autoReconnect);
 #endif
             }
             else
             {
-                inst = new SocketIONativeInstance(instanceName, targetAddress);
+                inst = new SocketIONativeInstance(instanceName, targetAddress, autoReconnect);
             }
 
             try
