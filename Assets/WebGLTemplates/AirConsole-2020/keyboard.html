@@ -747,7 +747,9 @@ path, .jtk-endpoint {
                 } else if (myAction === "criticalError") {
                     console.log("criticalError");
                     App.prototype.showSnackbar("A critical error has occured. Please restart the game! :<");
-                } else if(myAction === "allPlayersAreNotReady") {
+                } /*
+                unused now
+                else if(myAction === "allPlayersAreNotReady") {
                     document.getElementById("waitingForStartGame").style.display = "inline-block";
                     var waitingForNames="Waiting for: ";
                     payload.data.forEach(element => {
@@ -756,7 +758,7 @@ path, .jtk-endpoint {
                     });
                     document.getElementById("waitingForStartGame").innerHTML = waitingForNames;
                     document.getElementById("startGameButton").style.display = "none";    
-                } else if(myAction === "allPlayersAreReady") {
+                }*/ else if(myAction === "allPlayersAreReady") {
 
                     document.getElementById("startGameButton").style.display = "inline-block";
                     document.getElementById("waitingForStartGame").style.display = "none";
@@ -1564,27 +1566,26 @@ path, .jtk-endpoint {
                 if(!hasSeenTutorial[1]) {
                     App.prototype.showNextVotingTutorial();
                     hasSeenTutorial[1] = true;
-                } else {
-                    var answerText1 = App.prototype.getKeyboardValue("textfield1");
-                    var answerText2 = App.prototype.getKeyboardValue("textfield2");
-                    var answerText3 = App.prototype.getKeyboardValue("textfield3");
-				    var message = {
-					    'action': "sendAnswers",
-					    'info': {
-                            answerText1,
-                            answerText2,
-                            answerText3
-                        }
-				    };
-				    App.prototype.sendMessage(message);
-                    hideAllViews();
-                    document.getElementById("waitingView").style.display = "block";
-                    timeElapsed = 0;
-                    /*
-                    document.getElementById("answerQuestionsTimer").innerText = 0;
-                    clearInterval(answerQuestionsTimer);
-                    */                
-                }
+                } 
+                var answerText1 = App.prototype.getKeyboardValue("textfield1");
+                var answerText2 = App.prototype.getKeyboardValue("textfield2");
+                var answerText3 = App.prototype.getKeyboardValue("textfield3");
+                var message = {
+                    'action': "sendAnswers",
+                    'info': {
+                        answerText1,
+                        answerText2,
+                        answerText3
+                    }
+                };
+                App.prototype.sendMessage(message);
+                hideAllViews();
+                document.getElementById("waitingView").style.display = "block";
+                timeElapsed = 0;
+                /*
+                document.getElementById("answerQuestionsTimer").innerText = 0;
+                clearInterval(answerQuestionsTimer);
+                */    
 			}
             
 			App.prototype.sendSkipInstructions = function sendSkipInstructions() {
@@ -1688,7 +1689,6 @@ path, .jtk-endpoint {
 			}
             App.prototype.hideVotingTutorial = function hideVotingTutorial() {
                 document.getElementById("votingTutorialView").style.display = "none";
-                App.prototype.sendAnswer();
 			}            
             
             App.prototype.showTutorial = function showTutorial(instructionText) {

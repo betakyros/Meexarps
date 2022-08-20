@@ -896,6 +896,8 @@ public class main : MonoBehaviour
                 Player currentPlayer = gameState.players[from];
                 currentPlayer.isReady = true;
                 List<string> playersWhoAreNotReady = gameState.whoIsNotReady();
+                /*
+                 * unused now
                 if (playersWhoAreNotReady.Count == 0)
                 {
                     SendMessageToVip(new JsonAction("allPlayersAreReady", new string[] { }));
@@ -903,7 +905,8 @@ public class main : MonoBehaviour
                 else
                 {
                     SendMessageToVip(new JsonAction("allPlayersAreNotReady", playersWhoAreNotReady.ToArray()));
-                }
+                }*/
+                SendMessageToVip(new JsonAction("allPlayersAreReady", new string[] { }));
             }
         }
         else if ("sendStartGame".Equals(action))
