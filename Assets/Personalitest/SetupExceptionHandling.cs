@@ -38,7 +38,7 @@ public class ExceptionHandling
             msg.Add("message", errorText.text);
             msg.Add("context", "error");
 
-            socket.getSocketIoCommunicator().Instance.Emit("computerMessage", JToken.FromObject(msg).ToString());
+            socket.getSocketIoCommunicator().Instance.Emit("computerMessage", JToken.FromObject(msg).ToString(), false);
         }
     }
 }

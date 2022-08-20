@@ -741,9 +741,12 @@ path, .jtk-endpoint {
                   document.getElementById("vipOptionsDiv2").style.display = "block";
                   document.getElementById("vipStartButtonDescription").style.display = "block";
                   document.getElementById("startGameButton").style.display = "inline-block";
-                } else if(myAction === "roomDoesntExist") {
+                } else if (myAction === "roomDoesntExist") {
                     console.log("roomDoesntExist");
                     document.getElementById("roomDoesntExistWarning").style.display = "inline-block";
+                } else if (myAction === "criticalError") {
+                    console.log("criticalError");
+                    App.prototype.showSnackbar("A critical error has occured. Please restart the game! :<");
                 } else if(myAction === "allPlayersAreNotReady") {
                     document.getElementById("waitingForStartGame").style.display = "inline-block";
                     var waitingForNames="Waiting for: ";

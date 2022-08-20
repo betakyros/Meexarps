@@ -22,6 +22,7 @@ public class SocketClientFranklin : MonoBehaviour
             Debug.Log("Connected");
             JObject msg = new JObject();
             msg.Add("action", "init");
+            msg.Add("roomCode", roomCode);
 
             socketIoCommunicator.Instance.Emit("computerMessage", JToken.FromObject(msg).ToString(), false);
         });

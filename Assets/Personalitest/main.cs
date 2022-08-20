@@ -63,6 +63,7 @@ public class main : MonoBehaviour
     public GameObject roundCounter;
     public SocketClientFranklin socket;
     public Button fileUploadButton;
+    public GameObject disconnectBanner;
 
     private int currentCategoryIndex;
     private int currentCustomCategoryIndex;
@@ -359,8 +360,19 @@ public class main : MonoBehaviour
             {
                 JToken parsedData = JToken.Parse(data);
                 string roomCode = parsedData["roomCode"].ToString();
-                OnReadySteam(roomCode);
-                socket.roomCode = roomCode;
+                if (socket.roomCode == null || socket.roomCode == "")
+                {
+                    OnReadySteam(roomCode);
+                    socket.roomCode = roomCode;
+                } else if (roomCode != socket.roomCode)
+                {
+                    Debug.Log("Tried to override roomcode. Old room code: " + socket.roomCode + " new room code: " + roomCode);
+                    JObject msg = new JObject();
+                    msg.Add("action", "metric");
+                    msg.Add("roomCode", gameCode);
+                    msg.Add("metricName", "SERVEROVERWRITEROOMCODE");
+                    socket.SendWebSocketMessage(msg.ToString());
+                }
             });
             socket.getSocketIoCommunicator().Instance.Connect();
         }
@@ -560,7 +572,17 @@ public class main : MonoBehaviour
         if ("websocketInitialConnect".Equals(action))
         {
             OnConnect(from);
-        } 
+        }
+        else if ("notifyDisconnectJson".Equals(action))
+        {
+            playSound = false;
+            if(gameState.players.ContainsKey(from))
+            {
+                string playerName = gameState.players[from].nickname;
+                disconnectBanner.GetComponentInChildren<TextMeshProUGUI>().text = "<color=#325EFB>" + playerName + "</color> has disconnected. " + playerName + ", refresh your screen!";
+                StartCoroutine(DisplayDisconnectBanner(2));
+            }
+        }
         else if ("sendWelcomeInfo".Equals(action))
         {
             string name = ReplaceWhiteSpaceWithNormalSpace(data["info"]["name"].ToString().Trim());
@@ -1615,6 +1637,15 @@ public class main : MonoBehaviour
     {
         BroadcastToAllPhones(new JsonAction("sendWaitScreen", new string[] {}));
         gameState.SetPhoneViewGameState(PhoneViewGameState.SendWaitScreen);
+    }
+
+    private IEnumerator<WaitForSeconds> DisplayDisconnectBanner(float seconds)
+    {
+        Animator disconnectBannerAnimator = disconnectBanner.GetComponentInChildren<Animator>();
+
+        disconnectBannerAnimator.SetBool("isOpen", true);
+        yield return new WaitForSeconds(3);
+        disconnectBannerAnimator.SetBool("isOpen", false);
     }
 
     //todo remove parameter

@@ -59,32 +59,36 @@ const io = require("socket.io")(server, {
 					var room = io.sockets.adapter.rooms.get(roomCode);
 					if(!room["playerSockets"]) {
 						room["playerSockets"] = [];
-						room["phoneIds"] = [];
 					}
-					var playerNumber;
-					var isSameBrowserReconnect = jsonData.playerNumber != null;
+					var playerFromNumber;
+					//var isSameBrowserReconnect = jsonData.playerNumber != null;
 
-					if(!isSameBrowserReconnect) {
-						room["playerSockets"].push(socket.id)
-						playerNumber =  room["latestConnectionNum"]++;
-						room["phoneIds"][playerNumber] = phoneId;
-						var initJson = {
-							"data": {"action":"websocketInitialConnect"}, 
-							"clientId": playerNumber
-						};
-						if(!room["computerSocket"]) {
-							console.log("ERROR: computer connection does not exist.");
-							console.log("Room: ");
-							console.log(room);
-							console.log("Computer Socket: ");
-							console.log(room["computerSocket"]);
-						}
-						var computerSocketId = room["computerSocket"].id;
-						socket.to(computerSocketId).emit("phoneMessage", initJson);
-					} else {
+					//if(!isSameBrowserReconnect) {
+					playerFromNumber =  room["latestConnectionNum"]++;
+					room["playerSockets"].push({
+						socketId: socket.id,
+						playerFromNumber: playerFromNumber,
+						phoneId: phoneId
+					});
+					var initJson = {
+						"data": {"action":"websocketInitialConnect"}, 
+						"clientId": playerFromNumber
+					};
+					if(!room["computerSocket"]) {
+						console.log("ERROR: computer connection does not exist.");
+						console.log("Room: ");
+						console.log(room);
+						console.log("Computer Socket: ");
+						console.log(room["computerSocket"]);
+					}
+					var computerSocketId = room["computerSocket"].id;
+					socket.to(computerSocketId).emit("phoneMessage", initJson);
+					//} 
+					//this doesnt work anymore
+					/*else {
 						playerNumber = jsonData.playerNumber;
 						room["playerSockets"][playerNumber] = socket.id;
-					}
+					}*/
 
 				} else {
 					var roomDoesntExist = {
@@ -95,17 +99,33 @@ const io = require("socket.io")(server, {
 				}
 			} else {
 				//incase the user disconnected
-				socket.join(roomCode);
-				socket.rooms.forEach(rm => {
-					if(io.sockets.adapter.rooms.get(rm)["computerSocket"]) {
-						var playerNumber = io.sockets.adapter.rooms.get(rm)["phoneIds"].lastIndexOf(phoneId)
-						var wrappedJsonData = {
-							"data":jsonData, 
-							"clientId": playerNumber
-						};
-						socket.to(io.sockets.adapter.rooms.get(rm)["computerSocket"].id).emit("phoneMessage", wrappedJsonData);
-					}
-				})
+				try {
+					socket.join(roomCode);
+					socket.rooms.forEach(rm => {
+						var actualRoom = io.sockets.adapter.rooms.get(rm);
+						if(actualRoom["computerSocket"]) {
+							var socketInfos = actualRoom["playerSockets"];
+							var playerFromNumber;
+							if(socketInfos) {
+								socketInfos.forEach(socketInfo => {
+									if(socketInfo.phoneId == phoneId) {
+										playerFromNumber = socketInfo.playerFromNumber;
+									}
+								})
+							}
+							var wrappedJsonData = {
+								"data":jsonData, 
+								"clientId": playerFromNumber
+							};
+							socket.to(actualRoom["computerSocket"].id).emit("phoneMessage", wrappedJsonData);
+						}
+					})
+				} catch (error) {
+					var criticalError = {
+						"action":"criticalError"
+					};
+					socket.emit("systemMessage", criticalError);
+				}
 			}
 		});
 	
@@ -133,18 +153,27 @@ const io = require("socket.io")(server, {
 			}
 
 			if(jsonData.action === "init") {
-				var newRoomCode = getRandomString(4);
-				while(io.sockets.adapter.rooms.get(newRoomCode)) {
-					newRoomCode = getRandomString(4);
+				var roomToJoin;
+				if(!jsonData.roomCode) {
+					var newRoomCode = getRandomString(4);
+					while(io.sockets.adapter.rooms.get(newRoomCode)) {
+						newRoomCode = getRandomString(4);
+					}
+					roomToJoin = newRoomCode;
+				} else {
+					roomToJoin = jsonData.roomCode
 				}
-				socket.join(newRoomCode);
-				io.sockets.adapter.rooms.get(newRoomCode)["computerSocket"] = socket;
-				io.sockets.adapter.rooms.get(newRoomCode)["latestConnectionNum"] = 0;
-				var roomCodeJson = {
-					"roomCode":newRoomCode 
-				};
-				socket.emit("setRoomCode", roomCodeJson);
-				logProductMetric("gameStarted", newRoomCode)
+				socket.join(roomToJoin);
+				io.sockets.adapter.rooms.get(roomToJoin)["computerSocket"] = socket;
+				io.sockets.adapter.rooms.get(roomToJoin)["latestConnectionNum"] = 0;
+				
+				if(!jsonData.roomCode) { 
+					var roomCodeJson = {
+						"roomCode":roomToJoin 
+					};
+					socket.emit("setRoomCode", roomCodeJson);
+					logProductMetric("gameStarted", roomToJoin)
+				}
 				return;
 			}
 			
@@ -154,14 +183,39 @@ const io = require("socket.io")(server, {
 				});	
 			} else if (jsonData.action === 'message') {
 				socket.rooms.forEach(room => {
-					if(io.sockets.adapter.rooms.get(room)["playerSockets"]) {
-						var playerSocket = io.sockets.adapter.rooms.get(room)["playerSockets"][jsonData.from];
-						
-						socket.to(playerSocket).emit("computerMessage", jsonData.data);	
+					var socketInfos = io.sockets.adapter.rooms.get(room)["playerSockets"];
+					if(socketInfos) {
+						socketInfos.forEach(socketInfo => {
+							if(socketInfo.playerFromNumber == jsonData.from) {
+								socket.to(socketInfo.socketId).emit("computerMessage", jsonData.data);	
+							}
+						})
 					}
 				})
 			}
 		});
+
+		socket.on("disconnect", (reason) => {
+			console.log("disconnect reason");
+			console.log(reason);
+
+			socket.adapter.rooms.forEach( room => {
+				if(room.playerSockets) {
+					room.playerSockets.forEach(socketInfo => {
+						if(socketInfo.socketId == socket.id) {
+							console.log("my socket: " + socketInfo.socketId + " playerNum: " + socketInfo.playerFromNumber);
+							var notifyDisconnectJson = {
+								"data": {"action":"notifyDisconnectJson"}, 
+								"clientId": socketInfo.playerFromNumber
+							};
+							var computerSocketId = room["computerSocket"].id;
+							socket.to(computerSocketId).emit("phoneMessage", notifyDisconnectJson);
+						}
+					});
+				}
+				//io.sockets.adapter.rooms.get(roomCode);
+			});
+		})
 	});
 
 	
@@ -169,6 +223,7 @@ const io = require("socket.io")(server, {
 		//does trigger idk why
 	});
 
+	//i think this does nothing
   	io.on("disconnect", () => {
 		console.log("disconnectServer"); // "ping timeout"
 		logProductMetric("disconnectServer")
