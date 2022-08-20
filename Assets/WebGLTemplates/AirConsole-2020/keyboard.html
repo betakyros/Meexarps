@@ -786,7 +786,20 @@ path, .jtk-endpoint {
                     }  
                     if(hasGameStarted) {
                         document.getElementById("welcomeScreenBeforeGameStart").style.display = "none";
-                        document.getElementById("welcomeScreenAfterGameStart").style.display = "block";
+                        document.getElementById("selectAlienAndUsername").style.display = "none";
+                        document.getElementById("beforeReconnectView").style.display = "block";
+
+                        listOfPlayerNames.forEach(playerName => {
+                            var playerRejoinButtonsDiv = document.getElementById("playerRejoinButtons");
+                            var rejoinButton = document.createElement("div");
+                            rejoinButton.classList.add("pseudo_button");
+                            rejoinButton.innerHTML = "Rejoin as " + playerName;
+                            rejoinButton.onclick = function() {
+                                App.prototype.sendWelcomeInfo(playerName)
+                            };
+                            playerRejoinButtonsDiv.appendChild(rejoinButton);
+                            playerRejoinButtonsDiv.appendChild(document.createElement("br"));
+                        });
                     }
                 } else if(myAction === "confirmNameSubmission") {
                     App.prototype.showFirstTutorial();
@@ -1258,9 +1271,20 @@ path, .jtk-endpoint {
             }
 
             /* THIS IS WHERE RESPONSES ARE DEFINED */
-            App.prototype.sendWelcomeInfo = function sendWelcomeInfo() {
 
-                var nickname = App.prototype.getKeyboardValue("nickname");
+            App.prototype.joinAsNewPlayer = function joinAsNewPlayer() {
+                document.getElementById("beforeReconnectView").style.display = "none";
+                document.getElementById("selectAlienAndUsername").style.display = "block";
+                document.getElementById("welcomeScreenAfterGameStart").style.display = "block";
+            }
+
+            App.prototype.sendWelcomeInfo = function sendWelcomeInfo(initialName) {
+                var nickname;
+                if(initialName) {
+                    nickname = initialName;
+                } else {
+                    nickname = App.prototype.getKeyboardValue("nickname");
+                }
                 if(nickname) {
 				    var message = {
 					    'action': "sendWelcomeInfo",
@@ -2416,29 +2440,44 @@ path, .jtk-endpoint {
         <div class="view" id="welcomeScreenView" style="display:none;align-self:flex-start;padding-top:52px;">
             <p style="font-size:20px;">Welcome to</p>
             <div style="font-size:40px;">MEEXARPS</div>
+        <div class="view" id="beforeReconnectView" stype="display:none;align-self:flex-start;padding-top:52px;">
             <br>
             <br>
             <br>
-            Select your Meexarp
+            The game has already started.
             <br>
-            <div class="franklinBanner" style="position: inherit; margin-top: 8px; margin-bottom: 8px; padding: 10px 0; height: 15vw;">
-                <div style = "display:flex; justify-content:space-evenly;  width:80%; height:100%;" >
-                    <div id="alienButton0" class="alienButton" onmousedown="window.app.clickAlienButton(0)"></div>
-                    <div id="alienButton1" class="alienButton" onmousedown="window.app.clickAlienButton(1)"></div>
-                    <div id="alienButton2" class="alienButton" onmousedown="window.app.clickAlienButton(2)"></div>
-                    <div id="alienButton3" class="alienButton" onmousedown="window.app.clickAlienButton(3)"></div>
-                    <div id="alienButton4" class="alienButton" onmousedown="window.app.clickAlienButton(4)"></div>
-                    <div id="alienButton5" class="alienButton" onmousedown="window.app.clickAlienButton(5)"></div>
+            <br>
+            <br>
+            <div id="playerRejoinButtons"></div>
+            <div class="pseudo_button" onmousedown="window.app.joinAsNewPlayer()">Join as new player</div>
+        </div>
+            <div id="selectAlienAndUsername">
+                <br>
+                <br>
+                <br>
+                Select your Meexarp
+                <br>
+                <div class="franklinBanner"
+                    style="position: inherit; margin-top: 8px; margin-bottom: 8px; padding: 10px 0; height: 15vw;">
+                    <div style="display:flex; justify-content:space-evenly;  width:80%; height:100%;">
+                        <div id="alienButton0" class="alienButton" onmousedown="window.app.clickAlienButton(0)"></div>
+                        <div id="alienButton1" class="alienButton" onmousedown="window.app.clickAlienButton(1)"></div>
+                        <div id="alienButton2" class="alienButton" onmousedown="window.app.clickAlienButton(2)"></div>
+                        <div id="alienButton3" class="alienButton" onmousedown="window.app.clickAlienButton(3)"></div>
+                        <div id="alienButton4" class="alienButton" onmousedown="window.app.clickAlienButton(4)"></div>
+                        <div id="alienButton5" class="alienButton" onmousedown="window.app.clickAlienButton(5)"></div>
+                    </div>
                 </div>
-            </div>
-            Choose a username for your Meexarp
-            <br>
-            <div id="nickname" class="textfield" style="margin: 8px 0;">
-                <div style="color:#aaa"><i></i></div>
-            </div>
-            <div style="margin: 8px 0;" style="justify-content:center;">
-                <span style="display:none;" placeholder="username" class="franklinInput" contenteditable="true" id="nickname-system" 
-                onmousedown="window.app.setPlaceholder('nickname', '')" onblur="window.app.setPlaceholder('nickname', '')"></span>
+                Choose a username for your Meexarp
+                <br>
+                <div id="nickname" class="textfield" style="margin: 8px 0;">
+                    <div style="color:#aaa"><i></i></div>
+                </div>
+                <div style="margin: 8px 0;" style="justify-content:center;">
+                    <span style="display:none;" placeholder="username" class="franklinInput" contenteditable="true" id="nickname-system"
+                        onmousedown="window.app.setPlaceholder('nickname', '')"
+                        onblur="window.app.setPlaceholder('nickname', '')"></span>
+                </div>
             </div>
             <div id="welcomeScreenBeforeGameStart">
                 <div class="franklinInstructionText" style="font-size:9px;">To rejoin an existing game, please enter the same username</div>
