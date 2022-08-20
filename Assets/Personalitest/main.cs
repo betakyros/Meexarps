@@ -362,7 +362,7 @@ public class main : MonoBehaviour
                 OnReadySteam(roomCode);
                 socket.roomCode = roomCode;
             });
-
+            socket.getSocketIoCommunicator().Instance.Connect();
         }
         gameState = new GameState(this);
         currentQuestionIndex = 0;
