@@ -61,34 +61,39 @@ const io = require("socket.io")(server, {
 						room["playerSockets"] = [];
 					}
 					var playerFromNumber;
-					//var isSameBrowserReconnect = jsonData.playerNumber != null;
+					var isSameBrowserReconnect = jsonData.playerNumber != null;
 
-					//if(!isSameBrowserReconnect) {
-					playerFromNumber =  room["latestConnectionNum"]++;
-					room["playerSockets"].push({
-						socketId: socket.id,
-						playerFromNumber: playerFromNumber,
-						phoneId: phoneId
-					});
-					var initJson = {
-						"data": {"action":"websocketInitialConnect"}, 
-						"clientId": playerFromNumber
-					};
-					if(!room["computerSocket"]) {
-						console.log("ERROR: computer connection does not exist.");
-						console.log("Room: ");
-						console.log(room);
-						console.log("Computer Socket: ");
-						console.log(room["computerSocket"]);
-					}
-					var computerSocketId = room["computerSocket"].id;
-					socket.to(computerSocketId).emit("phoneMessage", initJson);
-					//} 
+					if(!isSameBrowserReconnect) {
+						playerFromNumber =  room["latestConnectionNum"]++;
+						room["playerSockets"].push({
+							socketId: socket.id,
+							playerFromNumber: playerFromNumber,
+							phoneId: phoneId
+						});
+						var initJson = {
+							"data": {"action":"websocketInitialConnect"}, 
+							"clientId": playerFromNumber
+						};
+						if(!room["computerSocket"]) {
+							console.log("ERROR: computer connection does not exist.");
+							console.log("Room: ");
+							console.log(room);
+							console.log("Computer Socket: ");
+							console.log(room["computerSocket"]);
+						}
+						var computerSocketId = room["computerSocket"].id;
+						socket.to(computerSocketId).emit("phoneMessage", initJson);
+					} 
 					//this doesnt work anymore
-					/*else {
+					else {
 						playerNumber = jsonData.playerNumber;
-						room["playerSockets"][playerNumber] = socket.id;
-					}*/
+						room["playerSockets"].forEach(socketInfo => {
+							if(socketInfo.playerFromNumber == playerNumber) {
+								socketInfo["socketId"] = socket.id;
+								socketInfo["phoneId"] = phoneId;
+							}
+						});
+					}
 
 				} else {
 					var roomDoesntExist = {
