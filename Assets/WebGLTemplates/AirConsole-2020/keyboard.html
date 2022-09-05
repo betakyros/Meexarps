@@ -899,6 +899,7 @@ path, .jtk-endpoint {
                     hideAllViews();
                     document.getElementById("welcomeScreenView").style.display = "block";
                     document.getElementById("nameAlreadyTakenView").style.display = "block";
+                    document.getElementById("beforeGameStartsRejoinButton").innerHTML = "Reconnect as " + App.prototype.getKeyboardValue("nickname");
                 } else if(myAction === "sendSkipIntro") {
                     hideAllViews();
                     displayElement(document.getElementById("skipIntroView"));
@@ -1289,7 +1290,7 @@ path, .jtk-endpoint {
                 document.getElementById("welcomeScreenAfterGameStart").style.display = "block";
             }
 
-            App.prototype.sendWelcomeInfo = function sendWelcomeInfo(initialName) {
+            App.prototype.sendWelcomeInfo = function sendWelcomeInfo(initialName, forceReconnect) {
                 var nickname;
                 if(initialName) {
                     nickname = initialName;
@@ -1302,7 +1303,8 @@ path, .jtk-endpoint {
 					    'info': {
                             'name': nickname,
                             'avatarId': 0,
-                            'selectedAlien': selectedAlien
+                            'selectedAlien': selectedAlien,
+                            'forceReconnect': forceReconnect
                         }
 				    };
 				    App.prototype.sendMessage(message);
@@ -2492,8 +2494,11 @@ path, .jtk-endpoint {
             </div>
             <div id="welcomeScreenBeforeGameStart">
                 <div class="franklinInstructionText" style="font-size:9px;">To rejoin an existing game, please enter the same username</div>
-                <div class="view" id="nameAlreadyTakenView" style="display:none;color:red;font-style:italic;">
-                    That name is already taken, please choose another name
+                <div class="view" id="nameAlreadyTakenView" style="display:none">
+                    <div style="color:red;font-style:italic;"> That name is already taken, would you like to reconnect? </div>
+                    </br>
+                    <div id="beforeGameStartsRejoinButton" class="pseudo_button" onmousedown="window.app.sendWelcomeInfo(null, true)">Reconnect as [name]</div>
+
                 </div>
                 <p>
                 <!-- TODO dont use onmousedown handler. try using whatever airconsole control library -->

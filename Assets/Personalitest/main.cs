@@ -544,7 +544,7 @@ public class main : MonoBehaviour
 
     void OnDisconnect(int from)
     {
-        removeDeviceIdFromAlienSelections(from);
+        removeDeviceIdFromUncommittedAlienSelections(from);
         BroadcastSelectedAliens();
     }
 
@@ -590,8 +590,9 @@ public class main : MonoBehaviour
 
             if (!(currentPlayer.Value == null))
             {
+                bool isForcedReconnect = data["info"]["forceReconnect"] != null ? data["info"]["forceReconnect"].ToObject<bool>() : false;
                 //prevent players from using the same name
-                if (gameState.phoneViewGameState.Equals(PhoneViewGameState.SendStartGameScreen))
+                if (!isForcedReconnect && gameState.phoneViewGameState.Equals(PhoneViewGameState.SendStartGameScreen))
                 {
                     SendMessageToPhone(from, new JsonAction("nameAlreadyTaken", new string[] { " " }));
                     return;
@@ -654,6 +655,9 @@ public class main : MonoBehaviour
                         {
                             if (!gameState.committedAlienSelections.ContainsKey(i))
                             {
+                                int fromOfPlayerAboutToGetBooted = gameState.uncommittedAlienSelections[i][0];
+                                // update selected aliens on phone screen
+                                SendMessageToPhone(fromOfPlayerAboutToGetBooted, new JsonAction("bootSelectedAlien", new string[] { " " }));
                                 CommitAlien(i);
                                 selectedAlien = i;
                             }
@@ -866,7 +870,7 @@ public class main : MonoBehaviour
             } else
             {
                 //remove the previous selection
-                removeDeviceIdFromAlienSelections(from);
+                removeDeviceIdFromUncommittedAlienSelections(from);
                 if(selectedAlien > -1)
                 {
                     gameState.uncommittedAlienSelections.Add(selectedAlien, new[] { from, -1 });
@@ -1273,16 +1277,15 @@ public class main : MonoBehaviour
         BroadcastToAllPhones(new JsonAction("sendAlienSelectionSuccess", new[] { selectedAliens }));
     }
 
-    private void removeDeviceIdFromAlienSelections(int from)
+    private void removeDeviceIdFromUncommittedAlienSelections(int from)
     {
-        Dictionary<int, int[]> alienSelections = gameState.GetAllAlienSelections();
+        Dictionary<int, int[]> alienSelections = gameState.uncommittedAlienSelections;
         foreach (KeyValuePair<int, int[]> alienSelection in alienSelections)
         {
             if (alienSelection.Value[0] == from)
             {
                 alienSelections.Remove(alienSelection.Key);
                 // update selected aliens on phone screen
-                SendMessageToPhone(from, new JsonAction("bootSelectedAlien", new string[] { " " }));
                 break;
             }
         }
@@ -1295,7 +1298,7 @@ public class main : MonoBehaviour
         if (gameState.uncommittedAlienSelections.ContainsKey(selectedAlien))
         {
             value = gameState.uncommittedAlienSelections[selectedAlien];
-            removeDeviceIdFromAlienSelections(value[0]);
+            removeDeviceIdFromUncommittedAlienSelections(value[0]);
             gameState.uncommittedAlienSelections.Remove(selectedAlien);
             gameState.committedAlienSelections.Add(selectedAlien, value);
             return true;
