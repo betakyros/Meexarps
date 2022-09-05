@@ -818,6 +818,10 @@ path, .jtk-endpoint {
                     document.getElementById("joinAs").innerText = payload.data[0];
                 } else if(myAction === "sendAlienSelectionFailed") {
                     //TODO update some message if the selection fails
+                } else if (myAction === "bootSelectedAlien") {
+                    //if you get booted from your selected alien
+                    document.getElementById("alienButton" + selectedAlien).className = "alienButton-disabled franklinImage";
+                    selectedAlien = -1;
                 } else if(myAction === "sendAlienSelectionSuccess") {
                     var selectedAliensArray = payload.data[0].split('');
                     for(var i = 0; i < 6; i++) {

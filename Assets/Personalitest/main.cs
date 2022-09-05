@@ -545,7 +545,7 @@ public class main : MonoBehaviour
     void OnDisconnect(int from)
     {
         removeDeviceIdFromAlienSelections(from);
-        BroadcastSelectedAliens(gameState.alienSelections);
+        BroadcastSelectedAliens();
     }
 
     void OnMessage(int from, JToken data)
@@ -631,18 +631,32 @@ public class main : MonoBehaviour
                 int newPlayerNumber = gameState.GetNumberOfPlayers();
                 if (selectedAlien > -1)
                 {
-                    gameState.alienSelections[selectedAlien] = new[] { -1, newPlayerNumber };
+                    gameState.uncommittedAlienSelections[selectedAlien] = new[] { -1, newPlayerNumber };
+                    CommitAlien(selectedAlien);
                 }
                 else
                 {
                     //select the next available alien
                     for (int i = 0; i < 6; i++)
                     {
-                        if (!gameState.alienSelections.ContainsKey(i))
+                        if (!gameState.GetAllAlienSelections().ContainsKey(i))
                         {
                             selectedAlien = i;
-                            gameState.alienSelections.Add(i, new[] { -1, newPlayerNumber });
+                            gameState.uncommittedAlienSelections.Add(i, new[] { -1, newPlayerNumber });
+                            CommitAlien(i);
                             break;
+                        }
+                    }
+                    //no uncommited alien was found
+                    if(selectedAlien < 0)
+                    {
+                        for (int i = 0; i < 6; i++)
+                        {
+                            if (!gameState.committedAlienSelections.ContainsKey(i))
+                            {
+                                CommitAlien(i);
+                                selectedAlien = i;
+                            }
                         }
                     }
                 }
@@ -846,7 +860,7 @@ public class main : MonoBehaviour
         {
             playSound = false;
             int selectedAlien = data["info"]["selectedAlien"].ToObject<int>();
-            if (gameState.alienSelections.ContainsKey(selectedAlien))
+            if (gameState.GetAllAlienSelections().ContainsKey(selectedAlien))
             {
                 SendMessageToPhone(from, new JsonAction("sendAlienSelectionFailed", new[] { ""}));
             } else
@@ -855,9 +869,9 @@ public class main : MonoBehaviour
                 removeDeviceIdFromAlienSelections(from);
                 if(selectedAlien > -1)
                 {
-                    gameState.alienSelections.Add(selectedAlien, new[] { from, -1 });
+                    gameState.uncommittedAlienSelections.Add(selectedAlien, new[] { from, -1 });
                 }
-                BroadcastSelectedAliens(gameState.alienSelections);
+                BroadcastSelectedAliens();
             }
 
         }
@@ -1248,8 +1262,9 @@ public class main : MonoBehaviour
         return playersWhoHaventSubmitted;
     }
 
-    private void BroadcastSelectedAliens(Dictionary<int, int[]> alienSelections)
+    private void BroadcastSelectedAliens()
     {
+        Dictionary<int, int[]> alienSelections = gameState.GetAllAlienSelections();
         string selectedAliens = "";
         foreach (int alienNumber in alienSelections.Keys)
         {
@@ -1260,14 +1275,33 @@ public class main : MonoBehaviour
 
     private void removeDeviceIdFromAlienSelections(int from)
     {
-        Dictionary<int, int[]> alienSelections = gameState.alienSelections;
+        Dictionary<int, int[]> alienSelections = gameState.GetAllAlienSelections();
         foreach (KeyValuePair<int, int[]> alienSelection in alienSelections)
         {
             if (alienSelection.Value[0] == from)
             {
                 alienSelections.Remove(alienSelection.Key);
+                // update selected aliens on phone screen
+                SendMessageToPhone(from, new JsonAction("bootSelectedAlien", new string[] { " " }));
                 break;
             }
+        }
+    }
+
+    // returns false if failed to commit
+    private bool CommitAlien(int selectedAlien)
+    {
+        int[] value;
+        if (gameState.uncommittedAlienSelections.ContainsKey(selectedAlien))
+        {
+            value = gameState.uncommittedAlienSelections[selectedAlien];
+            removeDeviceIdFromAlienSelections(value[0]);
+            gameState.uncommittedAlienSelections.Remove(selectedAlien);
+            gameState.committedAlienSelections.Add(selectedAlien, value);
+            return true;
+        } else
+        {
+            return false;
         }
     }
 
@@ -1337,7 +1371,7 @@ public class main : MonoBehaviour
 
     private void sendWelcomeScreenInfo(int from, int alienNumber)
     {
-        BroadcastSelectedAliens(gameState.alienSelections);
+        BroadcastSelectedAliens();
         List<string> playerNames = gameState.GetPlayerNamesInNumberOrder();
         List<string> playerAlienNumber = gameState.GetAlienNumberInNumberOrder();
         List<string> payload = new List<string>();
@@ -3699,7 +3733,8 @@ class GameState
     public Dictionary<int, Player> players { get; set; }
     //alienNumber, [from, playerNumber]. 
     //If either from or playernumber is defined the alien is taken
-    public Dictionary<int, int[]> alienSelections { get; set; }
+    public Dictionary<int, int[]> uncommittedAlienSelections { get; set; }
+    public Dictionary<int, int[]> committedAlienSelections { get; set; }
     public Dictionary<int, Player> audienceMembers { get; set; }
     public List<Round> rounds { get; set; }
     public PhoneViewGameState phoneViewGameState;
@@ -3715,12 +3750,28 @@ class GameState
     {
         this.m = m;
         players = new Dictionary<int, Player>();
-        alienSelections = new Dictionary<int, int[]>();
+        uncommittedAlienSelections = new Dictionary<int, int[]>();
+        committedAlienSelections = new Dictionary<int, int[]>();
         audienceMembers = new Dictionary<int, Player>();
         rounds = new List<Round>();
         tvViewGameState = TvViewGameState.WelcomeScreen;
         SetPhoneViewGameState(PhoneViewGameState.SendStartGameScreen);
         ResetGuesses();
+    }
+
+    //committed aliens take priority over uncommitted aliens
+    public Dictionary<int, int[]> GetAllAlienSelections()
+    {
+        Dictionary<int, int[]> returnable = new Dictionary<int, int[]>();
+        foreach (KeyValuePair<int, int[]> item in uncommittedAlienSelections)
+        {
+            returnable[item.Key] = item.Value;
+        }
+        foreach (KeyValuePair<int, int[]> item in committedAlienSelections)
+        {
+            returnable[item.Key] = item.Value;
+        }
+        return returnable;
     }
 
     public void SetPhoneViewGameState(PhoneViewGameState p)
