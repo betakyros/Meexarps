@@ -23,6 +23,8 @@ TagManager:
   - OfflineVotingPanel
   - OfflineVotingText
   - RoomCodeValue
+  - DownloadAnswersButton
+  - DisconnectBanner
   layers:
   - Default
   - TransparentFX

@@ -7,10 +7,16 @@ using UnityEngine.UI;
 public class ButtonOnPointerDown : MonoBehaviour, UnityEngine.EventSystems.IPointerDownHandler
 {
     public main m;
+    public bool isUpload;
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     public void OnPointerDown(UnityEngine.EventSystems.PointerEventData eventData) {
     Debug.Log("onpointerdown called");
-        m.UploadCustomQuestions();
+        if(isUpload) {
+            m.UploadCustomQuestions();
+        } else {
+            m.DownloadAnswers();
+        }
     }
 #else
     //

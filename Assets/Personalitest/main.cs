@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using UnityEngine.Video;
 using TMPro;
 using SFB;
+using System.IO;
 
 public class main : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class main : MonoBehaviour
     private static List<string> anonymousNames;
     //(question, left answer, right answer)
     private static List<string[]> wouldYouRathers;
+    private static List<string[]> customWouldYouRathers;
     private static List<string> friendshipTips;
     private int friendshipTipIndex;
     private GameState gameState;
@@ -63,6 +65,7 @@ public class main : MonoBehaviour
     public GameObject roundCounter;
     public SocketClientFranklin socket;
     public Button fileUploadButton;
+    public Button downloadAnswersButton;
     public GameObject disconnectBanner;
 
     private int currentCategoryIndex;
@@ -136,6 +139,102 @@ public class main : MonoBehaviour
         }
     }
 #endif
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    //
+    // WebGL
+    //
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void DownloadFile(string gameObjectName, string methodName, string filename, byte[] byteArray, int byteArraySize);
+
+    // Broser plugin should be called in OnPointerDown.
+    public void DownloadAnswers() {        
+        try
+        {
+            
+            List<string> s = GenerateAnswerText();
+            string ss = "";
+            /*No reason for this string builder to be like this. was debugging a lot and trying random things. feel free to clean up later*/
+            for(int i = 0; i < s.Count; i++)
+            {            
+                Debug.Log(s[i]);
+                ss += s[i];
+            }
+            var bytes = Encoding.UTF8.GetBytes(ss);
+            DownloadFile(gameObject.name, "OnFileDownload", "meexarpsAnswersAndQuestions.txt", bytes, bytes.Length);
+        } catch (System.Exception e)
+        {
+            Debug.Log("Failed to download file." + e);
+            downloadAnswersButton.GetComponentInChildren<Text>().text = "File too large. Failed to download.";
+             JObject msg = new JObject();
+            msg.Add("action", "metric");
+            msg.Add("metricName", "FILEFAILEDTODOWNLOAD");
+            socket.SendWebSocketMessage(msg.ToString());
+        }
+    }
+
+    // Called from browser
+    public void OnFileDownload() {
+        Debug.Log("File Successfully Downloaded");
+    }
+#else
+
+    public void DownloadAnswers()
+    {
+        //doesnt work for some reason??
+        var path = StandaloneFileBrowser.SaveFilePanel("Title", "", "sample", "txt");
+        if (!string.IsNullOrEmpty(path))
+        {
+            File.WriteAllText(path, "ExampleText");
+        }
+    }
+#endif
+
+    private List<string> GenerateAnswerText()
+    {
+        List<string> returnable = new List<string>();
+        for (int i = 0; i < gameState.rounds.Count; i++)
+        {
+            var currentRound = gameState.rounds[i];
+
+            returnable.Add("Round:" + i);
+            returnable.Add(System.Environment.NewLine);
+            returnable.Add("+++++++" + System.Environment.NewLine);
+
+            for (int j = 0; j < currentRound.questions.Count; j++)
+            {
+                returnable.Add(currentRound.questions[j]);
+                returnable.Add(System.Environment.NewLine);
+            }
+
+            returnable.Add(System.Environment.NewLine);
+            returnable.Add(System.Environment.NewLine);
+
+            for (int j = 0; j < currentRound.answers.Count; j++)
+            {
+                var currentAnswer = currentRound.answers[j];
+                returnable.Add(gameState.GetPlayerByPlayerNumber(currentAnswer.playerNumber).nickname);
+                returnable.Add(System.Environment.NewLine + "------" + System.Environment.NewLine);
+                for (int k = 0; k < currentAnswer.text.Length; k++)
+                {
+                    string answer = currentAnswer.text[k];
+                    returnable.Add(answer + System.Environment.NewLine);
+                }
+                returnable.Add(System.Environment.NewLine);
+            }
+        }
+
+        returnable.Add("Custom Would You Rather Questions" + System.Environment.NewLine);
+        returnable.Add("+++++++" + System.Environment.NewLine);
+        returnable.Add(System.Environment.NewLine);
+        for (int j = 0; j < customWouldYouRathers.Count; j++)
+        {
+            string s = string.Join("|", customWouldYouRathers[j]);
+            returnable.Add(s + System.Environment.NewLine);
+        }
+        return returnable;
+    }
+
     private System.Collections.IEnumerator OutputRoutine(string[] urlArr)
     {
 
@@ -253,7 +352,8 @@ public class main : MonoBehaviour
     {
         #if UNITY_EDITOR
             fileUploadButton.onClick.AddListener(UploadCustomQuestions);
-        #endif        
+            fileUploadButton.onClick.AddListener(DownloadAnswers);
+        #endif
         if (isWinterHolidaySeason)
         {
             GameObject.FindWithTag("SplashScreenImage").gameObject.SetActive(false);
@@ -319,6 +419,7 @@ public class main : MonoBehaviour
         friendshipTips.Shuffle();
         tempWouldYouRathers.Shuffle();
         wouldYouRathers = tempWouldYouRathers;
+        customWouldYouRathers = new List<string[]>();
 
         //seasonal content
         if (isWinterHolidaySeason)
@@ -968,6 +1069,7 @@ public class main : MonoBehaviour
                 wouldYouRather.Add(ReplaceWhiteSpaceWithNormalSpace(property.Value.ToString()));
             }
             wouldYouRathers.Insert(currentWouldYouRatherIndex, wouldYouRather.ToArray());
+            customWouldYouRathers.Add(wouldYouRather.ToArray());
         }
         else if ("sendWouldYouRatherAnswer".Equals(action))
         {
@@ -3050,6 +3152,7 @@ public class main : MonoBehaviour
         textMeshPros[offset + 4].text = "";
         textMeshPros[offset + 6].text = "";
         textMeshPros[offset + 7].text = "";
+        downloadAnswersButton.gameObject.SetActive(false);
 
         float waitForContext = 2.0f;
 
@@ -3088,7 +3191,10 @@ public class main : MonoBehaviour
         textMeshPros[offset + 7].text = "Look at your phone for personal results   <sprite=0>";
         yield return new WaitForSeconds(waitForContext);
 
-        if(shouldShowAudienceScorecard)
+        downloadAnswersButton.gameObject.SetActive(true);
+        yield return new WaitForSeconds(waitForContext);
+
+        if (shouldShowAudienceScorecard)
         {
             //set audience scores
             //first sort the audience scores
