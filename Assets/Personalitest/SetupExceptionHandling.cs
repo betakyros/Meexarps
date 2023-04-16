@@ -27,10 +27,11 @@ public class ExceptionHandling
         if (type == LogType.Exception)
         {
             m.printActionList();
+            m.printState();
 
             errorPanel.SetActive(true);
             Text errorText = errorPanel.GetComponentInChildren<Text>();
-            errorText.text = "ERROR: " + condition + "\n" + stackTrace;
+            errorText.text = "This message will dissapear in 10 seconds. Please screenshot and send to the developers.\nERROR: " + condition + "\n" + stackTrace;
             Debug.Log("ERROR: " + condition + "\n" + stackTrace);
 
             JObject msg = new JObject();

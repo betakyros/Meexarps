@@ -20,7 +20,7 @@ public class main : MonoBehaviour
     private static List<string> anonymousNames;
     //(question, left answer, right answer)
     private static List<string[]> wouldYouRathers;
-    private static List<string[]> customWouldYouRathers;
+    public static List<string[]> customWouldYouRathers;
     private static List<string> friendshipTips;
     private int friendshipTipIndex;
     private GameState gameState;
@@ -637,6 +637,7 @@ public class main : MonoBehaviour
         if (gameState.players.ContainsKey(from))
         {
             SendCurrentScreenForReconnect(from, gameState.players[from].playerNumber);
+            gameState.players[from].isDisconnected = false;
         } else
         {
             SendInitialRequestToPhone();
@@ -679,7 +680,9 @@ public class main : MonoBehaviour
             playSound = false;
             if(gameState.players.ContainsKey(from))
             {
-                string playerName = gameState.players[from].nickname;
+                Player p = gameState.players[from];
+                p.isDisconnected = true;
+                string playerName = p.nickname;
                 disconnectBanner.GetComponentInChildren<TextMeshProUGUI>().text = "<color=#325EFB>" + playerName + "</color> has disconnected. " + playerName + ", refresh your screen!";
                 StartCoroutine(DisplayDisconnectBanner(2));
             }
@@ -1505,7 +1508,7 @@ public class main : MonoBehaviour
                 sendWelcomeScreenInfoDetails(from, alienNumber, myPlayer);
 
             }
-            else 
+            else
             {
                 Player myPlayer = gameState.audienceMembers[from];
                 sendWelcomeScreenInfoDetails(from, AUDIENCE_ALIEN_NUMBER, myPlayer);
@@ -2309,7 +2312,13 @@ public class main : MonoBehaviour
         SendMessageToPhone(playerDeviceId, new JsonAction("sendVoting", listToSend.ToArray()));
     }
 
+
     //todo remove parameter
+    private IEnumerator<WaitForSeconds> HideErrorPanelAfter10seconds(float seconds)
+    {
+        yield return new WaitForSeconds(10);
+        errorPanel.SetActive(false);
+    }
     private IEnumerator<WaitForSeconds> ShowInstrucitons(float seconds)
     {
         //setup and show the answer panels
@@ -3491,18 +3500,15 @@ public class main : MonoBehaviour
     public void printActionList()
     {
         StringBuilder sb = new StringBuilder();
-        Debug.Log("Printing action list");
         int i = 0;
         actionList.ForEach(action => {
             string temp = i++ + " " + action[0];
-            Debug.Log(temp);
             sb.AppendLine(temp);
             }
         );
         for(int j = System.Math.Min(3, actionList.Count); j > 0; j--)
         {
             string temp = j + " to last " + actionList[actionList.Count - j][1];
-            Debug.Log(temp);
             sb.AppendLine(temp);
         }
         
@@ -3512,6 +3518,27 @@ public class main : MonoBehaviour
         msg.Add("context", "");
 
         socket.SendWebSocketMessage(msg.ToString());
+
+        // this is a hack, but i want to see if the game is still playable if we hide the error screen
+        StartCoroutine(HideErrorPanelAfter10seconds(10));
+    }
+
+    public void printState()
+    {
+        JObject msg = new JObject();
+        msg.Add("action", "log");
+        msg.Add("message", "----Start Print State----");
+        msg.Add("context", "");
+
+        socket.SendWebSocketMessage(msg.ToString());
+
+       
+        JObject msg2 = new JObject();
+        msg2.Add("action", "log");
+        msg2.Add("message", gameState.DebugToString());
+        msg2.Add("context", "");
+
+        socket.SendWebSocketMessage(msg2.ToString());
     }
 }
 
@@ -3600,6 +3627,8 @@ class Player
     private int currentDebounceIndex = 0;
     public bool isDebounced { get; set; }
 
+    public  bool isDisconnected { get; set; }
+
 public Player(string n, int d, int pn, int a, Animator an, int selectedAlien)
     {
         nickname = n;
@@ -3614,6 +3643,7 @@ public Player(string n, int d, int pn, int a, Animator an, int selectedAlien)
         isReady = false;
         isDebounced = false;
         debounceLog = new System.DateTime[debounceMaxInputsPerSec];
+        isDisconnected = false;
     }
 
     public Player(string n, int d, int pn, int a, int p, int nw, Animator an, Dictionary<string, int> bfp, int selectedAlien)
@@ -3630,6 +3660,7 @@ public Player(string n, int d, int pn, int a, Animator an, int selectedAlien)
         isReady = false;
         isDebounced = false;
         debounceLog = new System.DateTime[debounceMaxInputsPerSec];
+        isDisconnected = false;
     }
 
     public override string ToString()
@@ -3640,6 +3671,24 @@ public Player(string n, int d, int pn, int a, Animator an, int selectedAlien)
         sb.Append("playerNumber: " + playerNumber + "\n");
         sb.Append("avatarId: " + avatarId + "\n");
         sb.Append("points: " + points + "\n");
+        return sb.ToString();
+    }
+
+    public string debugToString()
+    {
+        StringBuilder sb = new StringBuilder("");
+        sb.Append("Nickname: " + nickname + "\n");
+        sb.Append("deviceId: " + deviceId + "\n");
+        sb.Append("playerNumber: " + playerNumber + "\n");
+        sb.Append("avatarId: " + avatarId + "\n");
+        sb.Append("points: " + points + "\n");
+        sb.Append("numWrong: " + numWrong+ "\n");
+        sb.Append("bestFriendPoints: " + PrettyPrinter.PrettyPrintDictionary(bestFriendPoints)+ "\n");
+        sb.Append("alienNumber: " + alienNumber+ "\n");
+        sb.Append("isReady: " + isReady+ "\n");
+        sb.Append("isDebounced: " + isDebounced+ "\n");
+        sb.Append("isDisconnected: " + isDisconnected+ "\n");
+        
         return sb.ToString();
     }
 
@@ -3818,6 +3867,53 @@ class Round
             sb.Append("\t" + answer.ToString());
             sb.Append("\n");
         }
+        return sb.ToString();
+    }
+
+    public string DebugToString()
+    {
+        StringBuilder sb = new StringBuilder("");
+        sb.Append("Questions \n");
+        foreach (string question in questions)
+        {
+            sb.Append("\t" + question);
+            sb.Append("\n");
+        }
+
+        sb.Append("Answers \n");
+        foreach (Answers answer in answers)
+        {
+            sb.Append("\t" + answer.ToString());
+            sb.Append("\n");
+        }
+
+        foreach (int deviceId in votes.Keys)
+        {
+            sb.Append("deviceId: " + deviceId);
+            sb.Append("\n");
+            foreach (string anonymousName in votes[deviceId].Keys)
+            {
+                sb.Append("\t" + anonymousName + ": " + PrettyPrinter.PrettyPrintDictionary(votes));
+
+                sb.Append("\n");
+            }
+            sb.Append("\n");
+        }
+
+        foreach (int deviceId in audienceVotes.Keys)
+        {
+            sb.Append("deviceId: " + deviceId);
+            sb.Append("\n");
+            foreach (string anonymousName in audienceVotes[deviceId].Keys)
+            {
+                sb.Append("\t" + anonymousName + ": " + PrettyPrinter.PrettyPrintDictionary(audienceVotes));
+
+                sb.Append("\n");
+            }
+            sb.Append("\n");
+        }
+
+
         return sb.ToString();
     }
 
@@ -4046,11 +4142,75 @@ class GameState
         return sb.ToString();
     }
 
+    public string DebugToString()
+    {
+    StringBuilder sb = new StringBuilder();
+
+        foreach (int playerFrom in players.Keys)
+        {
+            sb.AppendLine("playerFrom: " + playerFrom);
+            sb.Append("\n");
+            sb.AppendLine(players[playerFrom].debugToString());
+            sb.Append("\n");
+        }
+        sb.Append("\n");
+        foreach (int audienceFrom in audienceMembers.Keys)
+        {
+            sb.AppendLine("audienceFrom: " + audienceFrom);
+            sb.Append("\n");
+            sb.AppendLine(audienceMembers[audienceFrom].debugToString());
+            sb.Append("\n");
+        }
+        sb.Append("\n");
+        sb.AppendLine("uncommittedAlienSelections: " + PrettyPrinter.PrettyPrintDictionary(uncommittedAlienSelections));
+        sb.Append("\n");
+        sb.AppendLine("committedAlienSelections: " + PrettyPrinter.PrettyPrintDictionary(committedAlienSelections));
+        sb.Append("\n");
+        sb.AppendLine("rounds: ");
+        sb.Append("\n");
+        foreach (Round r in rounds)
+        {
+            sb.AppendLine(r.DebugToString());
+            sb.Append("\n");
+        }
+        sb.AppendLine("phoneViewGameState: " + phoneViewGameState);
+        sb.AppendLine("tvViewGameState: " + tvViewGameState);
+        sb.AppendLine("questionWriters: " + PrettyPrinter.PrettyPrintList<int>(questionWriters));
+        sb.AppendLine("totalCorrectGuesses: " + totalCorrectGuesses);
+        sb.AppendLine("totalWrongGuesses: " + totalCorrectGuesses);
+        sb.AppendLine("totalAudienceCorrectGuesses: " + totalAudienceCorrectGuesses);
+        sb.AppendLine("totalAudienceWrongGuesses: " + totalAudienceWrongGuesses);
+        return sb.ToString();
+    }
+
     public void updateRoundCounter(GameObject roundCounter)
     {
         roundCounter.GetComponentsInChildren<TextMeshProUGUI>()[1].text = (GetCurrentRoundNumber() + 1) + 
             "<size=15> of " + this.GetNumRoundsPerGame() + "</size>";
         roundCounter.SetActive(true);
+    }
+}
+
+static class PrettyPrinter
+{
+    public static string PrettyPrintList<T>(List<T> l)
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (T item in l)
+        {
+            sb.AppendLine(item.ToString());
+        }
+        return sb.ToString();
+    }
+
+    public static string PrettyPrintDictionary<Key, Value>(Dictionary<Key, Value> d)
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (KeyValuePair<Key, Value> kvp in d)
+        {
+            sb.AppendLine(string.Format("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
+        }
+        return sb.ToString();
     }
 }
 
