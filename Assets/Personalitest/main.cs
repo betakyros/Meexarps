@@ -764,6 +764,7 @@ public class main : MonoBehaviour
                                 SendMessageToPhone(fromOfPlayerAboutToGetBooted, new JsonAction("bootSelectedAlien", new string[] { " " }));
                                 CommitAlien(i);
                                 selectedAlien = i;
+                                break;
                             }
                         }
                     }
@@ -4195,6 +4196,14 @@ static class PrettyPrinter
 {
     public static string PrettyPrintList<T>(List<T> l)
     {
+        if (l == null)
+        {
+            return "Failed to pretty print list: list is null";
+        }
+        if (l.Count == 0)
+        {
+            return "Failed to pretty print list: list is empty";
+        }
         StringBuilder sb = new StringBuilder();
         foreach (T item in l)
         {
@@ -4205,6 +4214,14 @@ static class PrettyPrinter
 
     public static string PrettyPrintDictionary<Key, Value>(Dictionary<Key, Value> d)
     {
+        if (d == null)
+        {
+            return "Failed to pretty print dictionary: dictionary is null";
+        }
+        if (d.Count == 0)
+        {
+            return "Failed to pretty print dictionary: dictionary is empty";
+        }
         StringBuilder sb = new StringBuilder();
         foreach (KeyValuePair<Key, Value> kvp in d)
         {
