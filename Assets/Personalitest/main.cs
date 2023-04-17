@@ -3477,14 +3477,36 @@ public class main : MonoBehaviour
             AirConsole.instance.Message(from, jsonAction);
         } else
         {
-            
-            JObject msg = new JObject();
-            msg.Add("action", "message");
-            msg.Add("from", "" + from);
-            msg.Add("data", JToken.FromObject(jsonAction));
+            try
+            {
+                JObject msg = new JObject();
+                msg.Add("action", "message");
+                msg.Add("from", "" + from);
+                msg.Add("data", JToken.FromObject(jsonAction));
 
-            addToActionList("Send Message: " + jsonAction.action + " to: " + from, Newtonsoft.Json.JsonConvert.SerializeObject(jsonAction));
-            socket.SendWebSocketMessage(JToken.FromObject(msg).ToString());
+                if(null != jsonAction)
+                {
+                    addToActionList("Send Message: " + jsonAction.action + " to: " + from, Newtonsoft.Json.JsonConvert.SerializeObject(jsonAction));
+                } else
+                {
+                    JObject msg2 = new JObject();
+                    msg2.Add("action", "log");
+                    msg2.Add("message", "null jsonAction");
+                    msg2.Add("context", "error");
+                    addToActionList("Send Message: " + jsonAction.action + " to: " + from, "unknown json action");
+                    socket.getSocketIoCommunicator().Instance.Emit("computerMessage", JToken.FromObject(msg2).ToString(), false);
+                }
+                socket.SendWebSocketMessage(JToken.FromObject(msg).ToString());
+            } catch
+            {
+                JObject msg2 = new JObject();
+                msg2.Add("action", "log");
+                msg2.Add("message", "failed to send websocket message");
+                msg2.Add("context", "error");
+                addToActionList("failed to send an action", "unknown json action");
+                socket.getSocketIoCommunicator().Instance.Emit("computerMessage", JToken.FromObject(msg2).ToString(), false);
+                throw;
+            }
         }
     }
 
