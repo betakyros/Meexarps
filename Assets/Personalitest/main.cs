@@ -653,8 +653,12 @@ public class main : MonoBehaviour
     void OnMessage(int from, JToken data)
     {
         string action = data["action"].ToString();
-
-        addToActionList("Received: " + action + " from: " + from, Newtonsoft.Json.JsonConvert.SerializeObject(data));
+        string dataText = SafeSerialize(data, from, "OnMessage", action);
+        if(dataText == "ERROR")
+        {
+            throw new System.ArgumentException("Could not parse JSON Token in OnMessage");
+        }
+        addToActionList("Received: " + action + " from: " + from, dataText);
         bool playSound = true;
         if(gameState.players.ContainsKey(from))
         {
@@ -3465,9 +3469,16 @@ public class main : MonoBehaviour
             JObject msg = new JObject();
             msg.Add("action", "broadcast");
             msg.Add("data", JToken.FromObject(jsonAction));
-            addToActionList("Broadcast Message: " + jsonAction.action, Newtonsoft.Json.JsonConvert.SerializeObject(jsonAction));
-
-            socket.SendWebSocketMessage(msg.ToString());
+            string jsonActionText = SafeSerialize(jsonAction, -1, "BroadcastToAllPhones");
+            if (jsonActionText == "ERROR")
+            {
+                throw new System.ArgumentException("Could not parse JSON Action in BroadcastToAllPhones");
+            }
+            else
+            {
+                addToActionList("Broadcast Message: " + jsonAction.action, jsonActionText);
+                socket.SendWebSocketMessage(msg.ToString());
+            }
         }
     }
     private void SendMessageToPhone(int from, JsonAction jsonAction)
@@ -3477,36 +3488,60 @@ public class main : MonoBehaviour
             AirConsole.instance.Message(from, jsonAction);
         } else
         {
-            try
-            {
-                JObject msg = new JObject();
-                msg.Add("action", "message");
-                msg.Add("from", "" + from);
-                msg.Add("data", JToken.FromObject(jsonAction));
+            JObject msg = new JObject();
+            msg.Add("action", "message");
+            msg.Add("from", "" + from);
+            msg.Add("data", JToken.FromObject(jsonAction));
 
-                if(null != jsonAction)
-                {
-                    addToActionList("Send Message: " + jsonAction.action + " to: " + from, Newtonsoft.Json.JsonConvert.SerializeObject(jsonAction));
-                } else
-                {
-                    JObject msg2 = new JObject();
-                    msg2.Add("action", "log");
-                    msg2.Add("message", "null jsonAction");
-                    msg2.Add("context", "error");
-                    addToActionList("Send Message: " + jsonAction.action + " to: " + from, "unknown json action");
-                    socket.getSocketIoCommunicator().Instance.Emit("computerMessage", JToken.FromObject(msg2).ToString(), false);
-                }
+            string jsonActionText = SafeSerialize(jsonAction, from, "SendMessageToPhone");
+            if (jsonActionText == "ERROR")
+            {
+                throw new System.ArgumentException("Could not parse JSON Action in SendMessageToPhone");
+            } else
+            {
+                addToActionList("Send Message: " + jsonAction.action + " to: " + from, jsonActionText);
                 socket.SendWebSocketMessage(JToken.FromObject(msg).ToString());
-            } catch
+            }
+        }
+    }
+
+    private string SafeSerialize(object jsonAction, int from, string whereInCode, string action = "")
+    {
+        try
+        {
+            if (null != jsonAction)
+            {
+                return Newtonsoft.Json.JsonConvert.SerializeObject(jsonAction);
+            }
+            else
             {
                 JObject msg2 = new JObject();
                 msg2.Add("action", "log");
-                msg2.Add("message", "failed to send websocket message");
+                msg2.Add("message", "null jsonAction");
                 msg2.Add("context", "error");
-                addToActionList("failed to send an action", "unknown json action");
+                if (whereInCode == "BroadcastToAllPhones")
+                {
+                    addToActionList("Broadcast Message: " + jsonAction, "unknown json action");
+                } else if (whereInCode == "SendMessageToPhone")
+                {
+                    addToActionList("Send Message: " + jsonAction + " to: " + from, "unknown json action");
+                } else
+                {
+                    addToActionList("Received: " + action + " from: " + from, "unknown data");
+                }
                 socket.getSocketIoCommunicator().Instance.Emit("computerMessage", JToken.FromObject(msg2).ToString(), false);
-                throw;
+                return "ERROR";
             }
+        }
+        catch
+        {
+            JObject msg2 = new JObject();
+            msg2.Add("action", "log");
+            msg2.Add("message", "failed to send websocket message");
+            msg2.Add("context", "error");
+            addToActionList("failed to send an action", "unknown json action");
+            socket.getSocketIoCommunicator().Instance.Emit("computerMessage", JToken.FromObject(msg2).ToString(), false);
+            throw;
         }
     }
 
